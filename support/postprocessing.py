@@ -112,16 +112,16 @@ def _plot_error(err):
     return
 
 def _plot_energy_history(energy):
-
-    matplotlib.pyplot.plot(energy) #, cmap = 'jet')#, vmin = 1e-4, vmax = 1e-0)
-    matplotlib.pyplot.title('Energy')
-    #matplotlib.pyplot.colorbar()
-    #matplotlib.pyplot.show()
-    filename = 'fig_energy_real.jpg'
+    """On trace les valeurs du critère aux étapes acceptées de la descente."""
+    matplotlib.pyplot.plot(numpy.asarray(energy).ravel())
+    matplotlib.pyplot.title("Évolution du critère pendant la descente")
+    matplotlib.pyplot.xlabel("Étape acceptée")
+    matplotlib.pyplot.ylabel("Critère d'énergie")
+    filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fig_energy_real.jpg')
     matplotlib.pyplot.savefig(filename)
     matplotlib.pyplot.close()
-
     return
+
 
 def plot_rer_b_frequency_sweep(results, output_dir=None):
     """Enregistre le spectre du RER B et son énergie en fonction de la fréquence."""
