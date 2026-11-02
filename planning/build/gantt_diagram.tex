@@ -1,6 +1,6 @@
 \begin{tikzpicture}[x=1cm,y=-1cm,font=\sffamily\small]
 \path[use as bounding box] (0,0) rectangle (24.1,11.9);
-\node[anchor=west,font=\bfseries\large] at (0,.2) {ResoniCS : cinq lots coordonnés};
+\node[anchor=west,font=\bfseries\large] at (0,.2) {ResoniCS : travaux dans les fichiers partagés};
 \fill[blue!7] (3.00,.65) rectangle (7.20,1.35);
 \node[font=\bfseries] at (5.10,.98) {Lundi 2 novembre};
 \node[font=\scriptsize] at (4.05,1.58) {Matin};
@@ -35,13 +35,13 @@
 \node[anchor=west,font=\bfseries] at (0,2.30) {Yann};
 \node[anchor=west,font=\scriptsize,text=gray!80!black] at (0,2.69) {Voie numérique};
 \filldraw[fill=blue!55!black!11,draw=blue!55!black,rounded corners=2pt] (3.08,1.94) rectangle (7.12,3.12);
-\node[align=center,text width=3.89cm,font=\footnotesize,text=blue!55!black] at (5.10,2.53) {\textbf{Y1}\\ Solveur et contrats};
+\node[align=center,text width=3.89cm,font=\footnotesize,text=blue!55!black] at (5.10,2.53) {\textbf{Y1}\\ Géométrie et solveur};
 \filldraw[fill=blue!55!black!11,draw=blue!55!black,rounded corners=2pt] (7.28,1.94) rectangle (11.32,3.12);
 \node[align=center,text width=3.89cm,font=\footnotesize,text=blue!55!black] at (9.30,2.53) {\textbf{Y2}\\ Intégration et contrôles};
 \filldraw[fill=blue!55!black!11,draw=blue!55!black,rounded corners=2pt] (11.48,1.94) rectangle (15.52,3.12);
-\node[align=center,text width=3.89cm,font=\footnotesize,text=blue!55!black] at (13.50,2.53) {\textbf{Y3}\\ Raffinement et coût};
+\node[align=center,text width=3.89cm,font=\footnotesize,text=blue!55!black] at (13.50,2.53) {\textbf{Y3}\\ Bande et quantités};
 \filldraw[fill=blue!55!black!11,draw=blue!55!black,rounded corners=2pt] (15.68,1.94) rectangle (19.72,3.12);
-\node[align=center,text width=3.89cm,font=\footnotesize,text=blue!55!black] at (17.70,2.53) {\textbf{Y4}\\ Exécution reproductible};
+\node[align=center,text width=3.89cm,font=\footnotesize,text=blue!55!black] at (17.70,2.53) {\textbf{Y4}\\ Raffinement et contrôles};
 \filldraw[fill=blue!55!black!11,draw=blue!55!black,rounded corners=2pt] (19.88,1.94) rectangle (21.82,3.12);
 \node[align=center,text width=1.79cm,font=\footnotesize,text=blue!55!black] at (20.85,2.53) {\textbf{Y5}\\ Rendu et oral};
 \node[anchor=west,font=\bfseries] at (0,3.64) {Mathis};
@@ -71,11 +71,11 @@
 \node[anchor=west,font=\bfseries] at (0,6.32) {Joachim};
 \node[anchor=west,font=\scriptsize,text=gray!80!black] at (0,6.71) {Voie théorique};
 \filldraw[fill=violet!70!black!11,draw=violet!70!black,rounded corners=2pt] (3.08,5.96) rectangle (7.12,7.14);
-\node[align=center,text width=3.89cm,font=\footnotesize,text=violet!70!black] at (5.10,6.55) {\textbf{J1}\\ Objectif et adjoint};
+\node[align=center,text width=3.89cm,font=\footnotesize,text=violet!70!black] at (5.10,6.55) {\textbf{J1}\\ Objectif et bord ouvert};
 \filldraw[fill=violet!70!black!11,draw=violet!70!black,rounded corners=2pt] (7.28,5.96) rectangle (11.32,7.14);
-\node[align=center,text width=3.89cm,font=\footnotesize,text=violet!70!black] at (9.30,6.55) {\textbf{J2}\\ Gradient et bord ouvert};
+\node[align=center,text width=3.89cm,font=\footnotesize,text=violet!70!black] at (9.30,6.55) {\textbf{J2}\\ Gradient et contrôle};
 \filldraw[fill=violet!70!black!11,draw=violet!70!black,rounded corners=2pt] (11.48,5.96) rectangle (15.52,7.14);
-\node[align=center,text width=3.89cm,font=\footnotesize,text=violet!70!black] at (13.50,6.55) {\textbf{J3}\\ Objectif multibande};
+\node[align=center,text width=3.89cm,font=\footnotesize,text=violet!70!black] at (13.50,6.55) {\textbf{J3}\\ Objectif multifréquence};
 \filldraw[fill=violet!70!black!11,draw=violet!70!black,rounded corners=2pt] (15.68,5.96) rectangle (19.72,7.14);
 \node[align=center,text width=3.89cm,font=\footnotesize,text=violet!70!black] at (17.70,6.55) {\textbf{J4}\\ Validation des analyses};
 \filldraw[fill=violet!70!black!11,draw=violet!70!black,rounded corners=2pt] (19.88,5.96) rectangle (21.82,7.14);
@@ -83,7 +83,7 @@
 \node[anchor=west,font=\bfseries] at (0,7.66) {Antoine};
 \node[anchor=west,font=\scriptsize,text=gray!80!black] at (0,8.05) {Voie théorique};
 \filldraw[fill=red!60!black!11,draw=red!60!black,rounded corners=2pt] (3.08,7.30) rectangle (7.12,8.48);
-\node[align=center,text width=3.89cm,font=\footnotesize,text=red!60!black] at (5.10,7.89) {\textbf{A1}\\ Projection et interface};
+\node[align=center,text width=3.89cm,font=\footnotesize,text=red!60!black] at (5.10,7.89) {\textbf{A1}\\ Projection et méthode};
 \filldraw[fill=red!60!black!11,draw=red!60!black,rounded corners=2pt] (7.28,7.30) rectangle (11.32,8.48);
 \node[align=center,text width=3.89cm,font=\footnotesize,text=red!60!black] at (9.30,7.89) {\textbf{A2}\\ Descente à un pic};
 \filldraw[fill=red!60!black!11,draw=red!60!black,rounded corners=2pt] (11.48,7.30) rectangle (15.52,8.48);
@@ -104,5 +104,5 @@
 \filldraw[fill=gray!12,draw=gray!60] (17.78,8.72) rectangle (19.72,9.4);
 \node[font=\scriptsize,align=center] at (18.75,9.06) {Point équipe\\et enseignants};
 \node[anchor=west,text width=23.7cm,font=\small,align=left] at (0,10.0) {\textbf{Jalons :} lundi, conventions et interfaces validées ; mardi, références et première descente ; mercredi, plusieurs fréquences et budgets ; jeudi, choix du produit et données figées ; vendredi, répétition et rendu.};
-\node[anchor=west,text width=23.7cm,font=\footnotesize,align=left] at (0,11.05) {Les codes renvoient aux tâches détaillées dans les fiches. Les barres représentent les activités du jour, avec un livrable avant 14h30. Les échanges quotidiens se tiennent dans la fenêtre 14h30--17h ; le créneau précis dépend des enseignants. La soutenance a lieu vendredi après-midi.};
+\node[anchor=west,text width=23.7cm,font=\footnotesize,align=left] at (0,11.05) {Les codes renvoient aux fiches quotidiennes de chaque membre. Les barres représentent les activités du jour, avec un livrable avant 14h30. Les échanges quotidiens se tiennent dans la fenêtre 14h30--17h ; le créneau précis dépend des enseignants. La soutenance a lieu vendredi après-midi.};
 \end{tikzpicture}

@@ -1,73 +1,58 @@
-# ResoniCS — Organisation de la semaine d'intégration
+# ResoniCS — Planning par personne et par jour
 
-Le planning proposé couvre le **lundi 2 au vendredi 6 novembre 2026**. Il suit les cinq journées de l'énoncé, avec un résultat présentable avant les validations quotidiennes dans la fenêtre **14h30–17h**. La soutenance du vendredi après-midi dure **20 minutes**, puis **10 minutes de questions** ; chacun des cinq membres intervient.
+Chaque membre dispose de **cinq fiches**, une par jour du 2 au 6 novembre 2026. Chaque tâche indique ce qui est fait, le fichier à compléter, les fichiers à joindre, un prompt prêt à copier et les contrôles attendus.
 
-[![Diagramme de Gantt](build/gantt.png)](gantt.pdf)
+| Membre | Lundi | Mardi | Mercredi | Jeudi | Vendredi |
+|---|---|---|---|---|---|
+| Yann | [Fiche](Yann/01_lundi.md) | [Fiche](Yann/02_mardi.md) | [Fiche](Yann/03_mercredi.md) | [Fiche](Yann/04_jeudi.md) | [Fiche](Yann/05_vendredi.md) |
+| Mathis | [Fiche](Mathis/01_lundi.md) | [Fiche](Mathis/02_mardi.md) | [Fiche](Mathis/03_mercredi.md) | [Fiche](Mathis/04_jeudi.md) | [Fiche](Mathis/05_vendredi.md) |
+| Olympia | [Fiche](Olympia/01_lundi.md) | [Fiche](Olympia/02_mardi.md) | [Fiche](Olympia/03_mercredi.md) | [Fiche](Olympia/04_jeudi.md) | [Fiche](Olympia/05_vendredi.md) |
+| Joachim | [Fiche](Joachim/01_lundi.md) | [Fiche](Joachim/02_mardi.md) | [Fiche](Joachim/03_mercredi.md) | [Fiche](Joachim/04_jeudi.md) | [Fiche](Joachim/05_vendredi.md) |
+| Antoine | [Fiche](Antoine/01_lundi.md) | [Fiche](Antoine/02_mardi.md) | [Fiche](Antoine/03_mercredi.md) | [Fiche](Antoine/04_jeudi.md) | [Fiche](Antoine/05_vendredi.md) |
 
-- [Gantt en PDF](gantt.pdf) et [source LaTeX](build/gantt.tex).
-- [Cahier détaillé des tâches en PDF](cahier_des_taches.pdf) et [source LaTeX](build/cahier_des_taches.tex).
-- [Contrat commun des fonctions](contrat_commun.md).
-- [Planning éditable en CSV](build/repartition.csv) et [JSON](repartition.json).
+## Comment utiliser une fiche
 
-## Répartition des fichiers
+1. Récupérer les versions actuelles des fichiers partagés, puis ouvrir la fiche du jour.
+2. Joindre les fichiers indiqués et copier le prompt de la tâche. Un seul fichier cible est modifié ; les dépendances sont fournies en lecture seule.
+3. Vérifier le résultat, puis transmettre le fichier complet au membre suivant avant sa modification.
 
-| Membre | Voie | Fichier à produire | Responsabilité principale |
-|---|---|---|---|
-| [Yann](fiches/Yann.md) | Numérique | `resonics.py` | Adapter et vérifier le solveur fourni, intégrer les lots et coordonner les livrables |
-| [Mathis](fiches/Mathis.md) | Numérique | `materiaux.py` | Fixer les unités, documenter les bandes route/rail et fournir la loi complexe du matériau |
-| [Olympia](fiches/Olympia.md) | Numérique | `campagnes.py` | Organiser les campagnes, trouver les pics et comparer les formes et les produits |
-| [Joachim](fiches/Joachim.md) | Théorique | `objectif.py` | Écrire `your_compute_objective_function`, l'adjoint, le gradient et l'analyse du bord ouvert |
-| [Antoine](fiches/Antoine.md) | Théorique | `optimisation.py` | Écrire la projection à quantité fixée et `your_optimization_procedure` |
+Les résultats et paramètres produits les jours précédents sont joints lorsqu'une tâche les utilise. Une donnée encore manquante est signalée et aucun résultat physique n'est inventé pour la remplacer.
 
-Chaque fiche contient son contexte, les signatures utiles, les entrées et sorties, la méthode pas à pas, les vérifications et les jalons de la semaine. Elle peut être utilisée seule pour produire le fichier correspondant. Les exemples de contrôle sont écrits dans ce même fichier. Les fonctions qui ne sont pas encore intégrées sont reçues comme arguments et remplacées, dans les seuls contrôles, par de petits exemples synthétiques.
+## Fichiers partagés
 
-Les codes du Gantt associent une personne et une journée : **Y1–Y5**, **M1–M5**, **O1–O5**, **J1–J5** et **A1–A5** correspondent respectivement au lundi, mardi, mercredi, jeudi et vendredi. Les dates et heures du CSV sont des créneaux prévisionnels de production, avec remise de l'état du lot avant 14h30 ; elles n'imposent pas la durée d'une présentation intermédiaire.
+| Fichier existant | Contributions prévues |
+|---|---|
+| `support/preprocessing.py` | Yann prépare la géométrie et les poids du mur, puis Mathis ajoute la loi de matériau |
+| `support/processing.py` | Yann rend l'assemblage accessible pour le calcul de l'état et de l'adjoint |
+| `support/demo_control_polycopie2024.py` | Joachim écrit le coût et le gradient, Antoine la projection et la descente, puis Yann intègre et lance les expériences |
+| `support/postprocessing.py` | Olympia prépare les figures et les comparaisons à partir des calculs |
+| `support/_env.py` | Constantes communes utilisées en lecture seule |
 
-## Dépendances et jalons
+Une tâche concerne **un seul fichier à la fois**, et les fichiers sont communs au groupe. Les fonctions nouvelles sont ajoutées dans ces fichiers existants. Aucun nouveau module Python n'est prévu et les programmes de `support/` n'ont pas été modifiés pendant cette préparation.
 
-| Échéance | Résultat attendu | Dépendance à lever |
-|---|---|---|
-| Lundi, cadrage | Bandes, dimensions, source, budget et conventions écrits ; interfaces figées ; petits contrôles prêts | Données permettant de calculer une impédance complexe réelle à obtenir ou modèle documenté à choisir |
-| Mardi, avant validation | Courbes du mur plan et des profils entièrement recouverts ; pics repérés ; gradient vérifié ; première descente | Loi de matériau validée, solveur et gradient cohérents |
-| Mercredi, avant validation | Une distribution commune optimisée sur plusieurs fréquences ; comparaison de plusieurs budgets ; validation sur toute la bande | Projection pondérée et coûts fréquentiels fiables |
-| Jeudi, avant validation | Comparaisons après raffinement et plusieurs initialisations ; produit retenu ; données et figures figées | Résultats reproductibles et classement robuste des candidats |
-| Vendredi matin | Exécution et documents vérifiés ; répétition à cinq ; archive finale | Validation de chaque lot par son responsable |
+Pour éviter d'écraser des contributions, le passage de main est **Yann → Mathis** dans `preprocessing.py` le lundi, et **Joachim → Antoine → Yann** dans la démonstration. Les fonctions de calcul et les tracés peuvent avancer en parallèle dans leurs fichiers respectifs. Après l'intégration, Joachim et Yann contrôlent le gradient acoustique réel avant la première descente. Les corrections ultérieures reprennent toujours la dernière version partagée.
 
-Le développement peut avancer en parallèle dès lundi grâce aux contrats et aux contrôles autonomes. Les résultats obtenus avec un coefficient synthétique ne sont pas utilisés pour annoncer une performance de matériau réel.
+## Vue d'ensemble
 
-## Décisions à valider dès le premier point
+[![Planning de la semaine](build/gantt.png)](gantt.pdf)
 
-1. **Bandes et dimensions.** L'énoncé ne fixe ni la bande route, ni la bande rail, ni les dimensions du modèle. Ces données doivent être justifiées et compatibles avec le coût de calcul.
-2. **Loi de matériau.** Le support ne contient pas `compute_alpha`, et les projets antérieurs n'ont pas calculé cette loi. Les coefficients d'absorption réels d'une table ne déterminent pas à eux seuls une impédance complexe. Il faut obtenir le modèle et ses paramètres ou une table d'impédances documentée.
-3. **Signe de Robin.** Le coefficient effectivement assemblé par le support a le signe opposé à celui d'une condition écrite avec un plus devant le coefficient physique. Le contrôle sur onde plane précède les conclusions d'absorption.
-4. **Quantité fixée.** On conserve une longueur absorbante pondérée, puis un volume à épaisseur et profondeur fixées. Un même pourcentage de nœuds ne suffit pas entre contours de longueurs différentes. L'aire unité de l'ancien devoir n'est pas imposée pour l'EI.
-5. **Étude théorique du bord ouvert.** On conserve le bord source et on précise quelle paroi devient ouverte. Joachim fait valider l'interprétation attendue de l'étude énergétique et, si une dérivée géométrique de forme est exigée, son périmètre exact.
+- **Lundi :** modèle, données physiques, étude théorique, objectif et projection.
+- **Mardi :** références entièrement recouvertes, pics et première optimisation.
+- **Mercredi :** optimisation commune à plusieurs fréquences, quantités et validation de bande.
+- **Jeudi :** raffinement, plusieurs départs et choix du produit.
+- **Vendredi :** vérifications finales et soutenance de vingt minutes à cinq, puis dix minutes de questions.
 
-## Ordre des comparaisons
+Le groupe prépare son état d'avancement avant le point quotidien prévu dans la fenêtre de **14h30 à 17h**. Les codes du Gantt associent l'initiale du membre au numéro du jour, par exemple Y1 pour Yann lundi.
 
-1. Mur plan entièrement recouvert, puis profils fournis de niveaux un et deux entièrement recouverts.
-2. Distribution initiale à budget limité sur chaque forme, puis optimisation autour d'un pic.
-3. Optimisation d'une même distribution à plusieurs fréquences, comparaison des quantités et validation entre les fréquences de conception.
-4. Raffinement à géométrie fixée, stabilité selon l'initialisation et choix du produit dans la famille testée.
+Le [Gantt PDF](gantt.pdf), sa [source LaTeX](build/gantt.tex), le [CSV](build/repartition.csv) et le [JSON](repartition.json) donnent une vue synthétique. Les consignes copiables sont uniquement dans les fiches quotidiennes ; l'ancien cahier général et les anciennes fiches par module sont remplacés par cette organisation. Les [documents de référence](lecture_et_sources.md) servent à retrouver les supports utiles.
 
-Le mur entièrement recouvert est une référence demandée par l'énoncé ; il utilise généralement davantage de matériau qu'une distribution optimisée à budget limité. Les cartes et le critère de pression doivent être distingués d'une puissance dissipée ou d'une performance acoustique mesurée.
+## Compiler le Gantt
 
-## Mise en forme des futurs livrables
-
-Le cahier reprend le format du rapport précédent : article A4 de 11 points, marges de 2,2 cm, légendes courtes et liens cliquables. La présentation de la soutenance reprendra le thème Beamer **CambridgeUS**, le format **16:9**, le plan détaillé et les rappels de plan du projet précédent. Les fonctions, données et résultats de l'ancien devoir sont réutilisés seulement lorsque leurs hypothèses conviennent au nouveau modèle.
-
-La répartition orale de départ est de quatre minutes par personne : Yann présente le modèle et le calcul, Mathis le matériau et les bandes, Joachim l'objectif et le gradient, Antoine l'optimisation, puis Olympia les comparaisons et le produit. Cette répartition est ajustée lors de la répétition, en conservant vingt minutes au total.
-
-## Compilation
-
-Depuis le dossier `planning`, les sources et les fichiers de compilation se trouvent dans `build`. Les PDF publiés restent directement dans `planning` :
+Depuis `planning/build/` :
 
 ```sh
-cd build
 latexmk -pdf -interaction=nonstopmode -halt-on-error gantt.tex
 cp gantt.pdf ../gantt.pdf
-latexmk -pdf -interaction=nonstopmode -halt-on-error cahier_des_taches.tex
-cp cahier_des_taches.pdf ../cahier_des_taches.pdf
 ```
 
-Les cinq fiches Markdown sont les versions autonomes à partager avec les responsables des lots. Le répertoire `context` et les modules de `support` sont conservés dans leur état fourni.
+Les fichiers TeX, PNG et CSV restent dans `build/`. Le PDF à consulter reste dans `planning/`. Les futurs rapport et présentation reprendront les templates LaTeX du projet précédent, sans être créés à cette étape.

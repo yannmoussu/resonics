@@ -1,26 +1,26 @@
-id,responsable,voie,fichier,debut,fin,tache
-Y1,Yann,VN,resonics.py,2026-11-02 09:00,2026-11-02 14:30,Solveur et contrats
-Y2,Yann,VN,resonics.py,2026-11-03 09:00,2026-11-03 14:30,Intégration et contrôles
-Y3,Yann,VN,resonics.py,2026-11-04 09:00,2026-11-04 14:30,Raffinement et coût
-Y4,Yann,VN,resonics.py,2026-11-05 09:00,2026-11-05 14:30,Exécution reproductible
-Y5,Yann,VN,resonics.py,2026-11-06 09:00,2026-11-06 12:30,Livrables et répétition
-M1,Mathis,VN,materiaux.py,2026-11-02 09:00,2026-11-02 14:30,Bandes et modèle matériau
-M2,Mathis,VN,materiaux.py,2026-11-03 09:00,2026-11-03 14:30,Coefficients et passivité
-M3,Mathis,VN,materiaux.py,2026-11-04 09:00,2026-11-04 14:30,Comparaison des matériaux
-M4,Mathis,VN,materiaux.py,2026-11-05 09:00,2026-11-05 14:30,Choix du matériau
-M5,Mathis,VN,materiaux.py,2026-11-06 09:00,2026-11-06 12:30,Synthèse matériau
-O1,Olympia,VN,campagnes.py,2026-11-02 09:00,2026-11-02 14:30,Plan des expériences
-O2,Olympia,VN,campagnes.py,2026-11-03 09:00,2026-11-03 14:30,Références et pics
-O3,Olympia,VN,campagnes.py,2026-11-04 09:00,2026-11-04 14:30,Validation sur la bande
-O4,Olympia,VN,campagnes.py,2026-11-05 09:00,2026-11-05 14:30,Comparaison des produits
-O5,Olympia,VN,campagnes.py,2026-11-06 09:00,2026-11-06 12:30,Figures et répétition
-J1,Joachim,VT,objectif.py,2026-11-02 09:00,2026-11-02 14:30,Objectif et adjoint
-J2,Joachim,VT,objectif.py,2026-11-03 09:00,2026-11-03 14:30,Gradient et bord ouvert
-J3,Joachim,VT,objectif.py,2026-11-04 09:00,2026-11-04 14:30,Objectif multibande
-J4,Joachim,VT,objectif.py,2026-11-05 09:00,2026-11-05 14:30,Validation des analyses
-J5,Joachim,VT,objectif.py,2026-11-06 09:00,2026-11-06 12:30,Synthèse théorique
-A1,Antoine,VT,optimisation.py,2026-11-02 09:00,2026-11-02 14:30,Projection et interface
-A2,Antoine,VT,optimisation.py,2026-11-03 09:00,2026-11-03 14:30,Descente à un pic
-A3,Antoine,VT,optimisation.py,2026-11-04 09:00,2026-11-04 14:30,Bande et budgets
-A4,Antoine,VT,optimisation.py,2026-11-05 09:00,2026-11-05 14:30,Arrêts et robustesse
-A5,Antoine,VT,optimisation.py,2026-11-06 09:00,2026-11-06 12:30,Synthèse optimisation
+id,responsable,voie,date,tache,fichiers_cibles,fiche,nombre_taches
+Y1,Yann,VN,2026-11-02,Géométrie et solveur,support/preprocessing.py ; support/processing.py,Yann/01_lundi.md,2
+Y2,Yann,VN,2026-11-03,Intégration et premières références,support/demo_control_polycopie2024.py,Yann/02_mardi.md,1
+Y3,Yann,VN,2026-11-04,Bande et quantités,support/demo_control_polycopie2024.py,Yann/03_mercredi.md,1
+Y4,Yann,VN,2026-11-05,Raffinement et contrôles,support/demo_control_polycopie2024.py,Yann/04_jeudi.md,1
+Y5,Yann,VN,2026-11-06,Exécution finale et restitution,support/demo_control_polycopie2024.py,Yann/05_vendredi.md,2
+M1,Mathis,VN,2026-11-02,Données et matériau,support/preprocessing.py,Mathis/01_lundi.md,1
+M2,Mathis,VN,2026-11-03,Passivité,support/preprocessing.py,Mathis/02_mardi.md,1
+M3,Mathis,VN,2026-11-04,Matériaux et quantités,support/preprocessing.py,Mathis/03_mercredi.md,1
+M4,Mathis,VN,2026-11-05,Choix physique du matériau,support/preprocessing.py,Mathis/04_jeudi.md,1
+M5,Mathis,VN,2026-11-06,Validation et oral,support/preprocessing.py,Mathis/05_vendredi.md,1
+O1,Olympia,VN,2026-11-02,Figures de géométrie,support/postprocessing.py,Olympia/01_lundi.md,1
+O2,Olympia,VN,2026-11-03,Références et pics,support/postprocessing.py,Olympia/02_mardi.md,1
+O3,Olympia,VN,2026-11-04,Bande et quantités,support/postprocessing.py,Olympia/03_mercredi.md,1
+O4,Olympia,VN,2026-11-05,Robustesse et produit,support/postprocessing.py,Olympia/04_jeudi.md,1
+O5,Olympia,VN,2026-11-06,Figures et oral,support/postprocessing.py,Olympia/05_vendredi.md,1
+J1,Joachim,VT,2026-11-02,Objectif et étude théorique,support/demo_control_polycopie2024.py,Joachim/01_lundi.md,1
+J2,Joachim,VT,2026-11-03,Adjoint et gradient,support/demo_control_polycopie2024.py,Joachim/02_mardi.md,1
+J3,Joachim,VT,2026-11-04,Coût multifréquence,support/demo_control_polycopie2024.py,Joachim/03_mercredi.md,1
+J4,Joachim,VT,2026-11-05,Validation mathématique,support/demo_control_polycopie2024.py,Joachim/04_jeudi.md,1
+J5,Joachim,VT,2026-11-06,Validation et oral,support/demo_control_polycopie2024.py,Joachim/05_vendredi.md,1
+A1,Antoine,VT,2026-11-02,Projection,support/demo_control_polycopie2024.py,Antoine/01_lundi.md,1
+A2,Antoine,VT,2026-11-03,Descente projetée,support/demo_control_polycopie2024.py,Antoine/02_mardi.md,1
+A3,Antoine,VT,2026-11-04,Bande et budgets,support/demo_control_polycopie2024.py,Antoine/03_mercredi.md,1
+A4,Antoine,VT,2026-11-05,Arrêts et robustesse,support/demo_control_polycopie2024.py,Antoine/04_jeudi.md,1
+A5,Antoine,VT,2026-11-06,Validation et oral,support/demo_control_polycopie2024.py,Antoine/05_vendredi.md,1
