@@ -1,0 +1,118 @@
+# Yann — Mercredi 4 novembre 2026
+
+Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les développements techniques sont les étapes de ma contribution, dans les fichiers partagés. Chaque étape de code modifie uniquement son fichier cible.
+
+**Cas d’usage RER B.** On utilise la synthèse de Mathis et Olympia dans [SOTA.md](../../SOTA.md). La première plage de travail proposée est le roulement de 250 à 2 000 Hz, puis on prévoit les cas traction et auxiliaires de 100 à 500 Hz et crissement de 1 500 à 4 000 Hz selon les données et les moyens de calcul. Ces plages sont des indications de la synthèse à documenter et à valider en J1.3. Les petits contrôles synthétiques du code restent indépendants de ces bandes.
+
+## Analyze the obtained results to compare to the efficient performances on the fixed range of frequencies ; to compare to a fully absorbing wall ;
+
+**Repère :** J3.1. **Rôle :** contributeur.
+
+**Contribution de Yann.** On recalcule les réponses des distributions obtenues sur toute la bande, y compris entre les fréquences de conception.
+
+**Fichier à modifier :** `support/demo_control_polycopie2024.py`.
+
+### Fichiers concernés
+
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
+- `support/demo_control_polycopie2024.py`, version actuelle.
+- `support/preprocessing.py`, version actuelle.
+- `support/processing.py`, version actuelle.
+- `support/postprocessing.py`, version actuelle.
+- `support/_env.py`, version actuelle.
+- `context/Sujet-EI-EXT-2026.md`, version actuelle.
+
+### Contexte
+
+```text
+Protection du support : recopie à l’identique les deux cellules portant « Do not modify this cell, these are the values that you will be assessed against. », de leur en-tête jusqu’à la cellule suivante. La première initialise les coefficients, les seconds membres et la géométrie ; la seconde appelle processing.solve_helmholtz puis copie chi0 et u0. Garde toutes leurs lignes, commentaires, indentation, ordre, noms et arguments. Aucun ajout à l’intérieur, déplacement, suppression, changement d’appel ni nouvelle condition qui empêche leur exécution. Les fonctions étudiantes et les cellules « Fell free to modify the function call in this cell. » accueillent les compléments. Les campagnes sont appelées dans la dernière cellule autorisée, après le second bloc protégé, avec des tableaux indépendants des valeurs initiales. Compare les deux blocs à la version jointe avant de rendre le fichier et confirme leur identité.
+
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Compare les solutions sur toute la bande de roulement retenue, avec des points de validation hors des fréquences de conception. Si les cas traction ou crissement sont calculés, présente leurs bandes et leurs sources séparément. Le critère de pression du modèle et ses réductions relatives sont annoncés avec leur référence ; les valeurs de SOTA.md en dB(A) ne sont pas des performances calculées du produit.
+
+Reprends ces métadonnées RER B dans toutes les campagnes, y compris les fréquences de conception et les poids. La même géométrie et la même densité sont conservées si un produit est évalué sur plusieurs régimes.
+
+Modifie uniquement demo_control_polycopie2024.py joint et renvoie le fichier complet, sans créer de module. Les autres fichiers sont en lecture seule. Conserve les cellules imposées et toutes les fonctions validées des autres membres. Les commentaires sont des phrases françaises expliquant les étapes, sans notation mathématique. Ne lance aucune campagne à l'import et ne présente aucun résultat synthétique comme une performance physique.
+Pour chaque densité initiale ou optimisée de mardi, calcule une bande de validation commune avec des points intermédiaires et des voisinages de pics. Conserve les références entièrement recouvertes et leurs quantités. Transmets les records à Olympia pour le critère moyen pondéré et le maximum échantillonné.
+Sépare les fréquences ayant servi à optimiser de celles ajoutées pour valider. Donne les paramètres, le budget, les résidus et les motifs d'arrêt. Si le classement dépend d'un pic mal résolu, raffine les calculs correspondants.
+En complément de l'étude théorique J1.6, fournis à Joachim une comparaison numérique ouverte/réfléchissante avec source supérieure inchangée. L’ouverture concerne un côté latéral d’une copie locale case_domain du cas de campagne, son alpha_code=+1j*k et son masque est exclu de la conception et du budget. Le domaine du chemin initial n’est pas modifié. La règle des coins source est annoncée. Le tunnel réfléchissant reste le scénario de comparaison des produits ; ne déduis pas une inégalité universelle entre les coûts.
+```
+
+**Contrôle et transmission.** Olympia et Joachim reçoivent les réponses réellement calculées, avec les différences entre conception et validation.
+
+## to optimize the energy at once at several different frequencies ;
+
+**Repère :** J3.2. **Rôle :** contributeur.
+
+**Contribution de Yann.** On optimise une distribution unique de matériau commune à plusieurs fréquences.
+
+**Fichier à modifier :** `support/demo_control_polycopie2024.py`.
+
+### Fichiers concernés
+
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
+- `support/demo_control_polycopie2024.py`, version actuelle.
+- `support/preprocessing.py`, version actuelle.
+- `support/processing.py`, version actuelle.
+- `support/postprocessing.py`, version actuelle.
+- `support/_env.py`, version actuelle.
+- `context/Sujet-EI-EXT-2026.md`, version actuelle.
+
+### Contexte
+
+```text
+Protection du support : recopie à l’identique les deux cellules portant « Do not modify this cell, these are the values that you will be assessed against. », de leur en-tête jusqu’à la cellule suivante. La première initialise les coefficients, les seconds membres et la géométrie ; la seconde appelle processing.solve_helmholtz puis copie chi0 et u0. Garde toutes leurs lignes, commentaires, indentation, ordre, noms et arguments. Aucun ajout à l’intérieur, déplacement, suppression, changement d’appel ni nouvelle condition qui empêche leur exécution. Les fonctions étudiantes et les cellules « Fell free to modify the function call in this cell. » accueillent les compléments. Les campagnes sont appelées dans la dernière cellule autorisée, après le second bloc protégé, avec des tableaux indépendants des valeurs initiales. Compare les deux blocs à la version jointe avant de rendre le fichier et confirme leur identité.
+
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Optimise une distribution commune sur plusieurs fréquences de la bande RER B choisie. Sans spectre mesuré, utilise une quadrature fréquentielle normalisée explicitement annoncée. Avec un spectre de source disponible, documente les poids physiques et évite de pondérer à nouveau une amplitude déjà incluse dans la source. Les plages exploratoires se recouvrent ; leurs recouvrements ne doivent pas compter deux fois dans un coût de bande unique. Une conception couvrant plusieurs régimes est annoncée comme telle et conserve le même panneau et la même densité.
+
+Reprends ces métadonnées RER B dans toutes les campagnes, y compris les fréquences de conception et les poids. La même géométrie et la même densité sont conservées si un produit est évalué sur plusieurs régimes.
+
+Modifie uniquement demo_control_polycopie2024.py joint et renvoie le fichier complet, sans créer de module. Les autres fichiers sont en lecture seule. Conserve les cellules imposées et toutes les fonctions validées des autres membres. Les commentaires sont des phrases françaises expliquant les étapes, sans notation mathématique. Ne lance aucune campagne à l'import et ne présente aucun résultat synthétique comme une performance physique.
+Branche evaluate_band de Joachim avec un callback assemble_frequency(chi,frequency_hz). Celui-ci renvoie le même dictionnaire que l'assembleur monofréquence. Les fréquences, les poids de somme un et les références optionnelles strictement positives sont fixés avant la descente et communs aux candidats comparés.
+Appelle l'optimiseur existant avec une fermeture evaluate(chi,with_gradient=True) qui utilise ce coût de bande. La même densité sert à toutes les fréquences et on ne moyenne pas des densités optimisées séparément. evaluate_band renvoie u=None ; pour une carte, réévalue la densité finale à une fréquence annoncée avec evaluate_density.
+Recalcule ensuite la bande de validation indépendante et publie les records state='multi'. Si des points ont été ajoutés près d'un pic, recalcule les poids d'intégration, afin que leur simple accumulation ne modifie pas arbitrairement l'importance de ce voisinage. Vérifie les résidus, la faisabilité et le coût final.
+```
+
+**Contrôle et transmission.** Antoine valide les appels de descente et Olympia reçoit les courbes sur la bande, avec les fréquences de conception identifiées.
+
+## to study which quantity of the porous material gives the most optimal result ;
+
+**Repère :** J3.3. **Rôle :** contributeur.
+
+**Contribution de Yann.** On lance les mêmes expériences pour plusieurs quantités physiques de poreux et on transmet les résultats au groupe.
+
+**Fichier à modifier :** `support/demo_control_polycopie2024.py`.
+
+### Fichiers concernés
+
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
+- `support/demo_control_polycopie2024.py`, version actuelle.
+- `support/preprocessing.py`, version actuelle.
+- `support/processing.py`, version actuelle.
+- `support/postprocessing.py`, version actuelle.
+- `support/_env.py`, version actuelle.
+- `context/Sujet-EI-EXT-2026.md`, version actuelle.
+
+### Contexte
+
+```text
+Protection du support : recopie à l’identique les deux cellules portant « Do not modify this cell, these are the values that you will be assessed against. », de leur en-tête jusqu’à la cellule suivante. La première initialise les coefficients, les seconds membres et la géométrie ; la seconde appelle processing.solve_helmholtz puis copie chi0 et u0. Garde toutes leurs lignes, commentaires, indentation, ordre, noms et arguments. Aucun ajout à l’intérieur, déplacement, suppression, changement d’appel ni nouvelle condition qui empêche leur exécution. Les fonctions étudiantes et les cellules « Fell free to modify the function call in this cell. » accueillent les compléments. Les campagnes sont appelées dans la dernière cellule autorisée, après le second bloc protégé, avec des tableaux indépendants des valeurs initiales. Compare les deux blocs à la version jointe avant de rendre le fichier et confirme leur identité.
+
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Étudie la quantité nécessaire aux cartouches poreuses du panneau RER B avec les mêmes bandes et sources entre candidats comparables. La réduction de matière doit résulter des calculs. Les divisions par deux ou trois et la fraction de 40 % citées comme perspectives dans SOTA.md ne sont pas des résultats imposés. Compare les performances et la quantité à épaisseur et profondeur annoncées.
+
+Reprends ces métadonnées RER B dans toutes les campagnes, y compris les fréquences de conception et les poids. La même géométrie et la même densité sont conservées si un produit est évalué sur plusieurs régimes.
+
+Modifie uniquement demo_control_polycopie2024.py joint et renvoie le fichier complet, sans créer de module. Les autres fichiers sont en lecture seule. Conserve les cellules imposées et toutes les fonctions validées des autres membres. Les commentaires sont des phrases françaises expliquant les étapes, sans notation mathématique. Ne lance aucune campagne à l'import et ne présente aucun résultat synthétique comme une performance physique.
+Prends les budgets absolus validés avec Mathis et Antoine. Vérifie leur faisabilité pour toutes les formes. Avec une épaisseur et une profondeur constantes, le volume vaut longueur absorbante multipliée par épaisseur et profondeur. Si ces dimensions changent entre matériaux, adapte la longueur pour annoncer réellement un volume identique.
+Pour chaque budget, projette l'initialisation avec la fonction existante, puis lance les optimisations et la validation de bande sans changer la source ni la loi de matériau. Conserve les références entièrement recouvertes avec leurs quantités propres.
+Transmets à Olympia coûts de bande, maxima échantillonnés, densités finales et arrêts, ainsi que les longueurs et volumes. Les budgets sont des quantités physiques et non des pourcentages de nœuds.
+```
+
+**Contrôle et transmission.** Mathis valide les unités et les volumes, Antoine les contraintes et Olympia illustre les résultats réellement calculés.
+
+**Passage de main du programme principal :** Joachim → Antoine → Yann. Les résultats sont ensuite transmis à Olympia et aux autres responsables pour validation.

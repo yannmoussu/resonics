@@ -1,0 +1,918 @@
+[
+  {
+    "id": "J1.1",
+    "jour": 1,
+    "date": "2026-11-02",
+    "tache": "the state of the art ;",
+    "responsable": "Olympia",
+    "contributeurs": [
+      "Mathis"
+    ],
+    "contributions": [
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/01_lundi.md",
+        "fichier_cible": null,
+        "role": "responsable",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/01_lundi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      }
+    ],
+    "fichiers_cibles": [],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "La synthèse de l’état de l’art sur le RER B a déjà été réalisée par Mathis et Olympia dans SOTA.md. Exploite cette synthèse et complète sa vérification. Relie les affirmations chiffrées aux sources accessibles, distingue les réalisations sur le RER B des exemples sur d’autres lignes et compare les solutions aux inclusions poreuses envisagées. Les gains annoncés dans cette synthèse restent des points à vérifier et ne sont pas les résultats de ResoniCS.",
+    "etat": "Synthèse disponible par Mathis et Olympia ; vérification des sources et exploitation prévues.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J1.2",
+    "jour": 1,
+    "date": "2026-11-02",
+    "tache": "the model to consider,",
+    "responsable": "Yann",
+    "contributeurs": [
+      "Olympia",
+      "Joachim"
+    ],
+    "contributions": [
+      {
+        "membre": "Yann",
+        "fiche": "Yann/01_lundi.md",
+        "fichier_cible": "support/preprocessing.py",
+        "role": "responsable",
+        "zone_modification": "Ajouts et corrections des fonctions du projet ; factories et générateur initiaux inchangés."
+      },
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/01_lundi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/01_lundi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "contributeur",
+        "zone_modification": "Fonctions de tracé uniquement ; programme principal en lecture seule."
+      }
+    ],
+    "fichiers_cibles": [
+      "support/postprocessing.py",
+      "support/preprocessing.py"
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Le modèle représente un panneau destiné au bruit du RER B dans le tunnel réfléchissant demandé par l’énoncé. Décris le domaine et ses dimensions physiques, le profil fourni et la source de Dirichlet supérieure. La paroi rigide et les côtés Neumann sont les hypothèses du modèle. Choisis un profil physique fixe pour les comparaisons en fréquence ; le motif orthogonal fourni reste celui effectivement calculé. La géométrie de campagne est préparée par un helper ajouté, en conservant le générateur initial.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J1.3",
+    "jour": 1,
+    "date": "2026-11-02",
+    "tache": "the plage of frequencies of the interest, dimensions, noise sources ;",
+    "responsable": "Mathis",
+    "contributeurs": [
+      "Yann",
+      "Olympia"
+    ],
+    "contributions": [
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/01_lundi.md",
+        "fichier_cible": null,
+        "role": "responsable",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/01_lundi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/01_lundi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      }
+    ],
+    "fichiers_cibles": [],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Le choix d’application est désormais le RER B. Prends le roulement de 250 à 2 000 Hz comme première plage proposée, puis considère traction et auxiliaires de 100 à 500 Hz et crissement de 1 500 à 4 000 Hz comme cas complémentaires. Ces plages viennent de SOTA.md, pas d’un spectre mesuré fourni. Fais valider le régime, la bande, le site ou la section-type, la vitesse si elle est connue, les dimensions, la source et les données de matériau. Calcule le pas nécessaire à la fréquence maximale réellement étudiée et résous les reliefs. La règle des détails de l’ordre de lambda/2 guide le choix d’un panneau fixe et ne conduit pas à redimensionner le panneau à chaque fréquence.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J1.4",
+    "jour": 1,
+    "date": "2026-11-02",
+    "tache": "formulate the properties of the chosen model, what is known about its solution ;",
+    "responsable": "Joachim",
+    "contributeurs": [],
+    "contributions": [
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/01_lundi.md",
+        "fichier_cible": null,
+        "role": "responsable",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      }
+    ],
+    "fichiers_cibles": [],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Énonce les propriétés sous les hypothèses du panneau et de la source harmonique retenus pour le RER B. Distingue l’approximation réfléchissante Neumann de la description d’une paroi réelle. Les résultats de solvabilité et de dissipation doivent utiliser le coefficient complexe validé, et la plage étudiée doit rester dans la validité du modèle de matériau.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J1.5",
+    "jour": 1,
+    "date": "2026-11-02",
+    "tache": "formulate optimization problem ;",
+    "responsable": "Antoine",
+    "contributeurs": [
+      "Joachim"
+    ],
+    "contributions": [
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/01_lundi.md",
+        "fichier_cible": null,
+        "role": "responsable",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/01_lundi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur",
+        "zone_modification": "Fonctions étudiantes et cellules Fell free ; campagnes appelées après la seconde cellule protégée."
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py"
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Formule le coût du scénario RER B avec une quantité physique de poreux fixée. La source unitaire en haut donne d’abord une réponse fréquentielle de référence. Si aucun spectre mesuré n’est disponible, annonce des poids d’intégration de fréquence normalisés. Si un spectre mesuré est fourni, sa provenance et sa normalisation sont fixées avant la descente et la réponse à source unitaire est pondérée sans compter deux fois l’amplitude du bruit.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J1.6",
+    "jour": 1,
+    "date": "2026-11-02",
+    "tache": "Theoretical study : considering that one boundary is open-air (the wave go through without coming back) derive the energy over the form and compare the result with the analogous result with a reflexive boundary[^1].",
+    "responsable": "Joachim",
+    "contributeurs": [
+      "Yann"
+    ],
+    "contributions": [
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/01_lundi.md",
+        "fichier_cible": null,
+        "role": "responsable",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/01_lundi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      }
+    ],
+    "fichiers_cibles": [],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Étudie le même panneau destiné au RER B avec un côté réfléchissant puis ouvert, sans changer le bord source ni le budget. Les dimensions et le profil restent identiques entre ces deux scénarios. Relie la comparaison au confinement retenu dans le modèle et conserve séparément le scénario du tunnel réfléchissant utilisé pour classer les produits.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J1.7",
+    "jour": 1,
+    "date": "2026-11-02",
+    "tache": "to choose porous material(s) and its quantity ;",
+    "responsable": "Mathis",
+    "contributeurs": [
+      "Antoine"
+    ],
+    "contributions": [
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/01_lundi.md",
+        "fichier_cible": null,
+        "role": "responsable",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/01_lundi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      }
+    ],
+    "fichiers_cibles": [],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Le concept envisagé dans SOTA.md associe un panneau rigide et des cartouches poreuses amovibles. Examine la laine de roche et la fibre de chanvre seulement si leurs données complexes sont disponibles, puis fixe épaisseur, profondeur et quantité avec provenance. Une fraction illustrative telle que 40 % n’est pas un budget absolu commun entre des murs de longueurs différentes. Les contraintes d’entretien et d’encombrement sont des critères de choix à documenter.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J1.8",
+    "jour": 1,
+    "date": "2026-11-02",
+    "tache": "find numerically the corresponding complex coefficient(s) $\\alpha(\\omega)$ for the porous matherial(s) ; to compare the performances if several ;",
+    "responsable": "Mathis",
+    "contributeurs": [
+      "Yann"
+    ],
+    "contributions": [
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/01_lundi.md",
+        "fichier_cible": "support/preprocessing.py",
+        "role": "responsable",
+        "zone_modification": "Ajouts et corrections des fonctions du projet ; factories et générateur initiaux inchangés."
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/01_lundi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      }
+    ],
+    "fichiers_cibles": [
+      "support/preprocessing.py"
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Calcule la loi complexe sur les fréquences du scénario RER B retenu, en priorité la plage de roulement proposée. Les autres plages seront calculées seulement dans la validité de cette loi. Garde séparés la bande, les paramètres du matériau et leur provenance. La synthèse SOTA.md oriente les matériaux candidats et ne fournit pas à elle seule les paramètres d’une impédance complexe.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J1.9",
+    "jour": 1,
+    "date": "2026-11-02",
+    "tache": "find energy derivative over the distribution of the porous inclusions ;",
+    "responsable": "Joachim",
+    "contributeurs": [
+      "Yann"
+    ],
+    "contributions": [
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/01_lundi.md",
+        "fichier_cible": null,
+        "role": "responsable",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/01_lundi.md",
+        "fichier_cible": "support/processing.py",
+        "role": "contributeur",
+        "zone_modification": "Ajout du helper de matrice ; solve_helmholtz et assemblage initial inchangés."
+      }
+    ],
+    "fichiers_cibles": [
+      "support/processing.py"
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "La dérivée doit rester celle du système discret réellement assemblé pour la source du scénario RER B. Vérifie les conjugaisons, le signe et les poids, plutôt que d’utiliser directement la formule indicative de placement du poreux écrite dans SOTA.md. Pour un coût pondéré en fréquence, la dérivée emploie exactement les poids fixés dans le coût. Le helper de matrice est ajouté à côté du solveur fourni, dont le code et l’appel protégé restent inchangés.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J1.10",
+    "jour": 1,
+    "date": "2026-11-02",
+    "tache": "formulate/consider the numerical gradient descent method.",
+    "responsable": "Antoine",
+    "contributeurs": [],
+    "contributions": [
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/01_lundi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "responsable",
+        "zone_modification": "Fonctions étudiantes et cellules Fell free ; campagnes appelées après la seconde cellule protégée."
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py"
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "La descente améliore une densité sur le panneau RER B à budget absolu fixé. Les coefficients du matériau, la source, le profil et les poids fréquentiels restent constants pendant une descente. Préserve les petits contrôles algorithmiques et distingue-les des futures performances acoustiques.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J2.1",
+    "jour": 2,
+    "date": "2026-11-03",
+    "tache": "Study the energy on the chosen plage of frequencies for a fully absorbent wall of the plane shape and to define the local maxima ;",
+    "responsable": "Olympia",
+    "contributeurs": [
+      "Yann",
+      "Mathis"
+    ],
+    "contributions": [
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/02_mardi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "responsable",
+        "zone_modification": "Fonctions de tracé uniquement ; programme principal en lecture seule."
+      },
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/02_mardi.md",
+        "fichier_cible": "support/preprocessing.py",
+        "role": "contributeur",
+        "zone_modification": "Ajouts et corrections des fonctions du projet ; factories et générateur initiaux inchangés."
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/02_mardi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur",
+        "zone_modification": "Fonctions étudiantes et cellules Fell free ; campagnes appelées après la seconde cellule protégée."
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py",
+      "support/postprocessing.py",
+      "support/preprocessing.py"
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Calcule d’abord la référence du mur plan entièrement recouvert sur la plage de roulement proposée de 250 à 2 000 Hz après validation de ses paramètres. Les pics recherchés sont les pics de réponse du modèle ; ils ne constituent pas un spectre mesuré du RER B. Les cas complémentaires de traction ou de crissement sont identifiés séparément et utilisent leurs propres bandes validées.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J2.2",
+    "jour": 2,
+    "date": "2026-11-03",
+    "tache": "Study the same question for different shapes of fully absorbent walls ;",
+    "responsable": "Olympia",
+    "contributeurs": [
+      "Yann",
+      "Mathis"
+    ],
+    "contributions": [
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/02_mardi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "responsable",
+        "zone_modification": "Fonctions de tracé uniquement ; programme principal en lecture seule."
+      },
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/02_mardi.md",
+        "fichier_cible": "support/preprocessing.py",
+        "role": "contributeur",
+        "zone_modification": "Ajouts et corrections des fonctions du projet ; factories et générateur initiaux inchangés."
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/02_mardi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur",
+        "zone_modification": "Fonctions étudiantes et cellules Fell free ; campagnes appelées après la seconde cellule protégée."
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py",
+      "support/postprocessing.py",
+      "support/preprocessing.py"
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Compare au plan les profils fournis entièrement recouverts pour le même régime de bruit RER B, avec mêmes source, bande et dimensions de référence annoncées. Chaque profil reste fixe pendant le parcours de sa bande. Affiche les longueurs et quantités de matériau de chaque mur.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J2.3",
+    "jour": 2,
+    "date": "2026-11-03",
+    "tache": "Compare the energy of the initial distribution of the porous material (this time the wall has not only absorbing parts but also reflective ones) with the energy for the fully absorbing wall.",
+    "responsable": "Olympia",
+    "contributeurs": [
+      "Yann",
+      "Antoine"
+    ],
+    "contributions": [
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/02_mardi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "responsable",
+        "zone_modification": "Fonctions de tracé uniquement ; programme principal en lecture seule."
+      },
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/02_mardi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/02_mardi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur",
+        "zone_modification": "Fonctions étudiantes et cellules Fell free ; campagnes appelées après la seconde cellule protégée."
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py",
+      "support/postprocessing.py"
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Pour le même scénario RER B, compare les états initial et entièrement recouvert en indiquant leurs quantités physiques, leur bande et leur source. Le calcul doit montrer les écarts réels et ne doit pas imposer le gain ou la division de matière annoncés comme perspective dans SOTA.md.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J2.4",
+    "jour": 2,
+    "date": "2026-11-03",
+    "tache": "Optimize numerically for one or several of the most problematic frequencies (at which there is a maximum of the energy) ;",
+    "responsable": "Antoine",
+    "contributeurs": [
+      "Yann",
+      "Olympia",
+      "Joachim"
+    ],
+    "contributions": [
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/02_mardi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "responsable",
+        "zone_modification": "Fonctions étudiantes et cellules Fell free ; campagnes appelées après la seconde cellule protégée."
+      },
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/02_mardi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur",
+        "zone_modification": "Fonctions étudiantes et cellules Fell free ; campagnes appelées après la seconde cellule protégée."
+      },
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/02_mardi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "contributeur",
+        "zone_modification": "Fonctions de tracé uniquement ; programme principal en lecture seule."
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/02_mardi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur",
+        "zone_modification": "Fonctions étudiantes et cellules Fell free ; campagnes appelées après la seconde cellule protégée."
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py",
+      "support/postprocessing.py"
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Choisis les fréquences problématiques parmi les pics confirmés de la réponse du panneau sur la bande RER B retenue, d’abord le roulement. Identifie le régime de bruit et la fréquence de chaque descente. Recalcule ensuite la réponse sur la bande pour vérifier qu’une baisse à ce pic ne dégrade pas excessivement les autres fréquences.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J3.1",
+    "jour": 3,
+    "date": "2026-11-04",
+    "tache": "Analyze the obtained results to compare to the efficient performances on the fixed range of frequencies ; to compare to a fully absorbing wall ;",
+    "responsable": "Olympia",
+    "contributeurs": [
+      "Yann"
+    ],
+    "contributions": [
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/03_mercredi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "responsable",
+        "zone_modification": "Fonctions de tracé uniquement ; programme principal en lecture seule."
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/03_mercredi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur",
+        "zone_modification": "Fonctions étudiantes et cellules Fell free ; campagnes appelées après la seconde cellule protégée."
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py",
+      "support/postprocessing.py"
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Compare les solutions sur toute la bande de roulement retenue, avec des points de validation hors des fréquences de conception. Si les cas traction ou crissement sont calculés, présente leurs bandes et leurs sources séparément. Le critère de pression du modèle et ses réductions relatives sont annoncés avec leur référence ; les valeurs de SOTA.md en dB(A) ne sont pas des performances calculées du produit.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J3.2",
+    "jour": 3,
+    "date": "2026-11-04",
+    "tache": "to optimize the energy at once at several different frequencies ;",
+    "responsable": "Antoine",
+    "contributeurs": [
+      "Yann",
+      "Olympia",
+      "Joachim"
+    ],
+    "contributions": [
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/03_mercredi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "responsable",
+        "zone_modification": "Fonctions étudiantes et cellules Fell free ; campagnes appelées après la seconde cellule protégée."
+      },
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/03_mercredi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur",
+        "zone_modification": "Fonctions étudiantes et cellules Fell free ; campagnes appelées après la seconde cellule protégée."
+      },
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/03_mercredi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "contributeur",
+        "zone_modification": "Fonctions de tracé uniquement ; programme principal en lecture seule."
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/03_mercredi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur",
+        "zone_modification": "Fonctions étudiantes et cellules Fell free ; campagnes appelées après la seconde cellule protégée."
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py",
+      "support/postprocessing.py"
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Optimise une distribution commune sur plusieurs fréquences de la bande RER B choisie. Sans spectre mesuré, utilise une quadrature fréquentielle normalisée explicitement annoncée. Avec un spectre de source disponible, documente les poids physiques et évite de pondérer à nouveau une amplitude déjà incluse dans la source. Les plages exploratoires se recouvrent ; leurs recouvrements ne doivent pas compter deux fois dans un coût de bande unique. Une conception couvrant plusieurs régimes est annoncée comme telle et conserve le même panneau et la même densité.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J3.3",
+    "jour": 3,
+    "date": "2026-11-04",
+    "tache": "to study which quantity of the porous material gives the most optimal result ;",
+    "responsable": "Mathis",
+    "contributeurs": [
+      "Yann",
+      "Olympia",
+      "Antoine"
+    ],
+    "contributions": [
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/03_mercredi.md",
+        "fichier_cible": "support/preprocessing.py",
+        "role": "responsable",
+        "zone_modification": "Ajouts et corrections des fonctions du projet ; factories et générateur initiaux inchangés."
+      },
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/03_mercredi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/03_mercredi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "contributeur",
+        "zone_modification": "Fonctions de tracé uniquement ; programme principal en lecture seule."
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/03_mercredi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur",
+        "zone_modification": "Fonctions étudiantes et cellules Fell free ; campagnes appelées après la seconde cellule protégée."
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py",
+      "support/postprocessing.py",
+      "support/preprocessing.py"
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Étudie la quantité nécessaire aux cartouches poreuses du panneau RER B avec les mêmes bandes et sources entre candidats comparables. La réduction de matière doit résulter des calculs. Les divisions par deux ou trois et la fraction de 40 % citées comme perspectives dans SOTA.md ne sont pas des résultats imposés. Compare les performances et la quantité à épaisseur et profondeur annoncées.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J4.1",
+    "jour": 4,
+    "date": "2026-11-05",
+    "tache": "To continue the analysis of the performances ;",
+    "responsable": "Olympia",
+    "contributeurs": [
+      "Yann",
+      "Mathis",
+      "Joachim",
+      "Antoine"
+    ],
+    "contributions": [
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/04_jeudi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "responsable",
+        "zone_modification": "Fonctions de tracé uniquement ; programme principal en lecture seule."
+      },
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/04_jeudi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur",
+        "zone_modification": "Fonctions étudiantes et cellules Fell free ; campagnes appelées après la seconde cellule protégée."
+      },
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/04_jeudi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur",
+        "zone_modification": "Fonctions étudiantes et cellules Fell free ; campagnes appelées après la seconde cellule protégée."
+      },
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/04_jeudi.md",
+        "fichier_cible": "support/preprocessing.py",
+        "role": "contributeur",
+        "zone_modification": "Ajouts et corrections des fonctions du projet ; factories et générateur initiaux inchangés."
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/04_jeudi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur",
+        "zone_modification": "Fonctions étudiantes et cellules Fell free ; campagnes appelées après la seconde cellule protégée."
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py",
+      "support/postprocessing.py",
+      "support/preprocessing.py"
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Vérifie la robustesse du classement pour les régimes RER B effectivement calculés. Le maillage est dimensionné sur la fréquence maximale du cas comparé, y compris 4 000 Hz si le crissement est finalement inclus, et sur les reliefs. Recalcule la loi complexe et les poids du mur au raffinement, avec les mêmes dimensions et source. Les performances retenues restent celles du modèle de panneau et de sa bande validée.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J4.2",
+    "jour": 4,
+    "date": "2026-11-05",
+    "tache": "To conclude which product to produce/develop.",
+    "responsable": "Olympia",
+    "contributeurs": [
+      "Yann",
+      "Mathis",
+      "Joachim",
+      "Antoine"
+    ],
+    "contributions": [
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/04_jeudi.md",
+        "fichier_cible": null,
+        "role": "responsable",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/04_jeudi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/04_jeudi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/04_jeudi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/04_jeudi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      }
+    ],
+    "fichiers_cibles": [],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Choisis le produit pour le cas d’usage RER B en reliant la bande et le régime visés, la forme du panneau, le matériau, la quantité et les performances réellement calculées. Examine le concept de cartouches amovibles de SOTA.md et documente les contraintes d’entretien et d’encombrement. Présente le compromis retenu et distingue les critères de calcul des hypothèses de réalisation.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J5.1",
+    "jour": 5,
+    "date": "2026-11-06",
+    "tache": "To finalize everything",
+    "responsable": "Yann",
+    "contributeurs": [
+      "Mathis",
+      "Olympia",
+      "Joachim",
+      "Antoine"
+    ],
+    "contributions": [
+      {
+        "membre": "Yann",
+        "fiche": "Yann/05_vendredi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "responsable",
+        "zone_modification": "Fonctions étudiantes et cellules Fell free ; campagnes appelées après la seconde cellule protégée."
+      },
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/05_vendredi.md",
+        "fichier_cible": "support/preprocessing.py",
+        "role": "contributeur",
+        "zone_modification": "Ajouts et corrections des fonctions du projet ; factories et générateur initiaux inchangés."
+      },
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/05_vendredi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "contributeur",
+        "zone_modification": "Fonctions de tracé uniquement ; programme principal en lecture seule."
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py",
+      "support/postprocessing.py",
+      "support/preprocessing.py"
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Vérifie que les paramètres, exports et figures finaux indiquent RER B, le régime, la bande, la source, le matériau, la quantité et la provenance des données. Centre les textes de restitution sur le scénario RER B retenu. Conserve les titres officiels de l’énoncé et tous les contrôles numériques.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J5.2",
+    "jour": 5,
+    "date": "2026-11-06",
+    "tache": "Preparation of the defense",
+    "responsable": "Yann",
+    "contributeurs": [
+      "Mathis",
+      "Olympia",
+      "Joachim",
+      "Antoine"
+    ],
+    "contributions": [
+      {
+        "membre": "Yann",
+        "fiche": "Yann/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "responsable",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      }
+    ],
+    "fichiers_cibles": [],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Présente le besoin RER B puis la chaîne qui mène du scénario choisi au panneau retenu. Attribue la synthèse d’état de l’art à Mathis et Olympia. Annonce les bandes effectivement calculées, la représentation de la source et les gains mesurés par le code, sans transformer les perspectives de SOTA.md en résultats obtenus. Garde vingt minutes d’exposé à cinq puis dix minutes de questions.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  },
+  {
+    "id": "J5.3",
+    "jour": 5,
+    "date": "2026-11-06",
+    "tache": "Finalization of the rapport by the team.",
+    "responsable": "Yann",
+    "contributeurs": [
+      "Mathis",
+      "Olympia",
+      "Joachim",
+      "Antoine"
+    ],
+    "contributions": [
+      {
+        "membre": "Yann",
+        "fiche": "Yann/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "responsable",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      },
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur",
+        "zone_modification": "Analyse ou restitution, code en lecture seule."
+      }
+    ],
+    "fichiers_cibles": [],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Le rapport final porte sur le cas RER B. Il distingue les plages proposées dans SOTA.md des bandes finalement retenues, donne toutes les valeurs numériques utilisées et justifie la source et les poids fréquentiels. Les liens de l’état de l’art sont cités pour les affirmations qu’ils établissent. Les résultats de calcul, les quantités et le choix du panneau concordent avec les figures et le programme.",
+    "contraintes_code": "Cellules Do not modify intégralement conservées ; fonctions du chemin initial préservées ; ajouts dans les fonctions du projet et les cellules autorisées."
+  }
+]

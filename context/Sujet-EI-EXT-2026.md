@@ -1,0 +1,67 @@
+# EI Contrôle de la pollution acoustique extérieure (2SC5791), ST5
+
+**CentraleSupélec**
+
+**Optimization problem**
+
+## 1 Project
+
+The goal is to find (numerically) an optimal (more precisely an $\epsilon$-optimal) shape of a wall the most efficient in the range of frequencies of the interest to dissipate the acoustical noise near
+
+1. a highway (noise of cars),
+2. a railway (noise of trains).
+
+The walls will be tested under the worst conditions : in a reflex tunnel.
+
+To do it, the work will be done in a team presenting a startup.
+
+The new products are non-absorbing walls of a particular shape (not necessarily planar) with absorbing inclusions of one or more porous materials in fixed quantities.
+
+A Python program is given to solve the Helmholtz problem for a domain with a Dirichlet boundary on the top, the complex Robin condition in the bottom, and the homogeneous Neumann conditions on the left and the right boundary parts.
+
+For correct discretization, the wavelength should contain at least ten mesh points.
+
+### First day
+
+To give the name to the startup, to define the objectives, the applications to develop, and the main strategy and organization. In addition, to define
+
+- the state of the art ;
+- the model to consider,
+- the plage of frequencies of the interest, dimensions, noise sources ;
+- formulate the properties of the chosen model, what is known about its solution ;
+- formulate optimization problem ;
+- Theoretical study : considering that one boundary is open-air (the wave go through without coming back) derive the energy over the form and compare the result with the analogous result with a reflexive boundary[^1].
+- to choose porous material(s) and its quantity ;
+- find numerically the corresponding complex coefficient(s) $\alpha(\omega)$ for the porous matherial(s) ; to compare the performances if several ;
+- find energy derivative over the distribution of the porous inclusions ;
+- formulate/consider the numerical gradient descent method.
+
+### Second day
+
+- Study the energy on the chosen plage of frequencies for a fully absorbent wall of the plane shape and to define the local maxima ;
+- Study the same question for different shapes of fully absorbent walls ;
+- Compare the energy of the initial distribution of the porous material (this time the wall has not only absorbing parts but also reflective ones) with the energy for the fully absorbing wall.
+- Optimize numerically for one or several of the most problematic frequencies (at which there is a maximum of the energy) ;
+
+### Third day
+
+- Analyze the obtained results to compare to the efficient performances on the fixed range of frequencies ; to compare to a fully absorbing wall ;
+- to optimize the energy at once at several different frequencies ;
+- to study which quantity of the porous material gives the most optimal result ;
+
+### Fourth day
+
+- To continue the analysis of the performances ;
+- To conclude which product to produce/develop.
+
+### Fifth day
+
+Defense by team the afternoon (slides 20 min, each person speaks, 10 min questions)
+
+- To finalize everything
+- Preparation of the defense
+- Finalization of the rapport by the team.
+
+Each day from 14h30 to 17h, the team/start-up presents the current state of the work (main results of the day, difficulties, strategy, ..) and validates its work. Each team member must approve and validate their portion of the work.
+
+[^1]: To model the open-air type of boundaries, it is convient to consider the Sommerfeld radiation condition of the form $\frac{\partial v}{\partial n} - ik\operatorname{Tr}v = 0$ with the notation $u(x,t) = e^{-ikt}v(x)$ for the propagative wave.
