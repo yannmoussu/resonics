@@ -1,0 +1,312 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx,booktabs,array}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{float,microtype,needspace}
+\usepackage[section]{placeins}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue]{hyperref}
+\graphicspath{{../support/}}
+\setcounter{tocdepth}{2}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt minus 1pt}
+\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{12pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{5pt}
+\setlength{\belowcaptionskip}{0pt}
+\setlength{\emergencystretch}{2em}
+\AddToHook{cmd/section/before}{\Needspace{6\baselineskip}}
+\AddToHook{cmd/subsection/before}{\Needspace{5\baselineskip}}
+\newcommand{\dd}{\,\mathrm{d}}
+\newcommand{\ii}{\mathrm{i}}
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+% Valeurs du calcul fréquentiel effectivement exécuté.
+\newcommand{\frequencePic}{1\,150}
+\newcommand{\energiePic}{25,0147}
+\newcommand{\energieBande}{4\,132,884}
+\hypersetup{pdftitle={ResoniCS -- Optimisation acoustique d'un mur antibruit pour le RER B},pdfauthor={Auteurs à compléter}}
+
+\begin{document}
+\begin{titlepage}
+\centering
+{\Large CentraleSupélec\par}
+\vspace{2cm}
+{\Huge\bfseries ResoniCS\par}
+\vspace{1cm}
+{\LARGE\bfseries Optimisation acoustique\\[0.2cm]d'un mur antibruit pour le RER B\par}
+\vspace{1.2cm}
+{\large Projet d'enseignement d'intégration --- Contrôle des ondes\par}
+\vspace{0.6cm}
+{\large Année universitaire 2026--2027\par}
+\vfill
+{\large Auteurs : \textit{à compléter}\par}
+\vspace{1cm}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+Le trafic ferroviaire produit des nuisances sonores dont les mécanismes varient avec le fonctionnement du train et son interaction avec la voie. Dans un tunnel ou une tranchée couverte, les réflexions sur les parois peuvent renforcer certaines oscillations. Le projet ResoniCS étudie un panneau destiné à agir sur ce champ acoustique, en prenant le RER B comme cas d'usage.
+
+On cherche à associer une géométrie de paroi et une répartition de matériau poreux pour diminuer un indicateur d'énergie du champ sonore. La comparaison doit tenir compte de la quantité de matériau utilisée. L'objectif est donc de comprendre où le matériau est utile, puis de rechercher une répartition adaptée à plusieurs fréquences.
+
+Ce premier travail met en place le modèle et présente des calculs sur une géométrie fournie. L'équation de Helmholtz est résolue en deux dimensions par différences finies. Une source uniforme est imposée en haut du domaine et son amplitude varie avec la fréquence selon un spectre hypothétique. Les premiers résultats décrivent la réponse du modèle, puis l'optimisation du placement et la comparaison quantitative des géométries constituent les étapes suivantes.
+
+\section{État de l'art et cas d'usage}
+\subsection{Origines du bruit ferroviaire}
+La synthèse initiale de l'équipe distingue trois contributions utiles pour organiser l'étude \cite{sota}. Le \textbf{bruit de traction et des équipements} rassemble notamment les moteurs, la ventilation et les auxiliaires. Le \textbf{bruit de roulement} provient de l'interaction roue--rail. Le \textbf{crissement en courbe} correspond à des oscillations souvent tonales, c'est-à-dire concentrées autour de certaines fréquences, dont l'apparition dépend du contact roue--rail.
+
+Lee et ses coauteurs ont étudié plusieurs liaisons ferroviaires aéroportuaires, dont le RER B \cite{lee2022}. Leurs spectres montrent des contributions aux basses fréquences, notamment autour de 100, 200 et 300 Hz selon la pondération considérée. Ces mesures ont été réalisées \emph{dans les rames}. Elles renseignent le bruit intérieur et ne constituent pas un spectre mesuré au niveau d'un panneau extérieur.
+
+Sur d'autres réseaux de métro, Song et ses coauteurs observent des contributions roue--rail autour de 630 et 2\,500 Hz pour un type de matériel et autour de 800 Hz pour un autre \cite{metro2026}. Les désignations de ces matériels ne renvoient pas aux lignes du RER. L'étude de Kim et ses coauteurs décrit également plusieurs composantes de crissement et de contact en courbe \cite{kim2019}. Leur fréquence dépend du cas étudié. Ces publications motivent des ordres de grandeur pour notre modèle, sans déterminer à elles seules les paramètres d'une source extérieure du RER B.
+
+\subsection{Panneaux réfléchissants, absorption et géométrie}
+Un écran acoustique traditionnel modifie la propagation en faisant obstacle à l'onde. Une partie du son est réfléchie et une autre peut contourner l'écran par diffraction. Dans un milieu confiné, les réflexions sur les différentes parois jouent donc un rôle important. La condition de paroi parfaitement réfléchissante utilisée ici représente une idéalisation de ce comportement.
+
+Un matériau poreux comporte des pores dans lesquels le mouvement de l'air s'accompagne de pertes. Son effet peut être représenté par une condition aux limites complexe, dont les paramètres dépendent du matériau et de la fréquence \cite{cours}. On peut ainsi comparer une paroi entièrement recouverte et une paroi partiellement garnie, puis rechercher les zones où une quantité fixée de matériau est la plus utile.
+
+Le cours et la présentation de Filoche décrivent l'intérêt de frontières irrégulières pour la localisation des ondes \cite{cours,filoche}. La \textbf{localisation} désigne une concentration spatiale du champ dans certaines régions. Une géométrie préfractale, obtenue après un nombre fini de répétitions d'un motif, peut modifier les zones de forte oscillation et leur interaction avec le matériau. L'augmentation du contour constitue une motivation pour tester ces formes ; leur efficacité pour notre cas devra être mesurée par les comparaisons numériques.
+
+\section{Modélisation mathématique}
+\subsection{Domaine et champ acoustique}
+On note $\Omega\subset\mathbb R^2$ le domaine occupé par l'air. Sa frontière est décomposée en un bord supérieur $\Gamma_D$, deux côtés réfléchissants $\Gamma_N$ et une paroi inférieure $\Gamma_R$. Le vecteur $n$ est la normale extérieure au domaine et $\partial_n u=\nabla u\cdot n$ désigne la dérivée normale.
+
+À une fréquence $f$, en hertz, $u_f$ représente l'amplitude complexe de la pression. Les valeurs de source sont relatives tant qu'une calibration en pascals n'est pas disponible. La dépendance temporelle peut s'écrire
+\begin{equation*}
+p(x,t)=\operatorname{Re}\!\left(u_f(x)e^{-\ii 2\pi ft}\right)
+\end{equation*}
+La célérité est fixée à $c=343\,\mathrm{m\,s^{-1}}$. Le nombre d'onde $k_f$, en $\mathrm{m^{-1}}$ lorsque les longueurs sont en mètres, vaut $2\pi f/c$. En l'absence de source volumique, le modèle de propagation est \cite{cours}
+\begin{equation*}
+\Delta u_f+k_f^2u_f=0\quad\text{dans }\Omega
+\qquad k_f=\frac{2\pi f}{c}
+\end{equation*}
+
+\subsection{Conditions aux limites et matériau}
+La fonction $\chi$ décrit la présence de matériau sur $\Gamma_R$. Une valeur nulle correspond à une portion réfléchissante, une valeur égale à un à une portion garnie. Des valeurs intermédiaires seront admises lors de la recherche d'une répartition. Le modèle s'écrit
+\begin{equation*}
+\begin{cases}
+u_f=G(f) & \text{sur }\Gamma_D\\[2pt]
+\partial_nu_f=0 & \text{sur }\Gamma_N\\[2pt]
+\partial_nu_f+\alpha(f)\chi u_f=0 & \text{sur }\Gamma_R
+\end{cases}
+\end{equation*}
+La condition de \textbf{Dirichlet} impose la pression en haut du domaine. La condition de \textbf{Neumann} annule la dérivée normale sur les côtés et représente des parois rigides réfléchissantes. La condition de \textbf{Robin} relie la pression à sa dérivée normale sur le mur. Le coefficient complexe $\alpha$ décrit l'effet de la paroi dans cette convention. Avec les coefficients normalisés du support, il est exprimé en $\mathrm{m^{-1}}$ lorsque les longueurs sont en mètres.
+
+La convention du programme doit être distinguée de l'écriture précédente. Avec les coefficients unitaires fournis et un second membre Robin nul, l'assemblage de \code{compute_robin_condition} utilise
+\begin{equation*}
+u_B=\frac{u_I}{1-h\,\mathrm{Alpha}\,\chi_B}
+\end{equation*}
+Ici $u_B$ est la valeur au bord, $u_I$ celle du point intérieur voisin et $h$ le pas. Cette écriture correspond à $\partial_nu-\mathrm{Alpha}\chi u=0$, d'où
+\begin{equation*}
+\alpha=-\mathrm{Alpha}
+\end{equation*}
+Dans les premiers calculs, \code{Alpha} vaut $10-10\ii$, soit $\alpha=-10+10\ii$ dans l'écriture avec le signe plus, et reste constant en fréquence. Il s'agit du coefficient d'exemple du programme. Dans la convention précédente, cette valeur ne vérifie pas les hypothèses de signe du coefficient dissipatif données au §7.3 du polycopié \cite{cours}. On la conserve comme paramètre d'essai pour vérifier la chaîne de calcul. Les résultats ne valident donc pas encore l'absorption d'un matériau réel. Le signe, les unités et la dépendance fréquentielle devront être fixés avec la loi physique retenue.
+
+\subsection{Mur plan et contours préfractals}
+La comparaison prévue porte sur le mur plan de niveau 0 et sur les contours préfractals de niveaux 1 et 2. Le générateur \code{create_motif_koch} remplace un segment par huit segments orthogonaux, chacun quatre fois plus court. Le motif fourni utilise donc des angles droits. Le niveau 1 applique une fois ce motif et le niveau 2 le répète sur les segments obtenus.
+
+Les résultats présentés ici concernent uniquement le niveau 1. Le tableau~\ref{tab:parametres} indique les paramètres effectivement utilisés. La grille de stockage comporte aussi des points extérieurs au fluide, donc ses dimensions ne doivent pas être assimilées à celles du domaine d'air. Pour $N=50$ et $h=0,02$, les abscisses des points stockés vont de 0 à 0,98 dans la convention de longueur retenue. Le mur irrégulier se situe entre les ordonnées 0,76 et 1,24. Ces dimensions décrivent le cas numérique ; leur correspondance avec un panneau à installer reste à définir.
+
+\section{Modélisation de la source acoustique du RER B}
+\subsection{Une excitation uniforme sur le bord supérieur}
+À une fréquence donnée, on impose la même valeur complexe en tout point de $\Gamma_D$. La source possède ainsi une amplitude \emph{et une phase} uniformes sur ce bord. Ce choix fournit une excitation cohérente simple pour comparer les réponses des panneaux. Le passage d'une rame est représenté par une excitation équivalente stationnaire, sans calcul explicite de sa position ou de son déplacement.
+
+Cette hypothèse est une simplification du cas d'usage. Le mouvement d'un train ne suffit pas à rendre sa pression uniforme. Les différences de position et de phase entre les sources réelles pourront être examinées après les premières comparaisons, en gardant les mêmes données d'entrée pour tous les panneaux.
+
+\subsection{Somme de trois composantes gaussiennes}
+La fonction \code{source_rer_b}, dans \code{preprocessing.py}, fournit l'amplitude relative
+\begin{equation}\label{eq:source}
+G(f)=\sum_{m=1}^{3}A_m\exp\!\left(-\frac{(f-f_m)^2}{2\sigma_m^2}\right)
+\end{equation}
+Le centre $f_m$ et l'écart-type $\sigma_m$ sont exprimés en hertz. L'écart-type règle la largeur de la composante et $A_m$ son amplitude maximale lorsqu'elle est considérée seule. Les neuf paramètres retenus dans \eqref{eq:source} figurent dans le tableau~\ref{tab:source}.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{p{6.1cm}rrr}
+\toprule
+Composante & $f_m$ (Hz) & $\sigma_m$ (Hz) & $A_m$\\
+\midrule
+Basses fréquences, traction et équipements & 200 & 100 & 1,0\\
+Roulement & 800 & 350 & 0,8\\
+Haute fréquence, crissement représentatif & 2\,500 & 150 & 0,5\\
+\bottomrule
+\end{tabular}
+\caption{Paramètres du spectre hypothétique de la source}
+\label{tab:source}
+\end{table}
+
+Le centre de 200 Hz s'appuie sur les contributions basses fréquences observées à l'intérieur du RER B par Lee et ses coauteurs \cite{lee2022}. Il regroupe plusieurs mécanismes et n'est pas attribué exclusivement aux moteurs. Le centre de 800 Hz reprend un ordre de grandeur observé pour le bruit roue--rail sur d'autres métros \cite{metro2026}.
+
+La composante à 2\,500 Hz sert à représenter une contribution haute fréquence plus étroite. Cette fréquence apparaît dans des observations roue--rail \cite{metro2026}, tandis que les mesures de crissement font apparaître différents pics suivant les conditions de contact \cite{kim2019}. L'association exacte du crissement à 2\,500 Hz reste donc un choix de l'étude.
+
+Les écarts-types et les amplitudes relatives sont également choisis pour cette première représentation. Le modèle n'a pas été ajusté à un enregistrement extérieur du RER B. La gaussienne de roulement est large et la troisième plus resserrée, afin de distinguer une contribution étendue d'une contribution davantage tonale. La somme décrit une enveloppe d'amplitude, et sa valeur totale peut dépasser l'amplitude de chacune des composantes.
+
+\subsection{Portée de la pondération fréquentielle}
+Pour une géométrie et une répartition fixées, la linéarité de Helmholtz donne, lorsque les autres sources sont nulles,
+\begin{equation*}
+u_f=G(f)u_f^{(1)},\qquad J(f)=|G(f)|^2J^{(1)}(f)
+\end{equation*}
+L'exposant $(1)$ désigne le calcul avec une source unitaire. À une fréquence fixée et pour $G(f)\ne0$, ce facteur conserve le classement des panneaux. Sur une bande, il donne davantage d'importance à certaines fréquences et peut modifier le meilleur compromis. Une baisse de l'énergie due seulement à une source moins forte ne démontre donc pas une amélioration du mur.
+
+Les amplitudes restent relatives. Elles ne permettent pas de déduire directement un niveau absolu en dB(A), qui demanderait une référence de pression, une calibration et une pondération acoustique adaptées.
+
+\section{Méthode numérique}
+\subsection{Différences finies sur une grille régulière}
+On note $u_{i,j}$ l'approximation du champ au point de la ligne $i$ et de la colonne $j$. Le \textbf{stencil à cinq points} utilise ce point et ses quatre voisins pour approcher le Laplacien. À l'intérieur du domaine,
+\begin{equation*}
+\Delta u_{i,j}\simeq
+\frac{u_{i+1,j}+u_{i-1,j}+u_{i,j+1}+u_{i,j-1}-4u_{i,j}}{h^2}
+\end{equation*}
+On ajoute ensuite le terme $k_f^2u_{i,j}$ et les contributions des conditions aux limites pour construire le système linéaire. La fonction \code{solve_helmholtz} résout ce système avec le solveur fourni. Cette méthode reprend la discrétisation du programme et le principe présenté dans le polycopié \cite{cours}.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{p{8cm}l}
+\toprule
+Paramètre & Valeur utilisée\\
+\midrule
+Grille de stockage $M\times N$ & $100\times50$\\
+Pas $h$, interprété en mètres & $0,02$\\
+Niveau du contour calculé & 1\\
+Célérité $c$ & $343\,\mathrm{m\,s^{-1}}$\\
+Source du cas initial & Uniforme, amplitude 1\\
+Nombre d'onde initial $k_0$ & $10\,\mathrm{m^{-1}}$\\
+Fréquence initiale déduite $ck_0/(2\pi)$ & $545,90\,\mathrm{Hz}$\\
+Coefficient \code{Alpha} & $(10-10\ii)\,\mathrm{m^{-1}}$\\
+Points Robin garnis / points Robin & $39/98$\\
+Fraction nodale initiale \code{V_obj} & $0,397959$\\
+Fréquences du calcul spectral & 100 à 1\,500 Hz\\
+Pas fréquentiel et nombre de fréquences & 50 Hz, 29 valeurs\\
+\bottomrule
+\end{tabular}
+\caption{Paramètres des premiers calculs}
+\label{tab:parametres}
+\end{table}
+
+La fraction nodale \code{V_obj} indique la proportion de points Robin garnis. Elle ne suffit pas à définir un volume physique. Pour comparer des géométries différentes, on devra mesurer la longueur absorbante et annoncer l'épaisseur ainsi que la profondeur si un volume est utilisé.
+
+\subsection{Fréquences calculées et résolution de l'onde}
+Le calcul fréquentiel résout un problème indépendant pour chaque valeur de $f$. Dans le programme, l'argument nommé \code{omega} de \code{solve_helmholtz} reçoit le \emph{nombre d'onde} $k_f=2\pi f/c$. La pulsation temporelle, exprimée en radians par seconde, serait $2\pi f$.
+
+La longueur d'onde est $\lambda_f=c/f$. La règle d'au moins dix points de grille par longueur d'onde impose
+\begin{equation*}
+\frac{\lambda_f}{h}=\frac{c}{fh}\geq10
+\end{equation*}
+Avec $h=0,02$ et $c=343\,\mathrm{m\,s^{-1}}$, la limite correspondante est $1\,715\,\mathrm{Hz}$. À $1\,500\,\mathrm{Hz}$, on dispose d'environ 11,43 points par longueur d'onde. La bande effectivement calculée de 100 à 1\,500 Hz respecte donc cette règle. À $2\,500\,\mathrm{Hz}$, il faudrait $h\leq0,01372\,\mathrm{m}$. Le tracé du spectre jusqu'à $3\,500\,\mathrm{Hz}$ est une évaluation de la source, sans résolution acoustique à ces fréquences.
+
+La fonction \code{run_rer_b_frequency_sweep} construit un tableau Dirichlet indépendant pour chaque fréquence. Les coefficients de paroi et la géométrie sont conservés pendant ce calcul. La dépendance réelle du coefficient poreux en fréquence reste ainsi à introduire.
+
+\subsection{Énergie du champ et intégration sur la bande}
+Pour comparer les champs, on utilise le critère du cours \cite{cours}
+\begin{equation*}
+J(f,\chi)=\int_\Omega|u_f(x;\chi)|^2\dd x
+\end{equation*}
+Le module au carré mesure l'amplitude de pression au carré. Une valeur plus petite traduit donc un champ globalement moins intense dans le domaine observé, lorsque la source et le domaine de comparaison sont fixés. Le programme approche l'intégrale sur l'ensemble $\Omega_h$ des points intérieurs de la grille :
+\begin{equation*}
+J_h(f,\chi)=h^2\sum_{(i,j)\in\Omega_h}|u_{i,j}|^2
+\end{equation*}
+Chaque point intérieur représente ici une petite aire de taille $h^2$. Le calcul fréquentiel évalue réellement cette somme. La fonction d'objectif prévue pour la future optimisation reste à compléter dans le programme principal.
+
+L'indicateur intégré sur la bande $[f_1,f_q]$ est obtenu par la règle des trapèzes, comme au §7.7.2 du polycopié :
+\begin{equation*}
+\mathcal J_h(\chi)=\sum_{r=1}^{q-1}
+\frac{f_{r+1}-f_r}{2}\left[J_h(f_r,\chi)+J_h(f_{r+1},\chi)\right]
+\end{equation*}
+Ici, $q=29$ est le nombre de fréquences calculées. Dans la convention où $h$ est en mètres, $J_h$ représente une amplitude relative au carré multipliée par une aire, et l'intégration fréquentielle ajoute un facteur en hertz. Le facteur spectral $|G(f)|^2$ est déjà contenu dans le champ calculé. On intègre donc directement les énergies obtenues, sans leur appliquer une seconde pondération par la source. Cet indicateur rassemble des amplitudes relatives sur la bande et n'est ni une énergie calibrée en joules ni un niveau en décibels.
+
+\section{Premiers résultats numériques}
+\subsection{Spectre de l'excitation}
+La figure~\ref{fig:spectre} présente le modèle spectral sur 0 à 3\,500 Hz, évalué tous les 5 Hz sans résolution de Helmholtz. La zone grisée indique la bande du calcul acoustique. Les trois contributions sont visibles sur cet intervalle. La première et la deuxième se recouvrent, alors que la composante haute fréquence est plus étroite. La courbe est une donnée d'entrée du calcul ; elle ne représente pas une mesure expérimentale du RER B.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\textwidth]{fig_rer_b_spectre.png}
+\caption{Amplitude relative de la source en fonction de la fréquence}
+\label{fig:spectre}
+\end{figure}
+
+Le calcul acoustique s'arrête à 1\,500 Hz. Il couvre ainsi la composante basse fréquence et la partie principale de la composante de roulement choisie. La contribution centrée à 2\,500 Hz est affichée pour rendre le modèle lisible, mais ses effets sur le champ ne sont pas évalués par cette bande.
+
+\subsection{Énergie calculée sur la bande}
+La figure~\ref{fig:energie} montre uniquement les 29 fréquences effectivement simulées. Chaque point utilise la même géométrie, la même répartition initiale et le même coefficient de paroi. Seuls le nombre d'onde et l'amplitude de la source varient.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\textwidth]{fig_rer_b_energie.png}
+\caption{Indicateur d'énergie du champ en fonction de la fréquence}
+\label{fig:energie}
+\end{figure}
+
+Le maximum échantillonné vaut \energiePic{} et est obtenu à \frequencePic{} Hz. L'intégration des valeurs calculées donne \energieBande{} dans la normalisation du modèle. Deux autres pics marqués sont observés à 600 Hz et 800 Hz, avec des valeurs respectives de 11,0386 et 16,9559. Ces nombres décrivent les fréquences testées. Un pas plus petit autour des pics permettrait de mieux préciser leur position.
+
+À 1\,150 Hz, l'amplitude imposée vaut environ 0,4852, contre 0,8000 à 800 Hz. Le champ a pourtant une énergie plus grande à 1\,150 Hz. Les variations de la courbe résultent ainsi de la réponse du domaine et du spectre imposé. Les fréquences où la source est forte ne sont pas nécessairement celles où le domaine répond le plus fortement à une excitation unitaire. Une comparaison de murs demandera de conserver la même source pour tous les cas. Le coefficient constant utilisé ici devra également être remplacé par une loi documentée avant d'interpréter cette courbe comme la performance d'un matériau réel.
+
+\subsection{Champ initial et répartition de matériau}
+Le cas initial reste celui du programme fourni : $k_0=10\,\mathrm{m^{-1}}$ et une source uniforme unitaire. Sa fréquence équivalente est $545,90\,\mathrm{Hz}$ avec la célérité retenue. Il est distinct des calculs du spectre, qui utilisent l'amplitude $G(f)$.
+
+La figure~\ref{fig:champinitial} montre le module du champ initial sur les points intérieurs du domaine. Les axes des cartes sont les indices de la grille, avec un pas $h=0,02$ entre deux indices. Les zones de valeur élevée correspondent à des oscillations plus fortes. L'énergie de ce cas initial vaut 1,64386 et le maximum du module vaut environ 3,262 dans l'unité relative de pression. La carte sert à repérer la répartition spatiale de la réponse. Une concentration dans certaines zones ne démontre pas à elle seule une meilleure absorption.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.62\textwidth]{fig_u0_module_plot.png}
+\caption{Module du champ initial à la fréquence équivalente de 545,90 Hz}
+\label{fig:champinitial}
+\end{figure}
+
+La carte représente les points intérieurs du domaine ; les frontières et l'extérieur sont masqués.
+
+La figure~\ref{fig:repartition} présente la répartition initiale $\chi$. Les points rouges représentent les 39 points garnis parmi les 98 points Robin, soit la fraction nodale indiquée au tableau~\ref{tab:parametres}. Le reste du tableau contient la valeur zéro. Cette répartition est celle de départ. Aucun déplacement optimal du matériau n'a encore été calculé.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.62\textwidth]{fig_chi0_re_plot.jpg}
+\caption{Répartition initiale du matériau sur le mur}
+\label{fig:repartition}
+\end{figure}
+
+\section{Perspectives}
+La première étape consiste à déterminer un coefficient complexe documenté pour le matériau retenu. Le §3.2.4 du polycopié donne une démarche pour ce calcul. Sa mise en œuvre devra préciser les paramètres physiques, les conventions et la fréquence, puis permettre de refaire les courbes avec un coefficient adapté.
+
+On pourra ensuite optimiser $\chi$ sur une forme fixée, en conservant une longueur absorbante imposée. Cette longueur sera mesurée par
+\begin{equation*}
+L_{\mathrm{abs}}=\int_{\Gamma_R}\chi\dd s
+\end{equation*}
+La comparaison des placements initiaux et optimisés sera faite à quantité égale. Les références entièrement recouvertes resteront utiles, avec leur quantité propre clairement indiquée.
+
+La recherche sera étendue à une même répartition agissant sur plusieurs fréquences. Les murs plans et les niveaux préfractals 1 et 2 pourront alors être comparés sur une bande commune, avec une grille représentant leurs reliefs et leurs longueurs d'onde. Enfin, une variation des hypothèses de source permettra de savoir si le choix retenu dépend fortement du spectre illustratif ou de l'excitation spatiale uniforme. Ces étapes restent à réaliser.
+
+\begin{thebibliography}{9}
+\bibitem{lee2022}
+H.~P. Lee, S.~Kumar, S.~Garg et K.~M. Lim.
+\emph{Comparison of Cabin Noise of Airport Express Rail Systems}.
+\emph{Acoustics}, 4(1), 1--13, 2022.
+\href{https://doi.org/10.3390/acoustics4010001}{doi:10.3390/acoustics4010001}.
+
+\bibitem{metro2026}
+L.~Song, Z.~Wang, P.~Zhang, Q.~Liu et B.~Bai.
+\emph{Noise from Different Metro Train Types on Elevated Tracks: A Case Study Based on Field Measurements}.
+\emph{Buildings}, 16(6), 1191, 2026.
+\href{https://doi.org/10.3390/buildings16061191}{doi:10.3390/buildings16061191}.
+
+\bibitem{kim2019}
+J.~C. Kim, Y.~S. Yun et H.-M. Noh.
+\emph{Analysis of Wheel Squeal and Flanging on Curved Railway Tracks}.
+\emph{International Journal of Precision Engineering and Manufacturing}, 20, 2077--2087, 2019.
+\href{https://doi.org/10.1007/s12541-019-00225-7}{doi:10.1007/s12541-019-00225-7}.
+
+\bibitem{cours}
+A.~Rozanova-Pierrat.
+\emph{Contrôle des Ondes}.
+Polycopié de cours, CentraleSupélec, 4 septembre 2026.
+
+\bibitem{filoche}
+M.~Filoche.
+\emph{Waves next to irregular boundaries --- Wave localization, absorption, and noise abatement wall}.
+Présentation pédagogique fournie pour le projet.
+
+\bibitem{sota}
+Équipe ResoniCS.
+\emph{État de l'art : RER B}.
+Synthèse de travail interne, 2026.
+\end{thebibliography}
+\end{document}
