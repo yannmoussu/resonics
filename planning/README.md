@@ -2,12 +2,12 @@
 
 Le planning proposé couvre le **lundi 2 au vendredi 6 novembre 2026**. Il suit les cinq journées de l'énoncé, avec un résultat présentable avant les validations quotidiennes dans la fenêtre **14h30–17h**. La soutenance du vendredi après-midi dure **20 minutes**, puis **10 minutes de questions** ; chacun des cinq membres intervient.
 
-[![Diagramme de Gantt](gantt.png)](gantt.pdf)
+[![Diagramme de Gantt](build/gantt.png)](gantt.pdf)
 
-- [Gantt en PDF](gantt.pdf) et [source LaTeX](gantt.tex).
-- [Cahier détaillé des tâches en PDF](cahier_des_taches.pdf) et [source LaTeX](cahier_des_taches.tex).
+- [Gantt en PDF](gantt.pdf) et [source LaTeX](build/gantt.tex).
+- [Cahier détaillé des tâches en PDF](cahier_des_taches.pdf) et [source LaTeX](build/cahier_des_taches.tex).
 - [Contrat commun des fonctions](contrat_commun.md).
-- [Planning éditable en CSV](repartition.csv) et [JSON](repartition.json).
+- [Planning éditable en CSV](build/repartition.csv) et [JSON](repartition.json).
 
 ## Répartition des fichiers
 
@@ -60,11 +60,14 @@ La répartition orale de départ est de quatre minutes par personne : Yann prés
 
 ## Compilation
 
-Depuis ce dossier :
+Depuis le dossier `planning`, les sources et les fichiers de compilation se trouvent dans `build`. Les PDF publiés restent directement dans `planning` :
 
 ```sh
+cd build
 latexmk -pdf -interaction=nonstopmode -halt-on-error gantt.tex
+cp gantt.pdf ../gantt.pdf
 latexmk -pdf -interaction=nonstopmode -halt-on-error cahier_des_taches.tex
+cp cahier_des_taches.pdf ../cahier_des_taches.pdf
 ```
 
 Les cinq fiches Markdown sont les versions autonomes à partager avec les responsables des lots. Le répertoire `context` et les modules de `support` sont conservés dans leur état fourni.

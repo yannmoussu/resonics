@@ -9,3 +9,5 @@
 *.snm
 .DS_Store
 __pycache__/
+
+/build/*.pdf
