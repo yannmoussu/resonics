@@ -5,6 +5,7 @@
 \usepackage{lmodern}
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx,booktabs,array}
+\usepackage{xurl}
 \usepackage[margin=2.2cm]{geometry}
 \usepackage{float,microtype,needspace}
 \usepackage[section]{placeins}
@@ -30,6 +31,7 @@
 \hypersetup{pdftitle={ResoniCS -- Optimisation acoustique d'un mur antibruit pour le RER B},pdfauthor={Auteurs à compléter}}
 
 \begin{document}
+\hypersetup{pageanchor=false}
 \begin{titlepage}
 \centering
 {\Large CentraleSupélec\par}
@@ -45,6 +47,7 @@
 {\large Auteurs : \textit{à compléter}\par}
 \vspace{1cm}
 \end{titlepage}
+\hypersetup{pageanchor=true}
 
 \tableofcontents
 \newpage
@@ -54,7 +57,7 @@ Le trafic ferroviaire produit des nuisances sonores dont les mécanismes varient
 
 On cherche à associer une géométrie de paroi et une répartition de matériau poreux pour diminuer un indicateur d'énergie du champ sonore. La comparaison doit tenir compte de la quantité de matériau utilisée. L'objectif est donc de comprendre où le matériau est utile, puis de rechercher une répartition adaptée à plusieurs fréquences.
 
-Ce premier travail met en place le modèle et présente des calculs sur une géométrie fournie. L'équation de Helmholtz est résolue en deux dimensions par différences finies. Une source uniforme est imposée en haut du domaine et son amplitude varie avec la fréquence selon un spectre hypothétique. Les premiers résultats décrivent la réponse du modèle, puis l'optimisation du placement et la comparaison quantitative des géométries constituent les étapes suivantes.
+Ce premier travail met en place le modèle et présente des calculs sur une géométrie fournie. L'équation de Helmholtz est résolue en deux dimensions par différences finies. Une source uniforme est imposée en haut du domaine et son amplitude varie avec la fréquence selon un spectre hypothétique. Les premiers résultats décrivent la réponse du modèle et une première descente permet de vérifier le calcul de répartition. La comparaison physique des matériaux et des géométries demandera ensuite un coefficient de matériau documenté.
 
 \section{État de l'art et cas d'usage}
 \subsection{Origines du bruit ferroviaire}
@@ -70,6 +73,23 @@ Un écran acoustique traditionnel modifie la propagation en faisant obstacle à 
 Un matériau poreux comporte des pores dans lesquels le mouvement de l'air s'accompagne de pertes. Son effet peut être représenté par une condition aux limites complexe, dont les paramètres dépendent du matériau et de la fréquence \cite{cours}. On peut ainsi comparer une paroi entièrement recouverte et une paroi partiellement garnie, puis rechercher les zones où une quantité fixée de matériau est la plus utile.
 
 Le cours et la présentation de Filoche décrivent l'intérêt de frontières irrégulières pour la localisation des ondes \cite{cours,filoche}. La \textbf{localisation} désigne une concentration spatiale du champ dans certaines régions. Une géométrie préfractale, obtenue après un nombre fini de répétitions d'un motif, peut modifier les zones de forte oscillation et leur interaction avec le matériau. L'augmentation du contour constitue une motivation pour tester ces formes ; leur efficacité pour notre cas devra être mesurée par les comparaisons numériques.
+
+\subsection{Solutions développées par les acteurs ferroviaires}
+Les écrans installés le long des voies associent plusieurs fonctions. Ils font obstacle à la propagation directe et leur parement peut absorber une partie du son. SNCF Réseau décrit notamment l'emploi de béton-bois, de béton bas carbone et de panneaux métalliques intégrant de la laine minérale \cite{sncfbruit}. Le choix tient aussi compte de la durabilité et de l'intégration dans le site. L'isolation des façades et les interventions sur la voie constituent des actions complémentaires, ce qui montre qu'un panneau répond à une partie du problème ferroviaire.
+
+DELTABLOC propose l'écran bas \emph{Quie@Rail}, dans sa gamme PHONOBLOC \cite{quierail}. Le fabricant décrit des éléments préfabriqués en béton de granulats légers à structure ouverte, placés près de la voie. La configuration annoncée atteint 50 cm au-dessus du plan de roulement et se situe à 2,10 m de l'axe de la voie. Cet exemple montre l'intérêt d'intercepter le bruit près de la zone roue--rail tout en associant la forme de l'écran à un matériau absorbant. Ces dimensions caractérisent ce produit et ne fixent pas celles de notre domaine numérique.
+
+Phononic Vibes développe de son côté \emph{MetaWindow}, un panneau transparent présenté comme absorbant et certifié pour le réseau allemand, en collaboration avec Deutsche Bahn \cite{metawindow}. L'entreprise indique une première installation sur le S-Bahn de Hambourg. La transparence permet de prendre en compte une contrainte d'intégration visuelle en plus de la réponse acoustique. Ces informations proviennent de la présentation du fabricant. Elles illustrent l'existence de solutions industrielles innovantes, sans fournir un gain directement comparable à notre indicateur d'énergie dans un tunnel bidimensionnel.
+
+\subsection{Travaux de recherche sur la forme et le placement de l'absorbant}
+Félix, Sapoval, Filoche et Asch ont étudié numériquement des cavités contenant un milieu dissipatif séparé de l'air par une interface irrégulière \cite{felix2009}. Certains modes présentent un champ significatif à la fois dans l'air, où l'onde est excitée, et dans la région absorbante, où l'énergie est dissipée. Leur couplage à ces deux régions peut ainsi favoriser l'absorption. Ce mécanisme explique pourquoi la forme de l'interface joue un rôle, en plus de la quantité de matériau. Il motive l'étude de contours préfractals sans imposer qu'un contour plus irrégulier soit toujours meilleur pour toute excitation.
+
+Magoulès, Nguyen, Omnes et Rozanova-Pierrat proposent un modèle de Helmholtz avec dissipation sur la frontière pour rechercher une forme absorbante \cite{magoules2021}. Ils relient aussi le coefficient complexe de Robin à un modèle où les pertes se produisent dans le volume du matériau poreux. Cette étape est utile à notre projet car le coefficient de paroi doit représenter un matériau documenté avant de permettre une comparaison physique des panneaux.
+
+Magoulès, Menoux et Rozanova-Pierrat étudient ensuite le placement d'une quantité fixée d'absorbant sur une frontière donnée \cite{magoules2025}. Ils établissent un cadre d'optimisation et emploient une descente de gradient pour diminuer l'énergie sur plusieurs fréquences. Dans leurs exemples numériques, une répartition optimisée utilisant 50\,\% d'absorbant peut donner un indicateur d'énergie plus faible qu'une frontière entièrement absorbante. Ce résultat concerne les géométries, les coefficients et la bande de leur étude. Il fournit une hypothèse à tester pour notre cas d'usage, plutôt qu'une performance déjà obtenue pour le RER B.
+
+\subsection{Positionnement de l'étude ResoniCS}
+Ces réalisations distinguent trois choix complémentaires : le matériau, la forme du mur et la position des portions absorbantes. ResoniCS reprend cette démarche à l'échelle d'un modèle étudiant. On cherche d'abord un coefficient documenté pour le matériau, puis on compare les répartitions pour une quantité imposée. Les formes planes et préfractales sont évaluées avec une même source et une même bande. Les références entièrement recouvertes servent de points de comparaison, avec leur quantité propre annoncée. L'objectif est d'identifier les choix utiles au modèle et de justifier leur effet par les courbes, avant de conclure sur une solution destinée à une installation réelle.
 
 \section{Modélisation mathématique}
 \subsection{Domaine et champ acoustique}
@@ -209,7 +229,7 @@ Le module au carré mesure l'amplitude de pression au carré. Une valeur plus pe
 \begin{equation*}
 J_h(f,\chi)=h^2\sum_{(i,j)\in\Omega_h}|u_{i,j}|^2
 \end{equation*}
-Chaque point intérieur représente ici une petite aire de taille $h^2$. Le calcul fréquentiel évalue réellement cette somme. La fonction d'objectif prévue pour la future optimisation reste à compléter dans le programme principal.
+Chaque point intérieur représente ici une petite aire de taille $h^2$. Le calcul fréquentiel évalue cette somme. La fonction \code{your_compute_objective_function} effectue le même calcul et renvoie le nombre réel utilisé par la descente.
 
 L'indicateur intégré sur la bande $[f_1,f_q]$ est obtenu par la règle des trapèzes, comme au §7.7.2 du polycopié :
 \begin{equation*}
@@ -217,6 +237,25 @@ L'indicateur intégré sur la bande $[f_1,f_q]$ est obtenu par la règle des tra
 \frac{f_{r+1}-f_r}{2}\left[J_h(f_r,\chi)+J_h(f_{r+1},\chi)\right]
 \end{equation*}
 Ici, $q=29$ est le nombre de fréquences calculées. Dans la convention où $h$ est en mètres, $J_h$ représente une amplitude relative au carré multipliée par une aire, et l'intégration fréquentielle ajoute un facteur en hertz. Le facteur spectral $|G(f)|^2$ est déjà contenu dans le champ calculé. On intègre donc directement les énergies obtenues, sans leur appliquer une seconde pondération par la source. Cet indicateur rassemble des amplitudes relatives sur la bande et n'est ni une énergie calibrée en joules ni un niveau en décibels.
+
+\subsection{Première descente à quantité fixée}
+La fonction \code{your_optimization_procedure} reprend la descente projetée du §7.6 du polycopié \cite{cours}. On fixe la géométrie, la fréquence et le coefficient du matériau, puis on modifie seulement $\chi$. Ses valeurs restent entre zéro et un sur les points Robin, avec une somme imposée $V_{\mathrm{obj}}S$, où $S$ est leur nombre. Cette contrainte nodale convient au premier essai sur une forme fixée.
+
+À chaque étape, on calcule le champ, son coût et le gradient, c'est-à-dire la variation du coût produite par une petite modification de chaque valeur de matériau. Pour obtenir la dérivée du système effectivement résolu, on réutilise les fonctions d'assemblage fournies. En notant $AU=b$ le système discret, on calcule le vecteur adjoint $P$ par
+\begin{equation*}
+A^*P=2WU
+\end{equation*}
+Ici $U$ contient les valeurs complexes du champ, $A^*$ est la transposée conjuguée de $A$ et $W$ est diagonale, de valeur $h^2$ aux points intérieurs et zéro ailleurs. La dérivée prend en compte les termes de la condition Robin dans la matrice et, si nécessaire, dans le second membre. Une vérification par petites perturbations du matériau a confirmé le gradient calculé.
+
+On fait ensuite un pas dans la direction opposée au gradient, puis on ramène les valeurs dans l'intervalle autorisé en conservant leur somme. Avec $j$ un point Robin, cette projection s'écrit
+\begin{equation*}
+\chi_j^{n+1}=\max\!\left(0,\min\!\left(\chi_j^n-\zeta_n g_j^n+\ell_n,1\right)\right)
+\qquad
+\sum_{j\in\Gamma_{R,h}}\chi_j^{n+1}=V_{\mathrm{obj}}S
+\end{equation*}
+Le nombre $\zeta_n>0$ est le pas, $g^n$ le gradient et $\ell_n$ un décalage commun. On détermine ce décalage par 60 étapes de dichotomie. Les valeurs intermédiaires de $\chi$ constituent une répartition continue pour le calcul et devront être distinguées d'un placement final de portions entièrement garnies.
+
+Dans l'essai, le pas initial vaut 5. On le divise par deux lorsqu'une proposition ne diminue pas suffisamment le coût, avec un coefficient de diminution de $10^{-4}$, puis on multiplie le pas accepté par 1,1. Le calcul s'arrête après 100 étapes au maximum, si le pas devient inférieur à $10^{-5}$ ou si le changement projeté pour un pas unitaire ne dépasse plus $10^{-7}$. L'historique conserve seulement le coût initial et ceux des étapes acceptées.
 
 \section{Premiers résultats numériques}
 \subsection{Spectre de l'excitation}
@@ -256,7 +295,7 @@ La figure~\ref{fig:champinitial} montre le module du champ initial sur les point
 
 La carte représente les points intérieurs du domaine ; les frontières et l'extérieur sont masqués.
 
-La figure~\ref{fig:repartition} présente la répartition initiale $\chi$. Les points rouges représentent les 39 points garnis parmi les 98 points Robin, soit la fraction nodale indiquée au tableau~\ref{tab:parametres}. Le reste du tableau contient la valeur zéro. Cette répartition est celle de départ. Aucun déplacement optimal du matériau n'a encore été calculé.
+La figure~\ref{fig:repartition} présente la répartition initiale $\chi$. Les points rouges représentent les 39 points garnis parmi les 98 points Robin, soit la fraction nodale indiquée au tableau~\ref{tab:parametres}. Le reste du tableau contient la valeur zéro. Cette carte représente l'état de départ de la descente présentée ci-dessous.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.62\textwidth]{fig_chi0_re_plot.jpg}
@@ -264,10 +303,23 @@ La figure~\ref{fig:repartition} présente la répartition initiale $\chi$. Les p
 \label{fig:repartition}
 \end{figure}
 
+\subsection{Essai de la descente avec le coefficient provisoire}
+La figure~\ref{fig:descente} montre les valeurs réellement acceptées pour le cas initial à $k_0=10\,\mathrm{m^{-1}}$, avec la source unitaire et le coefficient d'exemple. Le critère passe de 1,64386 à 0,701126 en 100 étapes. La somme des valeurs de matériau reste égale à 39 sur les 98 points Robin, à la précision du calcul.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\textwidth]{fig_energy_real.jpg}
+\caption{Évolution du critère au cours des étapes acceptées de la descente}
+\label{fig:descente}
+\end{figure}
+
+La diminution confirme le fonctionnement de la recherche à quantité fixée pour ce cas numérique. L'arrêt correspond ici au nombre maximal d'étapes, donc il ne démontre pas qu'un minimum a été atteint. Le résultat conserve 38 valeurs intermédiaires de $\chi$ sur le mur. Il vérifie la méthode avec le coefficient provisoire et ne constitue pas une mesure d'absorption d'un matériau identifié.
+
+Les courbes fréquentielles des figures~\ref{fig:spectre} et~\ref{fig:energie} restent celles de la répartition initiale. Le remplacement du coefficient par celui du matériau retenu permettra de refaire la descente et de comparer les champs dans des conditions physiques documentées.
+
 \section{Perspectives}
 La première étape consiste à déterminer un coefficient complexe documenté pour le matériau retenu. Le §3.2.4 du polycopié donne une démarche pour ce calcul. Sa mise en œuvre devra préciser les paramètres physiques, les conventions et la fréquence, puis permettre de refaire les courbes avec un coefficient adapté.
 
-On pourra ensuite optimiser $\chi$ sur une forme fixée, en conservant une longueur absorbante imposée. Cette longueur sera mesurée par
+La première descente sera ensuite relancée avec le coefficient du matériau retenu. Pour comparer des formes différentes, la contrainte nodale sera remplacée par une longueur absorbante imposée. Cette longueur sera mesurée par
 \begin{equation*}
 L_{\mathrm{abs}}=\int_{\Gamma_R}\chi\dd s
 \end{equation*}
@@ -275,7 +327,7 @@ La comparaison des placements initiaux et optimisés sera faite à quantité ég
 
 La recherche sera étendue à une même répartition agissant sur plusieurs fréquences. Les murs plans et les niveaux préfractals 1 et 2 pourront alors être comparés sur une bande commune, avec une grille représentant leurs reliefs et leurs longueurs d'onde. Enfin, une variation des hypothèses de source permettra de savoir si le choix retenu dépend fortement du spectre illustratif ou de l'excitation spatiale uniforme. Ces étapes restent à réaliser.
 
-\begin{thebibliography}{9}
+\begin{thebibliography}{99}
 \bibitem{lee2022}
 H.~P. Lee, S.~Kumar, S.~Garg et K.~M. Lim.
 \emph{Comparison of Cabin Noise of Airport Express Rail Systems}.
@@ -308,5 +360,44 @@ Présentation pédagogique fournie pour le projet.
 Équipe ResoniCS.
 \emph{État de l'art : RER B}.
 Synthèse de travail interne, 2026.
+\bibitem{sncfbruit}
+Groupe SNCF.
+\emph{Nos engagements pour la réduction du bruit ferroviaire}.
+Entretien avec Jean-Philippe Regairaz, SNCF Réseau, mis à jour le 20 février 2026.
+\url{https://www.groupe-sncf.com/fr/engagements/developpement-durable/ressources-biodiversite/interview-reduire-bruit-ferroviaire}
+
+\bibitem{quierail}
+DELTABLOC.
+\emph{PHONOBLOC --- Série Special Rail : écrans acoustiques en bordure de voie ferrée}.
+Documentation du fabricant, consultée le 2 novembre 2026.
+\url{https://deltabloc.com/fr/produits/phonobloc/serie-special-rail}
+
+\bibitem{metawindow}
+Phononic Vibes.
+\emph{Rail --- MetaWindow}.
+Présentation du fabricant, consultée le 2 novembre 2026.
+\url{https://phononic-vibes.com/markets/rail/}
+
+\bibitem{felix2009}
+S.~Félix, B.~Sapoval, M.~Filoche et M.~Asch.
+\emph{Enhanced wave absorption through irregular interfaces}.
+EPL, 85, article 14003, 2009.
+\href{https://doi.org/10.1209/0295-5075/85/14003}{doi:10.1209/0295-5075/85/14003}.
+\href{https://www.institut-langevin.espci.fr/biblio/2024/8/21/2179/files/EPL_2009.pdf}{Texte intégral en accès libre}.
+
+\bibitem{magoules2021}
+F.~Magoulès, T.~P. Kieu Nguyen, P.~Omnes et A.~Rozanova-Pierrat.
+\emph{Optimal Absorption of Acoustic Waves by a Boundary}.
+SIAM Journal on Control and Optimization, 59(1), 561--583, 2021.
+\href{https://doi.org/10.1137/20M1327239}{doi:10.1137/20M1327239}.
+\href{https://arxiv.org/abs/2003.13250}{Version auteur en accès libre}.
+
+\bibitem{magoules2025}
+F.~Magoulès, M.~Menoux et A.~Rozanova-Pierrat.
+\emph{Frequency Range of a Non-Lipschitz Parametric Optimization of a Noise Absorption}.
+SIAM Journal on Control and Optimization, 63(2), 1267--1285, 2025.
+\href{https://doi.org/10.1137/24M1691296}{doi:10.1137/24M1691296}.
+\href{https://arxiv.org/abs/2409.06292}{Version auteur en accès libre}.
+
 \end{thebibliography}
 \end{document}
