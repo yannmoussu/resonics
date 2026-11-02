@@ -1,80 +1,69 @@
 # Yann — Jeudi 5 novembre 2026
 
-Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les développements techniques sont les étapes de ma contribution, dans les fichiers partagés. Chaque étape de code modifie uniquement son fichier cible.
+**Objectif du jour 4.** Vérifier les meilleurs résultats et choisir un produit. On limite les nouveaux essais à ceux qui peuvent changer la conclusion.
 
-**Cas d’usage RER B.** On utilise la synthèse de Mathis et Olympia dans [SOTA.md](../../SOTA.md). La première plage de travail proposée est le roulement de 250 à 2 000 Hz, puis on prévoit les cas traction et auxiliaires de 100 à 500 Hz et crissement de 1 500 à 4 000 Hz selon les données et les moyens de calcul. Ces plages sont des indications de la synthèse à documenter et à valider en J1.3. Les petits contrôles synthétiques du code restent indépendants de ces bandes.
+**Cas retenu.** Bruit de roulement du RER B. La plage 250–2 000 Hz vient de SOTA.md et reste à documenter. Pour le premier calcul, 500 Hz et c=340 m/s sont proposés ; ils sont à confirmer par le groupe. La source est imposée en haut. Les titres des tâches restent ceux de l’énoncé.
 
 ## To continue the analysis of the performances ;
 
 **Repère :** J4.1. **Rôle :** contributeur.
 
-**Fichier à modifier :** [support/demo_control_polycopie2024.py](../../support/demo_control_polycopie2024.py).
+**Ce qui est fait.** Faire quelques vérifications décisives sur les meilleurs cas.
 
-**Ce qui est fait.** On confronte le candidat retenu à une grille plus fine et à plusieurs points de départ. On conserve les paramètres physiques, la source et la quantité de matériau pour que les comparaisons répondent à la même question.
+**Fichier à modifier :** `support/demo_control_polycopie2024.py`, seulement pour les changements nécessaires.
 
-**Fichiers concernés avec le prompt :**
+### Fichiers concernés
 
-- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
-- La démonstration actuelle, seule cible à modifier.
-- Les quatre autres fichiers actuels de `support/`, en lecture seule.
-- Le tableau des candidats et les paramètres validés mercredi, joints ou copiés dans le message.
+- `SOTA.md` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- `support/demo_control_polycopie2024.py` — fichier à modifier.
+- `support/preprocessing.py` — lecture seule.
+- `support/processing.py` — lecture seule.
+- `support/postprocessing.py` — lecture seule.
+- `support/_env.py` — lecture seule.
 
-**Contexte :**
+Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
+
+### Contexte
 
 ```text
-Protection du support : recopie à l’identique les deux cellules portant « Do not modify this cell, these are the values that you will be assessed against. », de leur en-tête jusqu’à la cellule suivante. La première initialise les coefficients, les seconds membres et la géométrie ; la seconde appelle processing.solve_helmholtz puis copie chi0 et u0. Garde toutes leurs lignes, commentaires, indentation, ordre, noms et arguments. Aucun ajout à l’intérieur, déplacement, suppression, changement d’appel ni nouvelle condition qui empêche leur exécution. Les fonctions étudiantes et les cellules « Fell free to modify the function call in this cell. » accueillent les compléments. Les campagnes sont appelées dans la dernière cellule autorisée, après le second bloc protégé, avec des tableaux indépendants des valeurs initiales. Compare les deux blocs à la version jointe avant de rendre le fichier et confirme leur identité.
+Conserve intégralement les deux blocs marqués « Do not modify this cell, these are the values that you will be assessed against. », leurs lignes, commentaires et espaces en début de ligne. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Les modifications du lancement se font seulement dans les blocs « Fell free to modify the function call in this cell. », et les ajouts de fonctions se placent à côté des fonctions étudiantes. Les calculs supplémentaires se font après les blocs protégés, sans modifier leurs tableaux par effet de bord.
 
-Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+Recalcule les meilleurs cas avec un pas plus petit, le même niveau géométrique et les mêmes dimensions de référence. Annonce les dimensions discrètes réellement obtenues et les éventuels arrondis du contour. Vérifie les fréquences entre les points d’optimisation. Reprends deux ou trois répartitions de départ si le temps le permet. Réutilise les boucles existantes et conserve les paramètres permettant de refaire le calcul.
 
-Vérifie la robustesse du classement pour les régimes RER B effectivement calculés. Le maillage est dimensionné sur la fréquence maximale du cas comparé, y compris 4 000 Hz si le crissement est finalement inclus, et sur les reliefs. Recalcule la loi complexe et les poids du mur au raffinement, avec les mêmes dimensions et source. Les performances retenues restent celles du modèle de panneau et de sa bande validée.
-
-Conserve une exécution courte à petite dimension et annonce le coût réel des campagnes RER B. Une campagne de validation à fréquence plus haute doit satisfaire sa propre contrainte de maillage.
-
-Complète seulement demo_control_polycopie2024.py, sans créer d'autre module et sans modifier les cellules imposées ni les fonctions théoriques validées.
-
-Complète le pilote de campagne dans les fonctions ajoutées et appelle-le dans la dernière cellule autorisée après les deux cellules protégées. Ajoute une campagne de validation pour les meilleurs candidats déjà calculés :
-1. Raffine le pas en gardant les dimensions physiques, le niveau et les sommets du profil fixes. Avec N points, la largeur réelle utilise N-1 intervalles. Vérifie les coordonnées et les masques avant le calcul. Recalcule les indices de conception et leurs poids sur chaque grille.
-2. Transfère la densité le long du même contour, puis projette-la sur le budget fin avec la fonction d'Antoine. Explique la règle de transfert et distingue l'évaluation de cette densité transférée d'une éventuelle nouvelle optimisation fine. Recalcule les pics sur les deux grilles ; une fréquence de pic peut se déplacer.
-3. Relance la descente depuis une distribution uniforme et quelques répartitions admissibles différentes. Pour les tirages, fixe et affiche les graines. Toutes les initialisations sont projetées sur le même budget. Conserve coût final, contrainte, gradient projeté, cause d'arrêt, nombre de résolutions et temps de calcul.
-4. Vérifie aussi les fréquences de validation qui n'ont pas servi à optimiser. Compare au mur plan et au profil entièrement recouvert en indiquant leurs quantités, puis aux autres formes à budget égal.
-5. Réutilise les fonctions de calcul et de tracé existantes. Ne remplace pas un arrêt sur stagnation ou sur limite d'itérations par une annonce d'optimum global. Si le classement change au raffinement, remonte ce résultat avant de choisir le produit.
-6. Centralise dans les résultats la source, les dimensions, le matériau et sa provenance, le pas, les fréquences, les poids, le budget et les paramètres d'optimisation. Mets une exécution courte à disposition pour vérifier les appels, sans lancer toute la campagne à l'import.
-
-Renvoie le fichier complet et les vérifications réellement effectuées. Les commentaires restent des phrases simples qui expliquent les étapes. Les performances annoncées proviennent des calculs validés, avec leur domaine de comparaison.
+Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
 ```
 
-**Résultat attendu.** Les mêmes paramètres permettent de retrouver la campagne, et les écarts de maillage ou d'initialisation sont visibles. Le groupe peut choisir le meilleur produit de la famille étudiée en connaissant les limites de ce classement.
+**Vérification et résultat à transmettre.** Le classement des meilleurs cas est vérifié sans multiplier inutilement les essais.
 
 ## To conclude which product to produce/develop.
 
 **Repère :** J4.2. **Rôle :** contributeur.
 
-**Contribution de Yann.** On rassemble les résultats validés pour décider collectivement quel produit retenir.
+**Ce qui est fait.** Contribuer au choix du panneau avec les calculs reproductibles et les dimensions du panneau.
 
-**Fichier à modifier :** aucun, cette contribution est une analyse à transmettre au groupe.
+**Fichier à modifier :** aucun pour cette contribution.
 
 ### Fichiers concernés
 
-- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
-- `context/Sujet-EI-EXT-2026.md`, version actuelle.
-- `support/demo_control_polycopie2024.py`, version actuelle.
+- `SOTA.md` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- `support/demo_control_polycopie2024.py` — lecture seule.
+- `support/processing.py` — lecture seule.
+- `support/preprocessing.py` — lecture seule.
+
+Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
 
 ### Contexte
 
 ```text
-Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
+Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
 
-Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+À partir des résultats fournis, propose une conclusion courte sur les calculs reproductibles et les dimensions du panneau. Le choix concerne un panneau pour le scénario RER B et la bande réellement calculés. Cite les valeurs décisives, les quantités et les formes comparées. Distingue les résultats obtenus des perspectives de SOTA.md. Fais valider la conclusion par le groupe sans inventer de performance manquante.
 
-Choisis le produit pour le cas d’usage RER B en reliant la bande et le régime visés, la forme du panneau, le matériau, la quantité et les performances réellement calculées. Examine le concept de cartouches amovibles de SOTA.md et documente les contraintes d’entretien et d’encombrement. Présente le compromis retenu et distingue les critères de calcul des hypothèses de réalisation.
-
-Conserve une exécution courte à petite dimension et annonce le coût réel des campagnes RER B. Une campagne de validation à fréquence plus haute doit satisfaire sa propre contrainte de maillage.
-
-À partir du tableau des candidats et des figures validées joints au message, propose une conclusion de produit pour ResoniCS, sans modifier ni créer de fichier.
-Compare les géométries, le matériau, la quantité, le critère moyen sur bande, les pics échantillonnés et la stabilité au raffinement et aux initialisations. Cite les résultats disponibles et distingue les références entièrement recouvertes des comparaisons à budget égal.
-Donne le produit retenu dans la famille effectivement testée et les chiffres qui motivent le choix. Si les données ne suffisent pas à départager les candidats, précise le calcul complémentaire nécessaire sans inventer de classement. Prépare une synthèse courte à faire approuver par les cinq membres.
+Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
 ```
 
-**Contrôle et transmission.** Chaque membre approuve sa portion. Le choix final s'appuie sur les résultats d'Olympia et les validations de Mathis, Joachim et Antoine.
+**Vérification et résultat à transmettre.** Une décision appuyée sur une figure et quelques valeurs vérifiables.
 
-**Passage de main du programme principal :** Joachim → Antoine → Yann. Les résultats sont ensuite transmis à Olympia et aux autres responsables pour validation.
+**Ordre des modifications du fichier commun.** Joachim publie ses calculs, Antoine complète la descente, puis Yann lance les essais. Chacun repart de la dernière version complète.

@@ -1,109 +1,99 @@
 # Yann — Vendredi 6 novembre 2026
 
-Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les développements techniques sont les étapes de ma contribution, dans les fichiers partagés. Chaque étape de code modifie uniquement son fichier cible.
+**Objectif du jour 5.** Finaliser les résultats et les documents, puis répéter l’exposé à cinq. Les corrections restent ciblées.
 
-**Cas d’usage RER B.** On utilise la synthèse de Mathis et Olympia dans [SOTA.md](../../SOTA.md). La première plage de travail proposée est le roulement de 250 à 2 000 Hz, puis on prévoit les cas traction et auxiliaires de 100 à 500 Hz et crissement de 1 500 à 4 000 Hz selon les données et les moyens de calcul. Ces plages sont des indications de la synthèse à documenter et à valider en J1.3. Les petits contrôles synthétiques du code restent indépendants de ces bandes.
+**Cas retenu.** Bruit de roulement du RER B. La plage 250–2 000 Hz vient de SOTA.md et reste à documenter. Pour le premier calcul, 500 Hz et c=340 m/s sont proposés ; ils sont à confirmer par le groupe. La source est imposée en haut. Les titres des tâches restent ceux de l’énoncé.
 
 ## To finalize everything
 
 **Repère :** J5.1. **Rôle :** responsable.
 
-**Fichier à modifier si nécessaire :** [support/demo_control_polycopie2024.py](../../support/demo_control_polycopie2024.py).
+**Ce qui est fait.** Vérifier la partie concernant les calculs reproductibles et les dimensions du panneau.
 
-**Ce qui est fait.** On vérifie les imports, les appels et les paramètres sur une exécution courte, puis sur le cas retenu. Les corrections restent limitées aux erreurs d'intégration du programme principal et sont contrôlées après modification.
+**Fichier à modifier :** `support/demo_control_polycopie2024.py`, seulement pour les changements nécessaires.
 
-**Fichiers concernés avec le prompt :**
+### Fichiers concernés
 
-- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
-- La démonstration actuelle, seule cible à modifier si nécessaire.
-- Les quatre autres fichiers actuels de `support/`, en lecture seule.
-- Les paramètres et les résultats de référence validés jeudi, et le message d'erreur complet s'il y en a un.
+- `SOTA.md` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- `support/demo_control_polycopie2024.py` — fichier à modifier.
+- `support/preprocessing.py` — lecture seule.
+- `support/processing.py` — lecture seule.
+- `support/postprocessing.py` — lecture seule.
+- `support/_env.py` — lecture seule.
 
-**Contexte :**
+Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
+
+### Contexte
 
 ```text
-Protection du support : recopie à l’identique les deux cellules portant « Do not modify this cell, these are the values that you will be assessed against. », de leur en-tête jusqu’à la cellule suivante. La première initialise les coefficients, les seconds membres et la géométrie ; la seconde appelle processing.solve_helmholtz puis copie chi0 et u0. Garde toutes leurs lignes, commentaires, indentation, ordre, noms et arguments. Aucun ajout à l’intérieur, déplacement, suppression, changement d’appel ni nouvelle condition qui empêche leur exécution. Les fonctions étudiantes et les cellules « Fell free to modify the function call in this cell. » accueillent les compléments. Les campagnes sont appelées dans la dernière cellule autorisée, après le second bloc protégé, avec des tableaux indépendants des valeurs initiales. Compare les deux blocs à la version jointe avant de rendre le fichier et confirme leur identité.
+Conserve intégralement les deux blocs marqués « Do not modify this cell, these are the values that you will be assessed against. », leurs lignes, commentaires et espaces en début de ligne. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Les modifications du lancement se font seulement dans les blocs « Fell free to modify the function call in this cell. », et les ajouts de fonctions se placent à côté des fonctions étudiantes. Les calculs supplémentaires se font après les blocs protégés, sans modifier leurs tableaux par effet de bord.
 
-Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+Relis les fonctions et résultats de ta partie, puis refais les petits contrôles déjà prévus. Limite les corrections aux erreurs identifiées dans le seul fichier cible. Si l’erreur se trouve ailleurs, transmets-la à la personne concernée. Vérifie les unités, les paramètres et les figures conservées. Ne crée pas de nouveaux outils de vérification à ce stade.
 
-Vérifie que les paramètres, exports et figures finaux indiquent RER B, le régime, la bande, la source, le matériau, la quantité et la provenance des données. Centre les textes de restitution sur le scénario RER B retenu. Conserve les titres officiels de l’énoncé et tous les contrôles numériques.
-
-Les fichiers et commandes finaux permettent de retrouver les paramètres du scénario RER B retenu et ses résultats, avec les modules fournis complétés.
-
-Relis la démonstration ResoniCS jointe et vérifie son exécution avec les modules joints. Modifie uniquement demo_control_polycopie2024.py si une correction d'intégration est nécessaire. Ne crée aucun nouveau fichier Python et conserve les cellules imposées. Si l'erreur se trouve dans une dépendance, indique la fonction et le problème pour une tâche séparée de son responsable au lieu de modifier plusieurs fichiers.
-
-Vérifie les imports, les unités, les conversions de fréquence, les signatures actuelles, les dimensions, les masques, la source, le budget, les résidus et les historiques. Une exécution depuis support/ doit appeler seulement les fichiers existants et les bibliothèques prévues. Évite tout chemin absolu personnel. Vérifie qu'aucune variable fictive de l'ancien squelette n'est encore utilisée et que le cas affiché avant/après a réellement été recalculé.
-
-Teste d'abord un cas court puis le cas final avec les paramètres validés. Donne les commandes exactes depuis le répertoire support, les dépendances importées et les résultats du contrôle. N'invente aucun succès si tu ne peux pas exécuter les calculs. Si une correction change une valeur scientifique, signale les figures à recalculer avant la soutenance.
+Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
 ```
 
-**Résultat attendu.** Le programme principal appelle uniquement les modules fournis complétés. Les autres fichiers restent sous la responsabilité de leurs auteurs et toute correction scientifique est revalidée.
+**Vérification et résultat à transmettre.** Chaque membre donne son accord ou une courte liste de corrections nécessaires.
 
 ## Preparation of the defense
 
 **Repère :** J5.2. **Rôle :** responsable.
 
-**Fichier à modifier :** aucun pour cette préparation orale. La réponse est transmise au groupe pour sa répétition.
+**Ce qui est fait.** Préparer une intervention courte et répéter avec le groupe.
 
-**Ce qui est fait.** On rassemble les contributions approuvées et on vérifie qu'elles couvrent l'énoncé. On conserve les templates LaTeX du projet précédent, les légendes courtes et les figures lisibles. Yann présente le modèle et la chaîne de calcul, puis les quatre autres membres prennent leur partie.
+**Fichier à modifier :** aucun pour cette contribution.
 
-**Fichiers concernés avec le prompt :**
+### Fichiers concernés
 
-- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
-- `context/Sujet-EI-EXT-2026.md`.
-- La démonstration finale en lecture seule et les figures/tableaux de résultats retenus.
-- Les cinq synthèses approuvées et, lorsqu'ils existent, le rapport ou la présentation à relire. Pour une modification LaTeX ultérieure, joindre et traiter un seul fichier cible à la fois.
+- `SOTA.md` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- `support/demo_control_polycopie2024.py` — lecture seule.
+- `support/processing.py` — lecture seule.
+- `support/preprocessing.py` — lecture seule.
 
-**Contexte :**
+Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
+
+### Contexte
 
 ```text
-Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
+Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
 
-Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+Prépare une explication orale de les calculs reproductibles et les dimensions du panneau, en utilisant les figures retenues. Explique le problème, ce qui a été calculé et ce que l’on observe. Donne un exemple simple si nécessaire. La soutenance dure vingt minutes à cinq, puis dix minutes de questions. Fournis le texte dans la réponse pour les documents communs, sans nouveau fichier.
 
-Présente le besoin RER B puis la chaîne qui mène du scénario choisi au panneau retenu. Attribue la synthèse d’état de l’art à Mathis et Olympia. Annonce les bandes effectivement calculées, la représentation de la source et les gains mesurés par le code, sans transformer les perspectives de SOTA.md en résultats obtenus. Garde vingt minutes d’exposé à cinq puis dix minutes de questions.
-
-Les fichiers et commandes finaux permettent de retrouver les paramètres du scénario RER B retenu et ses résultats, avec les modules fournis complétés.
-
-À partir de l'énoncé et des résultats joints, propose une synthèse textuelle de notre travail et un déroulé de soutenance de vingt minutes à cinq, suivi de dix minutes de questions. Ne crée et ne modifie aucun fichier dans cette tâche.
-
-Vérifie que le modèle, les propriétés sous les hypothèses annoncées, les bandes, le matériau complexe, le budget, l'étude ouverte/réfléchissante, le gradient, la descente et les validations sont expliqués. Vérifie les références entièrement absorbantes, les pics, l'optimisation monofréquence puis multifréquence, les quantités, le raffinement et le choix du produit.
-
-Donne pour Yann une explication orale du modèle et des fonctions de calcul, une transition vers Mathis, puis une liste des points à vérifier collectivement. Appuie chaque performance annoncée sur une figure ou un tableau joint. Si un élément manque, identifie-le sans inventer de résultat. La répartition initiale est d'environ quatre minutes par personne et sera ajustée lors de la répétition.
+Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
 ```
 
-**Résultat attendu.** Les cinq membres valident leur portion, les légendes et les nombres correspondent aux calculs et l'exposé respecte la durée prévue.
+**Vérification et résultat à transmettre.** Une intervention compréhensible qui tient dans la durée collective.
 
 ## Finalization of the rapport by the team.
 
 **Repère :** J5.3. **Rôle :** responsable.
 
-**Contribution de Yann.** On vérifie collectivement le texte final et la concordance entre le rapport, les figures et les calculs.
+**Ce qui est fait.** Finaliser les paragraphes de sa partie du rapport.
 
-**Fichier à modifier :** aucun, cette contribution est une analyse à transmettre au groupe.
+**Fichier à modifier :** aucun pour cette contribution.
 
 ### Fichiers concernés
 
-- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
-- `context/Sujet-EI-EXT-2026.md`, version actuelle.
-- `support/demo_control_polycopie2024.py`, version actuelle.
+- `SOTA.md` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- `support/demo_control_polycopie2024.py` — lecture seule.
+- `support/processing.py` — lecture seule.
+- `support/preprocessing.py` — lecture seule.
+
+Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
 
 ### Contexte
 
 ```text
-Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
+Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
 
-Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+Prépare le texte final sur les calculs reproductibles et les dimensions du panneau avec les paramètres, unités et références utilisés. Relie les résultats aux figures et donne les valeurs réellement calculées. Garde le modèle LaTeX du projet précédent. Transmets le texte à Yann puis approuve son intégration. La relecture et les éventuelles corrections du rapport sont faites sur un seul fichier à la fois.
 
-Le rapport final porte sur le cas RER B. Il distingue les plages proposées dans SOTA.md des bandes finalement retenues, donne toutes les valeurs numériques utilisées et justifie la source et les poids fréquentiels. Les liens de l’état de l’art sont cités pour les affirmations qu’ils établissent. Les résultats de calcul, les quantités et le choix du panneau concordent avec les figures et le programme.
-
-Les fichiers et commandes finaux permettent de retrouver les paramètres du scénario RER B retenu et ses résultats, avec les modules fournis complétés.
-
-À partir de l'énoncé, du rapport actuel et des résultats validés joints, fais une relecture de finalisation dans ta réponse, sans créer de fichier et sans modifier de code.
-Vérifie que chaque tiret du sujet a une réponse, que toutes les valeurs utilisées sont annoncées et que les figures ont une interprétation appuyée sur leurs données. Vérifie les unités, les sources, les budgets, les conventions de Robin, l'étude selon la forme, l'optimisation et les contrôles. Conserve les formulations personnelles correctes et corrige les fautes de langue.
-Regroupe les remarques par partie et donne les corrections ponctuelles proposées pour que chaque membre valide sa contribution. La compilation et les modifications LaTeX ultérieures se font sur un seul fichier cible à la fois et reprennent le template du projet précédent. Si un fichier de rapport n'est pas joint, indique ce qui est nécessaire à la relecture, sans inventer son contenu.
+Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
 ```
 
-**Contrôle et transmission.** Joindre le rapport actuel et les contributions approuvées. Les cinq membres valident leur texte, les chiffres et les figures avant le rendu.
+**Vérification et résultat à transmettre.** Texte, chiffres, figures et code racontent le même résultat.
 
-**Passage de main du programme principal :** Joachim → Antoine → Yann. Les résultats sont ensuite transmis à Olympia et aux autres responsables pour validation.
+**Ordre des modifications du fichier commun.** Joachim publie ses calculs, Antoine complète la descente, puis Yann lance les essais. Chacun repart de la dernière version complète.

@@ -1,19 +1,15 @@
-# Documents utiles
+# Documents utiles pour commencer
 
-Les fiches quotidiennes indiquent les pièces précises à joindre. Les documents principaux sont les suivants.
-
-| Document | Utilité |
+| Document | Passage utile et rôle |
 |---|---|
-| [État de l’art RER B — Mathis et Olympia](../SOTA.md) | Cadrage de l’application, plages exploratoires, matériaux et concept de panneau ; les valeurs et perspectives chiffrées sont à documenter |
-| [Énoncé EI](../context/Sujet-EI-EXT-2026.md) | Questions, cinq journées, comparaisons et soutenance |
-| [Optimisation paramétrique — Allaire](../context/GAllaire-OptimParam.pdf) | Gradient projeté, recherche du pas et adjoint ; pages PDF 13–20 et 25–29 |
-| [Dirichlet non homogène](../context/Dirichlet_Nonhomogene.pdf) | Source imposée et emploi du champ total dans le gradient |
-| [Mur antibruit — Filoche](../context/Mur-antibruit-Filoche.pdf) | Formes, absorption et matériaux ; les coefficients réels d'absorption ne déterminent pas une impédance complexe |
-| [Programmes fournis](../support/) | Géométrie, différences finies, conditions aux limites et figures |
-| [Projets précédents](../context/acoustic-pollution-fem/) | Méthodes de vérification et templates LaTeX |
+| [Énoncé](../context/Sujet-EI-EXT-2026.md) | Ordre des tâches et résultats attendus chaque jour |
+| [SOTA — Mathis et Olympia](../SOTA.md) | Choix RER B, solutions existantes et pistes de matériaux ; les valeurs restent à documenter |
+| [Polycopié du cours](../context/Poly-ST5-57-2026.pdf) | §3.1.2 : Helmholtz ; §3.2.4 : calcul du coefficient, pages imprimées 43–47 ; §7.3 : modèle ; §7.5 : dérivée ; §7.6 : descente ; §7.7 : exemples numériques et règle de résolution |
+| [Note Dirichlet non homogène](../context/Dirichlet_Nonhomogene.pdf) | Source imposée et rôle du champ total dans la dérivée |
+| [Optimisation — Allaire](../context/GAllaire-OptimParam.pdf) | Appui pour la projection et la recherche du pas si nécessaire |
+| [Mur antibruit — Filoche](../context/Mur-antibruit-Filoche.pdf) | Exemples physiques et état de l’art |
+| [Code fourni](../support/) | Point de départ des calculs, avec les fonctions et blocs protégés conservés |
 
-Les pages mentionnées sont les pages des fichiers PDF. Les paramètres de l'ancien devoir, notamment sa contrainte d'aire, ne deviennent pas des contraintes de cette EI. Les profils fournis sont repris selon leur forme effective, qui utilise un motif orthogonal.
+Les pages indiquées sont les numéros imprimés du polycopié ; les pages du fichier PDF ont un décalage de dix. Le cas ISOREL et ses paramètres sont ainsi page imprimée 47, page 57 du PDF.
 
-Le critère intérieur mesure la pression intégrée au carré. Le coefficient de matériau et son signe doivent être validés avant les campagnes physiques. Les petits cas synthétiques des fiches servent seulement à vérifier les algorithmes.
-
-Le cas retenu est le RER B. Les bandes proposées dans SOTA.md servent à préparer les choix de J1.3, puis les calculs emploient les paramètres validés. Le profil réellement généré par le support reste un motif orthogonal. La formulation du gradient et les conventions de Robin sont vérifiées sur les équations assemblées, en s’appuyant sur les documents de méthode ci-dessus.
+Les anciennes parties FEM servent à reprendre la démarche d’explication et les modèles LaTeX. L’EI utilise les différences finies fournies. L’aire unité de l’ancien devoir ne constitue pas une contrainte supplémentaire de cette étude.

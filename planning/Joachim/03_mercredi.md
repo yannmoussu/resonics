@@ -1,49 +1,41 @@
 # Joachim — Mercredi 4 novembre 2026
 
-Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une même tâche est partagée avec les autres membres indiqués dans le Gantt, et cette fiche décrit la contribution de Joachim. On reprend toujours la dernière version des fichiers communs. Les modifications de la démonstration suivent Joachim, puis Antoine, puis Yann.
+**Objectif du jour 3.** Réutiliser les premiers calculs pour une optimisation sur plusieurs fréquences et quelques quantités de matériau. Les ajouts servent uniquement aux comparaisons nécessaires.
 
-**Cas d’usage RER B.** On utilise la synthèse de Mathis et Olympia dans [SOTA.md](../../SOTA.md). La première plage de travail proposée est le roulement de 250 à 2 000 Hz, puis on prévoit les cas traction et auxiliaires de 100 à 500 Hz et crissement de 1 500 à 4 000 Hz selon les données et les moyens de calcul. Ces plages sont des indications de la synthèse à documenter et à valider en J1.3. Les petits contrôles synthétiques du code restent indépendants de ces bandes.
+**Cas retenu.** Bruit de roulement du RER B. La plage 250–2 000 Hz vient de SOTA.md et reste à documenter. Pour le premier calcul, 500 Hz et c=340 m/s sont proposés ; ils sont à confirmer par le groupe. La source est imposée en haut. Les titres des tâches restent ceux de l’énoncé.
 
 ## to optimize the energy at once at several different frequencies ;
 
 **Repère :** J3.2. **Rôle :** contributeur.
 
-**Contribution de Joachim.** On ajoute un critère commun à plusieurs fréquences et la somme de leurs gradients, pour une distribution unique de matériau.
+**Ce qui est fait.** Étendre le coût et le gradient à plusieurs fréquences.
 
-**Fichier à modifier :** `support/demo_control_polycopie2024.py` uniquement.
+**Fichier à modifier :** `support/demo_control_polycopie2024.py`, seulement pour les changements nécessaires.
 
-**Fichiers concernés :**
+### Fichiers concernés
 
-- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
-- support/demo_control_polycopie2024.py, dernière version complète, seule cible à modifier
-- support/_env.py, support/preprocessing.py, support/processing.py et support/postprocessing.py, versions actuelles en lecture seule
-- Les fréquences, poids et références validés par le groupe, copiés dans le message
-- context/Sujet-EI-EXT-2026.md
+- `SOTA.md` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- `support/demo_control_polycopie2024.py` — fichier à modifier.
+- `support/preprocessing.py` — lecture seule.
+- `support/processing.py` — lecture seule.
+- `support/postprocessing.py` — lecture seule.
+- `support/_env.py` — lecture seule.
+- `context/Poly-ST5-57-2026.pdf` — lecture seule.
+- `context/Dirichlet_Nonhomogene.pdf` — lecture seule.
 
-**Contexte :**
+Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
+
+### Contexte
 
 ```text
-Protection du support : recopie à l’identique les deux cellules portant « Do not modify this cell, these are the values that you will be assessed against. », de leur en-tête jusqu’à la cellule suivante. La première initialise les coefficients, les seconds membres et la géométrie ; la seconde appelle processing.solve_helmholtz puis copie chi0 et u0. Garde toutes leurs lignes, commentaires, indentation, ordre, noms et arguments. Aucun ajout à l’intérieur, déplacement, suppression, changement d’appel ni nouvelle condition qui empêche leur exécution. Les fonctions étudiantes et les cellules « Fell free to modify the function call in this cell. » accueillent les compléments. Les campagnes sont appelées dans la dernière cellule autorisée, après le second bloc protégé, avec des tableaux indépendants des valeurs initiales. Compare les deux blocs à la version jointe avant de rendre le fichier et confirme leur identité.
+Conserve intégralement les deux blocs marqués « Do not modify this cell, these are the values that you will be assessed against. », leurs lignes, commentaires et espaces en début de ligne. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Les modifications du lancement se font seulement dans les blocs « Fell free to modify the function call in this cell. », et les ajouts de fonctions se placent à côté des fonctions étudiantes. Les calculs supplémentaires se font après les blocs protégés, sans modifier leurs tableaux par effet de bord.
 
-Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+Pour une même chi, additionne les coûts des fréquences choisies avec des poids fixes, puis additionne leurs gradients avec les mêmes poids. Sans spectre mesuré, utilise des poids de la méthode des trapèzes normalisés pour que leur somme vaille un. Si des fréquences supplémentaires sont ajoutées, recalcule les poids avant une nouvelle descente. Ajoute la boucle dans la fonction de calcul déjà utilisée mardi, sans créer un système de fonctions reçues en argument. Vérifie la dérivée du coût total par différences centrées. Le champ représenté sur une figure est recalculé à une fréquence précise.
 
-Optimise une distribution commune sur plusieurs fréquences de la bande RER B choisie. Sans spectre mesuré, utilise une quadrature fréquentielle normalisée explicitement annoncée. Avec un spectre de source disponible, documente les poids physiques et évite de pondérer à nouveau une amplitude déjà incluse dans la source. Les plages exploratoires se recouvrent ; leurs recouvrements ne doivent pas compter deux fois dans un coût de bande unique. Une conception couvrant plusieurs régimes est annoncée comme telle et conserve le même panneau et la même densité.
-
-Prépare des poids normalisés de quadrature lorsque le spectre du RER B n’est pas mesuré. Une pondération par un spectre disponible a une provenance et une normalisation explicites, fixes pendant la descente.
-
-Complète uniquement demo_control_polycopie2024.py en ajoutant evaluate_band(chi, frequencies_hz, frequency_weights, assemble_frequency, reference_energies=None, with_gradient=True) et un contrôle local non appelé automatiquement. Préserve evaluate_density, les fonctions d'Antoine et les cellules imposées. Ne crée pas de fichier.
-
-assemble_frequency(chi, frequency_hz) est le callback de Yann. Il renvoie le dictionnaire déjà attendu par evaluate_density : A,b,cell_weights,face_rows,face_design,dA_diag. Pour chaque fréquence, passe à evaluate_density une fermeture assemble(chi) qui fige cette fréquence. La même densité chi est utilisée à chaque fréquence.
-
-Les fréquences sont positives et finies. Les poids fréquentiels sont finis, positifs ou nuls, de somme un. Les références optionnelles sont strictement positives et fixées avant la descente ; à défaut, prends un vecteur de uns. Calcule F=sum(q_m*J_m/Jref_m) et son gradient avec exactement les mêmes facteurs. Garde les J_m bruts dans energies.
-
-Renvoie value,gradient,energies,state_residuals,adjoint_residuals et u=None, car un coût de bande n'a pas un unique champ associé. Avec with_gradient=False, aucune résolution adjointe n'est faite. Toutes les données de fréquence et de normalisation restent constantes pendant une optimisation.
-
-Construis un petit test synthétique à deux fréquences avec les assembleurs locaux déjà disponibles. Compare la somme des gradients à une différence centrée du coût total. Vérifie aussi qu'une seule fréquence de poids un redonne evaluate_density et que deux jeux de références non unitaires emploient les bons facteurs.
-
-Explique dans la réponse que les fréquences supplémentaires ajoutées près d'un pic demandent de recalculer les poids d'intégration si l'on veut approximer une intégrale sur la bande. Une optimisation sur une liste de fréquences n'exclut pas une dégradation entre ces points, qui sera contrôlée séparément.
-
-Renvoie le fichier complet et les résultats réellement exécutés, avec commentaires en phrases françaises sans notation mathématique.
+Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
 ```
 
-**Contrôle et passage de main.** On transmet evaluate_band vérifiée à Antoine puis à Yann. Une carte de champ sera obtenue par réévaluation à une fréquence annoncée, car le coût de bande renvoie u=None.
+**Vérification et résultat à transmettre.** Le même calcul de gradient fonctionne pour une fréquence ou une bande.
+
+**Ordre des modifications du fichier commun.** Joachim publie ses calculs, Antoine complète la descente, puis Yann lance les essais. Chacun repart de la dernière version complète.
