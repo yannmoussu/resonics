@@ -10,7 +10,7 @@ Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les dé
 
 **Fichier à modifier :** [support/preprocessing.py](../../support/preprocessing.py).
 
-**Ce qui est fait.** On conserve les profils fournis de niveaux zéro, un et deux. On vérifie leurs dimensions réelles et on identifie chaque contact entre un nœud Robin du mur et un nœud intérieur. Ces contacts donnent les longueurs servant à mesurer la quantité de matériau et les indices nécessaires au gradient.
+**Ce qui est fait.** On ajoute un helper pour les campagnes utilisant les profils fournis de niveaux zéro, un et deux, en conservant le générateur initial. On vérifie leurs dimensions réelles et on identifie chaque contact entre un nœud Robin du mur et un nœud intérieur. Ces contacts donnent les longueurs servant à mesurer la quantité de matériau et les indices nécessaires au gradient.
 
 **Fichiers à joindre avec le prompt :**
 
@@ -22,6 +22,8 @@ Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les dé
 **Prompt à copier :**
 
 ```text
+Protection du support : les cellules protégées du programme principal sont en lecture seule. Garde aussi inchangées les fonctions initialement fournies de preprocessing.py, notamment _set_coefficients_of_pde, _set_rhs_of_pde, _set_geometry_of_domain et les fonctions du motif qu’elle appelle. Ajoute les fonctions du projet à côté ; seules ces fonctions ajoutées peuvent être complétées ou corrigées. Elles travaillent sur des tableaux indépendants et ne changent pas les valeurs du cas initial par effet de bord. Compare les fonctions fournies à la version jointe avant de rendre le fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Le modèle représente un panneau destiné au bruit du RER B dans le tunnel réfléchissant demandé par l’énoncé. Décris le domaine et ses dimensions physiques, le profil fourni et la source de Dirichlet supérieure. La paroi rigide et les côtés Neumann sont les hypothèses du modèle. Choisis un profil physique fixe pour les comparaisons en fréquence ; le motif orthogonal fourni reste celui effectivement calculé.
@@ -30,9 +32,9 @@ Vérifie en particulier que la largeur physique, les reliefs et le pas permetten
 
 Je travaille sur ResoniCS, un projet d'optimisation acoustique par différences finies. Après le code, présente le modèle : Helmholtz dans l'air, source Dirichlet en haut, côtés Neumann homogènes et mur Robin avec répartition de poreux. Les dimensions, les bandes et la loi de matériau seront validées avec Mathis. Modifie uniquement preprocessing.py joint et renvoie sa version complète. Ne crée aucun autre fichier Python et conserve les fonctions existantes. Les dépendances jointes servent seulement à comprendre les interfaces.
 
-1. Vérifie _set_geometry_of_domain et les fonctions de fractale sur les niveaux 0, 1 et 2. Le motif actuel comporte huit segments de quart à angles droits, malgré le nom create_motif_koch. Conserve ce motif.
-2. Le support utilise N colonnes, donc des indices de 0 à N-1, alors que les extrémités du profil sont actuellement définies jusqu'à N. Rends le placement cohérent avec les indices disponibles et annonce les coordonnées réelles. Utilise N-1 intervalles pour une largeur L, donc h=L/(N-1) lors des futurs appels. Pour les niveaux étudiés, choisis N-1 multiple de 4**level afin de représenter les sommets. Place aussi la paroi plane à une ligne cohérente avec ce choix. Ne modifie pas les autres modules pour adapter leurs appels maintenant : indique le changement à Yann.
-3. Contrôle les étiquettes, les accès aux quatre voisins, l'absence d'intérieur au bord extérieur du tableau et la connexion du fluide. Le tableau de stockage peut contenir du complémentaire et sa hauteur ne donne pas à elle seule la hauteur du fluide.
+1. Lis _set_geometry_of_domain et les fonctions de fractale sur les niveaux 0, 1 et 2 sans modifier leurs lignes. Le motif fourni comporte huit segments de quart à angles droits, malgré le nom create_motif_koch. Garde ce motif et le comportement initial des fonctions fournies.
+2. Ajoute prepare_geometry_of_domain(M, N, level=0) dans preprocessing.py pour les campagnes, avec le même type de retour à cinq valeurs que _set_geometry_of_domain. Elle construit ses propres tableaux et réutilise les fonctions de motif en lecture seule. Dans ce nouveau helper seulement, définis les extrémités et la paroi plane dans les indices de 0 à N-1. Pour une largeur physique L, les campagnes emploient h=L/(N-1), avec N-1 multiple de 4**level pour les niveaux étudiés. Ne remplace pas l’appel protégé à _set_geometry_of_domain et ne redéfinis pas cette fonction sous le même nom. Transmets la nouvelle signature à Yann pour ses appels de campagne.
+3. Dans les tableaux du nouveau helper, contrôle les étiquettes, les accès aux quatre voisins, l’absence d’intérieur au bord extérieur et la connexion du fluide. Le tableau peut contenir du complémentaire et sa hauteur ne donne pas à elle seule la hauteur du fluide. Le cas initial fourni reste disponible avec ses coordonnées d’origine.
 4. Ajoute get_design_faces(domain_omega, spacestep, design_mask=None). Le masque optionnel limite la conception aux Robin du mur et permettra d'exclure une ouverture latérale. Retourne un dictionnaire avec boundary_indices, face_rows, face_design et design_weights. boundary_indices contient les indices aplatis des Robin de conception qui touchent au moins un intérieur, triés et uniques. Pour chaque contact intérieur/Robin dans les quatre directions, face_rows donne l'indice aplati de l'intérieur et face_design l'indice correspondant dans boundary_indices. Conserve tous les contacts, même si plusieurs touchent le même Robin. design_weights vaut spacestep multiplié par le nombre de contacts de chaque variable. Les indices aplatis suivent i*N+j, ordre C.
 5. Vérifie poids strictement positifs, indices valides, somme des poids égale au pas multiplié par le nombre de contacts, et masque excluant effectivement les Robin non modifiables. La contrainte future sera dot(design_weights,chi)=material_length_m, chi réel entre zéro et un. Il s'agit d'une longueur absorbante absolue, commune entre profils. L'aire égale à un de l'ancien devoir n'est pas une contrainte de cette EI.
 6. Donne de petits contrôles exécutables à la demande dans ce même fichier, sans effet à l'import. Les commentaires sont des phrases françaises qui expliquent les étapes, sans équations dans les commentaires. Termine par une courte explication des fonctions ajoutées, de leurs entrées/sorties et des contrôles effectués.
@@ -58,6 +60,8 @@ Je travaille sur ResoniCS, un projet d'optimisation acoustique par différences 
 ### Prompt à copier
 
 ```text
+Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Le choix d’application est désormais le RER B. Prends le roulement de 250 à 2 000 Hz comme première plage proposée, puis considère traction et auxiliaires de 100 à 500 Hz et crissement de 1 500 à 4 000 Hz comme cas complémentaires. Ces plages viennent de SOTA.md, pas d’un spectre mesuré fourni. Fais valider le régime, la bande, le site ou la section-type, la vitesse si elle est connue, les dimensions, la source et les données de matériau. Calcule le pas nécessaire à la fréquence maximale réellement étudiée et résous les reliefs. La règle des détails de l’ordre de lambda/2 guide le choix d’un panneau fixe et ne conduit pas à redimensionner le panneau à chaque fréquence.
@@ -89,6 +93,8 @@ Garde la même excitation supérieure pour les comparaisons. Énumère les valeu
 ### Prompt à copier
 
 ```text
+Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Étudie le même panneau destiné au RER B avec un côté réfléchissant puis ouvert, sans changer le bord source ni le budget. Les dimensions et le profil restent identiques entre ces deux scénarios. Relie la comparaison au confinement retenu dans le modèle et conserve séparément le scénario du tunnel réfléchissant utilisé pour classer les produits.
@@ -120,6 +126,8 @@ Donne un protocole de comparaison à mêmes géométrie, source et matériau, ai
 ### Prompt à copier
 
 ```text
+Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Calcule la loi complexe sur les fréquences du scénario RER B retenu, en priorité la plage de roulement proposée. Les autres plages seront calculées seulement dans la validité de cette loi. Garde séparés la bande, les paramètres du matériau et leur provenance. La synthèse SOTA.md oriente les matériaux candidats et ne fournit pas à elle seule les paramètres d’une impédance complexe.
@@ -139,7 +147,7 @@ Liste les contrôles synthétiques et de passivité à faire avec Mathis. La con
 
 **Fichier à modifier :** [support/processing.py](../../support/processing.py).
 
-**Ce qui est fait.** On sépare l'assemblage de la résolution, afin que Joachim puisse employer exactement la même matrice pour l'état et l'adjoint. On garde le comportement du solveur fourni.
+**Ce qui est fait.** On ajoute une fonction qui expose la matrice et le second membre pour l’état et l’adjoint, en reproduisant la composition du solveur fourni. Le solveur initial et les appels protégés restent inchangés.
 
 **Fichiers à joindre avec le prompt :**
 
@@ -151,6 +159,8 @@ Liste les contrôles synthétiques et de passivité à faire avec Mathis. La con
 **Prompt à copier :**
 
 ```text
+Protection du support : conserve intégralement solve_helmholtz et les fonctions d’assemblage initialement fournies, car elles déterminent le calcul appelé par la cellule protégée. Ajoute seulement les fonctions complémentaires demandées dans processing.py, en réutilisant les fonctions existantes sans les modifier. Aucun remplacement ou redirection de solve_helmholtz. Compare les fonctions fournies à la version jointe avant de rendre le fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 La dérivée doit rester celle du système discret réellement assemblé pour la source du scénario RER B. Vérifie les conjugaisons, le signe et les poids, plutôt que d’utiliser directement la formule indicative de placement du poreux écrite dans SOTA.md. Pour un coût pondéré en fréquence, la dérivée emploie exactement les poids fixés dans le coût.
@@ -159,7 +169,7 @@ Vérifie en particulier que la largeur physique, les reliefs et le pas permetten
 
 Modifie uniquement processing.py joint et renvoie le fichier complet, sans créer de nouveau module. Je veux réutiliser le solveur de Helmholtz fourni et donner sa matrice à un calcul adjoint.
 
-Ajoute assemble_helmholtz_system avec exactement les arguments de solve_helmholtz. Cette fonction reprend l'assemblage actuel, les conditions de Dirichlet, Neumann et Robin, dans le même ordre, puis retourne A au format CSR et b comme vecteur complexe aplati. Garde la matrice complète de taille M*N, avec les lignes identité déjà prévues hors intérieur. Conserve les équations et les coefficients du support. solve_helmholtz appelle ce helper et renvoie toujours le champ de forme (M,N), rempli uniquement à l'intérieur comme auparavant. Ne change pas ses arguments ni la convention d'aplatissement i*N+j.
+Ajoute assemble_helmholtz_system avec exactement les arguments de solve_helmholtz. Cette fonction reprend l'assemblage actuel, les conditions de Dirichlet, Neumann et Robin, dans le même ordre, puis retourne A au format CSR et b comme vecteur complexe aplati. Garde la matrice complète de taille M*N, avec les lignes identité déjà prévues hors intérieur. Conserve les équations et les coefficients du support. Ce nouveau helper est indépendant : il appelle les fonctions compute_stiffness_matrix, compute_mass_matrix puis compute_dirichlet_condition, compute_neumann_condition et compute_robin_condition, dans l’ordre du solveur fourni. solve_helmholtz et toutes ces fonctions restent exactement inchangées. Ne remplace pas l’appel du bloc protégé par le nouveau helper. Garde la convention d’aplatissement i*N+j et compare les solutions des deux chemins sur les mêmes données.
 
 Le paramètre historique omega reçoit le nombre d'onde k et non les hertz. Avec les coefficients imposés égaux à un et f_rob nul, le Robin actuel reconstruit u_B=u_I/(1-h*alpha_code). Il représente donc d_n u-alpha_code*u=0. Documente ce signe dans l'explication de ta réponse et vérifie la formule depuis le code. Les valeurs nulles que solve_helmholtz renvoie au bord ne représentent pas la trace physique.
 

@@ -23,6 +23,8 @@
 ### Prompt à copier
 
 ```text
+Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 La synthèse de l’état de l’art sur le RER B a déjà été réalisée par Mathis et Olympia dans SOTA.md. Exploite cette synthèse et complète sa vérification. Relie les affirmations chiffrées aux sources accessibles, distingue les réalisations sur le RER B des exemples sur d’autres lignes et compare les solutions aux inclusions poreuses envisagées. Les gains annoncés dans cette synthèse restent des points à vérifier et ne sont pas les résultats de ResoniCS.
@@ -56,6 +58,8 @@ Complète les sources et les données physiques nécessaires au scénario RER B,
 ### Prompt à copier
 
 ```text
+Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Le choix d’application est désormais le RER B. Prends le roulement de 250 à 2 000 Hz comme première plage proposée, puis considère traction et auxiliaires de 100 à 500 Hz et crissement de 1 500 à 4 000 Hz comme cas complémentaires. Ces plages viennent de SOTA.md, pas d’un spectre mesuré fourni. Fais valider le régime, la bande, le site ou la section-type, la vitesse si elle est connue, les dimensions, la source et les données de matériau. Calcule le pas nécessaire à la fréquence maximale réellement étudiée et résous les reliefs. La règle des détails de l’ordre de lambda/2 guide le choix d’un panneau fixe et ne conduit pas à redimensionner le panneau à chaque fréquence.
@@ -88,6 +92,8 @@ Propose au groupe des bandes de fréquences, des dimensions de domaine et une so
 ### Prompt à copier
 
 ```text
+Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Le concept envisagé dans SOTA.md associe un panneau rigide et des cartouches poreuses amovibles. Examine la laine de roche et la fibre de chanvre seulement si leurs données complexes sont disponibles, puis fixe épaisseur, profondeur et quantité avec provenance. Une fraction illustrative telle que 40 % n’est pas un budget absolu commun entre des murs de longueurs différentes. Les contraintes d’entretien et d’encombrement sont des critères de choix à documenter.
@@ -123,6 +129,8 @@ Présente un choix de matériau poreux, avec son épaisseur, sa provenance, sa b
 ### Prompt à copier
 
 ```text
+Protection du support : les cellules protégées du programme principal sont en lecture seule. Garde aussi inchangées les fonctions initialement fournies de preprocessing.py, notamment _set_coefficients_of_pde, _set_rhs_of_pde, _set_geometry_of_domain et les fonctions du motif qu’elle appelle. Ajoute les fonctions du projet à côté ; seules ces fonctions ajoutées peuvent être complétées ou corrigées. Elles travaillent sur des tableaux indépendants et ne changent pas les valeurs du cas initial par effet de bord. Compare les fonctions fournies à la version jointe avant de rendre le fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Calcule la loi complexe sur les fréquences du scénario RER B retenu, en priorité la plage de roulement proposée. Les autres plages seront calculées seulement dans la validité de cette loi. Garde séparés la bande, les paramètres du matériau et leur provenance. La synthèse SOTA.md oriente les matériaux candidats et ne fournit pas à elle seule les paramètres d’une impédance complexe.

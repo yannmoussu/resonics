@@ -40,12 +40,33 @@ Pour les exports, le dictionnaire `metadata` des `records` précise désormais `
 
 La synthèse SOTA.md et les résultats et paramètres produits les jours précédents sont joints lorsqu’une tâche les utilise. Une donnée encore manquante est signalée et aucun résultat physique n'est inventé pour la remplacer.
 
+## Zones protégées du programme fourni
+
+Le programme [demo_control_polycopie2024.py](../support/demo_control_polycopie2024.py) contient **deux cellules explicitement protégées**, chacune marquée `Do not modify this cell, these are the values that you will be assessed against.` Les numéros ci-dessous sont ceux de la version initiale et peuvent se décaler lors des ajouts ; les commentaires délimitent les cellules.
+
+| Cellule | Contenu à conserver intégralement |
+|---|---|
+| Initialisation, lignes 95 à 106 | Appels de `_set_coefficients_of_pde`, `_set_rhs_of_pde` et `_set_geometry_of_domain`, avec leurs affectations |
+| Résolution initiale, lignes 143 à 151 | Appel de `processing.solve_helmholtz`, puis `chi0 = chi.copy()` et `u0 = u.copy()` |
+
+Chaque cellule est conservée de son en-tête jusqu’au début de la cellule suivante, avec ses lignes, commentaires, indentation, arguments et ordre. Aucun ajout n’y est placé et leur exécution reste dans le chemin initial. Les prompts qui renvoient le fichier complet demandent de comparer ces deux cellules à leur version d’entrée avant de rendre le résultat.
+
+Les fonctions étudiantes et les cellules signalées `Fell free to modify the function call in this cell.` accueillent les compléments. La source `f_dir`, la densité et le coefficient Robin sont définis dans la cellule modifiable prévue à cet effet. Les coefficients imposés et les factories qui les initialisent gardent leur définition fournie.
+
+Pour préserver aussi le comportement des appels protégés, les tâches de géométrie et d’assemblage sont réalisées par **ajout de fonctions** dans les modules existants :
+
+- `prepare_geometry_of_domain` prépare les tableaux indépendants des campagnes, puis `get_design_faces` décrit leurs contacts. `_set_geometry_of_domain` et les fonctions de motif initiales gardent leur code.
+- `assemble_helmholtz_system` réutilise les fonctions d’assemblage fournies pour exposer la matrice et le second membre. `solve_helmholtz` et son appel protégé gardent leur code. Les solutions des deux chemins sont comparées sur les mêmes données.
+- `run_frequency_campaign` utilise les nouveaux helpers avec des variables locales `case_*`. Son appel se place dans la dernière cellule autorisée, **après** le calcul initial et les copies protégées. Les essais de frontière ouverte et les autres géométries travaillent sur ces données indépendantes.
+
+Les seules zones signalées comme protégées dans les cinq fichiers se trouvent dans le programme principal. La conservation des fonctions du chemin initial est une précaution supplémentaire du planning. Les fonctions nouvelles d’objectif, d’adjoint, de projection, de descente et de matériau restent à compléter dans les fichiers communs. Aucun fichier Python supplémentaire n’est demandé.
+
 ## Fichiers partagés
 
 | Fichier existant | Contributions prévues |
 |---|---|
-| `support/preprocessing.py` | Yann prépare la géométrie et les poids du mur, puis Mathis ajoute la loi de matériau |
-| `support/processing.py` | Yann rend l'assemblage accessible pour le calcul de l'état et de l'adjoint |
+| `support/preprocessing.py` | Yann ajoute la préparation des géométries de campagne et les poids du mur, puis Mathis ajoute la loi de matériau |
+| `support/processing.py` | Yann ajoute l’accès à la matrice pour l’état et l’adjoint, en gardant le solveur initial intact |
 | `support/demo_control_polycopie2024.py` | Joachim écrit le coût et le gradient, Antoine la projection et la descente, puis Yann intègre et lance les expériences |
 | `support/postprocessing.py` | Olympia prépare les figures et les comparaisons à partir des calculs |
 | `support/_env.py` | Constantes communes utilisées en lecture seule |

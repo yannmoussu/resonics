@@ -22,6 +22,8 @@ Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les dé
 **Prompt à copier :**
 
 ```text
+Protection du support : recopie à l’identique les deux cellules portant « Do not modify this cell, these are the values that you will be assessed against. », de leur en-tête jusqu’à la cellule suivante. La première initialise les coefficients, les seconds membres et la géométrie ; la seconde appelle processing.solve_helmholtz puis copie chi0 et u0. Garde toutes leurs lignes, commentaires, indentation, ordre, noms et arguments. Aucun ajout à l’intérieur, déplacement, suppression, changement d’appel ni nouvelle condition qui empêche leur exécution. Les fonctions étudiantes et les cellules « Fell free to modify the function call in this cell. » accueillent les compléments. Les campagnes sont appelées dans la dernière cellule autorisée, après le second bloc protégé, avec des tableaux indépendants des valeurs initiales. Compare les deux blocs à la version jointe avant de rendre le fichier et confirme leur identité.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Vérifie que les paramètres, exports et figures finaux indiquent RER B, le régime, la bande, la source, le matériau, la quantité et la provenance des données. Centre les textes de restitution sur le scénario RER B retenu. Conserve les titres officiels de l’énoncé et tous les contrôles numériques.
@@ -55,6 +57,8 @@ Teste d'abord un cas court puis le cas final avec les paramètres validés. Donn
 **Prompt à copier :**
 
 ```text
+Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Présente le besoin RER B puis la chaîne qui mène du scénario choisi au panneau retenu. Attribue la synthèse d’état de l’art à Mathis et Olympia. Annonce les bandes effectivement calculées, la représentation de la source et les gains mesurés par le code, sans transformer les perspectives de SOTA.md en résultats obtenus. Garde vingt minutes d’exposé à cinq puis dix minutes de questions.
@@ -87,6 +91,8 @@ Donne pour Yann une explication orale du modèle et des fonctions de calcul, une
 ### Prompt à copier
 
 ```text
+Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Le rapport final porte sur le cas RER B. Il distingue les plages proposées dans SOTA.md des bandes finalement retenues, donne toutes les valeurs numériques utilisées et justifie la source et les poids fréquentiels. Les liens de l’état de l’art sont cités pour les affirmations qu’ils établissent. Les résultats de calcul, les quantités et le choix du panneau concordent avec les figures et le programme.

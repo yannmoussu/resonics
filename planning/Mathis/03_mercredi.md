@@ -23,6 +23,8 @@
 ### Prompt à copier
 
 ```text
+Protection du support : les cellules protégées du programme principal sont en lecture seule. Garde aussi inchangées les fonctions initialement fournies de preprocessing.py, notamment _set_coefficients_of_pde, _set_rhs_of_pde, _set_geometry_of_domain et les fonctions du motif qu’elle appelle. Ajoute les fonctions du projet à côté ; seules ces fonctions ajoutées peuvent être complétées ou corrigées. Elles travaillent sur des tableaux indépendants et ne changent pas les valeurs du cas initial par effet de bord. Compare les fonctions fournies à la version jointe avant de rendre le fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Étudie la quantité nécessaire aux cartouches poreuses du panneau RER B avec les mêmes bandes et sources entre candidats comparables. La réduction de matière doit résulter des calculs. Les divisions par deux ou trois et la fraction de 40 % citées comme perspectives dans SOTA.md ne sont pas des résultats imposés. Compare les performances et la quantité à épaisseur et profondeur annoncées.

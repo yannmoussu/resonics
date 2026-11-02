@@ -23,6 +23,8 @@
 ### Prompt à copier
 
 ```text
+Protection du support : la cible est uniquement postprocessing.py. Les autres modules sont en lecture seule et les deux cellules « Do not modify this cell » du programme principal restent inchangées. Les corrections concernent les tracés et leurs fonctions ; elles ne modifient pas les appels protégés ni les données initiales du solveur par effet de bord.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Compare les solutions sur toute la bande de roulement retenue, avec des points de validation hors des fréquences de conception. Si les cas traction ou crissement sont calculés, présente leurs bandes et leurs sources séparément. Le critère de pression du modèle et ses réductions relatives sont annoncés avec leur référence ; les valeurs de SOTA.md en dB(A) ne sont pas des performances calculées du produit.
@@ -59,6 +61,8 @@ Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de cour
 ### Prompt à copier
 
 ```text
+Protection du support : la cible est uniquement postprocessing.py. Les autres modules sont en lecture seule et les deux cellules « Do not modify this cell » du programme principal restent inchangées. Les corrections concernent les tracés et leurs fonctions ; elles ne modifient pas les appels protégés ni les données initiales du solveur par effet de bord.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Optimise une distribution commune sur plusieurs fréquences de la bande RER B choisie. Sans spectre mesuré, utilise une quadrature fréquentielle normalisée explicitement annoncée. Avec un spectre de source disponible, documente les poids physiques et évite de pondérer à nouveau une amplitude déjà incluse dans la source. Les plages exploratoires se recouvrent ; leurs recouvrements ne doivent pas compter deux fois dans un coût de bande unique. Une conception couvrant plusieurs régimes est annoncée comme telle et conserve le même panneau et la même densité.
@@ -95,6 +99,8 @@ Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de cour
 ### Prompt à copier
 
 ```text
+Protection du support : la cible est uniquement postprocessing.py. Les autres modules sont en lecture seule et les deux cellules « Do not modify this cell » du programme principal restent inchangées. Les corrections concernent les tracés et leurs fonctions ; elles ne modifient pas les appels protégés ni les données initiales du solveur par effet de bord.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Étudie la quantité nécessaire aux cartouches poreuses du panneau RER B avec les mêmes bandes et sources entre candidats comparables. La réduction de matière doit résulter des calculs. Les divisions par deux ou trois et la fraction de 40 % citées comme perspectives dans SOTA.md ne sont pas des résultats imposés. Compare les performances et la quantité à épaisseur et profondeur annoncées.

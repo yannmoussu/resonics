@@ -22,6 +22,8 @@ Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les dé
 **Prompt à copier :**
 
 ```text
+Protection du support : recopie à l’identique les deux cellules portant « Do not modify this cell, these are the values that you will be assessed against. », de leur en-tête jusqu’à la cellule suivante. La première initialise les coefficients, les seconds membres et la géométrie ; la seconde appelle processing.solve_helmholtz puis copie chi0 et u0. Garde toutes leurs lignes, commentaires, indentation, ordre, noms et arguments. Aucun ajout à l’intérieur, déplacement, suppression, changement d’appel ni nouvelle condition qui empêche leur exécution. Les fonctions étudiantes et les cellules « Fell free to modify the function call in this cell. » accueillent les compléments. Les campagnes sont appelées dans la dernière cellule autorisée, après le second bloc protégé, avec des tableaux indépendants des valeurs initiales. Compare les deux blocs à la version jointe avant de rendre le fichier et confirme leur identité.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Vérifie la robustesse du classement pour les régimes RER B effectivement calculés. Le maillage est dimensionné sur la fréquence maximale du cas comparé, y compris 4 000 Hz si le crissement est finalement inclus, et sur les reliefs. Recalcule la loi complexe et les poids du mur au raffinement, avec les mêmes dimensions et source. Les performances retenues restent celles du modèle de panneau et de sa bande validée.
@@ -30,7 +32,7 @@ Conserve une exécution courte à petite dimension et annonce le coût réel des
 
 Complète seulement demo_control_polycopie2024.py, sans créer d'autre module et sans modifier les cellules imposées ni les fonctions théoriques validées.
 
-Ajoute une campagne de validation pour les meilleurs candidats déjà calculés :
+Complète le pilote de campagne dans les fonctions ajoutées et appelle-le dans la dernière cellule autorisée après les deux cellules protégées. Ajoute une campagne de validation pour les meilleurs candidats déjà calculés :
 1. Raffine le pas en gardant les dimensions physiques, le niveau et les sommets du profil fixes. Avec N points, la largeur réelle utilise N-1 intervalles. Vérifie les coordonnées et les masques avant le calcul. Recalcule les indices de conception et leurs poids sur chaque grille.
 2. Transfère la densité le long du même contour, puis projette-la sur le budget fin avec la fonction d'Antoine. Explique la règle de transfert et distingue l'évaluation de cette densité transférée d'une éventuelle nouvelle optimisation fine. Recalcule les pics sur les deux grilles ; une fréquence de pic peut se déplacer.
 3. Relance la descente depuis une distribution uniforme et quelques répartitions admissibles différentes. Pour les tirages, fixe et affiche les graines. Toutes les initialisations sont projetées sur le même budget. Conserve coût final, contrainte, gradient projeté, cause d'arrêt, nombre de résolutions et temps de calcul.
@@ -60,6 +62,8 @@ Renvoie le fichier complet et les vérifications réellement effectuées. Les co
 ### Prompt à copier
 
 ```text
+Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Choisis le produit pour le cas d’usage RER B en reliant la bande et le régime visés, la forme du panneau, le matériau, la quantité et les performances réellement calculées. Examine le concept de cartouches amovibles de SOTA.md et documente les contraintes d’entretien et d’encombrement. Présente le compromis retenu et distingue les critères de calcul des hypothèses de réalisation.

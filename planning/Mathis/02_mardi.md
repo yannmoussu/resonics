@@ -24,6 +24,8 @@
 ### Prompt à copier
 
 ```text
+Protection du support : les cellules protégées du programme principal sont en lecture seule. Garde aussi inchangées les fonctions initialement fournies de preprocessing.py, notamment _set_coefficients_of_pde, _set_rhs_of_pde, _set_geometry_of_domain et les fonctions du motif qu’elle appelle. Ajoute les fonctions du projet à côté ; seules ces fonctions ajoutées peuvent être complétées ou corrigées. Elles travaillent sur des tableaux indépendants et ne changent pas les valeurs du cas initial par effet de bord. Compare les fonctions fournies à la version jointe avant de rendre le fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Calcule d’abord la référence du mur plan entièrement recouvert sur la plage de roulement proposée de 250 à 2 000 Hz après validation de ses paramètres. Les pics recherchés sont les pics de réponse du modèle ; ils ne constituent pas un spectre mesuré du RER B. Les cas complémentaires de traction ou de crissement sont identifiés séparément et utilisent leurs propres bandes validées.
@@ -62,6 +64,8 @@ Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de cour
 ### Prompt à copier
 
 ```text
+Protection du support : les cellules protégées du programme principal sont en lecture seule. Garde aussi inchangées les fonctions initialement fournies de preprocessing.py, notamment _set_coefficients_of_pde, _set_rhs_of_pde, _set_geometry_of_domain et les fonctions du motif qu’elle appelle. Ajoute les fonctions du projet à côté ; seules ces fonctions ajoutées peuvent être complétées ou corrigées. Elles travaillent sur des tableaux indépendants et ne changent pas les valeurs du cas initial par effet de bord. Compare les fonctions fournies à la version jointe avant de rendre le fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Compare au plan les profils fournis entièrement recouverts pour le même régime de bruit RER B, avec mêmes source, bande et dimensions de référence annoncées. Chaque profil reste fixe pendant le parcours de sa bande. Affiche les longueurs et quantités de matériau de chaque mur.

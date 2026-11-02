@@ -22,6 +22,8 @@ Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une m�
 **Prompt à copier :**
 
 ```text
+Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Le modèle représente un panneau destiné au bruit du RER B dans le tunnel réfléchissant demandé par l’énoncé. Décris le domaine et ses dimensions physiques, le profil fourni et la source de Dirichlet supérieure. La paroi rigide et les côtés Neumann sont les hypothèses du modèle. Choisis un profil physique fixe pour les comparaisons en fréquence ; le motif orthogonal fourni reste celui effectivement calculé.
@@ -55,6 +57,8 @@ Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie le
 **Prompt à copier :**
 
 ```text
+Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Énonce les propriétés sous les hypothèses du panneau et de la source harmonique retenus pour le RER B. Distingue l’approximation réfléchissante Neumann de la description d’une paroi réelle. Les résultats de solvabilité et de dissipation doivent utiliser le coefficient complexe validé, et la plage étudiée doit rester dans la validité du modèle de matériau.
@@ -90,6 +94,8 @@ Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie le
 **Prompt à copier :**
 
 ```text
+Protection du support : recopie à l’identique les deux cellules portant « Do not modify this cell, these are the values that you will be assessed against. », de leur en-tête jusqu’à la cellule suivante. La première initialise les coefficients, les seconds membres et la géométrie ; la seconde appelle processing.solve_helmholtz puis copie chi0 et u0. Garde toutes leurs lignes, commentaires, indentation, ordre, noms et arguments. Aucun ajout à l’intérieur, déplacement, suppression, changement d’appel ni nouvelle condition qui empêche leur exécution. Les fonctions étudiantes et les cellules « Fell free to modify the function call in this cell. » accueillent les compléments. Les campagnes sont appelées dans la dernière cellule autorisée, après le second bloc protégé, avec des tableaux indépendants des valeurs initiales. Compare les deux blocs à la version jointe avant de rendre le fichier et confirme leur identité.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Formule le coût du scénario RER B avec une quantité physique de poreux fixée. La source unitaire en haut donne d’abord une réponse fréquentielle de référence. Si aucun spectre mesuré n’est disponible, annonce des poids d’intégration de fréquence normalisés. Si un spectre mesuré est fourni, sa provenance et sa normalisation sont fixées avant la descente et la réponse à source unitaire est pondérée sans compter deux fois l’amplitude du bruit.
@@ -126,6 +132,8 @@ Après le code, donne à Antoine la définition du critère à minimiser et ses 
 **Prompt à copier :**
 
 ```text
+Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Étudie le même panneau destiné au RER B avec un côté réfléchissant puis ouvert, sans changer le bord source ni le budget. Les dimensions et le profil restent identiques entre ces deux scénarios. Relie la comparaison au confinement retenu dans le modèle et conserve séparément le scénario du tunnel réfléchissant utilisé pour classer les produits.
@@ -162,6 +170,8 @@ Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie le
 **Prompt à copier :**
 
 ```text
+Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 La dérivée doit rester celle du système discret réellement assemblé pour la source du scénario RER B. Vérifie les conjugaisons, le signe et les poids, plutôt que d’utiliser directement la formule indicative de placement du poreux écrite dans SOTA.md. Pour un coût pondéré en fréquence, la dérivée emploie exactement les poids fixés dans le coût.

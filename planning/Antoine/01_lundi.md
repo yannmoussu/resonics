@@ -22,6 +22,8 @@ Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une m�
 **Prompt à copier :**
 
 ```text
+Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Formule le coût du scénario RER B avec une quantité physique de poreux fixée. La source unitaire en haut donne d’abord une réponse fréquentielle de référence. Si aucun spectre mesuré n’est disponible, annonce des poids d’intégration de fréquence normalisés. Si un spectre mesuré est fourni, sa provenance et sa normalisation sont fixées avant la descente et la réponse à source unitaire est pondérée sans compter deux fois l’amplitude du bruit.
@@ -57,6 +59,8 @@ Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie le
 **Prompt à copier :**
 
 ```text
+Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Le concept envisagé dans SOTA.md associe un panneau rigide et des cartouches poreuses amovibles. Examine la laine de roche et la fibre de chanvre seulement si leurs données complexes sont disponibles, puis fixe épaisseur, profondeur et quantité avec provenance. Une fraction illustrative telle que 40 % n’est pas un budget absolu commun entre des murs de longueurs différentes. Les contraintes d’entretien et d’encombrement sont des critères de choix à documenter.
@@ -91,6 +95,8 @@ Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie le
 **Prompt à copier :**
 
 ```text
+Protection du support : recopie à l’identique les deux cellules portant « Do not modify this cell, these are the values that you will be assessed against. », de leur en-tête jusqu’à la cellule suivante. La première initialise les coefficients, les seconds membres et la géométrie ; la seconde appelle processing.solve_helmholtz puis copie chi0 et u0. Garde toutes leurs lignes, commentaires, indentation, ordre, noms et arguments. Aucun ajout à l’intérieur, déplacement, suppression, changement d’appel ni nouvelle condition qui empêche leur exécution. Les fonctions étudiantes et les cellules « Fell free to modify the function call in this cell. » accueillent les compléments. Les campagnes sont appelées dans la dernière cellule autorisée, après le second bloc protégé, avec des tableaux indépendants des valeurs initiales. Compare les deux blocs à la version jointe avant de rendre le fichier et confirme leur identité.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 La descente améliore une densité sur le panneau RER B à budget absolu fixé. Les coefficients du matériau, la source, le profil et les poids fréquentiels restent constants pendant une descente. Préserve les petits contrôles algorithmiques et distingue-les des futures performances acoustiques.

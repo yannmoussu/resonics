@@ -24,6 +24,8 @@ Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une m�
 **Prompt à copier :**
 
 ```text
+Protection du support : recopie à l’identique les deux cellules portant « Do not modify this cell, these are the values that you will be assessed against. », de leur en-tête jusqu’à la cellule suivante. La première initialise les coefficients, les seconds membres et la géométrie ; la seconde appelle processing.solve_helmholtz puis copie chi0 et u0. Garde toutes leurs lignes, commentaires, indentation, ordre, noms et arguments. Aucun ajout à l’intérieur, déplacement, suppression, changement d’appel ni nouvelle condition qui empêche leur exécution. Les fonctions étudiantes et les cellules « Fell free to modify the function call in this cell. » accueillent les compléments. Les campagnes sont appelées dans la dernière cellule autorisée, après le second bloc protégé, avec des tableaux indépendants des valeurs initiales. Compare les deux blocs à la version jointe avant de rendre le fichier et confirme leur identité.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Choisis les fréquences problématiques parmi les pics confirmés de la réponse du panneau sur la bande RER B retenue, d’abord le roulement. Identifie le régime de bruit et la fréquence de chaque descente. Recalcule ensuite la réponse sur la bande pour vérifier qu’une baisse à ce pic ne dégrade pas excessivement les autres fréquences.

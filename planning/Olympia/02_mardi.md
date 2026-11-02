@@ -24,6 +24,8 @@
 ### Prompt à copier
 
 ```text
+Protection du support : la cible est uniquement postprocessing.py. Les autres modules sont en lecture seule et les deux cellules « Do not modify this cell » du programme principal restent inchangées. Les corrections concernent les tracés et leurs fonctions ; elles ne modifient pas les appels protégés ni les données initiales du solveur par effet de bord.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Calcule d’abord la référence du mur plan entièrement recouvert sur la plage de roulement proposée de 250 à 2 000 Hz après validation de ses paramètres. Les pics recherchés sont les pics de réponse du modèle ; ils ne constituent pas un spectre mesuré du RER B. Les cas complémentaires de traction ou de crissement sont identifiés séparément et utilisent leurs propres bandes validées.
@@ -60,6 +62,8 @@ Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de cour
 ### Prompt à copier
 
 ```text
+Protection du support : la cible est uniquement postprocessing.py. Les autres modules sont en lecture seule et les deux cellules « Do not modify this cell » du programme principal restent inchangées. Les corrections concernent les tracés et leurs fonctions ; elles ne modifient pas les appels protégés ni les données initiales du solveur par effet de bord.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Compare au plan les profils fournis entièrement recouverts pour le même régime de bruit RER B, avec mêmes source, bande et dimensions de référence annoncées. Chaque profil reste fixe pendant le parcours de sa bande. Affiche les longueurs et quantités de matériau de chaque mur.
@@ -96,6 +100,8 @@ Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de cour
 ### Prompt à copier
 
 ```text
+Protection du support : la cible est uniquement postprocessing.py. Les autres modules sont en lecture seule et les deux cellules « Do not modify this cell » du programme principal restent inchangées. Les corrections concernent les tracés et leurs fonctions ; elles ne modifient pas les appels protégés ni les données initiales du solveur par effet de bord.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Pour le même scénario RER B, compare les états initial et entièrement recouvert en indiquant leurs quantités physiques, leur bande et leur source. Le calcul doit montrer les écarts réels et ne doit pas imposer le gain ou la division de matière annoncés comme perspective dans SOTA.md.
@@ -133,6 +139,8 @@ Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de cour
 ### Prompt à copier
 
 ```text
+Protection du support : la cible est uniquement postprocessing.py. Les autres modules sont en lecture seule et les deux cellules « Do not modify this cell » du programme principal restent inchangées. Les corrections concernent les tracés et leurs fonctions ; elles ne modifient pas les appels protégés ni les données initiales du solveur par effet de bord.
+
 Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
 
 Choisis les fréquences problématiques parmi les pics confirmés de la réponse du panneau sur la bande RER B retenue, d’abord le roulement. Identifie le régime de bruit et la fréquence de chaque descente. Recalcule ensuite la réponse sur la bande pour vérifier qu’une baisse à ce pic ne dégrade pas excessivement les autres fréquences.
