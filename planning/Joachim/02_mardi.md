@@ -2,6 +2,8 @@
 
 Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une même tâche est partagée avec les autres membres indiqués dans le Gantt, et cette fiche décrit la contribution de Joachim. On reprend toujours la dernière version des fichiers communs. Les modifications de la démonstration suivent Joachim, puis Antoine, puis Yann.
 
+**Cas d’usage RER B.** On utilise la synthèse de Mathis et Olympia dans [SOTA.md](../../SOTA.md). La première plage de travail proposée est le roulement de 250 à 2 000 Hz, puis on prévoit les cas traction et auxiliaires de 100 à 500 Hz et crissement de 1 500 à 4 000 Hz selon les données et les moyens de calcul. Ces plages sont des indications de la synthèse à documenter et à valider en J1.3. Les petits contrôles synthétiques du code restent indépendants de ces bandes.
+
 ## Optimize numerically for one or several of the most problematic frequencies (at which there is a maximum of the energy) ;
 
 **Repère :** J2.4. **Rôle :** contributeur.
@@ -12,6 +14,7 @@ Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une m�
 
 **Fichiers à joindre :**
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - support/demo_control_polycopie2024.py, dernière version complète, seule cible à modifier
 - support/_env.py, support/preprocessing.py, support/processing.py et support/postprocessing.py, versions actuelles en lecture seule
 - context/Dirichlet_Nonhomogene.pdf, les deux pages
@@ -21,6 +24,12 @@ Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une m�
 **Prompt à copier :**
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Choisis les fréquences problématiques parmi les pics confirmés de la réponse du panneau sur la bande RER B retenue, d’abord le roulement. Identifie le régime de bruit et la fréquence de chaque descente. Recalcule ensuite la réponse sur la bande pour vérifier qu’une baisse à ce pic ne dégrade pas excessivement les autres fréquences.
+
+Le contrôle du gradient acoustique réel utilise la source et les coefficients du scénario RER B sélectionné, après le contrôle synthétique indépendant.
+
 Ajoute uniquement dans demo_control_polycopie2024.py la fonction evaluate_density(chi, assemble, with_gradient=True), et une fonction check_gradient() non appelée automatiquement. Conserve les autres travaux du fichier. Ne crée aucun autre fichier.
 
 chi est un vecteur réel de taille B, compris entre zéro et un. assemble est une fonction donnée par Yann : payload=assemble(chi). Elle renvoie un dictionnaire contenant A, b, cell_weights, face_rows, face_design et dA_diag. A est une matrice creuse complexe de taille MN par MN issue de l'assemblage avec élimination des conditions de bord ; b est aplati. Les poids cell_weights de taille MN valent h² à l'intérieur et zéro ailleurs. face_rows contient les indices globaux aplatis des intérieurs voisins des faces de conception, face_design les indices dans chi et dA_diag les dérivées complexes diagonales par face. Les indices peuvent se répéter. Le second membre b est indépendant de chi.

@@ -2,6 +2,8 @@
 
 Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une même tâche est partagée avec les autres membres indiqués dans le Gantt, et cette fiche décrit la contribution d’Antoine. On reprend toujours la dernière version des fichiers communs. Les modifications de la démonstration suivent Joachim, puis Antoine, puis Yann.
 
+**Cas d’usage RER B.** On utilise la synthèse de Mathis et Olympia dans [SOTA.md](../../SOTA.md). La première plage de travail proposée est le roulement de 250 à 2 000 Hz, puis on prévoit les cas traction et auxiliaires de 100 à 500 Hz et crissement de 1 500 à 4 000 Hz selon les données et les moyens de calcul. Ces plages sont des indications de la synthèse à documenter et à valider en J1.3. Les petits contrôles synthétiques du code restent indépendants de ces bandes.
+
 ## formulate optimization problem ;
 
 **Repère :** J1.5. **Rôle :** responsable.
@@ -12,6 +14,7 @@ Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une m�
 
 **Fichiers à joindre :**
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - support/demo_control_polycopie2024.py et support/processing.py, versions actuelles en lecture seule
 - context/GAllaire-OptimParam.pdf, pages PDF 18–20 et 25–29
 - context/Sujet-EI-EXT-2026.md
@@ -19,6 +22,12 @@ Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une m�
 **Prompt à copier :**
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Formule le coût du scénario RER B avec une quantité physique de poreux fixée. La source unitaire en haut donne d’abord une réponse fréquentielle de référence. Si aucun spectre mesuré n’est disponible, annonce des poids d’intégration de fréquence normalisés. Si un spectre mesuré est fourni, sa provenance et sa normalisation sont fixées avant la descente et la réponse à source unitaire est pondérée sans compter deux fois l’amplitude du bruit.
+
+La projection porte sur la longueur physique absorbante des cartouches du panneau RER B. Le pourcentage indicatif de SOTA.md ne remplace pas le budget pondéré commun entre profils.
+
 Formule le problème d’optimisation ResoniCS à partir du critère défini par Joachim. La densité chi est réelle, vaut entre zéro et un aux nœuds Robin de conception et reste nulle hors du mur modifiable. À géométrie fixée, le coût est l’intégrale intérieure de pression au carré obtenue après résolution de Helmholtz.
 
 Le poids d’une variable est la longueur discrète fournie par Yann, égale au pas multiplié par le nombre de contacts avec un intérieur. Imposer dot(design_weights,chi)=material_length_m conserve une longueur absorbante absolue. Les Robin d’ouverture sont exclues de la conception. À épaisseur et profondeur constantes, le volume est proportionnel à cette longueur. Précise les conditions de faisabilité et l’ensemble admissible. La comparaison des formes utilise des optimisations séparées et n’impose pas l’aire unité de l’ancien devoir.
@@ -40,6 +49,7 @@ Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie le
 
 **Fichiers à joindre :**
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - support/demo_control_polycopie2024.py et support/processing.py, versions actuelles en lecture seule
 - Le matériau, l’épaisseur, la profondeur et la quantité proposés par Mathis, puis les poids du mur calculés par Yann
 - context/Sujet-EI-EXT-2026.md
@@ -47,6 +57,12 @@ Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie le
 **Prompt à copier :**
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Le concept envisagé dans SOTA.md associe un panneau rigide et des cartouches poreuses amovibles. Examine la laine de roche et la fibre de chanvre seulement si leurs données complexes sont disponibles, puis fixe épaisseur, profondeur et quantité avec provenance. Une fraction illustrative telle que 40 % n’est pas un budget absolu commun entre des murs de longueurs différentes. Les contraintes d’entretien et d’encombrement sont des critères de choix à documenter.
+
+La projection porte sur la longueur physique absorbante des cartouches du panneau RER B. Le pourcentage indicatif de SOTA.md ne remplace pas le budget pondéré commun entre profils.
+
 Vérifie la quantité proposée par Mathis pour le mur. Donne le lien entre longueur absorbante pondérée, épaisseur, profondeur et volume de poreux. Vérifie les unités et la faisabilité du budget sur tous les profils retenus. Une même fraction du nombre de nœuds Robin ne conserve pas forcément la même quantité physique entre des contours de longueurs différentes.
 
 Prépare les valeurs et les hypothèses de quantité à transmettre au groupe. Si un paramètre manque, identifie-le. Ne choisis pas de quantité physique arbitraire pour rendre un test faisable. Les budgets synthétiques de contrôle seront séparés des budgets réels.
@@ -66,6 +82,7 @@ Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie le
 
 **Fichiers à joindre :**
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - support/demo_control_polycopie2024.py, dernière version complète, seule cible à modifier
 - support/_env.py, support/preprocessing.py, support/processing.py et support/postprocessing.py, versions actuelles en lecture seule
 - context/GAllaire-OptimParam.pdf, pages PDF 18–20 et 25–29
@@ -74,6 +91,12 @@ Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie le
 **Prompt à copier :**
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+La descente améliore une densité sur le panneau RER B à budget absolu fixé. Les coefficients du matériau, la source, le profil et les poids fréquentiels restent constants pendant une descente. Préserve les petits contrôles algorithmiques et distingue-les des futures performances acoustiques.
+
+La projection porte sur la longueur physique absorbante des cartouches du panneau RER B. Le pourcentage indicatif de SOTA.md ne remplace pas le budget pondéré commun entre profils.
+
 Complète uniquement demo_control_polycopie2024.py en ajoutant project_density(z, design_weights, material_length_m, tol=1e-10, max_iter=100) et une fonction check_projection() non appelée automatiquement. Ne crée aucun fichier et préserve les fonctions de Joachim ainsi que les cellules imposées.
 
 z est un vecteur réel de densités d'essai. design_weights contient des longueurs positives de même taille, fournies par Yann : le pas de grille multiplié par le nombre de faces intérieures de chaque nœud de conception. material_length_m est la longueur absorbante absolue imposée. On cherche la projection euclidienne sur 0<=chi<=1 avec dot(design_weights,chi)=material_length_m.

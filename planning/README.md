@@ -12,13 +12,33 @@ Une tâche peut mobiliser plusieurs personnes. Sa phrase reste identique dans le
 | Joachim | [Fiche](Joachim/01_lundi.md) | [Fiche](Joachim/02_mardi.md) | [Fiche](Joachim/03_mercredi.md) | [Fiche](Joachim/04_jeudi.md) | [Fiche](Joachim/05_vendredi.md) |
 | Antoine | [Fiche](Antoine/01_lundi.md) | [Fiche](Antoine/02_mardi.md) | [Fiche](Antoine/03_mercredi.md) | [Fiche](Antoine/04_jeudi.md) | [Fiche](Antoine/05_vendredi.md) |
 
+## Cas d’usage retenu : le RER B
+
+On concentre le projet sur le **bruit du RER B**. La [synthèse de l’état de l’art](../SOTA.md) a été réalisée par **Mathis et Olympia**. Elle est jointe aux prompts et sert à cadrer l’application, les matériaux et le concept de panneau. La tâche J1.1 est donc déjà amorcée par cette synthèse ; son complément porte sur les sources et sur les choix qui en découlent.
+
+| Régime de bruit | Plage proposée dans SOTA.md | Place dans les calculs |
+|---|---|---|
+| Roulement | 250–2 000 Hz | Première plage de travail proposée, à valider en J1.3 |
+| Traction et auxiliaires | 100–500 Hz | Cas complémentaire selon les données et les moyens de calcul |
+| Crissement en courbe | 1 500–4 000 Hz | Cas complémentaire selon les données, le matériau et la résolution possible |
+
+Ces plages sont des indications de la synthèse et doivent être documentées. L’enveloppe de 100 à 4 000 Hz ne constitue pas un spectre mesuré du RER B. En J1.3, Mathis propose au groupe le régime prioritaire, la bande finalement étudiée, le site ou la section-type, la vitesse si elle est connue, les dimensions et les données de source.
+
+On conserve le **tunnel réfléchissant** et la **source de Dirichlet en haut** du modèle fourni. Une source unitaire permet d’abord de calculer une réponse fréquentielle comparable entre panneaux. Sans spectre mesuré, le coût de bande utilise une quadrature normalisée explicitement annoncée. Si des données de source sont obtenues, leur provenance et leur pondération sont fixées avant l’optimisation. Les gains relatifs calculés portent sur ce scénario et son critère de pression.
+
+La forme et les dimensions du panneau restent fixes pendant une comparaison en fréquence. Yann vérifie le pas à partir de la plus haute fréquence effectivement calculée et des plus petits reliefs. Un cas à 4 000 Hz nécessite donc sa propre vérification de résolution. L’ordre de grandeur des reliefs proche de la demi-longueur d’onde guide les dimensions à tester.
+
+Le concept à examiner est le panneau rigide avec **cartouches poreuses amovibles** décrit dans SOTA.md. Mathis documente la loi complexe des matériaux candidats, notamment laine de roche ou fibre de chanvre si leurs données sont disponibles. Antoine conserve un budget physique pondéré. Les fractions de matériau et les gains évoqués dans l’état de l’art sont des perspectives à confronter aux calculs.
+
+Pour les exports, le dictionnaire `metadata` des `records` précise désormais `application`, `noise_regime`, `frequency_band_hz`, `band_provenance`, `source_model` et `source_spectrum_provenance`, en plus des paramètres déjà prévus. Olympia compare des configurations appartenant au même scénario et identifie les éventuels cas complémentaires. Les bandes exploratoires qui se recouvrent sont traitées séparément ou avec une pondération commune justifiée.
+
 ## Comment utiliser une fiche
 
 1. Récupérer les versions actuelles des fichiers partagés, puis ouvrir la fiche du jour.
 2. Joindre les fichiers indiqués et copier le prompt de la tâche. Un seul fichier cible est modifié ; les dépendances sont fournies en lecture seule.
 3. Vérifier le résultat, puis transmettre le fichier complet au membre suivant avant sa modification.
 
-Les résultats et paramètres produits les jours précédents sont joints lorsqu'une tâche les utilise. Une donnée encore manquante est signalée et aucun résultat physique n'est inventé pour la remplacer.
+La synthèse SOTA.md et les résultats et paramètres produits les jours précédents sont joints lorsqu’une tâche les utilise. Une donnée encore manquante est signalée et aucun résultat physique n'est inventé pour la remplacer.
 
 ## Fichiers partagés
 

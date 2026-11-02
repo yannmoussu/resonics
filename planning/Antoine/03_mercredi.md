@@ -2,6 +2,8 @@
 
 Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une même tâche est partagée avec les autres membres indiqués dans le Gantt, et cette fiche décrit la contribution d’Antoine. On reprend toujours la dernière version des fichiers communs. Les modifications de la démonstration suivent Joachim, puis Antoine, puis Yann.
 
+**Cas d’usage RER B.** On utilise la synthèse de Mathis et Olympia dans [SOTA.md](../../SOTA.md). La première plage de travail proposée est le roulement de 250 à 2 000 Hz, puis on prévoit les cas traction et auxiliaires de 100 à 500 Hz et crissement de 1 500 à 4 000 Hz selon les données et les moyens de calcul. Ces plages sont des indications de la synthèse à documenter et à valider en J1.3. Les petits contrôles synthétiques du code restent indépendants de ces bandes.
+
 ## to optimize the energy at once at several different frequencies ;
 
 **Repère :** J3.2. **Rôle :** responsable.
@@ -12,6 +14,7 @@ Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une m�
 
 **Fichiers à joindre :**
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - support/demo_control_polycopie2024.py, dernière version complète, seule cible à modifier
 - support/_env.py, support/preprocessing.py, support/processing.py et support/postprocessing.py, versions actuelles en lecture seule
 - Les fréquences de conception, leurs poids et leurs références fixes validés par le groupe
@@ -20,6 +23,12 @@ Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une m�
 **Prompt à copier :**
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Optimise une distribution commune sur plusieurs fréquences de la bande RER B choisie. Sans spectre mesuré, utilise une quadrature fréquentielle normalisée explicitement annoncée. Avec un spectre de source disponible, documente les poids physiques et évite de pondérer à nouveau une amplitude déjà incluse dans la source. Les plages exploratoires se recouvrent ; leurs recouvrements ne doivent pas compter deux fois dans un coût de bande unique. Une conception couvrant plusieurs régimes est annoncée comme telle et conserve le même panneau et la même densité.
+
+Garde les mêmes poids de coût et le même budget pendant chaque descente RER B. Des coûts de régimes différents ne sont comparés qu’avec leur normalisation annoncée.
+
 Complète uniquement les fonctions de contrôle de projection et d'optimisation dans demo_control_polycopie2024.py. Préserve le cœur validé sauf erreur démontrée, les fonctions de Joachim et le programme principal. Ne crée aucun fichier.
 
 L'interface your_optimization_procedure(chi0,evaluate,design_weights,material_length_m,...) ne change pas. evaluate peut désormais fermer evaluate_band : value est une somme pondérée de coûts et gradient la somme avec les mêmes coefficients. Pour une bande, u vaut None ; l'optimiseur doit accepter cette valeur. Les fréquences, leurs poids et les références restent fixes pendant une descente.
@@ -43,6 +52,7 @@ Si les valeurs fournies ne permettent pas encore une campagne physique, limite l
 
 **Fichiers à joindre :**
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - support/demo_control_polycopie2024.py et support/processing.py, versions actuelles en lecture seule
 - Les budgets proposés par Mathis et les poids de chaque géométrie calculés par Yann
 - context/Sujet-EI-EXT-2026.md
@@ -50,6 +60,12 @@ Si les valeurs fournies ne permettent pas encore une campagne physique, limite l
 **Prompt à copier :**
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Étudie la quantité nécessaire aux cartouches poreuses du panneau RER B avec les mêmes bandes et sources entre candidats comparables. La réduction de matière doit résulter des calculs. Les divisions par deux ou trois et la fraction de 40 % citées comme perspectives dans SOTA.md ne sont pas des résultats imposés. Compare les performances et la quantité à épaisseur et profondeur annoncées.
+
+Garde les mêmes poids de coût et le même budget pendant chaque descente RER B. Des coûts de régimes différents ne sont comparés qu’avec leur normalisation annoncée.
+
 Prépare les essais de quantité à partir des budgets validés, sans modifier ni créer de fichier. Vérifie pour chaque forme que le budget est compris entre zéro et la somme des poids. Décris les départs à transmettre à Yann : densité initiale du support projetée, densité uniforme, puis quelques perturbations à graines fixées reprojetées. Pour chaque comparaison, conserve le même budget absolu et les mêmes paramètres de coût.
 
 Précise les informations à garder après chaque descente : quantité mesurée, coût final recalculé, motif d’arrêt, gradient projeté et nombre d’évaluations. Les cas de budget nul et maximal vérifient aussi le comportement de l’algorithme. Une faible baisse du coût ne constitue pas à elle seule une preuve de stationnarité.

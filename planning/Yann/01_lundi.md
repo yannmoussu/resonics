@@ -2,6 +2,8 @@
 
 Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les développements techniques sont les étapes de ma contribution, dans les fichiers partagés. Chaque étape de code modifie uniquement son fichier cible.
 
+**Cas d’usage RER B.** On utilise la synthèse de Mathis et Olympia dans [SOTA.md](../../SOTA.md). La première plage de travail proposée est le roulement de 250 à 2 000 Hz, puis on prévoit les cas traction et auxiliaires de 100 à 500 Hz et crissement de 1 500 à 4 000 Hz selon les données et les moyens de calcul. Ces plages sont des indications de la synthèse à documenter et à valider en J1.3. Les petits contrôles synthétiques du code restent indépendants de ces bandes.
+
 ## the model to consider,
 
 **Repère :** J1.2. **Rôle :** responsable.
@@ -12,6 +14,7 @@ Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les dé
 
 **Fichiers à joindre avec le prompt :**
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/preprocessing.py`, version complète actuelle, à modifier.
 - `support/_env.py` et `support/processing.py`, en lecture seule pour les étiquettes et le stencil.
 - `context/Sujet-EI-EXT-2026.md`.
@@ -19,6 +22,12 @@ Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les dé
 **Prompt à copier :**
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Le modèle représente un panneau destiné au bruit du RER B dans le tunnel réfléchissant demandé par l’énoncé. Décris le domaine et ses dimensions physiques, le profil fourni et la source de Dirichlet supérieure. La paroi rigide et les côtés Neumann sont les hypothèses du modèle. Choisis un profil physique fixe pour les comparaisons en fréquence ; le motif orthogonal fourni reste celui effectivement calculé.
+
+Vérifie en particulier que la largeur physique, les reliefs et le pas permettent les fréquences retenues et que la source supérieure conserve la convention du support.
+
 Je travaille sur ResoniCS, un projet d'optimisation acoustique par différences finies. Après le code, présente le modèle : Helmholtz dans l'air, source Dirichlet en haut, côtés Neumann homogènes et mur Robin avec répartition de poreux. Les dimensions, les bandes et la loi de matériau seront validées avec Mathis. Modifie uniquement preprocessing.py joint et renvoie sa version complète. Ne crée aucun autre fichier Python et conserve les fonctions existantes. Les dépendances jointes servent seulement à comprendre les interfaces.
 
 1. Vérifie _set_geometry_of_domain et les fonctions de fractale sur les niveaux 0, 1 et 2. Le motif actuel comporte huit segments de quart à angles droits, malgré le nom create_motif_koch. Conserve ce motif.
@@ -41,6 +50,7 @@ Je travaille sur ResoniCS, un projet d'optimisation acoustique par différences 
 
 ### Fichiers à joindre
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/preprocessing.py`, version actuelle.
 - `support/demo_control_polycopie2024.py`, version actuelle.
 - `context/Sujet-EI-EXT-2026.md`, version actuelle.
@@ -48,9 +58,15 @@ Je travaille sur ResoniCS, un projet d'optimisation acoustique par différences 
 ### Prompt à copier
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Le choix d’application est désormais le RER B. Prends le roulement de 250 à 2 000 Hz comme première plage proposée, puis considère traction et auxiliaires de 100 à 500 Hz et crissement de 1 500 à 4 000 Hz comme cas complémentaires. Ces plages viennent de SOTA.md, pas d’un spectre mesuré fourni. Fais valider le régime, la bande, le site ou la section-type, la vitesse si elle est connue, les dimensions, la source et les données de matériau. Calcule le pas nécessaire à la fréquence maximale réellement étudiée et résous les reliefs. La règle des détails de l’ordre de lambda/2 guide le choix d’un panneau fixe et ne conduit pas à redimensionner le panneau à chaque fréquence.
+
+Vérifie en particulier que la largeur physique, les reliefs et le pas permettent les fréquences retenues et que la source supérieure conserve la convention du support.
+
 À partir des fichiers joints et des valeurs proposées par Mathis, vérifie la compatibilité des dimensions et des bandes avec les différences finies. Ne modifie aucun fichier.
 Pour f en Hz, calcule k=2*pi*f/c et lambda=c/f. Vérifie h<=lambda_min/10 et la résolution des plus petits reliefs. Distingue la hauteur réelle du fluide de celle du tableau. Donne les subdivisions nécessaires aux niveaux 0, 1 et 2, avec N-1 multiple de 4**level et h=L/(N-1).
-Garde la même excitation supérieure pour les comparaisons. Énumère les valeurs à annoncer au groupe : bande route, bande rail, dimensions, célérité, pas, nombre de points et source. Si ces valeurs ne sont pas encore fournies, donne les relations à appliquer et les informations à obtenir, sans inventer de nombres physiques.
+Garde la même excitation supérieure pour les comparaisons. Énumère les valeurs à annoncer au groupe : régime de bruit RER B, bande retenue, dimensions, célérité, pas, nombre de points et source. Si ces valeurs ne sont pas encore fournies, donne les relations à appliquer et les informations à obtenir, sans inventer de nombres physiques.
 ```
 
 **Contrôle et transmission.** Transmettre à Mathis et Olympia les dimensions et résolutions compatibles avant la validation de lundi.
@@ -65,6 +81,7 @@ Garde la même excitation supérieure pour les comparaisons. Énumère les valeu
 
 ### Fichiers à joindre
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/processing.py`, version actuelle.
 - `support/_env.py`, version actuelle.
 - `context/Sujet-EI-EXT-2026.md`, version actuelle.
@@ -72,6 +89,12 @@ Garde la même excitation supérieure pour les comparaisons. Énumère les valeu
 ### Prompt à copier
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Étudie le même panneau destiné au RER B avec un côté réfléchissant puis ouvert, sans changer le bord source ni le budget. Les dimensions et le profil restent identiques entre ces deux scénarios. Relie la comparaison au confinement retenu dans le modèle et conserve séparément le scénario du tunnel réfléchissant utilisé pour classer les produits.
+
+Vérifie en particulier que la largeur physique, les reliefs et le pas permettent les fréquences retenues et que la source supérieure conserve la convention du support.
+
 Lis le solveur fourni sans modifier les fichiers. Vérifie comment une paroi latérale Neumann peut être remplacée par une Robin de Sommerfeld, avec la source Dirichlet en haut inchangée.
 Avec coefficients unitaires et second membre Robin nul, le support impose d_n u-alpha_code*u=0, donc une ouverture a alpha_code=+1j*k. Vérifie ce signe depuis l'assemblage et identifie les étiquettes et masques concernés. Les Robin d'ouverture seront exclues de la conception et du budget.
 Donne un protocole de comparaison à mêmes géométrie, source et matériau, ainsi que les traces nécessaires pour calculer un flux. Les zéros renvoyés au bord par solve_helmholtz ne sont pas ces traces. Transmets cette convention à Joachim pour son étude théorique selon la forme et l'identité énergétique. Ne conclus pas à une inégalité de pression intégrée valable à toute fréquence.
@@ -89,6 +112,7 @@ Donne un protocole de comparaison à mêmes géométrie, source et matériau, ai
 
 ### Fichiers à joindre
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/processing.py`, version actuelle.
 - `support/preprocessing.py`, version actuelle.
 - `context/Sujet-EI-EXT-2026.md`, version actuelle.
@@ -96,6 +120,12 @@ Donne un protocole de comparaison à mêmes géométrie, source et matériau, ai
 ### Prompt à copier
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Calcule la loi complexe sur les fréquences du scénario RER B retenu, en priorité la plage de roulement proposée. Les autres plages seront calculées seulement dans la validité de cette loi. Garde séparés la bande, les paramètres du matériau et leur provenance. La synthèse SOTA.md oriente les matériaux candidats et ne fournit pas à elle seule les paramètres d’une impédance complexe.
+
+Vérifie en particulier que la largeur physique, les reliefs et le pas permettent les fréquences retenues et que la source supérieure conserve la convention du support.
+
 Compare, sans modifier les fichiers, la loi complexe préparée par Mathis avec l'assemblage Robin du support. Convention temporelle exp(-i*omega_phys*t), normale sortante, Z_s=pression/vitesse_normale_sortante.
 Le coefficient physique de d_n u+alpha_phys*u=0 vaut -1j*omega_phys*rho_air/Z_s ; le support attend alpha_code=-alpha_phys. Sa variable historique omega reçoit k=omega_phys/c. Vérifie les dimensions et le signe par la relation de reconstruction u_B=u_I/(1-h*alpha_code) pour les coefficients unitaires.
 Liste les contrôles synthétiques et de passivité à faire avec Mathis. La constante 10-10j de la démonstration n'identifie aucun matériau. Transmets les incohérences éventuelles et les appels attendus, sans annoncer de performance réelle avant validation des données complexes.
@@ -113,6 +143,7 @@ Liste les contrôles synthétiques et de passivité à faire avec Mathis. La con
 
 **Fichiers à joindre avec le prompt :**
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/processing.py`, version complète actuelle, à modifier.
 - `support/_env.py`, `support/preprocessing.py` et `support/demo_control_polycopie2024.py`, en lecture seule.
 - `context/Sujet-EI-EXT-2026.md`.
@@ -120,6 +151,12 @@ Liste les contrôles synthétiques et de passivité à faire avec Mathis. La con
 **Prompt à copier :**
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+La dérivée doit rester celle du système discret réellement assemblé pour la source du scénario RER B. Vérifie les conjugaisons, le signe et les poids, plutôt que d’utiliser directement la formule indicative de placement du poreux écrite dans SOTA.md. Pour un coût pondéré en fréquence, la dérivée emploie exactement les poids fixés dans le coût.
+
+Vérifie en particulier que la largeur physique, les reliefs et le pas permettent les fréquences retenues et que la source supérieure conserve la convention du support.
+
 Modifie uniquement processing.py joint et renvoie le fichier complet, sans créer de nouveau module. Je veux réutiliser le solveur de Helmholtz fourni et donner sa matrice à un calcul adjoint.
 
 Ajoute assemble_helmholtz_system avec exactement les arguments de solve_helmholtz. Cette fonction reprend l'assemblage actuel, les conditions de Dirichlet, Neumann et Robin, dans le même ordre, puis retourne A au format CSR et b comme vecteur complexe aplati. Garde la matrice complète de taille M*N, avec les lignes identité déjà prévues hors intérieur. Conserve les équations et les coefficients du support. solve_helmholtz appelle ce helper et renvoie toujours le champ de forme (M,N), rempli uniquement à l'intérieur comme auparavant. Ne change pas ses arguments ni la convention d'aplatissement i*N+j.

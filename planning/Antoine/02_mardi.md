@@ -2,6 +2,8 @@
 
 Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une même tâche est partagée avec les autres membres indiqués dans le Gantt, et cette fiche décrit la contribution d’Antoine. On reprend toujours la dernière version des fichiers communs. Les modifications de la démonstration suivent Joachim, puis Antoine, puis Yann.
 
+**Cas d’usage RER B.** On utilise la synthèse de Mathis et Olympia dans [SOTA.md](../../SOTA.md). La première plage de travail proposée est le roulement de 250 à 2 000 Hz, puis on prévoit les cas traction et auxiliaires de 100 à 500 Hz et crissement de 1 500 à 4 000 Hz selon les données et les moyens de calcul. Ces plages sont des indications de la synthèse à documenter et à valider en J1.3. Les petits contrôles synthétiques du code restent indépendants de ces bandes.
+
 ## Compare the energy of the initial distribution of the porous material (this time the wall has not only absorbing parts but also reflective ones) with the energy for the fully absorbing wall.
 
 **Repère :** J2.3. **Rôle :** contributeur.
@@ -12,6 +14,7 @@ Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une m�
 
 **Fichiers à joindre :**
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - support/demo_control_polycopie2024.py et support/processing.py, versions actuelles en lecture seule
 - Les poids de longueur et le budget validé par le groupe, puis les quantités des murs entièrement recouverts
 - context/Sujet-EI-EXT-2026.md
@@ -19,6 +22,12 @@ Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une m�
 **Prompt à copier :**
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Pour le même scénario RER B, compare les états initial et entièrement recouvert en indiquant leurs quantités physiques, leur bande et leur source. Le calcul doit montrer les écarts réels et ne doit pas imposer le gain ou la division de matière annoncés comme perspective dans SOTA.md.
+
+Les fréquences d’optimisation proviennent des pics confirmés de la réponse du modèle pour le régime RER B choisi et chaque descente conserve sa source et son budget.
+
 À partir du budget et des poids fournis, prépare l’initialisation utilisée pour comparer la répartition partielle au mur entièrement recouvert. Propose de projeter la densité initiale du support avec project_density et donne la densité uniforme material_length_m/sum(design_weights) comme contrôle admissible. Vérifie bornes et budget avec les fonctions existantes, sans modifier ni créer de fichier.
 
 Annonce séparément la quantité de la distribution initiale et celle du mur entièrement recouvert. Leur comparaison est demandée par l’énoncé même si leurs quantités diffèrent ; elle ne suffit pas à établir un gain à matériau égal. Transmets à Yann la densité initiale et ses paramètres pour le calcul des courbes, puis à Olympia les quantités à faire figurer dans les légendes.
@@ -38,6 +47,7 @@ Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie le
 
 **Fichiers à joindre :**
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - support/demo_control_polycopie2024.py, dernière version complète, seule cible à modifier
 - support/_env.py, support/preprocessing.py, support/processing.py et support/postprocessing.py, versions actuelles en lecture seule
 - context/GAllaire-OptimParam.pdf, pages PDF 18–20 et 25–29
@@ -46,6 +56,12 @@ Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie le
 **Prompt à copier :**
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Choisis les fréquences problématiques parmi les pics confirmés de la réponse du panneau sur la bande RER B retenue, d’abord le roulement. Identifie le régime de bruit et la fréquence de chaque descente. Recalcule ensuite la réponse sur la bande pour vérifier qu’une baisse à ce pic ne dégrade pas excessivement les autres fréquences.
+
+Les fréquences d’optimisation proviennent des pics confirmés de la réponse du modèle pour le régime RER B choisi et chaque descente conserve sa source et son budget.
+
 Modifie uniquement your_optimization_procedure dans demo_control_polycopie2024.py et ajoute check_optimizer() non appelé automatiquement. Préserve toutes les fonctions de Joachim, project_density et le programme principal, qui sera branché par Yann ensuite. Ne crée aucun fichier.
 
 Nouvelle signature : your_optimization_procedure(chi0, evaluate, design_weights, material_length_m, mu=1.0, max_iter=100, feasibility_tol=1e-10, gradient_tol=1e-6, armijo=1e-4, reduction=0.5, increase=1.1, min_step=1e-12, max_backtracks=40).

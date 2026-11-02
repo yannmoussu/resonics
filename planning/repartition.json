@@ -22,7 +22,11 @@
         "role": "contributeur"
       }
     ],
-    "fichiers_cibles": []
+    "fichiers_cibles": [],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "La synthèse de l’état de l’art sur le RER B a déjà été réalisée par Mathis et Olympia dans SOTA.md. Exploite cette synthèse et complète sa vérification. Relie les affirmations chiffrées aux sources accessibles, distingue les réalisations sur le RER B des exemples sur d’autres lignes et compare les solutions aux inclusions poreuses envisagées. Les gains annoncés dans cette synthèse restent des points à vérifier et ne sont pas les résultats de ResoniCS.",
+    "etat": "Synthèse disponible par Mathis et Olympia ; vérification des sources et exploitation prévues."
   },
   {
     "id": "J1.2",
@@ -57,7 +61,10 @@
     "fichiers_cibles": [
       "support/postprocessing.py",
       "support/preprocessing.py"
-    ]
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Le modèle représente un panneau destiné au bruit du RER B dans le tunnel réfléchissant demandé par l’énoncé. Décris le domaine et ses dimensions physiques, le profil fourni et la source de Dirichlet supérieure. La paroi rigide et les côtés Neumann sont les hypothèses du modèle. Choisis un profil physique fixe pour les comparaisons en fréquence ; le motif orthogonal fourni reste celui effectivement calculé."
   },
   {
     "id": "J1.3",
@@ -89,7 +96,10 @@
         "role": "contributeur"
       }
     ],
-    "fichiers_cibles": []
+    "fichiers_cibles": [],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Le choix d’application est désormais le RER B. Prends le roulement de 250 à 2 000 Hz comme première plage proposée, puis considère traction et auxiliaires de 100 à 500 Hz et crissement de 1 500 à 4 000 Hz comme cas complémentaires. Ces plages viennent de SOTA.md, pas d’un spectre mesuré fourni. Fais valider le régime, la bande, le site ou la section-type, la vitesse si elle est connue, les dimensions, la source et les données de matériau. Calcule le pas nécessaire à la fréquence maximale réellement étudiée et résous les reliefs. La règle des détails de l’ordre de lambda/2 guide le choix d’un panneau fixe et ne conduit pas à redimensionner le panneau à chaque fréquence."
   },
   {
     "id": "J1.4",
@@ -106,7 +116,10 @@
         "role": "responsable"
       }
     ],
-    "fichiers_cibles": []
+    "fichiers_cibles": [],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Énonce les propriétés sous les hypothèses du panneau et de la source harmonique retenus pour le RER B. Distingue l’approximation réfléchissante Neumann de la description d’une paroi réelle. Les résultats de solvabilité et de dissipation doivent utiliser le coefficient complexe validé, et la plage étudiée doit rester dans la validité du modèle de matériau."
   },
   {
     "id": "J1.5",
@@ -133,7 +146,10 @@
     ],
     "fichiers_cibles": [
       "support/demo_control_polycopie2024.py"
-    ]
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Formule le coût du scénario RER B avec une quantité physique de poreux fixée. La source unitaire en haut donne d’abord une réponse fréquentielle de référence. Si aucun spectre mesuré n’est disponible, annonce des poids d’intégration de fréquence normalisés. Si un spectre mesuré est fourni, sa provenance et sa normalisation sont fixées avant la descente et la réponse à source unitaire est pondérée sans compter deux fois l’amplitude du bruit."
   },
   {
     "id": "J1.6",
@@ -158,7 +174,10 @@
         "role": "contributeur"
       }
     ],
-    "fichiers_cibles": []
+    "fichiers_cibles": [],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Étudie le même panneau destiné au RER B avec un côté réfléchissant puis ouvert, sans changer le bord source ni le budget. Les dimensions et le profil restent identiques entre ces deux scénarios. Relie la comparaison au confinement retenu dans le modèle et conserve séparément le scénario du tunnel réfléchissant utilisé pour classer les produits."
   },
   {
     "id": "J1.7",
@@ -183,7 +202,10 @@
         "role": "contributeur"
       }
     ],
-    "fichiers_cibles": []
+    "fichiers_cibles": [],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Le concept envisagé dans SOTA.md associe un panneau rigide et des cartouches poreuses amovibles. Examine la laine de roche et la fibre de chanvre seulement si leurs données complexes sont disponibles, puis fixe épaisseur, profondeur et quantité avec provenance. Une fraction illustrative telle que 40 % n’est pas un budget absolu commun entre des murs de longueurs différentes. Les contraintes d’entretien et d’encombrement sont des critères de choix à documenter."
   },
   {
     "id": "J1.8",
@@ -210,7 +232,10 @@
     ],
     "fichiers_cibles": [
       "support/preprocessing.py"
-    ]
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Calcule la loi complexe sur les fréquences du scénario RER B retenu, en priorité la plage de roulement proposée. Les autres plages seront calculées seulement dans la validité de cette loi. Garde séparés la bande, les paramètres du matériau et leur provenance. La synthèse SOTA.md oriente les matériaux candidats et ne fournit pas à elle seule les paramètres d’une impédance complexe."
   },
   {
     "id": "J1.9",
@@ -237,7 +262,10 @@
     ],
     "fichiers_cibles": [
       "support/processing.py"
-    ]
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "La dérivée doit rester celle du système discret réellement assemblé pour la source du scénario RER B. Vérifie les conjugaisons, le signe et les poids, plutôt que d’utiliser directement la formule indicative de placement du poreux écrite dans SOTA.md. Pour un coût pondéré en fréquence, la dérivée emploie exactement les poids fixés dans le coût."
   },
   {
     "id": "J1.10",
@@ -256,7 +284,10 @@
     ],
     "fichiers_cibles": [
       "support/demo_control_polycopie2024.py"
-    ]
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "La descente améliore une densité sur le panneau RER B à budget absolu fixé. Les coefficients du matériau, la source, le profil et les poids fréquentiels restent constants pendant une descente. Préserve les petits contrôles algorithmiques et distingue-les des futures performances acoustiques."
   },
   {
     "id": "J2.1",
@@ -292,7 +323,10 @@
       "support/demo_control_polycopie2024.py",
       "support/postprocessing.py",
       "support/preprocessing.py"
-    ]
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Calcule d’abord la référence du mur plan entièrement recouvert sur la plage de roulement proposée de 250 à 2 000 Hz après validation de ses paramètres. Les pics recherchés sont les pics de réponse du modèle ; ils ne constituent pas un spectre mesuré du RER B. Les cas complémentaires de traction ou de crissement sont identifiés séparément et utilisent leurs propres bandes validées."
   },
   {
     "id": "J2.2",
@@ -328,7 +362,10 @@
       "support/demo_control_polycopie2024.py",
       "support/postprocessing.py",
       "support/preprocessing.py"
-    ]
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Compare au plan les profils fournis entièrement recouverts pour le même régime de bruit RER B, avec mêmes source, bande et dimensions de référence annoncées. Chaque profil reste fixe pendant le parcours de sa bande. Affiche les longueurs et quantités de matériau de chaque mur."
   },
   {
     "id": "J2.3",
@@ -363,7 +400,10 @@
     "fichiers_cibles": [
       "support/demo_control_polycopie2024.py",
       "support/postprocessing.py"
-    ]
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Pour le même scénario RER B, compare les états initial et entièrement recouvert en indiquant leurs quantités physiques, leur bande et leur source. Le calcul doit montrer les écarts réels et ne doit pas imposer le gain ou la division de matière annoncés comme perspective dans SOTA.md."
   },
   {
     "id": "J2.4",
@@ -405,7 +445,10 @@
     "fichiers_cibles": [
       "support/demo_control_polycopie2024.py",
       "support/postprocessing.py"
-    ]
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Choisis les fréquences problématiques parmi les pics confirmés de la réponse du panneau sur la bande RER B retenue, d’abord le roulement. Identifie le régime de bruit et la fréquence de chaque descente. Recalcule ensuite la réponse sur la bande pour vérifier qu’une baisse à ce pic ne dégrade pas excessivement les autres fréquences."
   },
   {
     "id": "J3.1",
@@ -433,7 +476,10 @@
     "fichiers_cibles": [
       "support/demo_control_polycopie2024.py",
       "support/postprocessing.py"
-    ]
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Compare les solutions sur toute la bande de roulement retenue, avec des points de validation hors des fréquences de conception. Si les cas traction ou crissement sont calculés, présente leurs bandes et leurs sources séparément. Le critère de pression du modèle et ses réductions relatives sont annoncés avec leur référence ; les valeurs de SOTA.md en dB(A) ne sont pas des performances calculées du produit."
   },
   {
     "id": "J3.2",
@@ -475,7 +521,10 @@
     "fichiers_cibles": [
       "support/demo_control_polycopie2024.py",
       "support/postprocessing.py"
-    ]
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Optimise une distribution commune sur plusieurs fréquences de la bande RER B choisie. Sans spectre mesuré, utilise une quadrature fréquentielle normalisée explicitement annoncée. Avec un spectre de source disponible, documente les poids physiques et évite de pondérer à nouveau une amplitude déjà incluse dans la source. Les plages exploratoires se recouvrent ; leurs recouvrements ne doivent pas compter deux fois dans un coût de bande unique. Une conception couvrant plusieurs régimes est annoncée comme telle et conserve le même panneau et la même densité."
   },
   {
     "id": "J3.3",
@@ -518,7 +567,10 @@
       "support/demo_control_polycopie2024.py",
       "support/postprocessing.py",
       "support/preprocessing.py"
-    ]
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Étudie la quantité nécessaire aux cartouches poreuses du panneau RER B avec les mêmes bandes et sources entre candidats comparables. La réduction de matière doit résulter des calculs. Les divisions par deux ou trois et la fraction de 40 % citées comme perspectives dans SOTA.md ne sont pas des résultats imposés. Compare les performances et la quantité à épaisseur et profondeur annoncées."
   },
   {
     "id": "J4.1",
@@ -568,7 +620,10 @@
       "support/demo_control_polycopie2024.py",
       "support/postprocessing.py",
       "support/preprocessing.py"
-    ]
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Vérifie la robustesse du classement pour les régimes RER B effectivement calculés. Le maillage est dimensionné sur la fréquence maximale du cas comparé, y compris 4 000 Hz si le crissement est finalement inclus, et sur les reliefs. Recalcule la loi complexe et les poids du mur au raffinement, avec les mêmes dimensions et source. Les performances retenues restent celles du modèle de panneau et de sa bande validée."
   },
   {
     "id": "J4.2",
@@ -614,7 +669,10 @@
         "role": "contributeur"
       }
     ],
-    "fichiers_cibles": []
+    "fichiers_cibles": [],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Choisis le produit pour le cas d’usage RER B en reliant la bande et le régime visés, la forme du panneau, le matériau, la quantité et les performances réellement calculées. Examine le concept de cartouches amovibles de SOTA.md et documente les contraintes d’entretien et d’encombrement. Présente le compromis retenu et distingue les critères de calcul des hypothèses de réalisation."
   },
   {
     "id": "J5.1",
@@ -664,7 +722,10 @@
       "support/demo_control_polycopie2024.py",
       "support/postprocessing.py",
       "support/preprocessing.py"
-    ]
+    ],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Vérifie que les paramètres, exports et figures finaux indiquent RER B, le régime, la bande, la source, le matériau, la quantité et la provenance des données. Centre les textes de restitution sur le scénario RER B retenu. Conserve les titres officiels de l’énoncé et tous les contrôles numériques."
   },
   {
     "id": "J5.2",
@@ -710,7 +771,10 @@
         "role": "contributeur"
       }
     ],
-    "fichiers_cibles": []
+    "fichiers_cibles": [],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Présente le besoin RER B puis la chaîne qui mène du scénario choisi au panneau retenu. Attribue la synthèse d’état de l’art à Mathis et Olympia. Annonce les bandes effectivement calculées, la représentation de la source et les gains mesurés par le code, sans transformer les perspectives de SOTA.md en résultats obtenus. Garde vingt minutes d’exposé à cinq puis dix minutes de questions."
   },
   {
     "id": "J5.3",
@@ -756,6 +820,9 @@
         "role": "contributeur"
       }
     ],
-    "fichiers_cibles": []
+    "fichiers_cibles": [],
+    "application": "RER B",
+    "document_de_cadrage": "SOTA.md",
+    "declinaison": "Le rapport final porte sur le cas RER B. Il distingue les plages proposées dans SOTA.md des bandes finalement retenues, donne toutes les valeurs numériques utilisées et justifie la source et les poids fréquentiels. Les liens de l’état de l’art sont cités pour les affirmations qu’ils établissent. Les résultats de calcul, les quantités et le choix du panneau concordent avec les figures et le programme."
   }
 ]

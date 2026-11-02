@@ -2,6 +2,8 @@
 
 Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les développements techniques sont les étapes de ma contribution, dans les fichiers partagés. Chaque étape de code modifie uniquement son fichier cible.
 
+**Cas d’usage RER B.** On utilise la synthèse de Mathis et Olympia dans [SOTA.md](../../SOTA.md). La première plage de travail proposée est le roulement de 250 à 2 000 Hz, puis on prévoit les cas traction et auxiliaires de 100 à 500 Hz et crissement de 1 500 à 4 000 Hz selon les données et les moyens de calcul. Ces plages sont des indications de la synthèse à documenter et à valider en J1.3. Les petits contrôles synthétiques du code restent indépendants de ces bandes.
+
 ## Study the energy on the chosen plage of frequencies for a fully absorbent wall of the plane shape and to define the local maxima ;
 
 **Repère :** J2.1. **Rôle :** contributeur.
@@ -12,6 +14,7 @@ Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les dé
 
 ### Fichiers à joindre
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/demo_control_polycopie2024.py`, version actuelle.
 - `support/preprocessing.py`, version actuelle.
 - `support/processing.py`, version actuelle.
@@ -22,6 +25,12 @@ Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les dé
 ### Prompt à copier
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Calcule d’abord la référence du mur plan entièrement recouvert sur la plage de roulement proposée de 250 à 2 000 Hz après validation de ses paramètres. Les pics recherchés sont les pics de réponse du modèle ; ils ne constituent pas un spectre mesuré du RER B. Les cas complémentaires de traction ou de crissement sont identifiés séparément et utilisent leurs propres bandes validées.
+
+Dans les records déjà prévus, ajoute dans metadata application='RER B', noise_regime, frequency_band_hz, band_provenance, source_model et source_spectrum_provenance. Garde le même format de records et distingue les régimes pour les comparaisons.
+
 Modifie uniquement demo_control_polycopie2024.py joint et renvoie le fichier complet, sans créer de module. Les autres fichiers sont en lecture seule. Conserve les cellules imposées et toutes les fonctions validées des autres membres. Les commentaires sont des phrases françaises expliquant les étapes, sans notation mathématique. Ne lance aucune campagne à l'import et ne présente aucun résultat synthétique comme une performance physique.
 Regroupe les paramètres validés lundi dans une zone modifiable. Refuse une campagne physique si la loi complexe ou ses paramètres manquent. Conserve la source supérieure et les dimensions annoncées. Convertis les fréquences en k=2*pi*f/c et vérifie h<=c/(10*f_max), les coordonnées réelles et la résolution des reliefs. Utilise compute_material_response de preprocessing et get_design_faces qui retourne boundary_indices, face_rows, face_design et design_weights.
 Prépare pour Joachim assemble(chi) renvoyant A,b,cell_weights,face_rows,face_design,dA_diag. chi est le vecteur de densités aux boundary_indices. Réinjecte-le dans une grille nulle hors conception et forme alpha_rob=Alpha_code*chi. Appelle processing.assemble_helmholtz_system : A est complète de taille M*N, b est aplati et cell_weights vaut h*h à l'intérieur, zéro ailleurs. Les indices face_rows sont globaux aplatis, face_design indexe chi et les répétitions sont conservées. Pour coefficients unitaires et f_rob nul, dA_diag=h*Alpha_code/(1-h*Alpha_code*chi[face_design])**2, carré complexe. Vérifie ces hypothèses.
@@ -41,6 +50,7 @@ Transmets la courbe à Olympia, reprends ses intervalles de maxima candidats et 
 
 ### Fichiers à joindre
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/demo_control_polycopie2024.py`, version actuelle.
 - `support/preprocessing.py`, version actuelle.
 - `support/processing.py`, version actuelle.
@@ -51,6 +61,12 @@ Transmets la courbe à Olympia, reprends ses intervalles de maxima candidats et 
 ### Prompt à copier
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Compare au plan les profils fournis entièrement recouverts pour le même régime de bruit RER B, avec mêmes source, bande et dimensions de référence annoncées. Chaque profil reste fixe pendant le parcours de sa bande. Affiche les longueurs et quantités de matériau de chaque mur.
+
+Dans les records déjà prévus, ajoute dans metadata application='RER B', noise_regime, frequency_band_hz, band_provenance, source_model et source_spectrum_provenance. Garde le même format de records et distingue les régimes pour les comparaisons.
+
 Modifie uniquement demo_control_polycopie2024.py joint et renvoie le fichier complet, sans créer de module. Les autres fichiers sont en lecture seule. Conserve les cellules imposées et toutes les fonctions validées des autres membres. Les commentaires sont des phrases françaises expliquant les étapes, sans notation mathématique. Ne lance aucune campagne à l'import et ne présente aucun résultat synthétique comme une performance physique.
 Réutilise la chaîne intégrée pour les profils de niveaux 1 et 2 entièrement recouverts. Les niveaux changent la forme ; le pas doit résoudre la plus petite irrégularité et au moins dix points par longueur d'onde. Conserve la source et les dimensions de référence, puis annonce l'aire et la longueur du mur effectivement obtenues.
 À chaque géométrie, recalcule les masques, les contacts et les poids de longueur. Le matériau est celui validé par Mathis à chaque fréquence. Calcule les courbes sur la même bande que le plan, avec state='full' et la quantité réellement utilisée. Appelle les tracés d'Olympia et affine les fréquences autour de ses nouveaux pics candidats. Ne considère pas le recouvrement intégral comme une borne minimale assurée de l'énergie.
@@ -69,6 +85,7 @@ Conserve les données brutes, les paramètres et les résidus, puis transmets le
 
 ### Fichiers à joindre
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/demo_control_polycopie2024.py`, version actuelle.
 - `support/preprocessing.py`, version actuelle.
 - `support/processing.py`, version actuelle.
@@ -79,6 +96,12 @@ Conserve les données brutes, les paramètres et les résidus, puis transmets le
 ### Prompt à copier
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Pour le même scénario RER B, compare les états initial et entièrement recouvert en indiquant leurs quantités physiques, leur bande et leur source. Le calcul doit montrer les écarts réels et ne doit pas imposer le gain ou la division de matière annoncés comme perspective dans SOTA.md.
+
+Dans les records déjà prévus, ajoute dans metadata application='RER B', noise_regime, frequency_band_hz, band_provenance, source_model et source_spectrum_provenance. Garde le même format de records et distingue les régimes pour les comparaisons.
+
 Modifie uniquement demo_control_polycopie2024.py joint et renvoie le fichier complet, sans créer de module. Les autres fichiers sont en lecture seule. Conserve les cellules imposées et toutes les fonctions validées des autres membres. Les commentaires sont des phrases françaises expliquant les étapes, sans notation mathématique. Ne lance aucune campagne à l'import et ne présente aucun résultat synthétique comme une performance physique.
 Pour chaque profil déjà calculé, prépare une densité initiale admissible sur le mur de conception. Le budget material_length_m est une longueur absolue commune entre formes ; vérifie qu'il est inférieur à la longueur totale de tous les murs. Projette l'initialisation du support avec project_density d'Antoine et les poids get_design_faces.
 Recalcule les réponses sur la même bande, avec mêmes source, dimensions et matériau que les références. Utilise state='initial' et vérifie dot(design_weights,chi)=material_length_m, ainsi que les bornes. Conserve séparément les quantités des références state='full', généralement supérieures.
@@ -97,6 +120,7 @@ Transmets à Olympia les courbes et la répartition initiale. Les différences d
 
 ### Fichiers à joindre
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/demo_control_polycopie2024.py`, version actuelle.
 - `support/preprocessing.py`, version actuelle.
 - `support/processing.py`, version actuelle.
@@ -107,6 +131,12 @@ Transmets à Olympia les courbes et la répartition initiale. Les différences d
 ### Prompt à copier
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Choisis les fréquences problématiques parmi les pics confirmés de la réponse du panneau sur la bande RER B retenue, d’abord le roulement. Identifie le régime de bruit et la fréquence de chaque descente. Recalcule ensuite la réponse sur la bande pour vérifier qu’une baisse à ce pic ne dégrade pas excessivement les autres fréquences.
+
+Dans les records déjà prévus, ajoute dans metadata application='RER B', noise_regime, frequency_band_hz, band_provenance, source_model et source_spectrum_provenance. Garde le même format de records et distingue les régimes pour les comparaisons.
+
 Modifie uniquement demo_control_polycopie2024.py joint et renvoie le fichier complet, sans créer de module. Les autres fichiers sont en lecture seule. Conserve les cellules imposées et toutes les fonctions validées des autres membres. Les commentaires sont des phrases françaises expliquant les étapes, sans notation mathématique. Ne lance aucune campagne à l'import et ne présente aucun résultat synthétique comme une performance physique.
 Prends les versions validées par Joachim puis Antoine. evaluate_density(chi,assemble,with_gradient=True) renvoie value,gradient,u aplati,state_residual,adjoint_residual. L'optimiseur d'Antoine a la signature your_optimization_procedure(chi0,evaluate,design_weights,material_length_m,mu=1.0,max_iter=100,feasibility_tol=1e-10,gradient_tol=1e-6,armijo=1e-4,reduction=0.5,increase=1.1,min_step=1e-12,max_backtracks=40) et retourne un dictionnaire.
 Avant toute descente, vérifie avec Joachim une différence centrée du coût sur l'assembleur acoustique réel, à petite dimension et densité intérieure aux bornes. Le test synthétique seul ne vérifie pas ce raccordement. Choisis ensuite une ou plusieurs fréquences problématiques parmi les pics confirmés avec Olympia.

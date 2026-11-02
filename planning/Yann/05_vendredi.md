@@ -2,6 +2,8 @@
 
 Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les développements techniques sont les étapes de ma contribution, dans les fichiers partagés. Chaque étape de code modifie uniquement son fichier cible.
 
+**Cas d’usage RER B.** On utilise la synthèse de Mathis et Olympia dans [SOTA.md](../../SOTA.md). La première plage de travail proposée est le roulement de 250 à 2 000 Hz, puis on prévoit les cas traction et auxiliaires de 100 à 500 Hz et crissement de 1 500 à 4 000 Hz selon les données et les moyens de calcul. Ces plages sont des indications de la synthèse à documenter et à valider en J1.3. Les petits contrôles synthétiques du code restent indépendants de ces bandes.
+
 ## To finalize everything
 
 **Repère :** J5.1. **Rôle :** responsable.
@@ -12,6 +14,7 @@ Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les dé
 
 **Fichiers à joindre avec le prompt :**
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - La démonstration actuelle, seule cible à modifier si nécessaire.
 - Les quatre autres fichiers actuels de `support/`, en lecture seule.
 - Les paramètres et les résultats de référence validés jeudi, et le message d'erreur complet s'il y en a un.
@@ -19,6 +22,12 @@ Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les dé
 **Prompt à copier :**
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Vérifie que les paramètres, exports et figures finaux indiquent RER B, le régime, la bande, la source, le matériau, la quantité et la provenance des données. Centre les textes de restitution sur le scénario RER B retenu. Conserve les titres officiels de l’énoncé et tous les contrôles numériques.
+
+Les fichiers et commandes finaux permettent de retrouver les paramètres du scénario RER B retenu et ses résultats, avec les modules fournis complétés.
+
 Relis la démonstration ResoniCS jointe et vérifie son exécution avec les modules joints. Modifie uniquement demo_control_polycopie2024.py si une correction d'intégration est nécessaire. Ne crée aucun nouveau fichier Python et conserve les cellules imposées. Si l'erreur se trouve dans une dépendance, indique la fonction et le problème pour une tâche séparée de son responsable au lieu de modifier plusieurs fichiers.
 
 Vérifie les imports, les unités, les conversions de fréquence, les signatures actuelles, les dimensions, les masques, la source, le budget, les résidus et les historiques. Une exécution depuis support/ doit appeler seulement les fichiers existants et les bibliothèques prévues. Évite tout chemin absolu personnel. Vérifie qu'aucune variable fictive de l'ancien squelette n'est encore utilisée et que le cas affiché avant/après a réellement été recalculé.
@@ -38,6 +47,7 @@ Teste d'abord un cas court puis le cas final avec les paramètres validés. Donn
 
 **Fichiers à joindre avec le prompt :**
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `context/Sujet-EI-EXT-2026.md`.
 - La démonstration finale en lecture seule et les figures/tableaux de résultats retenus.
 - Les cinq synthèses approuvées et, lorsqu'ils existent, le rapport ou la présentation à relire. Pour une modification LaTeX ultérieure, joindre et traiter un seul fichier cible à la fois.
@@ -45,6 +55,12 @@ Teste d'abord un cas court puis le cas final avec les paramètres validés. Donn
 **Prompt à copier :**
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Présente le besoin RER B puis la chaîne qui mène du scénario choisi au panneau retenu. Attribue la synthèse d’état de l’art à Mathis et Olympia. Annonce les bandes effectivement calculées, la représentation de la source et les gains mesurés par le code, sans transformer les perspectives de SOTA.md en résultats obtenus. Garde vingt minutes d’exposé à cinq puis dix minutes de questions.
+
+Les fichiers et commandes finaux permettent de retrouver les paramètres du scénario RER B retenu et ses résultats, avec les modules fournis complétés.
+
 À partir de l'énoncé et des résultats joints, propose une synthèse textuelle de notre travail et un déroulé de soutenance de vingt minutes à cinq, suivi de dix minutes de questions. Ne crée et ne modifie aucun fichier dans cette tâche.
 
 Vérifie que le modèle, les propriétés sous les hypothèses annoncées, les bandes, le matériau complexe, le budget, l'étude ouverte/réfléchissante, le gradient, la descente et les validations sont expliqués. Vérifie les références entièrement absorbantes, les pics, l'optimisation monofréquence puis multifréquence, les quantités, le raffinement et le choix du produit.
@@ -64,12 +80,19 @@ Donne pour Yann une explication orale du modèle et des fonctions de calcul, une
 
 ### Fichiers à joindre
 
+- `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `context/Sujet-EI-EXT-2026.md`, version actuelle.
 - `support/demo_control_polycopie2024.py`, version actuelle.
 
 ### Prompt à copier
 
 ```text
+Le cas d’usage est le bruit du RER B. Utilise SOTA.md joint comme document d’orientation et les paramètres validés du scénario, en distinguant les données sourcées des hypothèses d’étude.
+
+Le rapport final porte sur le cas RER B. Il distingue les plages proposées dans SOTA.md des bandes finalement retenues, donne toutes les valeurs numériques utilisées et justifie la source et les poids fréquentiels. Les liens de l’état de l’art sont cités pour les affirmations qu’ils établissent. Les résultats de calcul, les quantités et le choix du panneau concordent avec les figures et le programme.
+
+Les fichiers et commandes finaux permettent de retrouver les paramètres du scénario RER B retenu et ses résultats, avec les modules fournis complétés.
+
 À partir de l'énoncé, du rapport actuel et des résultats validés joints, fais une relecture de finalisation dans ta réponse, sans créer de fichier et sans modifier de code.
 Vérifie que chaque tiret du sujet a une réponse, que toutes les valeurs utilisées sont annoncées et que les figures ont une interprétation appuyée sur leurs données. Vérifie les unités, les sources, les budgets, les conventions de Robin, l'étude selon la forme, l'optimisation et les contrôles. Conserve les formulations personnelles correctes et corrige les fautes de langue.
 Regroupe les remarques par partie et donne les corrections ponctuelles proposées pour que chaque membre valide sa contribution. La compilation et les modifications LaTeX ultérieures se font sur un seul fichier cible à la fois et reprennent le template du projet précédent. Si un fichier de rapport n'est pas joint, indique ce qui est nécessaire à la relecture, sans inventer son contenu.
