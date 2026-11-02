@@ -1,16 +1,16 @@
 # Yann — Mardi 3 novembre 2026
 
-**Objectif du jour 2.** Calculer les références demandées, repérer quelques pics et faire une première descente après vérification du gradient. On complète les fonctions prévues dans le support, avec des tableaux simples de fréquences et d’énergies.
+**Objectif du jour.** On compare les premières courbes puis on essaie la descente prévue par le sujet à une fréquence problématique.
 
-**Cas retenu.** Bruit de roulement du RER B. La plage 250–2 000 Hz vient de SOTA.md et reste à documenter. Pour le premier calcul, 500 Hz et c=340 m/s sont proposés ; ils sont à confirmer par le groupe. La source est imposée en haut. Les titres des tâches restent ceux de l’énoncé.
+**Cas de départ.** Bruit de roulement du RER B. Premier essai proposé à 500 Hz avec c=343 m/s. Les comparaisons utilisent une pression imposée unitaire avec la même phase sur le bord supérieur. La plage 250–2 000 Hz de SOTA.md reste indicative. Avec la grille actuelle, on commence sur 250–1 500 Hz avant d’élargir si nécessaire.
 
 ## Study the energy on the chosen plage of frequencies for a fully absorbent wall of the plane shape and to define the local maxima ;
 
 **Repère :** J2.1. **Rôle :** contributeur.
 
-**Ce qui est fait.** Calculer la première courbe de référence.
+**Ce qui est fait.** Calculer la courbe de référence du mur plan entièrement recouvert.
 
-**Fichier à modifier :** `support/demo_control_polycopie2024.py`, seulement pour les changements nécessaires.
+**Fichier à modifier :** `support/demo_control_polycopie2024.py`, pour les seuls changements nécessaires.
 
 ### Fichiers concernés
 
@@ -22,27 +22,33 @@
 - `support/postprocessing.py` — lecture seule.
 - `support/_env.py` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
+Utiliser aussi les paramètres et résultats déjà obtenus pour cette tâche.
+
+La note sur la source décrit le spectre hypothétique existant. Il reste facultatif pour les comparaisons.
 
 ### Contexte
 
 ```text
-Conserve intégralement les deux blocs marqués « Do not modify this cell, these are the values that you will be assessed against. », leurs lignes, commentaires et espaces en début de ligne. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Les modifications du lancement se font seulement dans les blocs « Fell free to modify the function call in this cell. », et les ajouts de fonctions se placent à côté des fonctions étudiantes. Les calculs supplémentaires se font après les blocs protégés, sans modifier leurs tableaux par effet de bord.
+Modifie seulement demo_control_polycopie2024.py. Conserve intégralement les deux blocs « Do not modify this cell, these are the values that you will be assessed against. », avec leurs lignes, commentaires et indentation. Garde l’appel de solve_helmholtz et les copies chi0 et u0. Complète les fonctions étudiantes et les blocs « Fell free to modify the function call in this cell. ». Les essais supplémentaires utilisent leurs propres tableaux après les blocs protégés. Conserve les signatures et les retours du support.
 
-Dans la dernière partie autorisée de la démonstration, ajoute une boucle simple sur les fréquences de la bande retenue. Pour chaque fréquence, calcule k=2*pi*f/c et le coefficient du matériau, appelle solve_helmholtz puis your_compute_objective_function. Pour cette référence, mets chi à un aux points Robin. Stocke seulement les fréquences et les énergies dans deux tableaux. Commence par un nombre modeste de fréquences, puis précise les pics avec Olympia. Vérifie h<=c/(10*f_max) et conserve la source. Les blocs protégés gardent leurs lignes et leur appel initial.
+1. Prépare un essai level=0 dans un bloc autorisé, puis mets chi à un sur le mur Robin. Conserve les tableaux du cas initial.
+2. Utilise une boucle simple sur 250 à 1 500 Hz, par exemple par pas de 50 Hz, avec c=343 m/s. Pour chaque fréquence, impose la même source Dirichlet unitaire, calcule k et le coefficient du matériau, puis appelle solve_helmholtz et your_compute_objective_function.
+3. Transmets les fréquences et les énergies à Olympia. La fonction run_rer_b_frequency_sweep existante utilise déjà les gaussiennes et reste un essai séparé, facultatif.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Réutilise les calculs présents. Ajoute seulement le calcul nécessaire à ces étapes. Les commentaires restent des phrases françaises. Aucun nouveau fichier Python.
 ```
 
-**Vérification et résultat à transmettre.** Les deux tableaux et la courbe du mur plan entièrement recouvert.
+**Interprétation physique.** La source unitaire montre les fréquences auxquelles le domaine amplifie le plus les oscillations. Les pics dépendent du domaine et du mur, sans pondération par un spectre inventé.
+
+**Résultat à transmettre.** Deux tableaux et une première courbe d’énergie sur la bande.
 
 ## Study the same question for different shapes of fully absorbent walls ;
 
 **Repère :** J2.2. **Rôle :** contributeur.
 
-**Ce qui est fait.** Réutiliser la même boucle avec les profils fournis.
+**Ce qui est fait.** Reprendre le même calcul avec un mur irrégulier fourni.
 
-**Fichier à modifier :** `support/demo_control_polycopie2024.py`, seulement pour les changements nécessaires.
+**Fichier à modifier :** `support/demo_control_polycopie2024.py`, pour les seuls changements nécessaires.
 
 ### Fichiers concernés
 
@@ -54,27 +60,31 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 - `support/postprocessing.py` — lecture seule.
 - `support/_env.py` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
+Utiliser aussi les paramètres et résultats déjà obtenus pour cette tâche.
 
 ### Contexte
 
 ```text
-Conserve intégralement les deux blocs marqués « Do not modify this cell, these are the values that you will be assessed against. », leurs lignes, commentaires et espaces en début de ligne. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Les modifications du lancement se font seulement dans les blocs « Fell free to modify the function call in this cell. », et les ajouts de fonctions se placent à côté des fonctions étudiantes. Les calculs supplémentaires se font après les blocs protégés, sans modifier leurs tableaux par effet de bord.
+Modifie seulement demo_control_polycopie2024.py. Conserve intégralement les deux blocs « Do not modify this cell, these are the values that you will be assessed against. », avec leurs lignes, commentaires et indentation. Garde l’appel de solve_helmholtz et les copies chi0 et u0. Complète les fonctions étudiantes et les blocs « Fell free to modify the function call in this cell. ». Les essais supplémentaires utilisent leurs propres tableaux après les blocs protégés. Conserve les signatures et les retours du support.
 
-Reprends la boucle de fréquences en changeant seulement level dans la préparation autorisée des essais. Compare le plan et un premier profil irrégulier ; ajoute le second si le temps de calcul le permet. Utilise le générateur existant, la même source et les mêmes paramètres physiques. Note les dimensions et la quantité totale de chaque référence. Les essais supplémentaires se font après les blocs protégés sur leurs propres tableaux.
+1. Reprends les paramètres de J2.1 et change seulement level pour le profil irrégulier fourni. Utilise le même solveur et le même matériau.
+2. Calcule les énergies aux mêmes fréquences avec la même source unitaire. Garde le recouvrement complet pour cette comparaison.
+3. Note les dimensions et la quantité de matériau de chaque mur, puis envoie les tableaux à Olympia. Un profil irrégulier suffit pour le premier résultat.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Réutilise les calculs présents. Ajoute seulement le calcul nécessaire à ces étapes. Les commentaires restent des phrases françaises. Aucun nouveau fichier Python.
 ```
 
-**Vérification et résultat à transmettre.** Des courbes identifiées par niveau, avec leurs paramètres et leurs quantités.
+**Interprétation physique.** Le relief peut déplacer les résonances et modifier les zones de forte pression. Un mur entièrement recouvert plus long contient aussi davantage de matériau, ce qui doit être indiqué.
+
+**Résultat à transmettre.** Les courbes du plan et du premier relief, avec leurs quantités.
 
 ## Compare the energy of the initial distribution of the porous material (this time the wall has not only absorbing parts but also reflective ones) with the energy for the fully absorbing wall.
 
 **Repère :** J2.3. **Rôle :** contributeur.
 
-**Ce qui est fait.** Calculer la courbe de la répartition initiale.
+**Ce qui est fait.** Comparer le recouvrement complet et la répartition initiale du matériau.
 
-**Fichier à modifier :** `support/demo_control_polycopie2024.py`, seulement pour les changements nécessaires.
+**Fichier à modifier :** `support/demo_control_polycopie2024.py`, pour les seuls changements nécessaires.
 
 ### Fichiers concernés
 
@@ -86,27 +96,31 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 - `support/postprocessing.py` — lecture seule.
 - `support/_env.py` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
+Utiliser aussi les paramètres et résultats déjà obtenus pour cette tâche.
 
 ### Contexte
 
 ```text
-Conserve intégralement les deux blocs marqués « Do not modify this cell, these are the values that you will be assessed against. », leurs lignes, commentaires et espaces en début de ligne. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Les modifications du lancement se font seulement dans les blocs « Fell free to modify the function call in this cell. », et les ajouts de fonctions se placent à côté des fonctions étudiantes. Les calculs supplémentaires se font après les blocs protégés, sans modifier leurs tableaux par effet de bord.
+Modifie seulement demo_control_polycopie2024.py. Conserve intégralement les deux blocs « Do not modify this cell, these are the values that you will be assessed against. », avec leurs lignes, commentaires et indentation. Garde l’appel de solve_helmholtz et les copies chi0 et u0. Complète les fonctions étudiantes et les blocs « Fell free to modify the function call in this cell. ». Les essais supplémentaires utilisent leurs propres tableaux après les blocs protégés. Conserve les signatures et les retours du support.
 
-Pour chaque forme étudiée, reprends chi créé par le support et calcule l’énergie sur la même bande que le recouvrement complet. Note V_obj et la quantité réellement représentée. Transmets les tableaux à Olympia. Ne remplace pas les copies protégées chi0 et u0 ; utilise des noms distincts pour les résultats des essais supplémentaires.
+1. Reprends une des formes calculées et la répartition chi créée par le support.
+2. Refais la même boucle de fréquences avec la source unitaire et le même matériau. Garde séparés les résultats du recouvrement complet et de cette répartition.
+3. Transmets les deux courbes et les quantités correspondantes à Olympia.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Réutilise les calculs présents. Ajoute seulement le calcul nécessaire à ces étapes. Les commentaires restent des phrases françaises. Aucun nouveau fichier Python.
 ```
 
-**Vérification et résultat à transmettre.** La courbe initiale et la courbe entièrement recouverte sont comparables.
+**Interprétation physique.** Cette comparaison montre l’effet du retrait d’une partie du matériau. Elle fournit le point de départ de la recherche d’une meilleure répartition à quantité fixée.
+
+**Résultat à transmettre.** Deux courbes comparables sur une même forme, avec la quantité dans chaque cas.
 
 ## Optimize numerically for one or several of the most problematic frequencies (at which there is a maximum of the energy) ;
 
 **Repère :** J2.4. **Rôle :** contributeur.
 
-**Ce qui est fait.** Lancer une première optimisation après les vérifications de la voie théorique.
+**Ce qui est fait.** Exécuter une première descente sur un pic identifié.
 
-**Fichier à modifier :** `support/demo_control_polycopie2024.py`, seulement pour les changements nécessaires.
+**Fichier à modifier :** `support/demo_control_polycopie2024.py`, pour les seuls changements nécessaires.
 
 ### Fichiers concernés
 
@@ -118,18 +132,22 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 - `support/postprocessing.py` — lecture seule.
 - `support/_env.py` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
+Utiliser aussi les paramètres et résultats déjà obtenus pour cette tâche.
 
 ### Contexte
 
 ```text
-Conserve intégralement les deux blocs marqués « Do not modify this cell, these are the values that you will be assessed against. », leurs lignes, commentaires et espaces en début de ligne. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Les modifications du lancement se font seulement dans les blocs « Fell free to modify the function call in this cell. », et les ajouts de fonctions se placent à côté des fonctions étudiantes. Les calculs supplémentaires se font après les blocs protégés, sans modifier leurs tableaux par effet de bord.
+Modifie seulement demo_control_polycopie2024.py. Conserve intégralement les deux blocs « Do not modify this cell, these are the values that you will be assessed against. », avec leurs lignes, commentaires et indentation. Garde l’appel de solve_helmholtz et les copies chi0 et u0. Complète les fonctions étudiantes et les blocs « Fell free to modify the function call in this cell. ». Les essais supplémentaires utilisent leurs propres tableaux après les blocs protégés. Conserve les signatures et les retours du support.
 
-Prends la version de la démonstration reçue de Joachim puis d’Antoine. Utilise l’appel de your_optimization_procedure prévu par le support, avec les arguments et le retour chi,energy,u,grad conservés. Choisis une fréquence parmi les pics confirmés. Avant la descente, vérifie avec Joachim le gradient par différences centrées sur une petite grille. Recalcule ensuite l’énergie finale, la quantité et le champ. Transmets le résultat et les valeurs de l’énergie à chaque itération à Olympia.
+1. Prends le fichier commun après les contributions de Joachim et d’Antoine. Conserve les arguments et le retour chi,energy,u,grad de your_optimization_procedure.
+2. Choisis une fréquence où la courbe présente un pic confirmé. Lance la descente après leur vérification simple de la dérivée.
+3. Recalcule le champ final et l’énergie, puis vérifie avec Antoine que la quantité de matériau est conservée. Donne les figures et l’historique calculé à Olympia.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Réutilise les calculs présents. Ajoute seulement le calcul nécessaire à ces étapes. Les commentaires restent des phrases françaises. Aucun nouveau fichier Python.
 ```
 
-**Vérification et résultat à transmettre.** Une baisse réellement calculée à une fréquence, avec quantité respectée et motif d’arrêt connu.
+**Interprétation physique.** On cherche à placer la même quantité de matériau aux endroits où elle réduit le mieux les oscillations à cette fréquence. Le résultat concerne d’abord ce seul pic.
 
-**Ordre des modifications du fichier commun.** Joachim publie ses calculs, Antoine complète la descente, puis Yann lance les essais. Chacun repart de la dernière version complète.
+**Résultat à transmettre.** Une carte avant/après, une baisse d’énergie calculée et une quantité conservée.
+
+**Fichier commun.** Joachim ajoute le calcul de dérivée, Antoine complète la descente, puis Yann lance les essais en repartant de la dernière version.

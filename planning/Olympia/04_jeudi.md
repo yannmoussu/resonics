@@ -1,16 +1,16 @@
 # Olympia — Jeudi 5 novembre 2026
 
-**Objectif du jour 4.** Vérifier les meilleurs résultats et choisir un produit. On limite les nouveaux essais à ceux qui peuvent changer la conclusion.
+**Objectif du jour.** On vérifie le résultat retenu et on choisit le panneau à présenter.
 
-**Cas retenu.** Bruit de roulement du RER B. La plage 250–2 000 Hz vient de SOTA.md et reste à documenter. Pour le premier calcul, 500 Hz et c=340 m/s sont proposés ; ils sont à confirmer par le groupe. La source est imposée en haut. Les titres des tâches restent ceux de l’énoncé.
+**Cas de départ.** Bruit de roulement du RER B. Premier essai proposé à 500 Hz avec c=343 m/s. Les comparaisons utilisent une pression imposée unitaire avec la même phase sur le bord supérieur. La plage 250–2 000 Hz de SOTA.md reste indicative. Avec la grille actuelle, on commence sur 250–1 500 Hz avant d’élargir si nécessaire.
 
 ## To continue the analysis of the performances ;
 
 **Repère :** J4.1. **Rôle :** responsable.
 
-**Ce qui est fait.** Vérifier que les conclusions résistent aux derniers calculs.
+**Ce qui est fait.** Sélectionner les figures qui soutiennent le choix final.
 
-**Fichier à modifier :** `support/postprocessing.py`, seulement pour les changements nécessaires.
+**Fichier à modifier :** `support/postprocessing.py`, pour les seuls changements nécessaires.
 
 ### Fichiers concernés
 
@@ -20,25 +20,29 @@
 - `support/demo_control_polycopie2024.py` — lecture seule.
 - `support/_env.py` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
+Utiliser aussi les paramètres et résultats déjà obtenus pour cette tâche.
 
 ### Contexte
 
 ```text
-Modifie seulement postprocessing.py pour les figures nécessaires. Les autres fichiers restent inchangés, notamment les deux blocs « Do not modify this cell » du programme principal. Conserve les noms et arguments déjà utilisés par les appels de tracé.
+Modifie seulement postprocessing.py pour les figures demandées. Conserve les noms et arguments utilisés par les appels existants. Les fonctions fournies, les autres fichiers et les blocs protégés du programme principal restent inchangés.
 
-Compare les courbes au pas initial et au pas plus fin, puis les quelques départs testés. Utilise les mêmes références et quantités. Sélectionne les figures qui changent ou confirment le choix du produit. Un tableau court et une courbe sont suffisants.
+1. Compare le résultat retenu à la référence et à la vérification sur grille plus fine transmise par Yann.
+2. Vérifie les mêmes source et quantité, puis note si les principaux pics restent comparables.
+3. Retiens les figures utiles à la décision et rassemble les valeurs décisives dans un tableau court.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Réutilise les calculs présents. Ajoute seulement le calcul nécessaire à ces étapes. Les commentaires restent des phrases françaises. Aucun nouveau fichier Python.
 ```
 
-**Vérification et résultat à transmettre.** Une comparaison claire des vérifications utiles au choix final.
+**Interprétation physique.** Un choix reste crédible si son avantage se retrouve lorsque l’on améliore la description numérique du même cas.
+
+**Résultat à transmettre.** Quelques figures cohérentes et un tableau de décision court.
 
 ## To conclude which product to produce/develop.
 
 **Repère :** J4.2. **Rôle :** responsable.
 
-**Ce qui est fait.** Contribuer au choix du panneau avec les courbes comparatives et le compromis performance/matériau.
+**Ce qui est fait.** Expliquer le compromis retenu par le groupe.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -47,16 +51,20 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 - `SOTA.md` — lecture seule.
 - `context/Sujet-EI-EXT-2026.md` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
+Utiliser aussi les paramètres et résultats déjà obtenus pour cette tâche.
 
 ### Contexte
 
 ```text
-Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
+Lis les fichiers concernés pour expliquer cette tâche et donne le résultat dans la réponse. Les programmes restent inchangés pour cette contribution.
 
-À partir des résultats fournis, propose une conclusion courte sur les courbes comparatives et le compromis performance/matériau. Le choix concerne un panneau pour le scénario RER B et la bande réellement calculés. Cite les valeurs décisives, les quantités et les formes comparées. Distingue les résultats obtenus des perspectives de SOTA.md. Fais valider la conclusion par le groupe sans inventer de performance manquante.
+1. Choisis la figure qui compare le mieux les formes et les quantités étudiées.
+2. Explique avec les valeurs obtenues pourquoi le panneau retenu paraît intéressant pour la bande calculée.
+3. Fais valider avec le groupe la forme, le matériau et la quantité annoncés.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Explique les grandeurs utilisées et appuie la conclusion sur les documents ou les résultats fournis.
 ```
 
-**Vérification et résultat à transmettre.** Une décision appuyée sur une figure et quelques valeurs vérifiables.
+**Interprétation physique.** Le produit proposé résulte d’un compromis entre la diminution des oscillations et la quantité de matériau, pour le scénario étudié.
+
+**Résultat à transmettre.** Une conclusion commune accompagnée d’une figure lisible.

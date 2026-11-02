@@ -1,14 +1,14 @@
 # Joachim — Mardi 3 novembre 2026
 
-**Objectif du jour 2.** Calculer les références demandées, repérer quelques pics et faire une première descente après vérification du gradient. On complète les fonctions prévues dans le support, avec des tableaux simples de fréquences et d’énergies.
+**Objectif du jour 2.** Lire les premières courbes, puis obtenir une première baisse d’énergie en déplaçant le matériau.
 
-**Cas retenu.** Bruit de roulement du RER B. La plage 250–2 000 Hz vient de SOTA.md et reste à documenter. Pour le premier calcul, 500 Hz et c=340 m/s sont proposés ; ils sont à confirmer par le groupe. La source est imposée en haut. Les titres des tâches restent ceux de l’énoncé.
+**Cas de départ.** RER B, source uniforme unitaire en haut et c=343 m/s. Le premier essai est proposé à 500 Hz. La bande 250–2 000 Hz vient de SOTA.md. Avec le maillage actuel, on commence au plus à 1 500 Hz et on vérifie les dix points par longueur d’onde. Les trois gaussiennes restent un essai de sensibilité facultatif.
 
 ## Optimize numerically for one or several of the most problematic frequencies (at which there is a maximum of the energy) ;
 
 **Repère :** J2.4. **Rôle :** contributeur.
 
-**Ce qui est fait.** Programmer et vérifier le calcul de l’adjoint et du gradient.
+**Ce qui est fait.** Calculer le gradient nécessaire à la première descente.
 
 **Fichier à modifier :** `support/demo_control_polycopie2024.py`, seulement pour les changements nécessaires.
 
@@ -24,18 +24,20 @@
 - `context/Poly-ST5-57-2026.pdf` — lecture seule.
 - `context/Dirichlet_Nonhomogene.pdf` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
-
 ### Contexte
 
 ```text
-Conserve intégralement les deux blocs marqués « Do not modify this cell, these are the values that you will be assessed against. », leurs lignes, commentaires et espaces en début de ligne. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Les modifications du lancement se font seulement dans les blocs « Fell free to modify the function call in this cell. », et les ajouts de fonctions se placent à côté des fonctions étudiantes. Les calculs supplémentaires se font après les blocs protégés, sans modifier leurs tableaux par effet de bord.
+Modifie seulement demo_control_polycopie2024.py. Conserve intégralement les deux blocs « Do not modify this cell, these are the values that you will be assessed against. », leurs commentaires et leur indentation. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Complète les fonctions étudiantes et les blocs « Fell free to modify the function call in this cell. ». Les fonctions fournies restent inchangées et les ajouts restent dans ce seul fichier.
 
-Ajoute seulement le calcul nécessaire à l’adjoint dans la démonstration, à côté des fonctions étudiantes. Réutilise les fonctions compute_stiffness_matrix, compute_mass_matrix et celles des conditions aux limites de processing.py sans modifier ce fichier. Construis le même système A U=b que le solveur fourni. Pour J=h**2*sum(abs(u)**2) à l’intérieur, l’adjoint discret peut s’écrire A.conj().T P=2*W*U avec W=h**2 aux points intérieurs et zéro ailleurs. Pour chaque voisinage intérieur/Robin, additionne à la dérivée correspondante -Re(conj(P[row])*dA_diag*U[row]) avec dA_diag=h*Alpha/(1-h*Alpha*chi_b)**2 pour les coefficients unitaires et f_rob nul. Vérifie ces hypothèses et le carré complexe. Les points peuvent être parcourus avec les quatre voisins du code existant, sans tableaux de correspondance supplémentaires. Compare le gradient à (J(chi+t*d)-J(chi-t*d))/(2*t) pour plusieurs petits t. Donne à Antoine une fonction simple renvoyant coût, champ et gradient. Conserve la signature de la fonction d’objectif fournie.
+1. Ajoute dans la démonstration le calcul de l’adjoint décrit lundi. Reprends les appels d’assemblage de processing.py pour obtenir exactement le système A U=b du solveur fourni, sans modifier ses fonctions. U est le champ rangé dans un vecteur. Pour le critère J=U.conj().T W U, W vaut h² aux points intérieurs et zéro ailleurs.
+2. Résous A.conj().T P=2*W*U : P est l’adjoint discret et conj().T désigne la transposée conjuguée. Avec la source fixée et f_rob nul, une variation de chi modifie A et la dérivée vaut -Re(P.conj().T A_prime U). Déduis A_prime de la formule Robin réellement assemblée. Pour les coefficients unitaires du support, le terme diagonal h*Alpha*chi/(1-h*Alpha*chi) a pour dérivée h*Alpha/(1-h*Alpha*chi)**2. Additionne les contributions des voisins intérieurs de chaque point Robin.
+3. Vérifie une seule direction de variation d sur une petite grille : compare la somme grad*d à (J(chi+t*d)-J(chi-t*d))/(2*t), pour deux petites valeurs de t. Utilise une chi permettant les perturbations. Explique les valeurs obtenues, puis transmets le calcul de coût, champ et gradient à Antoine.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Utilise la version reçue du fichier commun et les résultats réellement calculés. Explique chaque grandeur et chaque étape. Les commentaires du code sont des phrases françaises sans équations.
 ```
 
-**Vérification et résultat à transmettre.** Le gradient est validé sur un petit cas, puis sur le système acoustique réel avant la descente.
+**Interprétation physique.** Le gradient relie une modification locale du matériau à la variation de l’énergie totale. Le petit essai confirme le sens de variation avant de lancer une descente.
 
-**Ordre des modifications du fichier commun.** Joachim publie ses calculs, Antoine complète la descente, puis Yann lance les essais. Chacun repart de la dernière version complète.
+**Vérification et résultat à transmettre.** Un gradient compris et vérifié sur un exemple, prêt pour la descente du même jour.
+
+**Fichier commun.** Joachim transmet son calcul à Antoine, qui complète la descente, puis Yann lance les essais. Chacun utilise la dernière version reçue.

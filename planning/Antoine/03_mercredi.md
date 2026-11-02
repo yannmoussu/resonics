@@ -1,14 +1,14 @@
 # Antoine — Mercredi 4 novembre 2026
 
-**Objectif du jour 3.** Réutiliser les premiers calculs pour une optimisation sur plusieurs fréquences et quelques quantités de matériau. Les ajouts servent uniquement aux comparaisons nécessaires.
+**Objectif du jour 3.** Réutiliser la descente pour plusieurs fréquences et quelques quantités de matériau.
 
-**Cas retenu.** Bruit de roulement du RER B. La plage 250–2 000 Hz vient de SOTA.md et reste à documenter. Pour le premier calcul, 500 Hz et c=340 m/s sont proposés ; ils sont à confirmer par le groupe. La source est imposée en haut. Les titres des tâches restent ceux de l’énoncé.
+**Cas de départ.** RER B, source uniforme unitaire en haut et c=343 m/s. Le premier essai est proposé à 500 Hz. La bande 250–2 000 Hz vient de SOTA.md. Avec le maillage actuel, on commence au plus à 1 500 Hz et on vérifie les dix points par longueur d’onde. Les trois gaussiennes restent un essai de sensibilité facultatif.
 
 ## to optimize the energy at once at several different frequencies ;
 
 **Repère :** J3.2. **Rôle :** responsable.
 
-**Ce qui est fait.** Réutiliser la descente pour le coût de bande.
+**Ce qui est fait.** Appliquer la même descente au coût de plusieurs fréquences.
 
 **Fichier à modifier :** `support/demo_control_polycopie2024.py`, seulement pour les changements nécessaires.
 
@@ -23,25 +23,27 @@
 - `support/_env.py` — lecture seule.
 - `context/Poly-ST5-57-2026.pdf` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
-
 ### Contexte
 
 ```text
-Conserve intégralement les deux blocs marqués « Do not modify this cell, these are the values that you will be assessed against. », leurs lignes, commentaires et espaces en début de ligne. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Les modifications du lancement se font seulement dans les blocs « Fell free to modify the function call in this cell. », et les ajouts de fonctions se placent à côté des fonctions étudiantes. Les calculs supplémentaires se font après les blocs protégés, sans modifier leurs tableaux par effet de bord.
+Modifie seulement demo_control_polycopie2024.py. Conserve intégralement les deux blocs « Do not modify this cell, these are the values that you will be assessed against. », leurs commentaires et leur indentation. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Complète les fonctions étudiantes et les blocs « Fell free to modify the function call in this cell. ». Les fonctions fournies restent inchangées et les ajouts restent dans ce seul fichier.
 
-Garde la projection et la recherche du pas déjà vérifiées. À l’endroit où coût et gradient sont évalués, utilise maintenant la somme préparée par Joachim. Ajoute seulement les arguments de fréquence nécessaires et indique à Yann comment les passer. Vérifie les bornes, la quantité et le coût final recalculé. La densité reste commune à toutes les fréquences.
+1. Reprends la descente de mardi et le coût total préparé par Joachim. Utilise une seule répartition chi pour toutes les fréquences.
+2. Remplace le coût et le gradient d’une fréquence par les sommes correspondantes. Garde les mêmes étapes de projection et de réduction du pas. Les fréquences et leurs poids restent fixes pendant ce calcul.
+3. Garde la liste d’arguments et le retour initial de your_optimization_procedure. Si une liste de fréquences est nécessaire, ajoute seulement un argument facultatif en fin de liste, avec une valeur par défaut qui conserve le cas de mardi. Donne à Yann un exemple d’appel et vérifie le coût final.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Utilise la version reçue du fichier commun et les résultats réellement calculés. Explique chaque grandeur et chaque étape. Les commentaires du code sont des phrases françaises sans équations.
 ```
 
-**Vérification et résultat à transmettre.** La descente existante optimise le coût total sans deuxième algorithme.
+**Interprétation physique.** Une même zone poreuse doit maintenant agir sur plusieurs pics, ce qui peut donner un placement différent de celui obtenu pour un seul pic.
+
+**Vérification et résultat à transmettre.** La descente réutilisée et un placement commun, avec les fréquences et les poids indiqués.
 
 ## to study which quantity of the porous material gives the most optimal result ;
 
 **Repère :** J3.3. **Rôle :** contributeur.
 
-**Ce qui est fait.** Adapter la contrainte lorsque la quantité physique doit être conservée.
+**Ce qui est fait.** Expliquer la contrainte de quantité pour les essais du groupe.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -54,18 +56,20 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 - `support/preprocessing.py` — lecture seule.
 - `context/Poly-ST5-57-2026.pdf` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
-
 ### Contexte
 
 ```text
-Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
+Les fichiers concernés sont en lecture seule. Fournis une explication pour le travail commun.
 
-Avec les longueurs représentées par les points ou segments du mur, écris la contrainte sum(w*chi)=L_abs. Explique pourquoi V_obj seul ne garantit pas une quantité identique entre profils. Pour une projection avec le produit scalaire habituel, utilise clip(z-lambda*w,0,1) et trouve lambda par dichotomie. Vérifie la quantité et les bornes. Cette extension est introduite maintenant parce que la comparaison physique entre profils en a besoin ; elle n’était pas un prérequis du premier calcul.
+1. Avec Mathis et Yann, associe aux points Robin la longueur de mur qu’ils représentent. Écris la quantité absorbante L_abs=sum(w*chi), où w contient ces longueurs.
+2. Pour chaque quantité testée, explique la projection correspondante : à partir de la proposition z, on prend clip(z-lambda*w,0,1). Le nombre lambda est choisi par dichotomie pour retrouver L_abs. Quand tous les poids sont identiques, on retrouve le décalage de mardi.
+3. Vérifie un exemple chiffré avec les longueurs du mur et transmets les étapes à Yann. Compare des quantités physiques identiques entre formes, avec l’épaisseur et la profondeur annoncées par Mathis.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Utilise la version reçue du fichier commun et les résultats réellement calculés. Explique chaque grandeur et chaque étape. Les commentaires du code sont des phrases françaises sans équations.
 ```
 
-**Vérification et résultat à transmettre.** Une projection vérifiée pour les quantités physiques comparées par Yann.
+**Interprétation physique.** Cette mesure permet de distinguer l’effet d’une forme de l’effet d’une quantité plus grande de matériau.
 
-**Ordre des modifications du fichier commun.** Joachim publie ses calculs, Antoine complète la descente, puis Yann lance les essais. Chacun repart de la dernière version complète.
+**Vérification et résultat à transmettre.** Une contrainte de quantité expliquée et un exemple utilisable pour les essais de Yann.
+
+**Fichier commun.** Joachim transmet son calcul à Antoine, qui complète la descente, puis Yann lance les essais. Chacun utilise la dernière version reçue.

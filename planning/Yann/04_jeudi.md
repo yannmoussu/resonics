@@ -1,16 +1,16 @@
 # Yann — Jeudi 5 novembre 2026
 
-**Objectif du jour 4.** Vérifier les meilleurs résultats et choisir un produit. On limite les nouveaux essais à ceux qui peuvent changer la conclusion.
+**Objectif du jour.** On vérifie le résultat retenu et on choisit le panneau à présenter.
 
-**Cas retenu.** Bruit de roulement du RER B. La plage 250–2 000 Hz vient de SOTA.md et reste à documenter. Pour le premier calcul, 500 Hz et c=340 m/s sont proposés ; ils sont à confirmer par le groupe. La source est imposée en haut. Les titres des tâches restent ceux de l’énoncé.
+**Cas de départ.** Bruit de roulement du RER B. Premier essai proposé à 500 Hz avec c=343 m/s. Les comparaisons utilisent une pression imposée unitaire avec la même phase sur le bord supérieur. La plage 250–2 000 Hz de SOTA.md reste indicative. Avec la grille actuelle, on commence sur 250–1 500 Hz avant d’élargir si nécessaire.
 
 ## To continue the analysis of the performances ;
 
 **Repère :** J4.1. **Rôle :** contributeur.
 
-**Ce qui est fait.** Faire quelques vérifications décisives sur les meilleurs cas.
+**Ce qui est fait.** Vérifier simplement le résultat qui guidera le choix du produit.
 
-**Fichier à modifier :** `support/demo_control_polycopie2024.py`, seulement pour les changements nécessaires.
+**Fichier à modifier :** `support/demo_control_polycopie2024.py`, pour les seuls changements nécessaires.
 
 ### Fichiers concernés
 
@@ -22,25 +22,29 @@
 - `support/postprocessing.py` — lecture seule.
 - `support/_env.py` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
+Utiliser aussi les paramètres et résultats déjà obtenus pour cette tâche.
 
 ### Contexte
 
 ```text
-Conserve intégralement les deux blocs marqués « Do not modify this cell, these are the values that you will be assessed against. », leurs lignes, commentaires et espaces en début de ligne. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Les modifications du lancement se font seulement dans les blocs « Fell free to modify the function call in this cell. », et les ajouts de fonctions se placent à côté des fonctions étudiantes. Les calculs supplémentaires se font après les blocs protégés, sans modifier leurs tableaux par effet de bord.
+Modifie seulement demo_control_polycopie2024.py. Conserve intégralement les deux blocs « Do not modify this cell, these are the values that you will be assessed against. », avec leurs lignes, commentaires et indentation. Garde l’appel de solve_helmholtz et les copies chi0 et u0. Complète les fonctions étudiantes et les blocs « Fell free to modify the function call in this cell. ». Les essais supplémentaires utilisent leurs propres tableaux après les blocs protégés. Conserve les signatures et les retours du support.
 
-Recalcule les meilleurs cas avec un pas plus petit, le même niveau géométrique et les mêmes dimensions de référence. Annonce les dimensions discrètes réellement obtenues et les éventuels arrondis du contour. Vérifie les fréquences entre les points d’optimisation. Reprends deux ou trois répartitions de départ si le temps le permet. Réutilise les boucles existantes et conserve les paramètres permettant de refaire le calcul.
+1. Recalcule le meilleur cas et sa référence sur une grille un peu plus fine en conservant la forme et les dimensions visées.
+2. Compare les courbes, les quantités et la position des principaux pics. Utilise quelques fréquences supplémentaires près des pics si nécessaire.
+3. Explique les écarts à Olympia. Si le temps le permet, refais une seule recherche avec une autre répartition initiale pour voir si le choix reste semblable.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Réutilise les calculs présents. Ajoute seulement le calcul nécessaire à ces étapes. Les commentaires restent des phrases françaises. Aucun nouveau fichier Python.
 ```
 
-**Vérification et résultat à transmettre.** Le classement des meilleurs cas est vérifié sans multiplier inutilement les essais.
+**Interprétation physique.** La comparaison sert à vérifier que le gain observé ne vient pas principalement d’une grille trop grossière. Une deuxième répartition de départ peut montrer la dépendance à l’essai initial.
+
+**Résultat à transmettre.** Une comparaison courte qui confirme le choix ou indique son incertitude.
 
 ## To conclude which product to produce/develop.
 
 **Repère :** J4.2. **Rôle :** contributeur.
 
-**Ce qui est fait.** Contribuer au choix du panneau avec les calculs reproductibles et les dimensions du panneau.
+**Ce qui est fait.** Proposer une forme de panneau à partir des calculs effectués.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -52,18 +56,20 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 - `support/processing.py` — lecture seule.
 - `support/preprocessing.py` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
+Utiliser aussi les paramètres et résultats déjà obtenus pour cette tâche.
 
 ### Contexte
 
 ```text
-Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
+Lis les fichiers concernés pour expliquer cette tâche et donne le résultat dans la réponse. Les programmes restent inchangés pour cette contribution.
 
-À partir des résultats fournis, propose une conclusion courte sur les calculs reproductibles et les dimensions du panneau. Le choix concerne un panneau pour le scénario RER B et la bande réellement calculés. Cite les valeurs décisives, les quantités et les formes comparées. Distingue les résultats obtenus des perspectives de SOTA.md. Fais valider la conclusion par le groupe sans inventer de performance manquante.
+1. Rassemble la forme, les dimensions, la quantité et les courbes du cas retenu.
+2. Explique au groupe pourquoi ce cas paraît préférable dans la bande étudiée. Donne les deux ou trois valeurs qui soutiennent le choix.
+3. Annonce la source unitaire utilisée et les hypothèses encore non mesurées pour le RER B.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Explique les grandeurs utilisées et appuie la conclusion sur les documents ou les résultats fournis.
 ```
 
-**Vérification et résultat à transmettre.** Une décision appuyée sur une figure et quelques valeurs vérifiables.
+**Interprétation physique.** Le panneau retenu répond au scénario calculé. La conclusion repose sur les courbes comparatives et la quantité de matériau nécessaires pour obtenir ce résultat.
 
-**Ordre des modifications du fichier commun.** Joachim publie ses calculs, Antoine complète la descente, puis Yann lance les essais. Chacun repart de la dernière version complète.
+**Résultat à transmettre.** Une proposition de panneau compréhensible et appuyée sur les résultats.

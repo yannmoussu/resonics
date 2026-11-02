@@ -1,18 +1,18 @@
 # Yann — Lundi 2 novembre 2026
 
-**Objectif du jour 1.** Obtenir un premier calcul compréhensible avec le code fourni : un cas RER B, ses paramètres, une figure du champ initial et son énergie. Le groupe présente aussi les choix physiques et les formules demandées. La descente et l’adjoint seront programmés mardi. Aucune nouvelle organisation générale du code n’est à construire lundi.
+**Objectif du jour.** On obtient un premier champ et son énergie avec le code fourni. Chacun apporte une explication ou un petit calcul nécessaire au résultat du groupe.
 
-**Cas retenu.** Bruit de roulement du RER B. La plage 250–2 000 Hz vient de SOTA.md et reste à documenter. Pour le premier calcul, 500 Hz et c=340 m/s sont proposés ; ils sont à confirmer par le groupe. La source est imposée en haut. Les titres des tâches restent ceux de l’énoncé.
+**Cas de départ.** Bruit de roulement du RER B. Premier essai proposé à 500 Hz avec c=343 m/s. Les comparaisons utilisent une pression imposée unitaire avec la même phase sur le bord supérieur. La plage 250–2 000 Hz de SOTA.md reste indicative. Avec la grille actuelle, on commence sur 250–1 500 Hz avant d’élargir si nécessaire.
 
-**Résultat attendu avant le point quotidien.** Une liste de paramètres, une figure initiale, une valeur d’énergie et les explications de chaque membre. Le coefficient d’exemple du code reste identifié comme tel tant que le matériau n’est pas validé.
+**À montrer lundi.** Les paramètres, un champ initial, sa valeur d’énergie et les explications du groupe. Les formules demandées sont étudiées lundi, puis utilisées quand la descente est programmée mardi.
 
 ## the model to consider,
 
 **Repère :** J1.2. **Rôle :** responsable.
 
-**Ce qui est fait.** Décrire le modèle et lancer un premier calcul avec le programme fourni.
+**Ce qui est fait.** Obtenir une première carte de pression avec le programme fourni.
 
-**Fichier à modifier :** `support/demo_control_polycopie2024.py`, seulement pour les changements nécessaires.
+**Fichier à modifier :** `support/demo_control_polycopie2024.py`, pour les seuls changements nécessaires.
 
 ### Fichiers concernés
 
@@ -28,20 +28,24 @@
 ### Contexte
 
 ```text
-Conserve intégralement les deux blocs marqués « Do not modify this cell, these are the values that you will be assessed against. », leurs lignes, commentaires et espaces en début de ligne. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Les modifications du lancement se font seulement dans les blocs « Fell free to modify the function call in this cell. », et les ajouts de fonctions se placent à côté des fonctions étudiantes. Les calculs supplémentaires se font après les blocs protégés, sans modifier leurs tableaux par effet de bord.
+Modifie seulement demo_control_polycopie2024.py. Conserve intégralement les deux blocs « Do not modify this cell, these are the values that you will be assessed against. », avec leurs lignes, commentaires et indentation. Garde l’appel de solve_helmholtz et les copies chi0 et u0. Complète les fonctions étudiantes et les blocs « Fell free to modify the function call in this cell. ». Les essais supplémentaires utilisent leurs propres tableaux après les blocs protégés. Conserve les signatures et les retours du support.
 
-Utilise directement _set_geometry_of_domain et solve_helmholtz tels qu’ils sont fournis. Explique le domaine, la source de Dirichlet en haut, les côtés réfléchissants Neumann et le mur Robin. Garde une seule géométrie pour ce premier essai. Le réglage actuel level=1 peut être conservé ; level=0 sert de référence plane si nécessaire. Dans les blocs autorisés, renseigne une fréquence d’essai et la célérité, puis calcule wavenumber=2*pi*frequency_hz/c. La proposition de départ est 500 Hz et c=340 m/s, valeur utilisée dans le polycopié, à confirmer dans le tableau de paramètres. Garde N et M du support si le pas respecte h<=c/(10*frequency_hz). Relève les dimensions effectivement représentées. Lance le fichier et conserve une figure du champ initial. Le calcul d’énergie sera fourni par Joachim. Aucun nouveau générateur, aucune nouvelle méthode de rangement des données et aucune préparation de l’adjoint ne sont demandés ici.
+1. Garde la géométrie actuelle level=1. Repère le bord supérieur excité, les côtés réfléchissants et le mur inférieur Robin.
+2. Choisis 500 Hz pour ce premier essai avec c=343 m/s, puis calcule wavenumber=2*pi*500/343. Garde une pression imposée égale à un, avec la même phase, sur le bord supérieur Dirichlet.
+3. Lance solve_helmholtz par le programme existant. Affiche le module abs(u0) avec myimshow déjà fournie dans postprocessing.py, puis l’énergie donnée par la fonction complétée par Joachim. Présente cette carte comme le champ initial. Note les paramètres à côté de la figure.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Réutilise les calculs présents. Ajoute seulement le calcul nécessaire à ces étapes. Les commentaires restent des phrases françaises. Aucun nouveau fichier Python.
 ```
 
-**Vérification et résultat à transmettre.** Un schéma ou une figure du domaine, les paramètres de l’essai et une figure du champ initial.
+**Interprétation physique.** Les zones où le module de la pression est élevé indiquent où les oscillations sont les plus fortes. Un premier champ suffit pour comprendre le modèle avant de chercher à améliorer le mur.
+
+**Résultat à transmettre.** Une figure du champ initial, une valeur d’énergie et la liste des paramètres utilisés.
 
 ## the plage of frequencies of the interest, dimensions, noise sources ;
 
 **Repère :** J1.3. **Rôle :** contributeur.
 
-**Ce qui est fait.** Vérifier que le premier essai est compatible avec la grille.
+**Ce qui est fait.** Vérifier que la grille représente correctement la fréquence choisie.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -56,20 +60,24 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 ### Contexte
 
 ```text
-Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
+Lis les fichiers concernés pour expliquer cette tâche et donne le résultat dans la réponse. Les programmes restent inchangés pour cette contribution.
 
-Avec les choix proposés par Mathis, calcule k=2*pi*f/c et lambda=c/f. Vérifie le pas h du programme et la règle d’au moins dix points par longueur d’onde. Sépare la fréquence unique du premier essai et la bande qui sera étudiée mardi. Note N, M, h, level, les dimensions du domaine, la fréquence et la source. Lis les coordonnées produites par le code et signale un écart éventuel entre dimensions prévues et dimensions représentées. Garde la discrétisation et le générateur fournis.
+1. Calcule lambda=c/f pour 500 Hz et c=343 m/s. Compare cette longueur au pas h du support.
+2. Vérifie lambda/h>=10, comme demandé dans l’énoncé. Avec N=50 et h=0,02 m, la règle est respectée à 500 Hz.
+3. Relève N, M, h, level et les dimensions effectivement obtenues dans les coordonnées. Transmets ce petit tableau à Mathis et Olympia.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Explique les grandeurs utilisées et appuie la conclusion sur les documents ou les résultats fournis.
 ```
 
-**Vérification et résultat à transmettre.** Le tableau de paramètres indique les unités et montre que la résolution du premier essai convient.
+**Interprétation physique.** Une onde doit être décrite par plusieurs points de grille pour que sa propagation soit correctement approchée. Les dimensions sont celles du domaine calculé.
+
+**Résultat à transmettre.** Un petit tableau avec les unités et le nombre de points par longueur d’onde.
 
 ## Theoretical study : considering that one boundary is open-air (the wave go through without coming back) derive the energy over the form and compare the result with the analogous result with a reflexive boundary[^1].
 
 **Repère :** J1.6. **Rôle :** contributeur.
 
-**Ce qui est fait.** Relier les conditions aux limites du code à l’étude théorique de Joachim.
+**Ce qui est fait.** Donner à Joachim les conditions aux limites utilisées dans le programme.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -84,20 +92,24 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 ### Contexte
 
 ```text
-Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
+Lis les fichiers concernés pour expliquer cette tâche et donne le résultat dans la réponse. Les programmes restent inchangés pour cette contribution.
 
-Lis les conditions Neumann et Robin dans processing.py et explique à Joachim quelle paroi réfléchissante pourrait devenir ouverte. Conserve la source supérieure. Vérifie la convention de signe employée par compute_robin_condition avant de traduire la condition de Sommerfeld. Donne cette correspondance dans ta réponse. Le lundi, cette contribution est une analyse du modèle et ne demande pas de programmer un deuxième cas.
+1. Repère les côtés Neumann, le bord Dirichlet et le mur Robin dans le domaine fourni.
+2. Lis compute_robin_condition et relève son signe. Aide Joachim à traduire la condition ouverte de l’énoncé avec cette convention.
+3. Explique sur un schéma quelle paroi latérale serait ouverte dans son étude. La source supérieure reste la même.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Explique les grandeurs utilisées et appuie la conclusion sur les documents ou les résultats fournis.
 ```
 
-**Vérification et résultat à transmettre.** Joachim dispose des conventions du code pour son étude ouverte/réfléchissante.
+**Interprétation physique.** Une paroi rigide réfléchit l’onde. Une condition ouverte représente au contraire un départ d’onde hors du domaine et introduit un flux sortant.
+
+**Résultat à transmettre.** Le schéma des frontières et les conventions nécessaires à l’étude théorique.
 
 ## find numerically the corresponding complex coefficient(s) $\alpha(\omega)$ for the porous matherial(s) ; to compare the performances if several ;
 
 **Repère :** J1.8. **Rôle :** contributeur.
 
-**Ce qui est fait.** Vérifier les unités et le signe du coefficient calculé par Mathis.
+**Ce qui est fait.** Relier le coefficient calculé par Mathis au coefficient attendu par le solveur.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -112,22 +124,24 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 ### Contexte
 
 ```text
-Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
+Lis les fichiers concernés pour expliquer cette tâche et donne le résultat dans la réponse. Les programmes restent inchangés pour cette contribution.
 
-Compare le coefficient physique obtenu par Mathis à la condition Robin réellement assemblée par processing.py. Vérifie les unités et les arguments reçus par solve_helmholtz. Distingue le nombre d’onde k, la pulsation et la fréquence en hertz. La valeur Alpha=10-10j du fichier initial est un coefficient d’exemple ; elle peut vérifier le fonctionnement du programme mais ne suffit pas à représenter un matériau choisi pour le RER B. Une fois la correspondance validée, Yann pourra modifier Alpha dans le bloc autorisé.
+1. Lis la définition du coefficient donnée par Mathis et repère son unité ainsi que la fréquence utilisée.
+2. Compare sa condition Robin à celle de compute_robin_condition. Avec les coefficients unitaires et f_rob nul, le support donne u_B=u_I/(1-h*Alpha), soit d_n u-Alpha*u=0. Une définition physique d_n u+alpha*u=0 conduit alors à Alpha=-alpha.
+3. Transmets la valeur à utiliser dans le bloc autorisé. Garde Alpha=10-10j identifié comme coefficient d’exemple jusqu’à ce que le calcul du matériau soit disponible.
 
-Pour les coefficients unitaires et f_rob nul, le code utilise u_B=u_I/(1-h*Alpha), donc la condition d_n u-Alpha*u=0. Si le coefficient physique est défini par d_n u+alpha*u=0, on utilise Alpha=-alpha après vérification des unités.
-
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Explique les grandeurs utilisées et appuie la conclusion sur les documents ou les résultats fournis.
 ```
 
-**Vérification et résultat à transmettre.** Une valeur de coefficient a une origine et une convention de signe annoncées.
+**Interprétation physique.** Le signe et la partie complexe du coefficient décrivent l’échange avec le mur. Une erreur de convention peut transformer un effet absorbant attendu en un résultat non physique.
+
+**Résultat à transmettre.** Une valeur de coefficient avec sa fréquence, son origine et la convention du code.
 
 ## find energy derivative over the distribution of the porous inclusions ;
 
 **Repère :** J1.9. **Rôle :** contributeur.
 
-**Ce qui est fait.** Comprendre les données nécessaires au futur calcul du gradient.
+**Ce qui est fait.** Comprendre où la répartition de matériau intervient dans le système.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -142,15 +156,19 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 ### Contexte
 
 ```text
-Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
+Lis les fichiers concernés pour expliquer cette tâche et donne le résultat dans la réponse. Les programmes restent inchangés pour cette contribution.
 
-Avec Joachim, repère où chi intervient dans alpha_rob=Alpha*chi et comment compute_robin_condition utilise cette valeur. Écris la dépendance à conserver pour le gradient de mardi. Lis seulement les fonctions existantes. Lundi, on ne crée ni fonction d’assemblage supplémentaire ni tableau de correspondance des points du mur.
+1. Repère la ligne alpha_rob=Alpha*chi et son utilisation dans compute_robin_condition.
+2. Avec Joachim, compare verbalement chi=0 et chi=1 sur un point du mur. Note quelle entrée du système dépend de cette valeur.
+3. Donne-lui cette information pour sa dérivée. Le calcul du gradient sera ajouté seulement au moment de la descente.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Explique les grandeurs utilisées et appuie la conclusion sur les documents ou les résultats fournis.
 ```
 
-**Vérification et résultat à transmettre.** Joachim connaît la dépendance du système à chi ; aucun travail supplémentaire de préparation du code n’est requis.
+**Interprétation physique.** Faire varier chi modifie le comportement local du mur et, par propagation, le champ de pression dans tout le domaine.
+
+**Résultat à transmettre.** L’endroit du code concerné et une explication du rôle de chi.
 
 [^1]: To model the open-air type of boundaries, it is convient to consider the Sommerfeld radiation condition of the form $\frac{\partial v}{\partial n} - ik\operatorname{Tr}v = 0$ with the notation $u(x,t) = e^{-ikt}v(x)$ for the propagative wave.
 
-**Ordre des modifications du fichier commun.** Joachim complète le coût, puis Yann ajoute les paramètres et l’affichage du premier résultat. Antoine prépare la méthode dans le texte.
+**Fichier commun.** Joachim complète le coût, puis Yann ajoute les paramètres et l’affichage du premier résultat. Antoine prépare la méthode dans le texte.

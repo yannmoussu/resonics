@@ -27,9 +27,9 @@
     "fichiers_cibles": [],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Présenter en quelques points l’état de l’art déjà disponible.",
+    "declinaison": "Réutiliser la synthèse disponible pour expliquer le besoin et les solutions existantes.",
     "etat": "Synthèse disponible par Mathis et Olympia ; vérification des sources et exploitation prévues.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés.",
     "livrable_jour1": "Une synthèse courte et sourcée, sans refaire un dossier complet."
   },
   {
@@ -70,8 +70,8 @@
     ],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Décrire le modèle et lancer un premier calcul avec le programme fourni.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche.",
+    "declinaison": "Lancer un premier cas et expliquer le domaine, la source et les conditions aux limites.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés.",
     "livrable_jour1": "Un schéma ou une figure du domaine, les paramètres de l’essai et une figure du champ initial."
   },
   {
@@ -110,9 +110,9 @@
     "fichiers_cibles": [],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Choisir un premier cas simple de bruit du RER B.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche.",
-    "livrable_jour1": "Un seul scénario, une fréquence d’essai et une source sont choisis pour le premier jour."
+    "declinaison": "Choisir une fréquence et une bande pour le RER B, puis vérifier le pas de grille.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés.",
+    "livrable_jour1": "500 Hz proposé pour le premier essai, c=343 m/s et bande calculée annoncée."
   },
   {
     "id": "J1.4",
@@ -133,8 +133,8 @@
     "fichiers_cibles": [],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Énoncer les propriétés du modèle utiles au premier jour.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche.",
+    "declinaison": "Expliquer les propriétés de la solution avec les hypothèses du cours.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés.",
     "livrable_jour1": "Les propriétés annoncées ont leurs hypothèses et leur référence dans le cours."
   },
   {
@@ -167,8 +167,8 @@
     ],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Formuler le problème à quantité de matériau fixée.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche.",
+    "declinaison": "Écrire ce que l’on cherche à diminuer et calculer l’énergie du premier champ.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés.",
     "livrable_jour1": "Le critère, les bornes de chi et la quantité imposée sont écrits et compris par le groupe."
   },
   {
@@ -199,8 +199,8 @@
     "fichiers_cibles": [],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Faire l’étude ouverte/réfléchissante demandée par le sujet.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche.",
+    "declinaison": "Comparer sur papier une paroi ouverte et une paroi réfléchissante avec un bilan d’énergie.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés.",
     "livrable_jour1": "Une analyse théorique concise répondant au tiret du sujet, avec ses hypothèses et références."
   },
   {
@@ -231,8 +231,8 @@
     "fichiers_cibles": [],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Retenir un matériau documenté et annoncer sa quantité.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche.",
+    "declinaison": "Choisir un matériau documenté et annoncer la quantité représentée.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés.",
     "livrable_jour1": "Un matériau de référence et une quantité clairement définie, sans étude comparative étendue dès lundi."
   },
   {
@@ -266,7 +266,7 @@
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
     "declinaison": "Calculer le coefficient du matériau à la fréquence du premier essai.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés.",
     "livrable_jour1": "Une valeur calculée et justifiée pour le premier essai, ou la liste précise des données qui empêchent ce calcul."
   },
   {
@@ -297,8 +297,8 @@
     "fichiers_cibles": [],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Établir la formule du gradient avant de la programmer.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche.",
+    "declinaison": "Expliquer comment une petite modification de la répartition change l’énergie.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés.",
     "livrable_jour1": "Une formule expliquée et un algorithme de calcul, prêts à être utilisés le lendemain."
   },
   {
@@ -320,9 +320,9 @@
     "fichiers_cibles": [],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Présenter la descente projetée sans la programmer dès lundi.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche.",
-    "livrable_jour1": "Un algorithme écrit et un exemple de projection, sans bibliothèque d’optimisation à construire lundi."
+    "declinaison": "Expliquer une étape de descente et la conservation de la quantité avec un exemple.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés.",
+    "livrable_jour1": "Une étape de descente expliquée avec un exemple à deux valeurs et quantité conservée."
   },
   {
     "id": "J2.1",
@@ -364,8 +364,8 @@
     ],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Tracer énergie et fréquences pour le mur plan.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche."
+    "declinaison": "Tracer l’énergie du mur plan entièrement recouvert en fonction de la fréquence.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés."
   },
   {
     "id": "J2.2",
@@ -407,8 +407,8 @@
     ],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Comparer les références entièrement recouvertes.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche."
+    "declinaison": "Refaire la courbe pour un contour irrégulier fourni et comparer les pics.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés."
   },
   {
     "id": "J2.3",
@@ -449,8 +449,8 @@
     ],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Comparer répartition initiale et recouvrement complet.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche."
+    "declinaison": "Comparer une répartition partielle et le recouvrement complet sur la même forme.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés."
   },
   {
     "id": "J2.4",
@@ -499,8 +499,8 @@
     ],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Compléter la descente dans la fonction prévue par le professeur.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche."
+    "declinaison": "Améliorer une répartition à une fréquence après avoir vérifié la direction de descente.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés."
   },
   {
     "id": "J3.1",
@@ -533,8 +533,8 @@
     ],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Comparer les réponses sur la bande.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche."
+    "declinaison": "Regarder l’effet de la répartition obtenue sur les autres fréquences de la bande.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés."
   },
   {
     "id": "J3.2",
@@ -583,8 +583,8 @@
     ],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Réutiliser la descente pour le coût de bande.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche."
+    "declinaison": "Chercher une seule répartition qui améliore plusieurs fréquences ensemble.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés."
   },
   {
     "id": "J3.3",
@@ -634,8 +634,8 @@
     ],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Exprimer les quantités en longueur ou volume de matériau.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche."
+    "declinaison": "Comparer quelques quantités de matériau avec les mêmes conditions de calcul.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés."
   },
   {
     "id": "J4.1",
@@ -693,8 +693,8 @@
     ],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Vérifier que les conclusions résistent aux derniers calculs.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche."
+    "declinaison": "Confirmer le résultat retenu par une vérification ciblée et expliquer les écarts.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés."
   },
   {
     "id": "J4.2",
@@ -748,8 +748,8 @@
     "fichiers_cibles": [],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Contribuer au choix du panneau avec les courbes comparatives et le compromis performance/matériau.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche."
+    "declinaison": "Choisir un panneau en reliant les courbes, la quantité utilisée et l’application RER B.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés."
   },
   {
     "id": "J5.1",
@@ -807,8 +807,8 @@
     ],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Vérifier la partie concernant les calculs reproductibles et les dimensions du panneau.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche."
+    "declinaison": "Relancer le cas retenu et rassembler les résultats réellement obtenus.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés."
   },
   {
     "id": "J5.2",
@@ -862,8 +862,8 @@
     "fichiers_cibles": [],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Préparer une intervention courte et répéter avec le groupe.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche."
+    "declinaison": "Préparer un exposé où chaque membre explique ses calculs et leur sens physique.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés."
   },
   {
     "id": "J5.3",
@@ -917,7 +917,7 @@
     "fichiers_cibles": [],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",
-    "declinaison": "Finaliser les paragraphes de sa partie du rapport.",
-    "contraintes_code": "Un fichier existant par modification ; blocs Do not modify et solveur fournis conservés ; ajouts limités au besoin de la tâche."
+    "declinaison": "Finaliser le rapport avec les paramètres, les figures et leur interprétation.",
+    "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés."
   }
 ]

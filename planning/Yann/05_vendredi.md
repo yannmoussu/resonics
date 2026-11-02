@@ -1,16 +1,16 @@
 # Yann — Vendredi 6 novembre 2026
 
-**Objectif du jour 5.** Finaliser les résultats et les documents, puis répéter l’exposé à cinq. Les corrections restent ciblées.
+**Objectif du jour.** On termine le rapport et on prépare ensemble la soutenance à partir des résultats obtenus.
 
-**Cas retenu.** Bruit de roulement du RER B. La plage 250–2 000 Hz vient de SOTA.md et reste à documenter. Pour le premier calcul, 500 Hz et c=340 m/s sont proposés ; ils sont à confirmer par le groupe. La source est imposée en haut. Les titres des tâches restent ceux de l’énoncé.
+**Cas de départ.** Bruit de roulement du RER B. Premier essai proposé à 500 Hz avec c=343 m/s. Les comparaisons utilisent une pression imposée unitaire avec la même phase sur le bord supérieur. La plage 250–2 000 Hz de SOTA.md reste indicative. Avec la grille actuelle, on commence sur 250–1 500 Hz avant d’élargir si nécessaire.
 
 ## To finalize everything
 
 **Repère :** J5.1. **Rôle :** responsable.
 
-**Ce qui est fait.** Vérifier la partie concernant les calculs reproductibles et les dimensions du panneau.
+**Ce qui est fait.** Terminer les corrections nécessaires sur sa contribution.
 
-**Fichier à modifier :** `support/demo_control_polycopie2024.py`, seulement pour les changements nécessaires.
+**Fichier à modifier :** `support/demo_control_polycopie2024.py`, pour les seuls changements nécessaires.
 
 ### Fichiers concernés
 
@@ -22,25 +22,29 @@
 - `support/postprocessing.py` — lecture seule.
 - `support/_env.py` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
+Utiliser aussi les paramètres et résultats déjà obtenus pour cette tâche.
 
 ### Contexte
 
 ```text
-Conserve intégralement les deux blocs marqués « Do not modify this cell, these are the values that you will be assessed against. », leurs lignes, commentaires et espaces en début de ligne. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Les modifications du lancement se font seulement dans les blocs « Fell free to modify the function call in this cell. », et les ajouts de fonctions se placent à côté des fonctions étudiantes. Les calculs supplémentaires se font après les blocs protégés, sans modifier leurs tableaux par effet de bord.
+Modifie seulement demo_control_polycopie2024.py. Conserve intégralement les deux blocs « Do not modify this cell, these are the values that you will be assessed against. », avec leurs lignes, commentaires et indentation. Garde l’appel de solve_helmholtz et les copies chi0 et u0. Complète les fonctions étudiantes et les blocs « Fell free to modify the function call in this cell. ». Les essais supplémentaires utilisent leurs propres tableaux après les blocs protégés. Conserve les signatures et les retours du support.
 
-Relis les fonctions et résultats de ta partie, puis refais les petits contrôles déjà prévus. Limite les corrections aux erreurs identifiées dans le seul fichier cible. Si l’erreur se trouve ailleurs, transmets-la à la personne concernée. Vérifie les unités, les paramètres et les figures conservées. Ne crée pas de nouveaux outils de vérification à ce stade.
+1. Relis le fichier principal et les résultats utilisés dans le document final.
+2. Refais un calcul déjà réalisé et vérifie les paramètres, les unités et les noms de figures.
+3. Corrige seulement les erreurs trouvées dans le fichier attribué. Signale les corrections nécessaires ailleurs à la personne concernée.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Réutilise les calculs présents. Ajoute seulement le calcul nécessaire à ces étapes. Les commentaires restent des phrases françaises. Aucun nouveau fichier Python.
 ```
 
-**Vérification et résultat à transmettre.** Chaque membre donne son accord ou une courte liste de corrections nécessaires.
+**Interprétation physique.** Le résultat présenté doit correspondre aux paramètres et aux hypothèses réellement utilisés.
+
+**Résultat à transmettre.** Une contribution relue et un exemple qui s’exécute.
 
 ## Preparation of the defense
 
 **Repère :** J5.2. **Rôle :** responsable.
 
-**Ce qui est fait.** Préparer une intervention courte et répéter avec le groupe.
+**Ce qui est fait.** Préparer son explication pour la soutenance.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -52,25 +56,29 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 - `support/processing.py` — lecture seule.
 - `support/preprocessing.py` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
+Utiliser aussi les paramètres et résultats déjà obtenus pour cette tâche.
 
 ### Contexte
 
 ```text
-Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
+Lis les fichiers concernés pour expliquer cette tâche et donne le résultat dans la réponse. Les programmes restent inchangés pour cette contribution.
 
-Prépare une explication orale de les calculs reproductibles et les dimensions du panneau, en utilisant les figures retenues. Explique le problème, ce qui a été calculé et ce que l’on observe. Donne un exemple simple si nécessaire. La soutenance dure vingt minutes à cinq, puis dix minutes de questions. Fournis le texte dans la réponse pour les documents communs, sans nouveau fichier.
+1. Prépare une explication orale sur le modèle, les dimensions et les calculs, en t’appuyant sur une figure retenue.
+2. Explique ce qui a été calculé, ce que l’on observe et ce que l’on en conclut. Ajoute un exemple simple pour une notion difficile.
+3. Répète avec le groupe pour tenir vingt minutes à cinq, puis prépare les dix minutes de questions.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Explique les grandeurs utilisées et appuie la conclusion sur les documents ou les résultats fournis.
 ```
 
-**Vérification et résultat à transmettre.** Une intervention compréhensible qui tient dans la durée collective.
+**Interprétation physique.** La figure doit permettre de relier le calcul numérique au comportement acoustique que l’on cherche à améliorer.
+
+**Résultat à transmettre.** Un texte oral court fourni dans la réponse pour les documents communs.
 
 ## Finalization of the rapport by the team.
 
 **Repère :** J5.3. **Rôle :** responsable.
 
-**Ce qui est fait.** Finaliser les paragraphes de sa partie du rapport.
+**Ce qui est fait.** Fournir le texte final de sa contribution.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -82,18 +90,20 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 - `support/processing.py` — lecture seule.
 - `support/preprocessing.py` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
+Utiliser aussi les paramètres et résultats déjà obtenus pour cette tâche.
 
 ### Contexte
 
 ```text
-Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
+Lis les fichiers concernés pour expliquer cette tâche et donne le résultat dans la réponse. Les programmes restent inchangés pour cette contribution.
 
-Prépare le texte final sur les calculs reproductibles et les dimensions du panneau avec les paramètres, unités et références utilisés. Relie les résultats aux figures et donne les valeurs réellement calculées. Garde le modèle LaTeX du projet précédent. Transmets le texte à Yann puis approuve son intégration. La relecture et les éventuelles corrections du rapport sont faites sur un seul fichier à la fois.
+1. Rédige le passage sur le modèle, les dimensions et les calculs avec les figures, les paramètres et les références utilisés.
+2. Écris une courte interprétation au-dessous de chaque résultat et annonce clairement les hypothèses.
+3. Transmets le texte à Yann pour le document commun au format LaTeX, puis relis son intégration.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Explique les grandeurs utilisées et appuie la conclusion sur les documents ou les résultats fournis.
 ```
 
-**Vérification et résultat à transmettre.** Texte, chiffres, figures et code racontent le même résultat.
+**Interprétation physique.** Le rapport explique les résultats calculés et le raisonnement qui conduit au choix du panneau.
 
-**Ordre des modifications du fichier commun.** Joachim publie ses calculs, Antoine complète la descente, puis Yann lance les essais. Chacun repart de la dernière version complète.
+**Résultat à transmettre.** Le texte et les légendes prêts à intégrer dans le modèle LaTeX précédent.

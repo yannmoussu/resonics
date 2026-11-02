@@ -1,16 +1,16 @@
 # Mathis — Mardi 3 novembre 2026
 
-**Objectif du jour 2.** Calculer les références demandées, repérer quelques pics et faire une première descente après vérification du gradient. On complète les fonctions prévues dans le support, avec des tableaux simples de fréquences et d’énergies.
+**Objectif du jour.** On compare les premières courbes puis on essaie la descente prévue par le sujet à une fréquence problématique.
 
-**Cas retenu.** Bruit de roulement du RER B. La plage 250–2 000 Hz vient de SOTA.md et reste à documenter. Pour le premier calcul, 500 Hz et c=340 m/s sont proposés ; ils sont à confirmer par le groupe. La source est imposée en haut. Les titres des tâches restent ceux de l’énoncé.
+**Cas de départ.** Bruit de roulement du RER B. Premier essai proposé à 500 Hz avec c=343 m/s. Les comparaisons utilisent une pression imposée unitaire avec la même phase sur le bord supérieur. La plage 250–2 000 Hz de SOTA.md reste indicative. Avec la grille actuelle, on commence sur 250–1 500 Hz avant d’élargir si nécessaire.
 
 ## Study the energy on the chosen plage of frequencies for a fully absorbent wall of the plane shape and to define the local maxima ;
 
 **Repère :** J2.1. **Rôle :** contributeur.
 
-**Ce qui est fait.** Fournir un coefficient valide sur la bande de référence.
+**Ce qui est fait.** Fournir le coefficient du même matériau pour les fréquences étudiées.
 
-**Fichier à modifier :** `support/preprocessing.py`, seulement pour les changements nécessaires.
+**Fichier à modifier :** `support/preprocessing.py`, pour les seuls changements nécessaires.
 
 ### Fichiers concernés
 
@@ -22,27 +22,31 @@
 - `support/_env.py` — lecture seule.
 - `context/Poly-ST5-57-2026.pdf` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
+Utiliser aussi les paramètres et résultats déjà obtenus pour cette tâche.
 
 ### Contexte
 
 ```text
-Modifie seulement preprocessing.py en ajoutant ou corrigeant la fonction du projet demandée. Garde inchangées les fonctions initialement fournies, notamment _set_coefficients_of_pde, _set_rhs_of_pde et _set_geometry_of_domain. Les blocs protégés du programme principal et les autres fichiers restent inchangés.
+Modifie seulement preprocessing.py pour le calcul demandé. Garde inchangées les fonctions initialement fournies, notamment _set_coefficients_of_pde, _set_rhs_of_pde et _set_geometry_of_domain. Les autres fichiers et les blocs protégés du programme principal restent inchangés.
 
-Complète la fonction de calcul du coefficient pour les fréquences réellement utilisées. Vérifie sa dépendance à la fréquence, ses unités et le signe avec Yann. Un cas simple d’onde arrivant perpendiculairement au mur permet de vérifier que le matériau ne fournit pas d’énergie. Donne les limites de validité. Ne multiplie pas les matériaux à ce stade.
+1. Reprends le calcul de la veille pour les fréquences choisies avec Yann.
+2. Trace ou liste brièvement les parties réelle et imaginaire pour repérer une variation anormale. Vérifie les unités et la convention de signe déjà discutée.
+3. Transmets les valeurs à Yann avec les hypothèses du matériau.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Réutilise les calculs présents. Ajoute seulement le calcul nécessaire à ces étapes. Les commentaires restent des phrases françaises. Aucun nouveau fichier Python.
 ```
 
-**Vérification et résultat à transmettre.** Le premier matériau est utilisable sur la bande retenue.
+**Interprétation physique.** Le matériau peut réagir différemment suivant la fréquence. Cette variation doit être prise en compte pour interpréter les pics du domaine.
+
+**Résultat à transmettre.** Les coefficients aux fréquences effectivement calculées.
 
 ## Study the same question for different shapes of fully absorbent walls ;
 
 **Repère :** J2.2. **Rôle :** contributeur.
 
-**Ce qui est fait.** Vérifier que le changement de forme conserve la même loi de matériau.
+**Ce qui est fait.** Garder le même matériau lorsque la forme du mur change.
 
-**Fichier à modifier :** `support/preprocessing.py`, seulement pour les changements nécessaires.
+**Fichier à modifier :** `support/preprocessing.py`, pour les seuls changements nécessaires.
 
 ### Fichiers concernés
 
@@ -54,16 +58,20 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 - `support/_env.py` — lecture seule.
 - `context/Poly-ST5-57-2026.pdf` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
+Utiliser aussi les paramètres et résultats déjà obtenus pour cette tâche.
 
 ### Contexte
 
 ```text
-Modifie seulement preprocessing.py en ajoutant ou corrigeant la fonction du projet demandée. Garde inchangées les fonctions initialement fournies, notamment _set_coefficients_of_pde, _set_rhs_of_pde et _set_geometry_of_domain. Les blocs protégés du programme principal et les autres fichiers restent inchangés.
+Modifie seulement preprocessing.py pour le calcul demandé. Garde inchangées les fonctions initialement fournies, notamment _set_coefficients_of_pde, _set_rhs_of_pde et _set_geometry_of_domain. Les autres fichiers et les blocs protégés du programme principal restent inchangés.
 
-Vérifie que la même fréquence donne le même coefficient pour les différentes formes. Note les paramètres à maintenir identiques et les quantités de matériau différentes lorsque toute la paroi est recouverte. Réutilise les vérifications du cas plan ; ajoute seulement ce qui manque ou corrige une erreur identifiée.
+1. Compare les paramètres des essais plan et irrégulier transmis par Yann.
+2. Vérifie qu’une même fréquence utilise les mêmes paramètres de matériau et le même coefficient.
+3. Note la quantité totale lorsque chaque mur est entièrement recouvert. Corrige seulement une erreur identifiée dans ta fonction de coefficient.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Réutilise les calculs présents. Ajoute seulement le calcul nécessaire à ces étapes. Les commentaires restent des phrases françaises. Aucun nouveau fichier Python.
 ```
 
-**Vérification et résultat à transmettre.** Les différences entre courbes ne proviennent pas d’un changement involontaire de matériau.
+**Interprétation physique.** Cette étape permet de distinguer ce qui vient du relief et ce qui vient d’une quantité de matériau plus importante.
+
+**Résultat à transmettre.** Une comparaison où le matériau est identique et les quantités sont connues.

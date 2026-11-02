@@ -1,14 +1,14 @@
 # Joachim — Jeudi 5 novembre 2026
 
-**Objectif du jour 4.** Vérifier les meilleurs résultats et choisir un produit. On limite les nouveaux essais à ceux qui peuvent changer la conclusion.
+**Objectif du jour 4.** Interpréter les résultats calculés et choisir un panneau.
 
-**Cas retenu.** Bruit de roulement du RER B. La plage 250–2 000 Hz vient de SOTA.md et reste à documenter. Pour le premier calcul, 500 Hz et c=340 m/s sont proposés ; ils sont à confirmer par le groupe. La source est imposée en haut. Les titres des tâches restent ceux de l’énoncé.
+**Cas de départ.** RER B, source uniforme unitaire en haut et c=343 m/s. Le premier essai est proposé à 500 Hz. La bande 250–2 000 Hz vient de SOTA.md. Avec le maillage actuel, on commence au plus à 1 500 Hz et on vérifie les dix points par longueur d’onde. Les trois gaussiennes restent un essai de sensibilité facultatif.
 
 ## To continue the analysis of the performances ;
 
 **Repère :** J4.1. **Rôle :** contributeur.
 
-**Ce qui est fait.** Relire les formules et leurs vérifications.
+**Ce qui est fait.** Relier les formules aux résultats conservés.
 
 **Fichier à modifier :** `support/demo_control_polycopie2024.py`, seulement pour les changements nécessaires.
 
@@ -24,25 +24,27 @@
 - `context/Poly-ST5-57-2026.pdf` — lecture seule.
 - `context/Dirichlet_Nonhomogene.pdf` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
-
 ### Contexte
 
 ```text
-Conserve intégralement les deux blocs marqués « Do not modify this cell, these are the values that you will be assessed against. », leurs lignes, commentaires et espaces en début de ligne. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Les modifications du lancement se font seulement dans les blocs « Fell free to modify the function call in this cell. », et les ajouts de fonctions se placent à côté des fonctions étudiantes. Les calculs supplémentaires se font après les blocs protégés, sans modifier leurs tableaux par effet de bord.
+Modifie seulement demo_control_polycopie2024.py. Conserve intégralement les deux blocs « Do not modify this cell, these are the values that you will be assessed against. », leurs commentaires et leur indentation. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Complète les fonctions étudiantes et les blocs « Fell free to modify the function call in this cell. ». Les fonctions fournies restent inchangées et les ajouts restent dans ce seul fichier.
 
-Reprends les différences centrées si le code de gradient a changé. Vérifie les conventions de Robin, le champ total et les poids de fréquence. Relis l’étude ouverte/réfléchissante et la variation selon la forme à la lumière des calculs. Signale ce qui est prouvé dans le cadre annoncé et ce qui est seulement observé.
+1. Reprends une courbe d’énergie et une carte du champ parmi les résultats du groupe. Vérifie que leurs paramètres correspondent aux équations présentées.
+2. Compare l’interprétation des pics et de la dissipation à l’étude ouverte/réfléchissante de lundi. Définis les notions utilisées dans le texte.
+3. Si le calcul du gradient a changé, refais le petit essai de perturbation de mardi. Corrige uniquement une erreur identifiée dans ta partie du fichier commun.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Utilise la version reçue du fichier commun et les résultats réellement calculés. Explique chaque grandeur et chaque étape. Les commentaires du code sont des phrases françaises sans équations.
 ```
 
-**Vérification et résultat à transmettre.** Les explications mathématiques correspondent aux calculs retenus.
+**Interprétation physique.** On explique le résultat avec les réflexions, les résonances et l’emplacement du matériau, plutôt qu’avec la seule baisse d’un nombre.
+
+**Vérification et résultat à transmettre.** Une explication courte des figures retenues et les corrections réellement nécessaires.
 
 ## To conclude which product to produce/develop.
 
 **Repère :** J4.2. **Rôle :** contributeur.
 
-**Ce qui est fait.** Contribuer au choix du panneau avec les hypothèses et les conclusions mathématiques.
+**Ce qui est fait.** Contribuer au choix du panneau avec les résultats du modèle.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -55,18 +57,18 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 - `context/Poly-ST5-57-2026.pdf` — lecture seule.
 - `context/Dirichlet_Nonhomogene.pdf` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
-
 ### Contexte
 
 ```text
-Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
+Les fichiers concernés sont en lecture seule. Fournis une explication pour le travail commun.
 
-À partir des résultats fournis, propose une conclusion courte sur les hypothèses et les conclusions mathématiques. Le choix concerne un panneau pour le scénario RER B et la bande réellement calculés. Cite les valeurs décisives, les quantités et les formes comparées. Distingue les résultats obtenus des perspectives de SOTA.md. Fais valider la conclusion par le groupe sans inventer de performance manquante.
+1. Observe avec le groupe les courbes obtenues pour les panneaux réellement calculés, avec une source et des quantités comparables.
+2. Indique la forme et la répartition qui donnent le meilleur compromis sur les fréquences retenues. Appuie la décision sur une figure et deux ou trois valeurs.
+3. Explique la conclusion à partir du modèle et des hypothèses annoncées. Une pondération par le spectre hypothétique reste une variante dont on précise l’effet.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Utilise la version reçue du fichier commun et les résultats réellement calculés. Explique chaque grandeur et chaque étape. Les commentaires du code sont des phrases françaises sans équations.
 ```
 
-**Vérification et résultat à transmettre.** Une décision appuyée sur une figure et quelques valeurs vérifiables.
+**Interprétation physique.** Le panneau retenu doit réduire le champ pour le cas étudié, avec la quantité de matériau annoncée. Une seule fréquence favorable ne résume pas toute une bande.
 
-**Ordre des modifications du fichier commun.** Joachim publie ses calculs, Antoine complète la descente, puis Yann lance les essais. Chacun repart de la dernière version complète.
+**Vérification et résultat à transmettre.** Une conclusion collective qui relie le choix du panneau aux calculs.

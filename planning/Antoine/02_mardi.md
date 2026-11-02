@@ -1,14 +1,14 @@
 # Antoine — Mardi 3 novembre 2026
 
-**Objectif du jour 2.** Calculer les références demandées, repérer quelques pics et faire une première descente après vérification du gradient. On complète les fonctions prévues dans le support, avec des tableaux simples de fréquences et d’énergies.
+**Objectif du jour 2.** Lire les premières courbes, puis obtenir une première baisse d’énergie en déplaçant le matériau.
 
-**Cas retenu.** Bruit de roulement du RER B. La plage 250–2 000 Hz vient de SOTA.md et reste à documenter. Pour le premier calcul, 500 Hz et c=340 m/s sont proposés ; ils sont à confirmer par le groupe. La source est imposée en haut. Les titres des tâches restent ceux de l’énoncé.
+**Cas de départ.** RER B, source uniforme unitaire en haut et c=343 m/s. Le premier essai est proposé à 500 Hz. La bande 250–2 000 Hz vient de SOTA.md. Avec le maillage actuel, on commence au plus à 1 500 Hz et on vérifie les dix points par longueur d’onde. Les trois gaussiennes restent un essai de sensibilité facultatif.
 
 ## Compare the energy of the initial distribution of the porous material (this time the wall has not only absorbing parts but also reflective ones) with the energy for the fully absorbing wall.
 
 **Repère :** J2.3. **Rôle :** contributeur.
 
-**Ce qui est fait.** Préparer une répartition initiale qui respecte la quantité choisie.
+**Ce qui est fait.** Comparer la quantité initiale à celle du mur entièrement couvert.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -21,25 +21,27 @@
 - `support/preprocessing.py` — lecture seule.
 - `context/Poly-ST5-57-2026.pdf` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
-
 ### Contexte
 
 ```text
-Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
+Les fichiers concernés sont en lecture seule. Fournis une explication pour le travail commun.
 
-Vérifie les bornes de chi et la valeur de V_obj sur les points Robin. Conserve la même quantité pendant la descente d’une forme donnée. Annonce séparément la quantité du mur entièrement recouvert. Donne à Yann les valeurs initiales et les paramètres ; aucun nouveau programme de lancement n’est nécessaire.
+1. Relève chi et V_obj pour la forme étudiée. Vérifie que les valeurs Robin sont entre zéro et un.
+2. Donne à Yann la quantité utilisée pour la future descente. Note aussi celle du cas chi=1 sur tout le mur.
+3. Explique à Olympia la différence entre les deux comparaisons : même matériau avec quantité différente pour initial/plein, puis même quantité pour initial/optimisé.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Utilise la version reçue du fichier commun et les résultats réellement calculés. Explique chaque grandeur et chaque étape. Les commentaires du code sont des phrases françaises sans équations.
 ```
 
-**Vérification et résultat à transmettre.** Une répartition initiale et une quantité clairement annoncées.
+**Interprétation physique.** Le mur entièrement couvert donne une référence utile. La comparaison initial/optimisé montre l’effet du placement pour une quantité fixée.
+
+**Vérification et résultat à transmettre.** Les deux quantités et la règle à conserver pendant la première descente.
 
 ## Optimize numerically for one or several of the most problematic frequencies (at which there is a maximum of the energy) ;
 
 **Repère :** J2.4. **Rôle :** responsable.
 
-**Ce qui est fait.** Compléter la descente dans la fonction prévue par le professeur.
+**Ce qui est fait.** Compléter la descente prévue par le support.
 
 **Fichier à modifier :** `support/demo_control_polycopie2024.py`, seulement pour les changements nécessaires.
 
@@ -54,18 +56,20 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 - `support/_env.py` — lecture seule.
 - `context/Poly-ST5-57-2026.pdf` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
-
 ### Contexte
 
 ```text
-Conserve intégralement les deux blocs marqués « Do not modify this cell, these are the values that you will be assessed against. », leurs lignes, commentaires et espaces en début de ligne. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Les modifications du lancement se font seulement dans les blocs « Fell free to modify the function call in this cell. », et les ajouts de fonctions se placent à côté des fonctions étudiantes. Les calculs supplémentaires se font après les blocs protégés, sans modifier leurs tableaux par effet de bord.
+Modifie seulement demo_control_polycopie2024.py. Conserve intégralement les deux blocs « Do not modify this cell, these are the values that you will be assessed against. », leurs commentaires et leur indentation. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Complète les fonctions étudiantes et les blocs « Fell free to modify the function call in this cell. ». Les fonctions fournies restent inchangées et les ajouts restent dans ce seul fichier.
 
-Complète your_optimization_procedure avec sa liste d’arguments et son retour chi,energy,u,grad. Utilise le calcul de coût et gradient reçu de Joachim. Pour une forme fixe et la fraction nodale du support, projette les valeurs Robin sur 0<=chi<=1 et sum(chi)=V_obj*S, avec S le nombre de points Robin : un décalage scalaire choisi par dichotomie suivi d’un clip suffit. Les autres points restent à zéro. Essaie chi-step*grad, projette, recalcule le coût et réduis le pas si la diminution est insuffisante. Un essai refusé ne remplace jamais la dernière répartition acceptée. Arrête selon le gradient projeté, un nombre maximal d’itérations ou un pas trop petit, puis annonce la raison. Conserve seulement l’énergie initiale et celles des étapes acceptées. Vérifie d’abord la projection sur un exemple à deux valeurs, puis la diminution du coût. La mesure physique commune sera ajoutée quand les comparaisons entre formes l’exigeront.
+1. Reprends le fichier contenant le calcul de Joachim. Complète your_optimization_procedure en gardant sa liste d’arguments et son retour chi,energy,u,grad. Pars d’une seule répartition initiale et d’une seule fréquence choisie parmi les pics.
+2. Dans une boucle simple, calcule le coût et le gradient, essaie chi-mu*grad puis applique la projection expliquée lundi aux seuls points Robin. Pour cette forme fixe, la somme à conserver vaut V_obj*S, où S est le nombre de points Robin. Si le coût augmente, divise mu par deux et refais l’essai à partir de la dernière répartition acceptée.
+3. Trace les énergies initiale et acceptées, vérifie la somme de chi et ses bornes, puis transmets le fichier à Yann. Prévois un nombre maximal d’itérations et un arrêt si le pas devient trop petit. Annonce la raison de l’arrêt et recalcule le coût final.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Utilise la version reçue du fichier commun et les résultats réellement calculés. Explique chaque grandeur et chaque étape. Les commentaires du code sont des phrases françaises sans équations.
 ```
 
-**Vérification et résultat à transmettre.** La descente fonctionne dans la fonction du support et respecte la quantité définie pour cette forme.
+**Interprétation physique.** La courbe montre si déplacer le matériau permet de réduire le champ avec la même quantité. Un arrêt du calcul ne garantit pas à lui seul le meilleur placement possible.
 
-**Ordre des modifications du fichier commun.** Joachim publie ses calculs, Antoine complète la descente, puis Yann lance les essais. Chacun repart de la dernière version complète.
+**Vérification et résultat à transmettre.** Une première descente qui baisse l’énergie, une répartition finale et sa quantité vérifiée.
+
+**Fichier commun.** Joachim transmet son calcul à Antoine, qui complète la descente, puis Yann lance les essais. Chacun utilise la dernière version reçue.

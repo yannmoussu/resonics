@@ -1,14 +1,14 @@
 # Joachim — Vendredi 6 novembre 2026
 
-**Objectif du jour 5.** Finaliser les résultats et les documents, puis répéter l’exposé à cinq. Les corrections restent ciblées.
+**Objectif du jour 5.** Relire les résultats et préparer l’exposé collectif.
 
-**Cas retenu.** Bruit de roulement du RER B. La plage 250–2 000 Hz vient de SOTA.md et reste à documenter. Pour le premier calcul, 500 Hz et c=340 m/s sont proposés ; ils sont à confirmer par le groupe. La source est imposée en haut. Les titres des tâches restent ceux de l’énoncé.
+**Cas de départ.** RER B, source uniforme unitaire en haut et c=343 m/s. Le premier essai est proposé à 500 Hz. La bande 250–2 000 Hz vient de SOTA.md. Avec le maillage actuel, on commence au plus à 1 500 Hz et on vérifie les dix points par longueur d’onde. Les trois gaussiennes restent un essai de sensibilité facultatif.
 
 ## To finalize everything
 
 **Repère :** J5.1. **Rôle :** contributeur.
 
-**Ce qui est fait.** Vérifier la partie concernant les hypothèses et les conclusions mathématiques.
+**Ce qui est fait.** Relire les explications mathématiques finales.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -21,25 +21,27 @@
 - `context/Poly-ST5-57-2026.pdf` — lecture seule.
 - `context/Dirichlet_Nonhomogene.pdf` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
-
 ### Contexte
 
 ```text
-Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
+Les fichiers concernés sont en lecture seule. Fournis une explication pour le travail commun.
 
-Relis les fonctions et résultats de ta partie, puis refais les petits contrôles déjà prévus. Limite les corrections aux erreurs identifiées dans le seul fichier cible. Si l’erreur se trouve ailleurs, transmets-la à la personne concernée. Vérifie les unités, les paramètres et les figures conservées. Ne crée pas de nouveaux outils de vérification à ce stade.
+1. Relis les équations, les définitions et les sources de ta partie. Vérifie que le signe de Robin et la source correspondent au code final.
+2. Vérifie que les valeurs citées sont celles des figures conservées, avec les mêmes paramètres.
+3. Transmets à Yann seulement les corrections nécessaires et confirme la partie relue.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Utilise la version reçue du fichier commun et les résultats réellement calculés. Explique chaque grandeur et chaque étape. Les commentaires du code sont des phrases françaises sans équations.
 ```
 
-**Vérification et résultat à transmettre.** Chaque membre donne son accord ou une courte liste de corrections nécessaires.
+**Interprétation physique.** Le lecteur doit comprendre ce qui est imposé au modèle et ce qui a été observé dans les calculs.
+
+**Vérification et résultat à transmettre.** Une partie mathématique relue et une courte liste de corrections éventuelles.
 
 ## Preparation of the defense
 
 **Repère :** J5.2. **Rôle :** contributeur.
 
-**Ce qui est fait.** Préparer une intervention courte et répéter avec le groupe.
+**Ce qui est fait.** Préparer l’explication orale du modèle et de la dérivée.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -52,25 +54,27 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 - `context/Poly-ST5-57-2026.pdf` — lecture seule.
 - `context/Dirichlet_Nonhomogene.pdf` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
-
 ### Contexte
 
 ```text
-Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
+Les fichiers concernés sont en lecture seule. Fournis une explication pour le travail commun.
 
-Prépare une explication orale de les hypothèses et les conclusions mathématiques, en utilisant les figures retenues. Explique le problème, ce qui a été calculé et ce que l’on observe. Donne un exemple simple si nécessaire. La soutenance dure vingt minutes à cinq, puis dix minutes de questions. Fournis le texte dans la réponse pour les documents communs, sans nouveau fichier.
+1. Prépare une explication avec le schéma du domaine : source, parois et effet attendu du matériau.
+2. Décris l’énergie, puis explique le rôle de l’adjoint et du gradient à l’aide d’un petit déplacement de matériau.
+3. Appuie l’interprétation sur une figure du groupe et répète ton passage. L’exposé collectif dure vingt minutes à cinq, suivi de dix minutes de questions.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Utilise la version reçue du fichier commun et les résultats réellement calculés. Explique chaque grandeur et chaque étape. Les commentaires du code sont des phrases françaises sans équations.
 ```
 
-**Vérification et résultat à transmettre.** Une intervention compréhensible qui tient dans la durée collective.
+**Interprétation physique.** À l’oral, on doit pouvoir relier une formule à ce qu’elle représente dans le domaine.
+
+**Vérification et résultat à transmettre.** Un passage oral compréhensible et un exemple simple en cas de question.
 
 ## Finalization of the rapport by the team.
 
 **Repère :** J5.3. **Rôle :** contributeur.
 
-**Ce qui est fait.** Finaliser les paragraphes de sa partie du rapport.
+**Ce qui est fait.** Finaliser le texte mathématique avec les figures du groupe.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -83,18 +87,18 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 - `context/Poly-ST5-57-2026.pdf` — lecture seule.
 - `context/Dirichlet_Nonhomogene.pdf` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
-
 ### Contexte
 
 ```text
-Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
+Les fichiers concernés sont en lecture seule. Fournis une explication pour le travail commun.
 
-Prépare le texte final sur les hypothèses et les conclusions mathématiques avec les paramètres, unités et références utilisés. Relie les résultats aux figures et donne les valeurs réellement calculées. Garde le modèle LaTeX du projet précédent. Transmets le texte à Yann puis approuve son intégration. La relecture et les éventuelles corrections du rapport sont faites sur un seul fichier à la fois.
+1. Fournis les paragraphes sur le modèle, ses propriétés, l’étude ouverte/réfléchissante et la dérivée. Définis les termes avant de les utiliser.
+2. Associe chaque interprétation à la figure concernée et cite les paramètres réellement utilisés. Utilise les références du cours pour les résultats repris.
+3. Transmets ton texte à Yann dans le modèle LaTeX commun et relis la version intégrée.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Utilise la version reçue du fichier commun et les résultats réellement calculés. Explique chaque grandeur et chaque étape. Les commentaires du code sont des phrases françaises sans équations.
 ```
 
-**Vérification et résultat à transmettre.** Texte, chiffres, figures et code racontent le même résultat.
+**Interprétation physique.** Le rapport explique les étapes qui relient la source et les équations au panneau finalement choisi.
 
-**Ordre des modifications du fichier commun.** Joachim publie ses calculs, Antoine complète la descente, puis Yann lance les essais. Chacun repart de la dernière version complète.
+**Vérification et résultat à transmettre.** Un texte court, cohérent avec le code, les figures et la présentation.

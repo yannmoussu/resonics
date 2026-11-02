@@ -1,14 +1,14 @@
 # Antoine — Jeudi 5 novembre 2026
 
-**Objectif du jour 4.** Vérifier les meilleurs résultats et choisir un produit. On limite les nouveaux essais à ceux qui peuvent changer la conclusion.
+**Objectif du jour 4.** Interpréter les résultats calculés et choisir un panneau.
 
-**Cas retenu.** Bruit de roulement du RER B. La plage 250–2 000 Hz vient de SOTA.md et reste à documenter. Pour le premier calcul, 500 Hz et c=340 m/s sont proposés ; ils sont à confirmer par le groupe. La source est imposée en haut. Les titres des tâches restent ceux de l’énoncé.
+**Cas de départ.** RER B, source uniforme unitaire en haut et c=343 m/s. Le premier essai est proposé à 500 Hz. La bande 250–2 000 Hz vient de SOTA.md. Avec le maillage actuel, on commence au plus à 1 500 Hz et on vérifie les dix points par longueur d’onde. Les trois gaussiennes restent un essai de sensibilité facultatif.
 
 ## To continue the analysis of the performances ;
 
 **Repère :** J4.1. **Rôle :** contributeur.
 
-**Ce qui est fait.** Vérifier les arrêts et les contraintes.
+**Ce qui est fait.** Lire la courbe de descente et vérifier les quantités.
 
 **Fichier à modifier :** `support/demo_control_polycopie2024.py`, seulement pour les changements nécessaires.
 
@@ -23,25 +23,27 @@
 - `support/_env.py` — lecture seule.
 - `context/Poly-ST5-57-2026.pdf` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
-
 ### Contexte
 
 ```text
-Conserve intégralement les deux blocs marqués « Do not modify this cell, these are the values that you will be assessed against. », leurs lignes, commentaires et espaces en début de ligne. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Les modifications du lancement se font seulement dans les blocs « Fell free to modify the function call in this cell. », et les ajouts de fonctions se placent à côté des fonctions étudiantes. Les calculs supplémentaires se font après les blocs protégés, sans modifier leurs tableaux par effet de bord.
+Modifie seulement demo_control_polycopie2024.py. Conserve intégralement les deux blocs « Do not modify this cell, these are the values that you will be assessed against. », leurs commentaires et leur indentation. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Complète les fonctions étudiantes et les blocs « Fell free to modify the function call in this cell. ». Les fonctions fournies restent inchangées et les ajouts restent dans ce seul fichier.
 
-Relis les dernières descentes : bornes de chi, quantité mesurée, diminution du coût et raison d’arrêt. Un arrêt parce que le pas est trop petit ou parce que le nombre d’itérations est atteint est annoncé comme tel. Compare les départs à même quantité et propose seulement les reprises nécessaires.
+1. Reprends la courbe des étapes acceptées pour le panneau qui semble le plus intéressant. Vérifie que le coût final correspond à la répartition représentée.
+2. Vérifie les bornes de chi et la quantité absorbante, puis relève la raison de l’arrêt.
+3. Propose seulement une correction nécessaire ou quelques itérations supplémentaires si cela peut modifier la conclusion. Garde un seul départ de référence pour le MVP.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Utilise la version reçue du fichier commun et les résultats réellement calculés. Explique chaque grandeur et chaque étape. Les commentaires du code sont des phrases françaises sans équations.
 ```
 
-**Vérification et résultat à transmettre.** Le coût final, la répartition et le motif d’arrêt correspondent au même calcul.
+**Interprétation physique.** Une baisse à quantité constante vient du placement du matériau. Une énergie qui se stabilise décrit le résultat de cette descente, pas une preuve d’optimum global.
+
+**Vérification et résultat à transmettre.** Une courbe interprétée et la quantité du panneau retenu vérifiée.
 
 ## To conclude which product to produce/develop.
 
 **Repère :** J4.2. **Rôle :** contributeur.
 
-**Ce qui est fait.** Contribuer au choix du panneau avec le respect des contraintes et l’état d’arrêt de la descente.
+**Ce qui est fait.** Aider le groupe à choisir avec une quantité connue.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -54,18 +56,18 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 - `support/preprocessing.py` — lecture seule.
 - `context/Poly-ST5-57-2026.pdf` — lecture seule.
 
-Joindre aussi les paramètres et les résultats de la veille utilisés dans cette tâche.
-
 ### Contexte
 
 ```text
-Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
+Les fichiers concernés sont en lecture seule. Fournis une explication pour le travail commun.
 
-À partir des résultats fournis, propose une conclusion courte sur le respect des contraintes et l’état d’arrêt de la descente. Le choix concerne un panneau pour le scénario RER B et la bande réellement calculés. Cite les valeurs décisives, les quantités et les formes comparées. Distingue les résultats obtenus des perspectives de SOTA.md. Fais valider la conclusion par le groupe sans inventer de performance manquante.
+1. Compare les candidats calculés en relevant la forme, la quantité de matériau et les fréquences étudiées.
+2. Donne deux ou trois valeurs d’énergie utiles à la décision, ainsi que la quantité correspondante.
+3. Explique le compromis retenu avec Olympia et Mathis. Appuie le choix sur les résultats, puis fais valider la conclusion par le groupe.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Utilise la version reçue du fichier commun et les résultats réellement calculés. Explique chaque grandeur et chaque étape. Les commentaires du code sont des phrases françaises sans équations.
 ```
 
-**Vérification et résultat à transmettre.** Une décision appuyée sur une figure et quelques valeurs vérifiables.
+**Interprétation physique.** Le choix dépend de l’énergie restante et du matériau nécessaire pour l’obtenir. Ajouter du matériau et mieux le placer sont deux effets à distinguer.
 
-**Ordre des modifications du fichier commun.** Joachim publie ses calculs, Antoine complète la descente, puis Yann lance les essais. Chacun repart de la dernière version complète.
+**Vérification et résultat à transmettre.** Une conclusion courte sur l’efficacité obtenue pour la quantité retenue.

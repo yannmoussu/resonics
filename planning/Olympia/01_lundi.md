@@ -1,16 +1,16 @@
 # Olympia — Lundi 2 novembre 2026
 
-**Objectif du jour 1.** Obtenir un premier calcul compréhensible avec le code fourni : un cas RER B, ses paramètres, une figure du champ initial et son énergie. Le groupe présente aussi les choix physiques et les formules demandées. La descente et l’adjoint seront programmés mardi. Aucune nouvelle organisation générale du code n’est à construire lundi.
+**Objectif du jour.** On obtient un premier champ et son énergie avec le code fourni. Chacun apporte une explication ou un petit calcul nécessaire au résultat du groupe.
 
-**Cas retenu.** Bruit de roulement du RER B. La plage 250–2 000 Hz vient de SOTA.md et reste à documenter. Pour le premier calcul, 500 Hz et c=340 m/s sont proposés ; ils sont à confirmer par le groupe. La source est imposée en haut. Les titres des tâches restent ceux de l’énoncé.
+**Cas de départ.** Bruit de roulement du RER B. Premier essai proposé à 500 Hz avec c=343 m/s. Les comparaisons utilisent une pression imposée unitaire avec la même phase sur le bord supérieur. La plage 250–2 000 Hz de SOTA.md reste indicative. Avec la grille actuelle, on commence sur 250–1 500 Hz avant d’élargir si nécessaire.
 
-**Résultat attendu avant le point quotidien.** Une liste de paramètres, une figure initiale, une valeur d’énergie et les explications de chaque membre. Le coefficient d’exemple du code reste identifié comme tel tant que le matériau n’est pas validé.
+**À montrer lundi.** Les paramètres, un champ initial, sa valeur d’énergie et les explications du groupe. Les formules demandées sont étudiées lundi, puis utilisées quand la descente est programmée mardi.
 
 ## the state of the art ;
 
 **Repère :** J1.1. **Rôle :** responsable.
 
-**Ce qui est fait.** Présenter en quelques points l’état de l’art déjà disponible.
+**Ce qui est fait.** Présenter l’état de l’art déjà rédigé avec Mathis.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -23,20 +23,24 @@
 ### Contexte
 
 ```text
-Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
+Lis les fichiers concernés pour expliquer cette tâche et donne le résultat dans la réponse. Les programmes restent inchangés pour cette contribution.
 
-Réutilise SOTA.md réalisé avec Mathis. Prépare une synthèse courte sur le besoin RER B, les solutions existantes et la piste d’un mur irrégulier avec une quantité fixée de poreux. Sépare les performances de la littérature des résultats que le groupe doit encore calculer. Cite les documents utiles. L’objectif est de pouvoir présenter ce choix au premier point avec les enseignants.
+1. Reprends SOTA.md et sélectionne trois points utiles au RER B : besoin, solutions existantes et idée du mur irrégulier avec poreux.
+2. Associe chaque information chiffrée à sa source.
+3. Prépare une synthèse à montrer au premier point avec les enseignants.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Explique les grandeurs utilisées et appuie la conclusion sur les documents ou les résultats fournis.
 ```
 
-**Vérification et résultat à transmettre.** Une synthèse courte et sourcée, sans refaire un dossier complet.
+**Interprétation physique.** Le projet teste une solution acoustique dans un modèle simple. L’état de l’art explique pourquoi cette piste mérite d’être étudiée.
+
+**Résultat à transmettre.** Une synthèse courte qui sépare les résultats publiés et les calculs à faire.
 
 ## the model to consider,
 
 **Repère :** J1.2. **Rôle :** contributeur.
 
-**Ce qui est fait.** Rendre le modèle visible à partir des figures existantes.
+**Ce qui est fait.** Rendre la première figure de Yann compréhensible.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -49,20 +53,24 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 ### Contexte
 
 ```text
-Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
+Lis les fichiers concernés pour expliquer cette tâche et donne le résultat dans la réponse. Les programmes restent inchangés pour cette contribution.
 
-Utilise les figures initiales déjà produites par le code de Yann. Indique où se trouvent la source, l’air, les parois réfléchissantes et le mur comportant du matériau. Un schéma simple ou une légende suffit pour le premier jour. Décris ce que représente la couleur et la fréquence du calcul. Aucune nouvelle fonction de tracé n’est nécessaire si les figures fournies sont lisibles.
+1. Repère sur le domaine la source en haut, les côtés réfléchissants et le mur du bas.
+2. Lis la légende de couleur avec Yann et précise s’il s’agit de la partie réelle du champ ou de son module.
+3. Ajoute une légende explicative ou un petit schéma dans ta réponse. Indique la fréquence et les paramètres du calcul.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Explique les grandeurs utilisées et appuie la conclusion sur les documents ou les résultats fournis.
 ```
 
-**Vérification et résultat à transmettre.** Une figure initiale compréhensible avec ses conditions aux limites.
+**Interprétation physique.** La partie réelle représente une composante oscillante et peut changer de signe. Le module permet de voir où l’amplitude de pression est la plus forte.
+
+**Résultat à transmettre.** Une figure initiale annotée ou une légende qui permet de la lire.
 
 ## the plage of frequencies of the interest, dimensions, noise sources ;
 
 **Repère :** J1.3. **Rôle :** contributeur.
 
-**Ce qui est fait.** Préparer une comparaison simple pour le lendemain.
+**Ce qui est fait.** Préparer les trois premières comparaisons.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -74,11 +82,15 @@ Relis la version reçue et réutilise les calculs déjà présents. Utilise des 
 ### Contexte
 
 ```text
-Cette contribution est une analyse ou une explication. Les fichiers de code joints restent en lecture seule. Donne la réponse dans le message, sans modifier de fichier.
+Lis les fichiers concernés pour expliquer cette tâche et donne le résultat dans la réponse. Les programmes restent inchangés pour cette contribution.
 
-À partir du scénario et des paramètres de Mathis, prépare la liste des calculs de mardi : mur plan entièrement recouvert, profil fourni entièrement recouvert, puis répartition initiale. Note les paramètres à garder identiques. Pour recevoir les résultats, deux tableaux, fréquences et énergies, ainsi que le nom du cas suffisent. Aucun format général de stockage de résultats n’est demandé.
+1. Avec les paramètres de Mathis, liste les essais de mardi : mur plan entièrement recouvert, mur irrégulier entièrement recouvert et répartition initiale sur une même forme.
+2. Note la source unitaire uniforme et la bande retenue, identiques pour comparer les cas.
+3. Demande à Yann les fréquences et les énergies de chaque essai, accompagnées du nom de la forme et de la quantité utilisée.
 
-Relis la version reçue et réutilise les calculs déjà présents. Utilise des phrases simples. Conserve les notations du cours, explique les notions nécessaires et distingue les choix du groupe des données fournies. Ne crée aucun nouveau fichier Python. Annonce seulement les calculs réellement exécutés.
+Explique les grandeurs utilisées et appuie la conclusion sur les documents ou les résultats fournis.
 ```
 
-**Vérification et résultat à transmettre.** Une liste claire de comparaisons et des axes à utiliser pour les courbes.
+**Interprétation physique.** Changer un paramètre à la fois permet de comprendre l’effet du relief puis celui de la quantité et de la répartition du matériau.
+
+**Résultat à transmettre.** La liste des premiers cas à tracer, sans préparation de nouveaux programmes.
