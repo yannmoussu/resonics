@@ -170,4 +170,14 @@ if __name__ == '__main__':
     postprocessing._plot_error(err)
     postprocessing._plot_energy_history(energy)
 
+    # On limite les fréquences pour garder dix points par longueur d’onde.
+    frequencies_hz = numpy.arange(100.0, 1501.0, 50.0)
+    results = processing.run_rer_b_frequency_sweep(
+        domain_omega, spacestep, frequencies_hz,
+        f, f_dir, f_neu, f_rob,
+        beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
+    )
+    # On enregistre les deux courbes dans le dossier de ce programme.
+    postprocessing.plot_rer_b_frequency_sweep(results)
+
     print('End.')

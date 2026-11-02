@@ -121,3 +121,33 @@ def _plot_energy_history(energy):
     matplotlib.pyplot.close()
 
     return
+
+def plot_rer_b_frequency_sweep(results, output_dir=None):
+    """Enregistre le spectre du RER B et son énergie en fonction de la fréquence."""
+    if output_dir is None:
+        output_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # On crée le dossier demandé avant d’enregistrer les figures.
+    os.makedirs(output_dir, exist_ok=True)
+    frequencies = results["frequencies_hz"]
+
+    fig, ax = matplotlib.pyplot.subplots()
+    ax.plot(frequencies, results["amplitudes"])
+    ax.set_xlabel("Fréquence (Hz)")
+    ax.set_ylabel("Amplitude relative")
+    ax.set_title("Source acoustique hypothétique du RER B")
+    ax.grid(True)
+    fig.tight_layout()
+    fig.savefig(os.path.join(output_dir, "fig_rer_b_spectre.png"), dpi=150)
+    matplotlib.pyplot.close(fig)
+
+    fig, ax = matplotlib.pyplot.subplots()
+    ax.plot(frequencies, results["energies"])
+    ax.set_xlabel("Fréquence (Hz)")
+    ax.set_ylabel("Énergie acoustique numérique")
+    ax.set_title("Énergie du domaine selon la fréquence")
+    ax.grid(True)
+    fig.tight_layout()
+    fig.savefig(os.path.join(output_dir, "fig_rer_b_energie.png"), dpi=150)
+    matplotlib.pyplot.close(fig)
+    return

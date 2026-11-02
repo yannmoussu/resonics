@@ -12,6 +12,7 @@ import scipy.sparse.linalg
 
 # MRG packages
 import _env
+import preprocessing
 
 
 def is_in_interior_domain(node):
@@ -529,3 +530,70 @@ def replace_old_by_new(u, oldvalue, newvalue):
             if u[i, j] == oldvalue:
                 u[i, j] = newvalue
     return u
+
+def run_rer_b_frequency_sweep(
+    domain_omega, spacestep, frequencies_hz,
+    f, f_dir, f_neu, f_rob,
+    beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
+    sound_speed_m_s=343.0,
+):
+    """Résout Helmholtz pour chaque fréquence et conserve le cas initial intact.
+
+    Le spectre est appliqué avec la convention de Dirichlet du support.
+    Le matériau et la géométrie sont fixés pendant tout le balayage.
+    """
+    frequencies = numpy.asarray(frequencies_hz, dtype=numpy.float64)
+    if frequencies.ndim != 1 or frequencies.size == 0:
+        raise ValueError("Les fréquences doivent former un vecteur non vide.")
+    if not numpy.all(numpy.isfinite(frequencies)) or numpy.any(frequencies <= 0.0):
+        raise ValueError("Les fréquences doivent être positives et finies.")
+    if frequencies.size > 1 and not numpy.all(numpy.diff(frequencies) > 0.0):
+        raise ValueError("Les fréquences doivent être strictement croissantes.")
+    if not numpy.isfinite(sound_speed_m_s) or sound_speed_m_s <= 0.0:
+        raise ValueError("La vitesse du son doit être positive.")
+    if not numpy.isfinite(spacestep) or spacestep <= 0.0:
+        raise ValueError("Le pas spatial doit être positif.")
+    if sound_speed_m_s / (frequencies.max() * spacestep) < 10.0:
+        raise ValueError("Le maillage ne respecte pas dix points par longueur d'onde.")
+    if not numpy.any(domain_omega[0, :] == _env.NODE_DIRICHLET):
+        raise ValueError("La frontière supérieure doit contenir des noeuds Dirichlet.")
+
+    amplitudes = numpy.empty_like(frequencies)
+    energies = numpy.empty_like(frequencies)
+    solutions = {}
+
+    # Chaque résolution utilise un second membre distinct et la même géométrie.
+    for ind, frequency_hz in enumerate(frequencies):
+        frequency_hz = float(frequency_hz)
+        k = 2.0 * numpy.pi * frequency_hz / sound_speed_m_s
+        amplitudes[ind] = preprocessing.source_rer_b(frequency_hz)
+
+        f_dir_freq = numpy.zeros_like(f_dir)
+        f_dir_freq[0, :] = amplitudes[ind]
+        u_freq = solve_helmholtz(
+            domain_omega, spacestep, k,
+            f, f_dir_freq, f_neu, f_rob,
+            beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob
+        )
+        # On additionne les amplitudes au carré sur les points intérieurs.
+        energies[ind] = spacestep**2 * numpy.sum(
+            numpy.abs(u_freq[domain_omega == _env.NODE_INTERIOR])**2
+        )
+        solutions[frequency_hz] = u_freq
+
+    # Les énergies contiennent déjà la pondération imposée par la source.
+    if frequencies.size > 1:
+        band_energy = float(numpy.sum(
+            (frequencies[1:] - frequencies[:-1]) *
+            (energies[1:] + energies[:-1]) / 2.0
+        ))
+    else:
+        band_energy = float(energies[0])
+
+    return {
+        "frequencies_hz": frequencies,
+        "amplitudes": amplitudes,
+        "energies": energies,
+        "solutions": solutions,
+        "band_energy": band_energy,
+    }
