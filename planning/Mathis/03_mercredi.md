@@ -12,7 +12,7 @@
 
 **Fichier à compléter :** `support/preprocessing.py`.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/preprocessing.py` — cible à modifier.
@@ -20,7 +20,7 @@
 - `context/Sujet-EI-EXT-2026.md` — lecture seule.
 - Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : les cellules protégées du programme principal sont en lecture seule. Garde aussi inchangées les fonctions initialement fournies de preprocessing.py, notamment _set_coefficients_of_pde, _set_rhs_of_pde, _set_geometry_of_domain et les fonctions du motif qu’elle appelle. Ajoute les fonctions du projet à côté ; seules ces fonctions ajoutées peuvent être complétées ou corrigées. Elles travaillent sur des tableaux indépendants et ne changent pas les valeurs du cas initial par effet de bord. Compare les fonctions fournies à la version jointe avant de rendre le fichier.

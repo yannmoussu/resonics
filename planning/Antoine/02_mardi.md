@@ -12,14 +12,14 @@ Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une m�
 
 **Fichier à modifier :** aucun pour cette contribution d’analyse ou de restitution.
 
-**Fichiers à joindre :**
+**Fichiers concernés :**
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - support/demo_control_polycopie2024.py et support/processing.py, versions actuelles en lecture seule
 - Les poids de longueur et le budget validé par le groupe, puis les quantités des murs entièrement recouverts
 - context/Sujet-EI-EXT-2026.md
 
-**Prompt à copier :**
+**Contexte :**
 
 ```text
 Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
@@ -47,7 +47,7 @@ Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie le
 
 **Fichier à modifier :** `support/demo_control_polycopie2024.py` uniquement.
 
-**Fichiers à joindre :**
+**Fichiers concernés :**
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - support/demo_control_polycopie2024.py, dernière version complète, seule cible à modifier
@@ -55,7 +55,7 @@ Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie le
 - context/GAllaire-OptimParam.pdf, pages PDF 18–20 et 25–29
 - context/Sujet-EI-EXT-2026.md
 
-**Prompt à copier :**
+**Contexte :**
 
 ```text
 Protection du support : recopie à l’identique les deux cellules portant « Do not modify this cell, these are the values that you will be assessed against. », de leur en-tête jusqu’à la cellule suivante. La première initialise les coefficients, les seconds membres et la géométrie ; la seconde appelle processing.solve_helmholtz puis copie chi0 et u0. Garde toutes leurs lignes, commentaires, indentation, ordre, noms et arguments. Aucun ajout à l’intérieur, déplacement, suppression, changement d’appel ni nouvelle condition qui empêche leur exécution. Les fonctions étudiantes et les cellules « Fell free to modify the function call in this cell. » accueillent les compléments. Les campagnes sont appelées dans la dernière cellule autorisée, après le second bloc protégé, avec des tableaux indépendants des valeurs initiales. Compare les deux blocs à la version jointe avant de rendre le fichier et confirme leur identité.

@@ -12,7 +12,7 @@ Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les dé
 
 **Fichier à modifier :** `support/demo_control_polycopie2024.py`.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/demo_control_polycopie2024.py`, version actuelle.
@@ -22,7 +22,7 @@ Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les dé
 - `support/_env.py`, version actuelle.
 - `context/Sujet-EI-EXT-2026.md`, version actuelle.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : recopie à l’identique les deux cellules portant « Do not modify this cell, these are the values that you will be assessed against. », de leur en-tête jusqu’à la cellule suivante. La première initialise les coefficients, les seconds membres et la géométrie ; la seconde appelle processing.solve_helmholtz puis copie chi0 et u0. Garde toutes leurs lignes, commentaires, indentation, ordre, noms et arguments. Aucun ajout à l’intérieur, déplacement, suppression, changement d’appel ni nouvelle condition qui empêche leur exécution. Les fonctions étudiantes et les cellules « Fell free to modify the function call in this cell. » accueillent les compléments. Les campagnes sont appelées dans la dernière cellule autorisée, après le second bloc protégé, avec des tableaux indépendants des valeurs initiales. Compare les deux blocs à la version jointe avant de rendre le fichier et confirme leur identité.
@@ -50,7 +50,7 @@ Transmets la courbe à Olympia, reprends ses intervalles de maxima candidats et 
 
 **Fichier à modifier :** `support/demo_control_polycopie2024.py`.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/demo_control_polycopie2024.py`, version actuelle.
@@ -60,7 +60,7 @@ Transmets la courbe à Olympia, reprends ses intervalles de maxima candidats et 
 - `support/_env.py`, version actuelle.
 - `context/Sujet-EI-EXT-2026.md`, version actuelle.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : recopie à l’identique les deux cellules portant « Do not modify this cell, these are the values that you will be assessed against. », de leur en-tête jusqu’à la cellule suivante. La première initialise les coefficients, les seconds membres et la géométrie ; la seconde appelle processing.solve_helmholtz puis copie chi0 et u0. Garde toutes leurs lignes, commentaires, indentation, ordre, noms et arguments. Aucun ajout à l’intérieur, déplacement, suppression, changement d’appel ni nouvelle condition qui empêche leur exécution. Les fonctions étudiantes et les cellules « Fell free to modify the function call in this cell. » accueillent les compléments. Les campagnes sont appelées dans la dernière cellule autorisée, après le second bloc protégé, avec des tableaux indépendants des valeurs initiales. Compare les deux blocs à la version jointe avant de rendre le fichier et confirme leur identité.
@@ -87,7 +87,7 @@ Conserve les données brutes, les paramètres et les résidus, puis transmets le
 
 **Fichier à modifier :** `support/demo_control_polycopie2024.py`.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/demo_control_polycopie2024.py`, version actuelle.
@@ -97,7 +97,7 @@ Conserve les données brutes, les paramètres et les résidus, puis transmets le
 - `support/_env.py`, version actuelle.
 - `context/Sujet-EI-EXT-2026.md`, version actuelle.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : recopie à l’identique les deux cellules portant « Do not modify this cell, these are the values that you will be assessed against. », de leur en-tête jusqu’à la cellule suivante. La première initialise les coefficients, les seconds membres et la géométrie ; la seconde appelle processing.solve_helmholtz puis copie chi0 et u0. Garde toutes leurs lignes, commentaires, indentation, ordre, noms et arguments. Aucun ajout à l’intérieur, déplacement, suppression, changement d’appel ni nouvelle condition qui empêche leur exécution. Les fonctions étudiantes et les cellules « Fell free to modify the function call in this cell. » accueillent les compléments. Les campagnes sont appelées dans la dernière cellule autorisée, après le second bloc protégé, avec des tableaux indépendants des valeurs initiales. Compare les deux blocs à la version jointe avant de rendre le fichier et confirme leur identité.
@@ -124,7 +124,7 @@ Transmets à Olympia les courbes et la répartition initiale. Les différences d
 
 **Fichier à modifier :** `support/demo_control_polycopie2024.py`.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/demo_control_polycopie2024.py`, version actuelle.
@@ -134,7 +134,7 @@ Transmets à Olympia les courbes et la répartition initiale. Les différences d
 - `support/_env.py`, version actuelle.
 - `context/Sujet-EI-EXT-2026.md`, version actuelle.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : recopie à l’identique les deux cellules portant « Do not modify this cell, these are the values that you will be assessed against. », de leur en-tête jusqu’à la cellule suivante. La première initialise les coefficients, les seconds membres et la géométrie ; la seconde appelle processing.solve_helmholtz puis copie chi0 et u0. Garde toutes leurs lignes, commentaires, indentation, ordre, noms et arguments. Aucun ajout à l’intérieur, déplacement, suppression, changement d’appel ni nouvelle condition qui empêche leur exécution. Les fonctions étudiantes et les cellules « Fell free to modify the function call in this cell. » accueillent les compléments. Les campagnes sont appelées dans la dernière cellule autorisée, après le second bloc protégé, avec des tableaux indépendants des valeurs initiales. Compare les deux blocs à la version jointe avant de rendre le fichier et confirme leur identité.

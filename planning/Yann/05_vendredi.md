@@ -12,14 +12,14 @@ Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les dé
 
 **Ce qui est fait.** On vérifie les imports, les appels et les paramètres sur une exécution courte, puis sur le cas retenu. Les corrections restent limitées aux erreurs d'intégration du programme principal et sont contrôlées après modification.
 
-**Fichiers à joindre avec le prompt :**
+**Fichiers concernés avec le prompt :**
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - La démonstration actuelle, seule cible à modifier si nécessaire.
 - Les quatre autres fichiers actuels de `support/`, en lecture seule.
 - Les paramètres et les résultats de référence validés jeudi, et le message d'erreur complet s'il y en a un.
 
-**Prompt à copier :**
+**Contexte :**
 
 ```text
 Protection du support : recopie à l’identique les deux cellules portant « Do not modify this cell, these are the values that you will be assessed against. », de leur en-tête jusqu’à la cellule suivante. La première initialise les coefficients, les seconds membres et la géométrie ; la seconde appelle processing.solve_helmholtz puis copie chi0 et u0. Garde toutes leurs lignes, commentaires, indentation, ordre, noms et arguments. Aucun ajout à l’intérieur, déplacement, suppression, changement d’appel ni nouvelle condition qui empêche leur exécution. Les fonctions étudiantes et les cellules « Fell free to modify the function call in this cell. » accueillent les compléments. Les campagnes sont appelées dans la dernière cellule autorisée, après le second bloc protégé, avec des tableaux indépendants des valeurs initiales. Compare les deux blocs à la version jointe avant de rendre le fichier et confirme leur identité.
@@ -47,14 +47,14 @@ Teste d'abord un cas court puis le cas final avec les paramètres validés. Donn
 
 **Ce qui est fait.** On rassemble les contributions approuvées et on vérifie qu'elles couvrent l'énoncé. On conserve les templates LaTeX du projet précédent, les légendes courtes et les figures lisibles. Yann présente le modèle et la chaîne de calcul, puis les quatre autres membres prennent leur partie.
 
-**Fichiers à joindre avec le prompt :**
+**Fichiers concernés avec le prompt :**
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `context/Sujet-EI-EXT-2026.md`.
 - La démonstration finale en lecture seule et les figures/tableaux de résultats retenus.
 - Les cinq synthèses approuvées et, lorsqu'ils existent, le rapport ou la présentation à relire. Pour une modification LaTeX ultérieure, joindre et traiter un seul fichier cible à la fois.
 
-**Prompt à copier :**
+**Contexte :**
 
 ```text
 Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
@@ -82,13 +82,13 @@ Donne pour Yann une explication orale du modèle et des fonctions de calcul, une
 
 **Fichier à modifier :** aucun, cette contribution est une analyse à transmettre au groupe.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `context/Sujet-EI-EXT-2026.md`, version actuelle.
 - `support/demo_control_polycopie2024.py`, version actuelle.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.

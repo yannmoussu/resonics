@@ -12,7 +12,7 @@ Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une m�
 
 **Fichier à modifier :** aucun pour cette contribution d’analyse ou de restitution.
 
-**Fichiers à joindre :**
+**Fichiers concernés :**
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - support/demo_control_polycopie2024.py et support/processing.py, versions actuelles en lecture seule
@@ -20,7 +20,7 @@ Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une m�
 - Les sorties finales des contrôles du gradient et des campagnes
 - context/Sujet-EI-EXT-2026.md
 
-**Prompt à copier :**
+**Contexte :**
 
 ```text
 Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
@@ -46,7 +46,7 @@ Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie le
 
 **Fichier à modifier :** aucun pour cette contribution d’analyse ou de restitution.
 
-**Fichiers à joindre :**
+**Fichiers concernés :**
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - support/demo_control_polycopie2024.py et support/processing.py, versions actuelles en lecture seule
@@ -54,7 +54,7 @@ Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie le
 - Les figures, valeurs et plan de soutenance retenus par le groupe
 - context/Sujet-EI-EXT-2026.md
 
-**Prompt à copier :**
+**Contexte :**
 
 ```text
 Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
@@ -84,7 +84,7 @@ Liste les appels de contrôles déjà présents dans ce même fichier et les ré
 
 **Fichier à modifier :** aucun pour cette contribution d’analyse ou de restitution.
 
-**Fichiers à joindre :**
+**Fichiers concernés :**
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - support/demo_control_polycopie2024.py et support/processing.py, versions actuelles en lecture seule
@@ -92,7 +92,7 @@ Liste les appels de contrôles déjà présents dans ce même fichier et les ré
 - Les paragraphes de rapport existants et les équations/figures à relire, s’ils sont disponibles
 - context/Sujet-EI-EXT-2026.md
 
-**Prompt à copier :**
+**Contexte :**
 
 ```text
 Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.

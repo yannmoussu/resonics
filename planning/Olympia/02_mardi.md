@@ -12,7 +12,7 @@
 
 **Fichier à compléter :** `support/postprocessing.py`.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/postprocessing.py` — cible à modifier.
@@ -21,7 +21,7 @@
 - `context/Sujet-EI-EXT-2026.md` — lecture seule.
 - Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : la cible est uniquement postprocessing.py. Les autres modules sont en lecture seule et les deux cellules « Do not modify this cell » du programme principal restent inchangées. Les corrections concernent les tracés et leurs fonctions ; elles ne modifient pas les appels protégés ni les données initiales du solveur par effet de bord.
@@ -51,7 +51,7 @@ Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de cour
 
 **Fichier à compléter :** `support/postprocessing.py`.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/postprocessing.py` — cible à modifier.
@@ -59,7 +59,7 @@ Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de cour
 - `context/Sujet-EI-EXT-2026.md` — lecture seule.
 - Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : la cible est uniquement postprocessing.py. Les autres modules sont en lecture seule et les deux cellules « Do not modify this cell » du programme principal restent inchangées. Les corrections concernent les tracés et leurs fonctions ; elles ne modifient pas les appels protégés ni les données initiales du solveur par effet de bord.
@@ -89,7 +89,7 @@ Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de cour
 
 **Fichier à compléter :** `support/postprocessing.py`.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/postprocessing.py` — cible à modifier.
@@ -97,7 +97,7 @@ Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de cour
 - `context/Sujet-EI-EXT-2026.md` — lecture seule.
 - Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : la cible est uniquement postprocessing.py. Les autres modules sont en lecture seule et les deux cellules « Do not modify this cell » du programme principal restent inchangées. Les corrections concernent les tracés et leurs fonctions ; elles ne modifient pas les appels protégés ni les données initiales du solveur par effet de bord.
@@ -127,7 +127,7 @@ Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de cour
 
 **Fichier à compléter :** `support/postprocessing.py`.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/postprocessing.py` — cible à modifier.
@@ -136,7 +136,7 @@ Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de cour
 - `context/Sujet-EI-EXT-2026.md` — lecture seule.
 - Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : la cible est uniquement postprocessing.py. Les autres modules sont en lecture seule et les deux cellules « Do not modify this cell » du programme principal restent inchangées. Les corrections concernent les tracés et leurs fonctions ; elles ne modifient pas les appels protégés ni les données initiales du solveur par effet de bord.

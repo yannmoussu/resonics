@@ -14,13 +14,13 @@
 
 **Fichier à compléter :** aucun pour cette contribution d’analyse ou de restitution.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `context/Sujet-EI-EXT-2026.md` — lecture seule.
 - `context/Mur-antibruit-Filoche.pdf` — lecture seule.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
@@ -47,7 +47,7 @@ Reprends la synthèse de l’état de l’art déjà réalisée avec Mathis dans
 
 **Fichier à compléter :** `support/postprocessing.py`.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/postprocessing.py` — cible à modifier.
@@ -56,7 +56,7 @@ Reprends la synthèse de l’état de l’art déjà réalisée avec Mathis dans
 - `support/demo_control_polycopie2024.py` — lecture seule.
 - `context/Sujet-EI-EXT-2026.md` — lecture seule.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : la cible est uniquement postprocessing.py. Les autres modules sont en lecture seule et les deux cellules « Do not modify this cell » du programme principal restent inchangées. Les corrections concernent les tracés et leurs fonctions ; elles ne modifient pas les appels protégés ni les données initiales du solveur par effet de bord.
@@ -90,14 +90,14 @@ Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de cour
 
 **Fichier à compléter :** aucun pour cette contribution d’analyse ou de restitution.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `context/Sujet-EI-EXT-2026.md` — lecture seule.
 - `support/demo_control_polycopie2024.py` — lecture seule.
 - `support/postprocessing.py` — lecture seule.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.

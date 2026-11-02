@@ -14,13 +14,13 @@
 
 **Fichier à compléter :** aucun pour cette contribution d’analyse ou de restitution.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `context/Sujet-EI-EXT-2026.md` — lecture seule.
 - `context/Mur-antibruit-Filoche.pdf` — lecture seule.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
@@ -47,7 +47,7 @@ Complète les sources et les données physiques nécessaires au scénario RER B,
 
 **Fichier à compléter :** aucun pour cette contribution d’analyse ou de restitution.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `context/Sujet-EI-EXT-2026.md` — lecture seule.
@@ -55,7 +55,7 @@ Complète les sources et les données physiques nécessaires au scénario RER B,
 - `support/preprocessing.py` — lecture seule.
 - `support/demo_control_polycopie2024.py` — lecture seule.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
@@ -82,14 +82,14 @@ Propose au groupe des bandes de fréquences, des dimensions de domaine et une so
 
 **Fichier à compléter :** aucun pour cette contribution d’analyse ou de restitution.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `context/Sujet-EI-EXT-2026.md` — lecture seule.
 - `context/Mur-antibruit-Filoche.pdf` — lecture seule.
 - `support/preprocessing.py` — lecture seule.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
@@ -116,7 +116,7 @@ Présente un choix de matériau poreux, avec son épaisseur, sa provenance, sa b
 
 **Fichier à compléter :** `support/preprocessing.py`.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/preprocessing.py` — cible à modifier.
@@ -126,7 +126,7 @@ Présente un choix de matériau poreux, avec son épaisseur, sa provenance, sa b
 - `context/Sujet-EI-EXT-2026.md` — lecture seule.
 - `context/Mur-antibruit-Filoche.pdf` — lecture seule.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : les cellules protégées du programme principal sont en lecture seule. Garde aussi inchangées les fonctions initialement fournies de preprocessing.py, notamment _set_coefficients_of_pde, _set_rhs_of_pde, _set_geometry_of_domain et les fonctions du motif qu’elle appelle. Ajoute les fonctions du projet à côté ; seules ces fonctions ajoutées peuvent être complétées ou corrigées. Elles travaillent sur des tableaux indépendants et ne changent pas les valeurs du cas initial par effet de bord. Compare les fonctions fournies à la version jointe avant de rendre le fichier.

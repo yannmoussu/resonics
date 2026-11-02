@@ -12,14 +12,14 @@ Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les dé
 
 **Ce qui est fait.** On ajoute un helper pour les campagnes utilisant les profils fournis de niveaux zéro, un et deux, en conservant le générateur initial. On vérifie leurs dimensions réelles et on identifie chaque contact entre un nœud Robin du mur et un nœud intérieur. Ces contacts donnent les longueurs servant à mesurer la quantité de matériau et les indices nécessaires au gradient.
 
-**Fichiers à joindre avec le prompt :**
+**Fichiers concernés avec le prompt :**
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/preprocessing.py`, version complète actuelle, à modifier.
 - `support/_env.py` et `support/processing.py`, en lecture seule pour les étiquettes et le stencil.
 - `context/Sujet-EI-EXT-2026.md`.
 
-**Prompt à copier :**
+**Contexte :**
 
 ```text
 Protection du support : les cellules protégées du programme principal sont en lecture seule. Garde aussi inchangées les fonctions initialement fournies de preprocessing.py, notamment _set_coefficients_of_pde, _set_rhs_of_pde, _set_geometry_of_domain et les fonctions du motif qu’elle appelle. Ajoute les fonctions du projet à côté ; seules ces fonctions ajoutées peuvent être complétées ou corrigées. Elles travaillent sur des tableaux indépendants et ne changent pas les valeurs du cas initial par effet de bord. Compare les fonctions fournies à la version jointe avant de rendre le fichier.
@@ -50,14 +50,14 @@ Je travaille sur ResoniCS, un projet d'optimisation acoustique par différences 
 
 **Fichier à modifier :** aucun, cette contribution est une analyse à transmettre au groupe.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/preprocessing.py`, version actuelle.
 - `support/demo_control_polycopie2024.py`, version actuelle.
 - `context/Sujet-EI-EXT-2026.md`, version actuelle.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
@@ -83,14 +83,14 @@ Garde la même excitation supérieure pour les comparaisons. Énumère les valeu
 
 **Fichier à modifier :** aucun, cette contribution est une analyse à transmettre au groupe.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/processing.py`, version actuelle.
 - `support/_env.py`, version actuelle.
 - `context/Sujet-EI-EXT-2026.md`, version actuelle.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
@@ -116,14 +116,14 @@ Donne un protocole de comparaison à mêmes géométrie, source et matériau, ai
 
 **Fichier à modifier :** aucun, cette contribution est une analyse à transmettre au groupe.
 
-### Fichiers à joindre
+### Fichiers concernés
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/processing.py`, version actuelle.
 - `support/preprocessing.py`, version actuelle.
 - `context/Sujet-EI-EXT-2026.md`, version actuelle.
 
-### Prompt à copier
+### Contexte
 
 ```text
 Protection du support : cette contribution est une analyse ou une restitution. Tous les fichiers de code joints restent en lecture seule, y compris les deux cellules « Do not modify this cell » du programme principal et les fonctions qu’elles appellent. Donne les explications dans la réponse, sans modifier de fichier.
@@ -149,14 +149,14 @@ Liste les contrôles synthétiques et de passivité à faire avec Mathis. La con
 
 **Ce qui est fait.** On ajoute une fonction qui expose la matrice et le second membre pour l’état et l’adjoint, en reproduisant la composition du solveur fourni. Le solveur initial et les appels protégés restent inchangés.
 
-**Fichiers à joindre avec le prompt :**
+**Fichiers concernés avec le prompt :**
 
 - `SOTA.md`, synthèse de Mathis et Olympia sur le RER B, en lecture seule.
 - `support/processing.py`, version complète actuelle, à modifier.
 - `support/_env.py`, `support/preprocessing.py` et `support/demo_control_polycopie2024.py`, en lecture seule.
 - `context/Sujet-EI-EXT-2026.md`.
 
-**Prompt à copier :**
+**Contexte :**
 
 ```text
 Protection du support : conserve intégralement solve_helmholtz et les fonctions d’assemblage initialement fournies, car elles déterminent le calcul appelé par la cellule protégée. Ajoute seulement les fonctions complémentaires demandées dans processing.py, en réutilisant les fonctions existantes sans les modifier. Aucun remplacement ou redirection de solve_helmholtz. Compare les fonctions fournies à la version jointe avant de rendre le fichier.
