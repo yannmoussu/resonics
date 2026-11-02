@@ -2,6 +2,13 @@
 
 Chaque contribution ajoute un petit résultat que les cinq membres peuvent expliquer. On reprend les fichiers de `support/`, puis on complète seulement ce qui manque pour la tâche du jour. Les 22 titres de l’[énoncé](../context/Sujet-EI-EXT-2026.md) et leur ordre sont conservés.
 
+## Documents de suivi
+
+Ces documents tiennent compte du code et des choix les plus récents :
+
+- [Reste à faire pour le jour 1 — PDF](reste_a_faire_jour1.pdf)
+- [Feuille de route du jour 2 — README](README_JOUR2.md)
+
 ## Premier résultat lundi
 
 Le groupe montre un domaine, une source, une carte du champ et une valeur d’énergie. Il explique les paramètres et les conditions aux limites. Les formules de dérivée et de descente demandées lundi sont établies sur papier, puis programmées mardi.

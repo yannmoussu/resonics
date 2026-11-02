@@ -1,0 +1,81 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{lmodern,amsmath,amssymb,tabularx,booktabs,array,microtype}
+\usepackage[margin=1.8cm]{geometry}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\tache}[2]{\par\medskip\textbf{$\square$ #1}\par #2\par}
+\hypersetup{pdftitle={ResoniCS -- Reste à faire pour le jour 1},pdfauthor={ResoniCS}}
+\begin{document}
+{\LARGE\bfseries ResoniCS --- Terminer le jour 1}\par
+\textbf{Point de situation au 2 novembre 2026.} Ce document reprend les dix attendus du premier jour de l'énoncé. Il porte sur les fichiers et contributions déjà disponibles.
+
+\section*{Ce qui est déjà prêt}
+Le nom ResoniCS et le cas d'usage RER B sont retenus. L'état de l'art est enrichi et sourcé. Le modèle de Helmholtz, la source somme de trois gaussiennes et les premiers résultats sont décrits dans le rapport. Les fonctions de coût, de projection, de calcul du champ, de gradient et de descente sont programmées et vérifiées.
+
+L'essai de descente diminue le critère de 1,64386 à 0,701126 en 100 étapes acceptées, en conservant une somme de matériau égale à 39. Il utilise encore le coefficient d'exemple \code{Alpha=10-10j}. Le choix du matériau et de son coefficient est en cours du côté de \textbf{Joachim}.
+
+\section*{Bilan des dix attendus}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.3cm}>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Repère} & \textbf{Point du sujet, résumé} & \textbf{État} & \textbf{Travail restant}\\
+\midrule
+J1.1 & État de l'art & Fait & Réutiliser la synthèse existante et ses références.\\[3pt]
+J1.2 & Modèle acoustique & Fait & Un schéma des frontières peut faciliter l'explication.\\[3pt]
+J1.3 & Fréquences, dimensions, source & À harmoniser & Fixer l'échelle physique et aligner les paramètres dans les documents.\\[3pt]
+J1.4 & Propriétés de la solution & À rédiger & Énoncer l'existence et l'unicité du cours avec leurs hypothèses.\\[3pt]
+J1.5 & Problème d'optimisation & À formaliser & Écrire explicitement le minimum recherché et ses contraintes.\\[3pt]
+J1.6 & Paroi ouverte ou réfléchissante & À traiter & Établir le bilan et la comparaison théorique demandée, avec la condition de Sommerfeld.\\[3pt]
+J1.7 & Matériau et quantité & À finaliser & Recevoir le choix de Joachim et justifier la quantité du premier essai.\\[3pt]
+J1.8 & Coefficient complexe & En attente & Recevoir la valeur, sa fréquence, ses unités et sa convention de signe.\\[3pt]
+J1.9 & Dérivée de l'énergie & Code prêt & Compléter l'expression mathématique de la dérivée et son lien avec l'adjoint dans le rapport.\\[3pt]
+J1.10 & Descente de gradient & Fait & Réutiliser la méthode testée avec le coefficient physique retenu.\\
+\bottomrule
+\end{tabularx}
+
+\section*{Ordre de priorité}
+\begin{enumerate}
+\item Compléter les propriétés de la solution et l'étude ouverte/réfléchissante.
+\item Finaliser le matériau et son coefficient avec Joachim, puis vérifier leur correspondance avec le programme.
+\item Achever la formulation du minimum et de la dérivée, puis harmoniser les paramètres.
+\end{enumerate}
+
+\newpage
+{\Large\bfseries Liste concrète pour terminer}\par
+Les points ci-dessous précisent les résultats à obtenir. Ils constituent une feuille de route et non des travaux supplémentaires déjà réalisés.
+
+\tache{Propriétés de la solution --- J1.4}{
+Retrouver les hypothèses du §7.3 du polycopié, puis présenter le résultat d'existence et d'unicité. Expliquer le rôle du coefficient dissipatif et distinguer ce cadre du coefficient d'exemple actuel.\par
+\emph{À obtenir :} un court passage dans \code{report/report.tex}, avec les hypothèses, la référence au cours et une interprétation physique.}
+
+\tache{Étude ouverte/réfléchissante --- J1.6}{
+Conserver une même source et écrire les deux problèmes en remplaçant une paroi réfléchissante par la condition de Sommerfeld donnée dans l'énoncé. Établir le bilan d'énergie, identifier le flux à travers le bord ouvert et répondre au calcul demandé sur l'énergie et la forme. La comparaison des énergies intérieures doit s'appuyer sur les relations obtenues.\par
+\emph{À obtenir :} les deux modèles et une comparaison théorique expliquée. S'appuyer sur Antoine et Joachim pour cette partie mathématique.}
+
+\tache{Réception du matériau et du coefficient --- J1.7 et J1.8}{
+Récupérer auprès de Joachim le nom du matériau, les paramètres utilisés, leurs sources, la fréquence et le coefficient complexe avec ses unités. Vérifier le signe attendu par \code{compute_robin_condition}. Préciser si l'on dispose d'une seule valeur ou d'une loi en fréquence.\par
+La répartition initiale contient 39 points garnis sur 98 points Robin, soit environ 40\,\%. Justifier ce choix et le présenter comme une fraction nodale pour ce premier cas.\par
+\emph{À obtenir :} un petit tableau de données et la valeur à employer dans le bloc autorisé du programme. Un matériau documenté suffit pour commencer.}
+
+\tache{Formulation du minimum et de la dérivée --- J1.5 et J1.9}{
+Rassembler le critère à minimiser, les bornes et la quantité imposée dans une formulation explicite. Ajouter l'expression de la dérivée par rapport à la répartition et expliquer le rôle du champ adjoint. Le gradient et la descente sont déjà calculés dans le programme.\par
+\emph{À obtenir :} les formules du rapport, avec chaque grandeur définie et le lien avec les §§7.5--7.6 du cours.}
+
+\tache{Cadrage physique et cohérence des documents --- J1.3}{
+Choisir les dimensions physiques de référence en les présentant comme des hypothèses si elles ne sont pas mesurées. Harmoniser les réglages suivants :}
+\begin{itemize}
+\item Le planning propose encore 500 Hz, alors que le calcul initial utilise $k=10$, soit environ 545,90 Hz avec $c=343\,\mathrm{m\,s^{-1}}$.
+\item La bande effectivement calculée est 100--1\,500 Hz par pas de 50 Hz. Le spectre théorique est affiché sur 0--3\,500 Hz.
+\item Le calcul initial et la descente actuelle utilisent une source unitaire. Le calcul fréquentiel utilise la somme de gaussiennes.
+\end{itemize}
+\emph{À obtenir :} des paramètres cohérents entre le rapport, le code et le planning, ainsi qu'une attribution actualisée du travail sur le matériau à Joachim.
+
+\textbf{Le jour 1 est prêt lorsque} le groupe peut expliquer le modèle, ses propriétés, la comparaison théorique, le critère, sa dérivée et la descente, puis présenter un matériau documenté et les paramètres du premier essai. Les comparaisons systématiques des formes et les optimisations à plusieurs fréquences relèvent des jours suivants.
+
+\end{document}
