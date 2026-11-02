@@ -1,44 +1,60 @@
-# Olympia — Jeudi 5 novembre — Robustesse et choix du produit
+# Olympia — Jeudi 5 novembre
 
-**Organisation.** On travaille à partir des versions à jour. On ne modifie que le fichier cible et on conserve les fonctions déjà écrites par les autres. Les fonctions nouvelles sont ajoutées dans ce fichier et les fonctions des jours précédents sont conservées. Aucune de ces fiches ne demande de créer un nouveau module Python.
+**Organisation.** On utilise les versions complètes et à jour. Chaque contribution de code porte sur un seul fichier de `support/`, les dépendances restent en lecture seule et aucun nouveau module Python n’est créé. Les intitulés ci-dessous reprennent exactement les tirets de l’énoncé.
 
-## Tâche — Robustesse et choix du produit
+## To continue the analysis of the performances ;
+
+**Repère :** J4.1. **Rôle :** responsable.
+
+**Contribution d’Olympia.** On confronte les courbes aux calculs raffinés et à plusieurs initialisations pour vérifier la stabilité des performances.
 
 **Fichier à compléter :** `support/postprocessing.py`.
 
-On vérifie que le choix reste cohérent lorsque le maillage est raffiné et que l'initialisation de l'optimisation varie. On produit quelques figures décisives et une synthèse chiffrée permettant au groupe de retenir un produit dans la famille réellement testée.
-
 ### Fichiers à joindre
 
-- `support/postprocessing.py`
-- `support/demo_control_polycopie2024.py`
-- `context/Sujet-EI-EXT-2026.md`
-
-- Les données de calcul transmises par Yann pour la journée, avec les paramètres et les tableaux `records`. Pour les cartes ou historiques, joindre également les champs et les itérations réellement enregistrés. Si ces données ne sont pas encore disponibles, les demander avant toute conclusion physique.
-
-On joint les fichiers complets et à jour. Seul le fichier cible est modifiable ; les autres servent à comprendre les appels et les conventions.
+- `support/postprocessing.py` — cible à modifier.
+- `support/demo_control_polycopie2024.py` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
 
 ### Prompt à copier
 
 ```text
-Complète uniquement support/postprocessing.py, à partir des résultats calculés et transmis par Yann. records conserve le format des jours précédents et metadata précise notamment l'initialisation, le matériau, la source et les fréquences de conception. Ne crée aucune donnée de performance artificielle.
+Modifie uniquement support/postprocessing.py joint et renvoie sa version complète si une modification est nécessaire. Les autres fichiers sont fournis en lecture seule. Conserve les fonctions des autres membres et les signatures validées.
 
-Ajoute un comparatif des courbes sur deux pas de maillage, pour une même géométrie physique, une même source et un même budget. Sépare les niveaux de géométrie des niveaux de raffinement du maillage. Vérifie que chaque groupe contient des cas comparables avant de calculer un écart relatif de critère. Pour les champs, une grille plus fine doit être comparée avec une interpolation explicitée, ou être montrée séparément sans soustraction directe incompatible.
+records est une liste de dictionnaires avec case_id, frequency_hz, energy, level, state, material_length_m, spacestep_m, relative_residual et metadata. state vaut full, initial, mono ou multi. Les paramètres de source, de matériau, les fréquences de conception et les conditions de calcul sont décrits dans metadata. Prépare un comparatif à deux pas de maillage pour une même géométrie physique, une même source et un même budget. Sépare niveau géométrique et raffinement. Pour les champs, explicite une interpolation ou montre les grilles séparément sans soustraction incompatible.
 
-Montre la dispersion des critères finaux obtenus pour plusieurs initialisations. Si les données ne contiennent qu'une initialisation, signale ce manque et demande un calcul à Yann plutôt que d'inventer une dispersion. Si un champ de densité a été seuillé en zones binaires, distingue le résultat relaxé du résultat seuillé, et exige le budget et la réponse recalculés après seuillage.
+Montre la dispersion des coûts finaux selon les initialisations identifiées dans metadata. Si une seule initialisation existe, demande les calculs nécessaires. Distingue une densité relaxée d’une version seuillée et exige le budget et la réponse recalculés après seuillage. Les écarts de critères sont calculés seulement sur des groupes comparables. Les données viennent de Yann, sans simulation dans postprocessing.py.
 
-Prépare une synthèse compacte des candidats : géométrie, matériau, budget, critère moyen pondéré, maximum échantillonné, stabilité au raffinement et état de convergence. Donne une recommandation fondée sur les résultats disponibles, qui ne prétend pas être un optimum global de toutes les formes. Les panneaux et les légendes doivent rester lisibles dans la présentation.
-
-Rends uniquement la version complète du fichier cible et une courte explication des modifications et des contrôles. Ne crée aucun autre fichier Python. Conserve toutes les fonctions sans rapport avec cette tâche et les modifications déjà faites par les autres. Les commentaires sont de courtes phrases françaises expliquant les étapes, sans formules mathématiques. Les petits contrôles restent dans ce même fichier et ne se lancent pas lors de son import.
+Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de courtes phrases françaises sans équations ni symboles mathématiques. Les petits contrôles restent dans ce même fichier et ne se lancent pas lors de son import. Après le fichier complet, donne une courte explication et les contrôles réellement exécutés. Si tu ne peux pas les lancer, indique les appels à faire sans annoncer leur réussite.
 ```
 
-### Résultat attendu et contrôles
+**Contrôle attendu.** Les variations de maillage et de départ sont identifiables. Le classement retenu est proportionné aux données et à l’état de convergence.
 
-- Le raffinement conserve les dimensions et le budget physiques.
-- Les différents départs sont identifiables et les conclusions restent proportionnées aux données.
-- Le choix du produit s'appuie sur une courbe de bande et quelques chiffres vérifiables.
-- Les figures utiles et leurs légendes sont prêtes avant le point de validation.
+**Passage de main.** Faire relire les contrôles par Yann et Antoine avant le choix collectif du produit.
 
-### Passage de main
+## To conclude which product to produce/develop.
 
-Olympia présente la synthèse au groupe, puis transmet à Yann les figures finales et les résultats qui les justifient. Chaque responsable valide l'interprétation de son lot.
+**Repère :** J4.2. **Rôle :** responsable.
+
+**Contribution d’Olympia.** On rassemble les comparaisons en une recommandation de produit à discuter et valider avec les cinq membres.
+
+**Fichier à compléter :** aucun pour cette contribution d’analyse ou de restitution.
+
+### Fichiers à joindre
+
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- `support/postprocessing.py` — lecture seule.
+- `support/demo_control_polycopie2024.py` — lecture seule.
+- Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
+
+### Prompt à copier
+
+```text
+À partir des courbes et tableaux joints, prépare une synthèse compacte des candidats : forme, matériau, quantité physique, critère moyen pondéré, maximum échantillonné, stabilité au raffinement et état de convergence. Recommande un produit dans la famille réellement testée en citant les résultats décisifs. Distingue les différences de budget et les observations de robustesse. Ne prétends pas obtenir un optimum global de toutes les formes. Donne la recommandation dans ta réponse sans créer de fichier.
+
+```
+
+**Contrôle attendu.** Le produit retenu se justifie par une courbe de bande, quelques nombres vérifiables et une quantité annoncée.
+
+**Passage de main.** Présenter la synthèse au groupe, recueillir les validations puis transmettre à Yann le choix approuvé et ses figures.

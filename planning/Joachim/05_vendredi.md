@@ -1,22 +1,46 @@
-# Joachim — Vendredi, 6 novembre 2026
+# Joachim — Vendredi 6 novembre 2026
 
-Objectif : expliquer le critère, le gradient et le rôle des conditions de bord pendant la soutenance.
+Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une même tâche est partagée avec les autres membres indiqués dans le Gantt, et cette fiche décrit la contribution de Joachim. On reprend toujours la dernière version des fichiers communs. Les modifications de la démonstration suivent Joachim, puis Antoine, puis Yann.
 
-**Fichier partagé.** On récupère la dernière version transmise par le membre précédent, puis on renvoie le fichier entier après vérification. Une seule personne applique ses modifications à la fois. Chaque tâche ci-dessous concerne un seul fichier de `support/` et ne crée aucun module Python.
+## To finalize everything
 
-## Tâche 1 — Réception du code et préparation de l'intervention
+**Repère :** J5.1. **Rôle :** contributeur.
 
-**Fichier concerné :** `support/demo_control_polycopie2024.py`, en lecture pour les fonctions de Joachim. On ne crée pas de document ou de programme supplémentaire dans cette tâche.
+**Contribution de Joachim.** On refait les contrôles des fonctions de coût et de gradient avant de valider le code final.
 
-**Ce qu'on fait.** On refait les petits contrôles, puis on prépare une explication orale courte et des réponses aux questions sur les mathématiques. Le groupe garde vingt minutes de présentation, puis dix minutes de questions, avec une intervention de chacun.
+**Fichier à modifier :** aucun pour cette contribution d’analyse ou de restitution.
 
 **Fichiers à joindre :**
 
-- `support/demo_control_polycopie2024.py`, version finale partagée
-- `support/_env.py`, `support/preprocessing.py`, `support/processing.py` et `support/postprocessing.py`, versions actuelles en lecture seule pour les imports et les contrôles
-- `context/Sujet-EI-EXT-2026.md` et `context/Dirichlet_Nonhomogene.pdf`
-- Les figures et valeurs retenues par le groupe, sous leur forme actuelle
+- support/demo_control_polycopie2024.py et support/processing.py, versions actuelles en lecture seule
+- support/_env.py, support/preprocessing.py et support/postprocessing.py, en lecture seule
+- Les sorties finales des contrôles du gradient et des campagnes
+- context/Sujet-EI-EXT-2026.md
 
+**Prompt à copier :**
+
+```text
+Relis les fonctions your_compute_objective_function, evaluate_density et evaluate_band de la démonstration finale. Ne modifie aucun fichier pour cette vérification. Liste les appels de contrôles présents et vérifie leurs sorties lorsqu’elles sont fournies. Contrôle les poids, le facteur deux, les conjugaisons, les résidus et la correspondance des paramètres avec les figures. Si une correction est nécessaire, précise la fonction et le contrôle à reprendre pour une intervention séparée dans ce seul fichier.
+
+Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie les affirmations sur les documents et résultats joints. Signale les données manquantes au lieu d’inventer un résultat.
+```
+
+**Contrôle et passage de main.** On donne à Yann la validation des fonctions de Joachim ou la liste précise des corrections à effectuer avant de figer le rendu.
+
+## Preparation of the defense
+
+**Repère :** J5.2. **Rôle :** contributeur.
+
+**Contribution de Joachim.** On prépare l’explication orale du critère, du système adjoint et des conditions aux limites.
+
+**Fichier à modifier :** aucun pour cette contribution d’analyse ou de restitution.
+
+**Fichiers à joindre :**
+
+- support/demo_control_polycopie2024.py et support/processing.py, versions actuelles en lecture seule
+- context/Dirichlet_Nonhomogene.pdf, les deux pages
+- Les figures, valeurs et plan de soutenance retenus par le groupe
+- context/Sujet-EI-EXT-2026.md
 
 **Prompt à copier :**
 
@@ -30,4 +54,31 @@ Rappelle la nécessité du champ total avec la source Dirichlet non homogène et
 Liste les appels de contrôles déjà présents dans ce même fichier et les résultats à vérifier avant la soutenance. Ne dis pas qu'un calcul a réussi si ses sorties ne sont pas jointes. Donne la réponse directement dans le message pour qu'elle puisse être reprise par Yann dans les documents communs.
 ```
 
-**Validation collective.** On confirme avec Yann que les équations, les chiffres, les figures et le code final emploient les mêmes conventions. Pendant la répétition, on mesure la durée totale de l'équipe et on ajuste son intervention.
+**Contrôle et passage de main.** On répète avec Antoine la transition entre gradient et descente, puis avec le groupe l’exposé de vingt minutes suivi de dix minutes de questions.
+
+## Finalization of the rapport by the team.
+
+**Repère :** J5.3. **Rôle :** contributeur.
+
+**Contribution de Joachim.** On fournit les équations et les explications validées pour la partie mathématique du rapport.
+
+**Fichier à modifier :** aucun pour cette contribution d’analyse ou de restitution.
+
+**Fichiers à joindre :**
+
+- support/demo_control_polycopie2024.py et support/processing.py, versions actuelles en lecture seule
+- context/Dirichlet_Nonhomogene.pdf, les deux pages
+- Les paragraphes de rapport existants et les équations/figures à relire, s’ils sont disponibles
+- context/Sujet-EI-EXT-2026.md
+
+**Prompt à copier :**
+
+```text
+Prépare dans le message la contribution mathématique finale au rapport, sans créer ni modifier de fichier. Présente le modèle et ses hypothèses, l’étude énergétique selon la forme avec réflexion et ouverture, le critère intérieur, l’adjoint et le gradient de densité, puis le critère multifréquence. Relie les équations aux fonctions réellement présentes et aux contrôles exécutés. Donne les références des documents fournis et les valeurs numériques utilisées dans les tests, sans inventer de résultat manquant.
+
+Relis les paragraphes existants lorsqu’ils sont joints et propose les corrections de fond nécessaires. Les titres de figures décrivent les données représentées et les conclusions figurent dans le texte. Yann intégrera ensuite les éléments approuvés dans le fichier LaTeX commun lors d’une tâche dédiée.
+
+Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie les affirmations sur les documents et résultats joints. Signale les données manquantes au lieu d’inventer un résultat.
+```
+
+**Contrôle et passage de main.** On approuve sa portion du rapport avec Yann et on vérifie que le code, les figures et les explications utilisent les mêmes conventions.

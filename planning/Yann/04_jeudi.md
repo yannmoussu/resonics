@@ -1,10 +1,10 @@
-# Yann — Jeudi 5 novembre
+# Yann — Jeudi 5 novembre 2026
 
-**But du jour.** Vérifier que le produit retenu reste intéressant lorsque le maillage et l'initialisation changent, puis figer une campagne reproductible.
+Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les développements techniques sont les étapes de ma contribution, dans les fichiers partagés. Chaque étape de code modifie uniquement son fichier cible.
 
-**Passage de main.** Antoine publie ses contrôles d'arrêt, Joachim relit le calcul d'objectif, puis Yann effectue les expériences ci-dessous dans la démonstration. Olympia reçoit les résultats pour le classement final.
+## To continue the analysis of the performances ;
 
-## Tâche 1 — Contrôler le raffinement et la reproductibilité
+**Repère :** J4.1. **Rôle :** contributeur.
 
 **Fichier à modifier :** [support/demo_control_polycopie2024.py](../../support/demo_control_polycopie2024.py).
 
@@ -33,3 +33,28 @@ Renvoie le fichier complet et les vérifications réellement effectuées. Les co
 ```
 
 **Résultat attendu.** Les mêmes paramètres permettent de retrouver la campagne, et les écarts de maillage ou d'initialisation sont visibles. Le groupe peut choisir le meilleur produit de la famille étudiée en connaissant les limites de ce classement.
+
+## To conclude which product to produce/develop.
+
+**Repère :** J4.2. **Rôle :** contributeur.
+
+**Contribution de Yann.** On rassemble les résultats validés pour décider collectivement quel produit retenir.
+
+**Fichier à modifier :** aucun, cette contribution est une analyse à transmettre au groupe.
+
+### Fichiers à joindre
+
+- `context/Sujet-EI-EXT-2026.md`, version actuelle.
+- `support/demo_control_polycopie2024.py`, version actuelle.
+
+### Prompt à copier
+
+```text
+À partir du tableau des candidats et des figures validées joints au message, propose une conclusion de produit pour ResoniCS, sans modifier ni créer de fichier.
+Compare les géométries, le matériau, la quantité, le critère moyen sur bande, les pics échantillonnés et la stabilité au raffinement et aux initialisations. Cite les résultats disponibles et distingue les références entièrement recouvertes des comparaisons à budget égal.
+Donne le produit retenu dans la famille effectivement testée et les chiffres qui motivent le choix. Si les données ne suffisent pas à départager les candidats, précise le calcul complémentaire nécessaire sans inventer de classement. Prépare une synthèse courte à faire approuver par les cinq membres.
+```
+
+**Contrôle et transmission.** Chaque membre approuve sa portion. Le choix final s'appuie sur les résultats d'Olympia et les validations de Mathis, Joachim et Antoine.
+
+**Passage de main du programme principal :** Joachim → Antoine → Yann. Les résultats sont ensuite transmis à Olympia et aux autres responsables pour validation.

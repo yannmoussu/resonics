@@ -1,22 +1,21 @@
-# Joachim — Mercredi, 4 novembre 2026
+# Joachim — Mercredi 4 novembre 2026
 
-Objectif : utiliser une distribution unique de matériau pour plusieurs fréquences.
+Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une même tâche est partagée avec les autres membres indiqués dans le Gantt, et cette fiche décrit la contribution de Joachim. On reprend toujours la dernière version des fichiers communs. Les modifications de la démonstration suivent Joachim, puis Antoine, puis Yann.
 
-**Fichier partagé.** On récupère la dernière version transmise par le membre précédent, puis on renvoie le fichier entier après vérification. Une seule personne applique ses modifications à la fois. Chaque tâche ci-dessous concerne un seul fichier de `support/` et ne crée aucun module Python.
+## to optimize the energy at once at several different frequencies ;
 
-## Tâche 1 — Coût multifréquence et somme des gradients
+**Repère :** J3.2. **Rôle :** contributeur.
 
-**Fichier à compléter :** `support/demo_control_polycopie2024.py`, uniquement une nouvelle fonction `evaluate_band` et ses contrôles.
+**Contribution de Joachim.** On ajoute un critère commun à plusieurs fréquences et la somme de leurs gradients, pour une distribution unique de matériau.
 
-**Ce qu'on fait.** On additionne des critères évalués pour la même densité, avec des poids fréquentiels fixés. La descente d'Antoine reçoit cette somme par le même mécanisme d'évaluation qu'à une fréquence. On garde les énergies brutes pour comparer les performances sur la bande.
+**Fichier à modifier :** `support/demo_control_polycopie2024.py` uniquement.
 
 **Fichiers à joindre :**
 
-- `support/demo_control_polycopie2024.py`, version complète de mardi validée
-- `support/_env.py`, `support/preprocessing.py`, `support/processing.py` et `support/postprocessing.py`, versions actuelles en lecture seule pour les imports et les contrôles
-- `context/Sujet-EI-EXT-2026.md`
-- La liste des fréquences de conception, leurs poids et leurs énergies de référence validées, collée dans le message
-
+- support/demo_control_polycopie2024.py, dernière version complète, seule cible à modifier
+- support/_env.py, support/preprocessing.py, support/processing.py et support/postprocessing.py, versions actuelles en lecture seule
+- Les fréquences, poids et références validés par le groupe, copiés dans le message
+- context/Sujet-EI-EXT-2026.md
 
 **Prompt à copier :**
 
@@ -36,4 +35,4 @@ Explique dans la réponse que les fréquences supplémentaires ajoutées près d
 Renvoie le fichier complet et les résultats réellement exécutés, avec commentaires en phrases françaises sans notation mathématique.
 ```
 
-**Vérification et transmission.** On transmet la version validée à Antoine. Yann branchera l'assemblage fréquentiel et Olympia comparera aussi les points de fréquence qui n'ont pas servi à la conception. Pour l'optimisation de bande, l'affichage du champ se fait après une réévaluation à une fréquence annoncée.
+**Contrôle et passage de main.** On transmet evaluate_band vérifiée à Antoine puis à Yann. Une carte de champ sera obtenue par réévaluation à une fréquence annoncée, car le coût de bande renvoie u=None.

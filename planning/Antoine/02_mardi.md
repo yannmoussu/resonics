@@ -1,24 +1,47 @@
-# Antoine — Mardi, 3 novembre 2026
+# Antoine — Mardi 3 novembre 2026
 
-Objectif : mener la première descente à une fréquence problématique.
+Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une même tâche est partagée avec les autres membres indiqués dans le Gantt, et cette fiche décrit la contribution d’Antoine. On reprend toujours la dernière version des fichiers communs. Les modifications de la démonstration suivent Joachim, puis Antoine, puis Yann.
 
-**Fichier partagé.** On récupère la dernière version transmise par le membre précédent, puis on renvoie le fichier entier après vérification. Une seule personne applique ses modifications à la fois. Chaque tâche ci-dessous concerne un seul fichier de `support/` et ne crée aucun module Python.
+## Compare the energy of the initial distribution of the porous material (this time the wall has not only absorbing parts but also reflective ones) with the energy for the fully absorbing wall.
 
-## Tâche 1 — Descente projetée et recherche de pas
+**Repère :** J2.3. **Rôle :** contributeur.
 
-**Fichier à compléter :** `support/demo_control_polycopie2024.py`, uniquement `your_optimization_procedure` et une fonction `check_optimizer` à ajouter.
+**Contribution d’Antoine.** On fournit des distributions initiales admissibles et la quantité de matériau à afficher avec chaque référence.
 
-**Ce qu'on fait.** On remplace la boucle incomplète par une descente qui réévalue le coût après chaque projection et ne conserve que les essais acceptés. Le calcul acoustique est reçu sous forme d'une fonction d'évaluation, ce qui permet de vérifier l'algorithme sur une petite quadratique avant la campagne.
-
-**Avant de commencer.** On attend la version de Joachim et son contrôle du gradient. Après cette tâche, Yann adaptera l'appel dans le programme principal. La signature et le retour ci-dessous remplacent explicitement l'ancienne signature longue et son tuple.
+**Fichier à modifier :** aucun pour cette contribution d’analyse ou de restitution.
 
 **Fichiers à joindre :**
 
-- `support/demo_control_polycopie2024.py`, avec `project_density` et `evaluate_density` validées
-- `support/_env.py`, `support/preprocessing.py`, `support/processing.py` et `support/postprocessing.py`, versions actuelles en lecture seule pour les imports et les contrôles
-- `context/GAllaire-OptimParam.pdf`, pages PDF 18 à 20
-- `context/Sujet-EI-EXT-2026.md`
+- support/demo_control_polycopie2024.py et support/processing.py, versions actuelles en lecture seule
+- Les poids de longueur et le budget validé par le groupe, puis les quantités des murs entièrement recouverts
+- context/Sujet-EI-EXT-2026.md
 
+**Prompt à copier :**
+
+```text
+À partir du budget et des poids fournis, prépare l’initialisation utilisée pour comparer la répartition partielle au mur entièrement recouvert. Propose de projeter la densité initiale du support avec project_density et donne la densité uniforme material_length_m/sum(design_weights) comme contrôle admissible. Vérifie bornes et budget avec les fonctions existantes, sans modifier ni créer de fichier.
+
+Annonce séparément la quantité de la distribution initiale et celle du mur entièrement recouvert. Leur comparaison est demandée par l’énoncé même si leurs quantités diffèrent ; elle ne suffit pas à établir un gain à matériau égal. Transmets à Yann la densité initiale et ses paramètres pour le calcul des courbes, puis à Olympia les quantités à faire figurer dans les légendes.
+
+Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie les affirmations sur les documents et résultats joints. Signale les données manquantes au lieu d’inventer un résultat.
+```
+
+**Contrôle et passage de main.** On vérifie la faisabilité de la densité de départ et on transmet les quantités à Yann et Olympia avant l’interprétation des courbes.
+
+## Optimize numerically for one or several of the most problematic frequencies (at which there is a maximum of the energy) ;
+
+**Repère :** J2.4. **Rôle :** responsable.
+
+**Contribution d’Antoine.** On remplace la boucle incomplète par une descente projetée avec recherche du pas et historique des essais acceptés.
+
+**Fichier à modifier :** `support/demo_control_polycopie2024.py` uniquement.
+
+**Fichiers à joindre :**
+
+- support/demo_control_polycopie2024.py, dernière version complète, seule cible à modifier
+- support/_env.py, support/preprocessing.py, support/processing.py et support/postprocessing.py, versions actuelles en lecture seule
+- context/GAllaire-OptimParam.pdf, pages PDF 18–20 et 25–29
+- context/Sujet-EI-EXT-2026.md
 
 **Prompt à copier :**
 
@@ -40,4 +63,4 @@ Dans check_optimizer(), prends F(x)=0.5*(2*(x1-0.1)^2+4*(x2-0.2)^2), w=(1,2), L=
 Renvoie le fichier complet et les contrôles réellement exécutés, ou les appels à exécuter. Les commentaires et docstrings sont des phrases françaises sans notation mathématique. Décris le changement de signature pour que Yann puisse adapter son appel.
 ```
 
-**Vérification et transmission.** On exécute `check_optimizer()`, puis Yann branche la fréquence retenue par Olympia. On vérifie que la quantité reste fixée et que l'historique donne des baisses réelles avant de présenter la première optimisation.
+**Contrôle et passage de main.** On valide check_optimizer() sur la quadratique, puis Yann intègre le callback acoustique. Joachim et Yann contrôlent le gradient réel avant les descentes aux pics retenus par Olympia.

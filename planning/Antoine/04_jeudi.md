@@ -1,22 +1,21 @@
-# Antoine — Jeudi, 5 novembre 2026
+# Antoine — Jeudi 5 novembre 2026
 
-Objectif : s'assurer que le produit choisi correspond à une optimisation correctement arrêtée.
+Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une même tâche est partagée avec les autres membres indiqués dans le Gantt, et cette fiche décrit la contribution d’Antoine. On reprend toujours la dernière version des fichiers communs. Les modifications de la démonstration suivent Joachim, puis Antoine, puis Yann.
 
-**Fichier partagé.** On récupère la dernière version transmise par le membre précédent, puis on renvoie le fichier entier après vérification. Une seule personne applique ses modifications à la fois. Chaque tâche ci-dessous concerne un seul fichier de `support/` et ne crée aucun module Python.
+## To continue the analysis of the performances ;
 
-## Tâche 1 — Robustesse et motifs d'arrêt
+**Repère :** J4.1. **Rôle :** contributeur.
 
-**Fichier concerné :** `support/demo_control_polycopie2024.py`, pour la projection, la descente et leurs contrôles. Les données des campagnes sont examinées telles qu'elles existent.
+**Contribution d’Antoine.** On vérifie les motifs d’arrêt, les budgets et la robustesse des candidats selon leurs points de départ.
 
-**Ce qu'on fait.** On distingue une convergence locale d'un arrêt faute de pas ou d'itérations. On vérifie la cohérence du coût final, du budget et du meilleur candidat de plusieurs départs. On indique à Yann les calculs à reprendre avant de figer les résultats.
+**Fichier à modifier :** `support/demo_control_polycopie2024.py` uniquement.
 
 **Fichiers à joindre :**
 
-- `support/demo_control_polycopie2024.py`, dernière version complète
-- `support/_env.py`, `support/preprocessing.py`, `support/processing.py` et `support/postprocessing.py`, versions actuelles en lecture seule pour les imports et les contrôles
-- `context/Sujet-EI-EXT-2026.md`
-- Les historiques et les résumés réels des essais, joints ou collés dans le message
-
+- support/demo_control_polycopie2024.py, dernière version complète, seule cible à modifier
+- support/_env.py, support/preprocessing.py, support/processing.py et support/postprocessing.py, versions actuelles en lecture seule
+- Les historiques, budgets et résumés réels des campagnes, avec leurs initialisations
+- context/Sujet-EI-EXT-2026.md
 
 **Prompt à copier :**
 
@@ -32,4 +31,30 @@ Reprends les petits contrôles d'algorithme, dont les cas de budget extrême et 
 Prépare une explication courte du choix du candidat et de ses limites de calcul pour le groupe. Les campagnes au maillage affiné sont relancées par Yann et comparées par Olympia, elles ne sont pas recodées dans une autre fonction ici.
 ```
 
-**Vérification et transmission.** On transmet à Yann et Olympia les essais à conserver et ceux à prolonger. Toute correction de la projection ou de la recherche de pas impose de réévaluer les candidats concernés.
+**Contrôle et passage de main.** On transmet les essais à conserver ou à prolonger à Yann et Olympia. Une correction de projection ou de recherche du pas impose de réévaluer les candidats concernés.
+
+## To conclude which product to produce/develop.
+
+**Repère :** J4.2. **Rôle :** contributeur.
+
+**Contribution d’Antoine.** On vérifie que le candidat retenu est admissible et que son état de convergence est annoncé correctement.
+
+**Fichier à modifier :** aucun pour cette contribution d’analyse ou de restitution.
+
+**Fichiers à joindre :**
+
+- support/demo_control_polycopie2024.py et support/processing.py, versions actuelles en lecture seule
+- Le tableau final des candidats et les historiques des essais retenus
+- context/Sujet-EI-EXT-2026.md
+
+**Prompt à copier :**
+
+```text
+À partir du tableau et des historiques réels, identifie les candidats admissibles et leurs motifs d’arrêt. Vérifie que coût, densité, gradient projeté et budget se rapportent à la même évaluation finale. Compare les points de départ au même budget et distingue une stationnarité locale d’une limite d’itérations ou de pas.
+
+Propose une courte conclusion pour le choix collectif du produit, en indiquant ce que l’algorithme permet d’affirmer. Le meilleur candidat évalué dans la famille testée n’est pas une preuve d’optimum global. Si le résultat jugé meilleur n’est pas suffisamment contrôlé, indique le calcul précis à reprendre avec Yann avant de le retenir.
+
+Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie les affirmations sur les documents et résultats joints. Signale les données manquantes au lieu d’inventer un résultat.
+```
+
+**Contrôle et passage de main.** On valide avec Olympia la façon de présenter la convergence et avec Yann les éventuels essais à relancer.

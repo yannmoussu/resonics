@@ -1,25 +1,35 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[10pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[french]{babel}
-\usepackage{lmodern,amsmath,amssymb,amsfonts}
-\usepackage{graphicx,booktabs,array}
-\usepackage[margin=2.2cm,landscape]{geometry}
-\usepackage{float,needspace,microtype,tikz}
-\usepackage[colorlinks=true,linkcolor=blue!45!black,urlcolor=blue!45!black]{hyperref}
-\usepackage[figure]{hypcap}
-\usepackage{xcolor,xurl}
+\usepackage{lmodern,amsmath,amssymb}
+\usepackage[a3paper,landscape,margin=1.25cm]{geometry}
+\usepackage{graphicx,array,booktabs,float,microtype,tikz}
+\usepackage[colorlinks=true,urlcolor=blue!50!black]{hyperref}
+\usepackage{xcolor}
+\hypersetup{pdftitle={ResoniCS -- Tâches de l'énoncé et planning},pdfauthor={Équipe ResoniCS}}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
 \setlength{\parskip}{4pt}
+\setlength{\intextsep}{5pt}
 \setlength{\abovecaptionskip}{5pt}
 \setlength{\belowcaptionskip}{0pt}
-\hypersetup{pdftitle={ResoniCS -- Planning de la semaine},pdfauthor={Équipe ResoniCS}}
-\pagestyle{empty}
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\newcommand{\ganttbar}[1]{\tikz[baseline=-.45ex]\filldraw[fill=#1!16,draw=#1,rounded corners=1.4pt] (0,0) rectangle (1.25cm,.19cm);}
 \begin{document}
-\section*{Organisation prévisionnelle du 2 au 6 novembre 2026}
-Les tâches complètent les fichiers fournis dans support. Chaque modification porte sur un seul fichier, partagé entre les membres selon un passage de main. Les fiches individuelles détaillent les tâches et les contrôles de chaque jour.
+{\Large\bfseries ResoniCS — Planning du 2 au 6 novembre 2026}\par
+Les 22 tirets de l'énoncé sont repris mot pour mot et dans leur ordre. Chaque barre représente la journée prévue pour la tâche. Le nom en gras désigne le responsable et les autres noms indiquent les contributions.
+
+\textbf{Cadrage initial.} To give the name to the startup, to define the objectives, the applications to develop, and the main strategy and organization. In addition, to define
 \begin{figure}[H]
 \centering
 \input{gantt_diagram.tex}
-\caption{Répartition des travaux sur les cinq journées}
+\caption{Planning des tâches de l'énoncé}
 \end{figure}
+\textsuperscript{1} To model the open-air type of boundaries, it is convient to consider the Sommerfeld radiation condition of the form $\frac{\partial v}{\partial n} - ik\operatorname{Tr}v = 0$ with the notation $u(x,t) = e^{-ikt}v(x)$ for the propagative wave.
+
+\textbf{Validation quotidienne.} Each day from 14h30 to 17h, the team/start-up presents the current state of the work (main results of the day, difficulties, strategy, ..) and validates its work. Each team member must approve and validate their portion of the work.
+
+\textbf{Vendredi après-midi.} Defense by team the afternoon (slides 20 min, each person speaks, 10 min questions)
 \end{document}

@@ -1,41 +1,82 @@
-# Mathis — Vendredi 6 novembre — Relecture du matériau et préparation de l’oral
+# Mathis — Vendredi 6 novembre
 
-**Organisation.** On travaille à partir des versions à jour. On ne modifie que le fichier cible et on conserve les fonctions déjà écrites par les autres. Les fonctions nouvelles sont ajoutées dans ce fichier et les fonctions des jours précédents sont conservées. Aucune de ces fiches ne demande de créer un nouveau module Python.
+**Organisation.** On utilise les versions complètes et à jour. Chaque contribution de code porte sur un seul fichier de `support/`, les dépendances restent en lecture seule et aucun nouveau module Python n’est créé. Les intitulés ci-dessous reprennent exactement les tirets de l’énoncé.
 
-## Tâche — Relecture du matériau et préparation de l’oral
+## To finalize everything
+
+**Repère :** J5.1. **Rôle :** contributeur.
+
+**Contribution de Mathis.** On vérifie une dernière fois que les coefficients présentés sont reproductibles à partir des paramètres annoncés.
 
 **Fichier à compléter :** `support/preprocessing.py`.
 
-On vérifie que le programme permet de retrouver tous les paramètres du matériau montrés dans les documents. On prépare une explication orale des conversions et du choix physique, puis on valide cette partie pendant la répétition collective.
-
 ### Fichiers à joindre
 
-- `support/preprocessing.py`
-- `support/demo_control_polycopie2024.py`
-- `context/Sujet-EI-EXT-2026.md`
-
-- Les paramètres validés et les résultats de comparaison transmis par Yann et Olympia.
-
-On joint les fichiers complets et à jour. Seul le fichier cible est modifiable ; les autres servent à comprendre les appels et les conventions.
+- `support/preprocessing.py` — cible à modifier.
+- `support/demo_control_polycopie2024.py` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
 
 ### Prompt à copier
 
 ```text
-Vérifie uniquement support/preprocessing.py dans sa version finale. Limite les modifications aux erreurs avérées ou aux commentaires utiles. Conserve la signature de compute_material_response et tous les ajouts des autres membres.
+Modifie uniquement support/preprocessing.py joint et renvoie sa version complète si une modification est nécessaire. Les autres fichiers sont fournis en lecture seule. Conserve les fonctions des autres membres et les signatures validées.
 
-Vérifie les données d'entrée nécessaires, les unités, les contrôles de validité, la provenance et la distinction entre alpha_phys et alpha_code. Confirme qu'un import de ce fichier ne lance pas de calcul lourd ni de graphique. Donne la commande ou le petit appel reproductible permettant de retrouver les coefficients présentés, avec les paramètres réellement utilisés.
+Vérifie la version finale de preprocessing.py. Limite les corrections aux erreurs avérées ou aux commentaires utiles et conserve toutes les signatures utilisées par le pilote. Contrôle la provenance, les unités, le domaine de validité et le signe de Robin. Vérifie que l’import ne déclenche ni calcul lourd ni graphique. Donne le petit appel qui reproduit les coefficients retenus, avec les paramètres réels du projet. Ne prétends pas avoir exécuté un contrôle si tu n’as pas ses sorties.
 
-Prépare ensuite, dans ta réponse et sans nouveau fichier, un court texte oral expliquant le matériau, le passage de l'impédance au coefficient Robin, la passivité et la quantité utilisée. Réserve les conclusions chiffrées aux résultats effectivement fournis. La soutenance collective dure vingt minutes et les cinq membres doivent parler.
-
-Rends uniquement la version complète du fichier cible et une courte explication des modifications et des contrôles. Ne crée aucun autre fichier Python. Conserve toutes les fonctions sans rapport avec cette tâche et les modifications déjà faites par les autres. Les commentaires sont de courtes phrases françaises expliquant les étapes, sans formules mathématiques. Les petits contrôles restent dans ce même fichier et ne se lancent pas lors de son import.
+Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de courtes phrases françaises sans équations ni symboles mathématiques. Les petits contrôles restent dans ce même fichier et ne se lancent pas lors de son import. Après le fichier complet, donne une courte explication et les contrôles réellement exécutés. Si tu ne peux pas les lancer, indique les appels à faire sans annoncer leur réussite.
 ```
 
-### Résultat attendu et contrôles
+**Contrôle attendu.** Les coefficients du programme correspondent aux valeurs présentées et les petits contrôles sont exécutables sans nouveau module.
 
-- Les coefficients publiés sont reproductibles à partir des données explicites.
-- Les petits contrôles passent sans toucher aux autres modules.
-- Mathis sait expliquer les unités, le signe et la quantité, puis valide sa partie pendant la répétition.
+**Passage de main.** Valider le matériau auprès de Yann le matin. Une correction de valeur scientifique impose d’actualiser les résultats concernés.
 
-### Passage de main
+## Preparation of the defense
 
-Mathis rend sa validation à Yann le matin. On évite les changements d'interface après la répétition, puis chacun intervient à la soutenance de l'après-midi.
+**Repère :** J5.2. **Rôle :** contributeur.
+
+**Contribution de Mathis.** On prépare l’explication orale du matériau, des unités et de sa quantité, puis on répète avec les autres membres.
+
+**Fichier à compléter :** aucun pour cette contribution d’analyse ou de restitution.
+
+### Fichiers à joindre
+
+- `support/preprocessing.py` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
+
+### Prompt à copier
+
+```text
+Prépare une explication orale du matériau à partir du code final et des valeurs retenues. Explique l’impédance, sa conversion en coefficient Robin, le contrôle de passivité et la quantité utilisée. Donne des phrases naturelles et relie les conclusions chiffrées aux résultats joints. Le groupe dispose de vingt minutes d’exposé et dix minutes de questions, avec une intervention de chacun. Ne crée aucun fichier.
+
+```
+
+**Contrôle attendu.** Les chiffres commentés à l’oral correspondent au code et le groupe respecte sa durée totale.
+
+**Passage de main.** Répéter la transition depuis le modèle de Yann vers le matériau, puis vers l’objectif de Joachim.
+
+## Finalization of the rapport by the team.
+
+**Repère :** J5.3. **Rôle :** contributeur.
+
+**Contribution de Mathis.** On fournit au groupe le texte final et les valeurs sur le matériau pour le rapport commun.
+
+**Fichier à compléter :** aucun pour cette contribution d’analyse ou de restitution.
+
+### Fichiers à joindre
+
+- `support/preprocessing.py` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
+
+### Prompt à copier
+
+```text
+Prépare pour le rapport commun une contribution concise contenant les paramètres du matériau, leurs unités, leur provenance, la conversion du coefficient et la quantité retenue. Appuie les conclusions sur les figures et les valeurs jointes. Distingue les contrôles synthétiques des résultats physiques. Donne le texte directement dans ta réponse pour intégration au document commun, sans créer de fichier.
+
+```
+
+**Contrôle attendu.** Le texte, les chiffres et les conventions sont identiques à ceux des programmes et des figures approuvées.
+
+**Passage de main.** Relire la section intégrée par Yann et donner l’approbation finale de cette partie.

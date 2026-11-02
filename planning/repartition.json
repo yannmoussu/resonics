@@ -1,303 +1,761 @@
 [
   {
-    "id": "Y1",
-    "responsable": "Yann",
-    "voie": "VN",
+    "id": "J1.1",
+    "jour": 1,
     "date": "2026-11-02",
-    "tache": "Géométrie et solveur",
+    "tache": "the state of the art ;",
+    "responsable": "Olympia",
+    "contributeurs": [
+      "Mathis"
+    ],
+    "contributions": [
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/01_lundi.md",
+        "fichier_cible": null,
+        "role": "responsable"
+      },
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/01_lundi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": []
+  },
+  {
+    "id": "J1.2",
+    "jour": 1,
+    "date": "2026-11-02",
+    "tache": "the model to consider,",
+    "responsable": "Yann",
+    "contributeurs": [
+      "Olympia",
+      "Joachim"
+    ],
+    "contributions": [
+      {
+        "membre": "Yann",
+        "fiche": "Yann/01_lundi.md",
+        "fichier_cible": "support/preprocessing.py",
+        "role": "responsable"
+      },
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/01_lundi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      },
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/01_lundi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "contributeur"
+      }
+    ],
     "fichiers_cibles": [
-      "support/preprocessing.py",
+      "support/postprocessing.py",
+      "support/preprocessing.py"
+    ]
+  },
+  {
+    "id": "J1.3",
+    "jour": 1,
+    "date": "2026-11-02",
+    "tache": "the plage of frequencies of the interest, dimensions, noise sources ;",
+    "responsable": "Mathis",
+    "contributeurs": [
+      "Yann",
+      "Olympia"
+    ],
+    "contributions": [
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/01_lundi.md",
+        "fichier_cible": null,
+        "role": "responsable"
+      },
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/01_lundi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/01_lundi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": []
+  },
+  {
+    "id": "J1.4",
+    "jour": 1,
+    "date": "2026-11-02",
+    "tache": "formulate the properties of the chosen model, what is known about its solution ;",
+    "responsable": "Joachim",
+    "contributeurs": [],
+    "contributions": [
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/01_lundi.md",
+        "fichier_cible": null,
+        "role": "responsable"
+      }
+    ],
+    "fichiers_cibles": []
+  },
+  {
+    "id": "J1.5",
+    "jour": 1,
+    "date": "2026-11-02",
+    "tache": "formulate optimization problem ;",
+    "responsable": "Antoine",
+    "contributeurs": [
+      "Joachim"
+    ],
+    "contributions": [
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/01_lundi.md",
+        "fichier_cible": null,
+        "role": "responsable"
+      },
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/01_lundi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py"
+    ]
+  },
+  {
+    "id": "J1.6",
+    "jour": 1,
+    "date": "2026-11-02",
+    "tache": "Theoretical study : considering that one boundary is open-air (the wave go through without coming back) derive the energy over the form and compare the result with the analogous result with a reflexive boundary[^1].",
+    "responsable": "Joachim",
+    "contributeurs": [
+      "Yann"
+    ],
+    "contributions": [
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/01_lundi.md",
+        "fichier_cible": null,
+        "role": "responsable"
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/01_lundi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": []
+  },
+  {
+    "id": "J1.7",
+    "jour": 1,
+    "date": "2026-11-02",
+    "tache": "to choose porous material(s) and its quantity ;",
+    "responsable": "Mathis",
+    "contributeurs": [
+      "Antoine"
+    ],
+    "contributions": [
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/01_lundi.md",
+        "fichier_cible": null,
+        "role": "responsable"
+      },
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/01_lundi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": []
+  },
+  {
+    "id": "J1.8",
+    "jour": 1,
+    "date": "2026-11-02",
+    "tache": "find numerically the corresponding complex coefficient(s) $\\alpha(\\omega)$ for the porous matherial(s) ; to compare the performances if several ;",
+    "responsable": "Mathis",
+    "contributeurs": [
+      "Yann"
+    ],
+    "contributions": [
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/01_lundi.md",
+        "fichier_cible": "support/preprocessing.py",
+        "role": "responsable"
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/01_lundi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": [
+      "support/preprocessing.py"
+    ]
+  },
+  {
+    "id": "J1.9",
+    "jour": 1,
+    "date": "2026-11-02",
+    "tache": "find energy derivative over the distribution of the porous inclusions ;",
+    "responsable": "Joachim",
+    "contributeurs": [
+      "Yann"
+    ],
+    "contributions": [
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/01_lundi.md",
+        "fichier_cible": null,
+        "role": "responsable"
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/01_lundi.md",
+        "fichier_cible": "support/processing.py",
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": [
       "support/processing.py"
-    ],
-    "fiche": "Yann/01_lundi.md",
-    "nombre_taches": 2
+    ]
   },
   {
-    "id": "Y2",
-    "responsable": "Yann",
-    "voie": "VN",
-    "date": "2026-11-03",
-    "tache": "Intégration et premières références",
-    "fichiers_cibles": [
-      "support/demo_control_polycopie2024.py"
-    ],
-    "fiche": "Yann/02_mardi.md",
-    "nombre_taches": 1
-  },
-  {
-    "id": "Y3",
-    "responsable": "Yann",
-    "voie": "VN",
-    "date": "2026-11-04",
-    "tache": "Bande et quantités",
-    "fichiers_cibles": [
-      "support/demo_control_polycopie2024.py"
-    ],
-    "fiche": "Yann/03_mercredi.md",
-    "nombre_taches": 1
-  },
-  {
-    "id": "Y4",
-    "responsable": "Yann",
-    "voie": "VN",
-    "date": "2026-11-05",
-    "tache": "Raffinement et contrôles",
-    "fichiers_cibles": [
-      "support/demo_control_polycopie2024.py"
-    ],
-    "fiche": "Yann/04_jeudi.md",
-    "nombre_taches": 1
-  },
-  {
-    "id": "Y5",
-    "responsable": "Yann",
-    "voie": "VN",
-    "date": "2026-11-06",
-    "tache": "Exécution finale et restitution",
-    "fichiers_cibles": [
-      "support/demo_control_polycopie2024.py"
-    ],
-    "fiche": "Yann/05_vendredi.md",
-    "nombre_taches": 2
-  },
-  {
-    "id": "M1",
-    "responsable": "Mathis",
-    "voie": "VN",
+    "id": "J1.10",
+    "jour": 1,
     "date": "2026-11-02",
-    "tache": "Données et matériau",
-    "fichiers_cibles": [
-      "support/preprocessing.py"
+    "tache": "formulate/consider the numerical gradient descent method.",
+    "responsable": "Antoine",
+    "contributeurs": [],
+    "contributions": [
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/01_lundi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "responsable"
+      }
     ],
-    "fiche": "Mathis/01_lundi.md",
-    "nombre_taches": 1
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py"
+    ]
   },
   {
-    "id": "M2",
-    "responsable": "Mathis",
-    "voie": "VN",
+    "id": "J2.1",
+    "jour": 2,
     "date": "2026-11-03",
-    "tache": "Passivité",
-    "fichiers_cibles": [
-      "support/preprocessing.py"
-    ],
-    "fiche": "Mathis/02_mardi.md",
-    "nombre_taches": 1
-  },
-  {
-    "id": "M3",
-    "responsable": "Mathis",
-    "voie": "VN",
-    "date": "2026-11-04",
-    "tache": "Matériaux et quantités",
-    "fichiers_cibles": [
-      "support/preprocessing.py"
-    ],
-    "fiche": "Mathis/03_mercredi.md",
-    "nombre_taches": 1
-  },
-  {
-    "id": "M4",
-    "responsable": "Mathis",
-    "voie": "VN",
-    "date": "2026-11-05",
-    "tache": "Choix physique du matériau",
-    "fichiers_cibles": [
-      "support/preprocessing.py"
-    ],
-    "fiche": "Mathis/04_jeudi.md",
-    "nombre_taches": 1
-  },
-  {
-    "id": "M5",
-    "responsable": "Mathis",
-    "voie": "VN",
-    "date": "2026-11-06",
-    "tache": "Validation et oral",
-    "fichiers_cibles": [
-      "support/preprocessing.py"
-    ],
-    "fiche": "Mathis/05_vendredi.md",
-    "nombre_taches": 1
-  },
-  {
-    "id": "O1",
+    "tache": "Study the energy on the chosen plage of frequencies for a fully absorbent wall of the plane shape and to define the local maxima ;",
     "responsable": "Olympia",
-    "voie": "VN",
-    "date": "2026-11-02",
-    "tache": "Figures de géométrie",
-    "fichiers_cibles": [
-      "support/postprocessing.py"
+    "contributeurs": [
+      "Yann",
+      "Mathis"
     ],
-    "fiche": "Olympia/01_lundi.md",
-    "nombre_taches": 1
+    "contributions": [
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/02_mardi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "responsable"
+      },
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/02_mardi.md",
+        "fichier_cible": "support/preprocessing.py",
+        "role": "contributeur"
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/02_mardi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py",
+      "support/postprocessing.py",
+      "support/preprocessing.py"
+    ]
   },
   {
-    "id": "O2",
-    "responsable": "Olympia",
-    "voie": "VN",
+    "id": "J2.2",
+    "jour": 2,
     "date": "2026-11-03",
-    "tache": "Références et pics",
-    "fichiers_cibles": [
-      "support/postprocessing.py"
-    ],
-    "fiche": "Olympia/02_mardi.md",
-    "nombre_taches": 1
-  },
-  {
-    "id": "O3",
+    "tache": "Study the same question for different shapes of fully absorbent walls ;",
     "responsable": "Olympia",
-    "voie": "VN",
-    "date": "2026-11-04",
-    "tache": "Bande et quantités",
-    "fichiers_cibles": [
-      "support/postprocessing.py"
+    "contributeurs": [
+      "Yann",
+      "Mathis"
     ],
-    "fiche": "Olympia/03_mercredi.md",
-    "nombre_taches": 1
+    "contributions": [
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/02_mardi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "responsable"
+      },
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/02_mardi.md",
+        "fichier_cible": "support/preprocessing.py",
+        "role": "contributeur"
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/02_mardi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py",
+      "support/postprocessing.py",
+      "support/preprocessing.py"
+    ]
   },
   {
-    "id": "O4",
-    "responsable": "Olympia",
-    "voie": "VN",
-    "date": "2026-11-05",
-    "tache": "Robustesse et produit",
-    "fichiers_cibles": [
-      "support/postprocessing.py"
-    ],
-    "fiche": "Olympia/04_jeudi.md",
-    "nombre_taches": 1
-  },
-  {
-    "id": "O5",
-    "responsable": "Olympia",
-    "voie": "VN",
-    "date": "2026-11-06",
-    "tache": "Figures et oral",
-    "fichiers_cibles": [
-      "support/postprocessing.py"
-    ],
-    "fiche": "Olympia/05_vendredi.md",
-    "nombre_taches": 1
-  },
-  {
-    "id": "J1",
-    "responsable": "Joachim",
-    "voie": "VT",
-    "date": "2026-11-02",
-    "tache": "Objectif et étude théorique",
-    "fichiers_cibles": [
-      "support/demo_control_polycopie2024.py"
-    ],
-    "fiche": "Joachim/01_lundi.md",
-    "nombre_taches": 1
-  },
-  {
-    "id": "J2",
-    "responsable": "Joachim",
-    "voie": "VT",
+    "id": "J2.3",
+    "jour": 2,
     "date": "2026-11-03",
-    "tache": "Adjoint et gradient",
-    "fichiers_cibles": [
-      "support/demo_control_polycopie2024.py"
+    "tache": "Compare the energy of the initial distribution of the porous material (this time the wall has not only absorbing parts but also reflective ones) with the energy for the fully absorbing wall.",
+    "responsable": "Olympia",
+    "contributeurs": [
+      "Yann",
+      "Antoine"
     ],
-    "fiche": "Joachim/02_mardi.md",
-    "nombre_taches": 1
+    "contributions": [
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/02_mardi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "responsable"
+      },
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/02_mardi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/02_mardi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py",
+      "support/postprocessing.py"
+    ]
   },
   {
-    "id": "J3",
-    "responsable": "Joachim",
-    "voie": "VT",
-    "date": "2026-11-04",
-    "tache": "Coût multifréquence",
-    "fichiers_cibles": [
-      "support/demo_control_polycopie2024.py"
-    ],
-    "fiche": "Joachim/03_mercredi.md",
-    "nombre_taches": 1
-  },
-  {
-    "id": "J4",
-    "responsable": "Joachim",
-    "voie": "VT",
-    "date": "2026-11-05",
-    "tache": "Validation mathématique",
-    "fichiers_cibles": [
-      "support/demo_control_polycopie2024.py"
-    ],
-    "fiche": "Joachim/04_jeudi.md",
-    "nombre_taches": 1
-  },
-  {
-    "id": "J5",
-    "responsable": "Joachim",
-    "voie": "VT",
-    "date": "2026-11-06",
-    "tache": "Validation et oral",
-    "fichiers_cibles": [
-      "support/demo_control_polycopie2024.py"
-    ],
-    "fiche": "Joachim/05_vendredi.md",
-    "nombre_taches": 1
-  },
-  {
-    "id": "A1",
-    "responsable": "Antoine",
-    "voie": "VT",
-    "date": "2026-11-02",
-    "tache": "Projection",
-    "fichiers_cibles": [
-      "support/demo_control_polycopie2024.py"
-    ],
-    "fiche": "Antoine/01_lundi.md",
-    "nombre_taches": 1
-  },
-  {
-    "id": "A2",
-    "responsable": "Antoine",
-    "voie": "VT",
+    "id": "J2.4",
+    "jour": 2,
     "date": "2026-11-03",
-    "tache": "Descente projetée",
-    "fichiers_cibles": [
-      "support/demo_control_polycopie2024.py"
+    "tache": "Optimize numerically for one or several of the most problematic frequencies (at which there is a maximum of the energy) ;",
+    "responsable": "Antoine",
+    "contributeurs": [
+      "Yann",
+      "Olympia",
+      "Joachim"
     ],
-    "fiche": "Antoine/02_mardi.md",
-    "nombre_taches": 1
+    "contributions": [
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/02_mardi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "responsable"
+      },
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/02_mardi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur"
+      },
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/02_mardi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "contributeur"
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/02_mardi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py",
+      "support/postprocessing.py"
+    ]
   },
   {
-    "id": "A3",
-    "responsable": "Antoine",
-    "voie": "VT",
+    "id": "J3.1",
+    "jour": 3,
     "date": "2026-11-04",
-    "tache": "Bande et budgets",
-    "fichiers_cibles": [
-      "support/demo_control_polycopie2024.py"
+    "tache": "Analyze the obtained results to compare to the efficient performances on the fixed range of frequencies ; to compare to a fully absorbing wall ;",
+    "responsable": "Olympia",
+    "contributeurs": [
+      "Yann"
     ],
-    "fiche": "Antoine/03_mercredi.md",
-    "nombre_taches": 1
+    "contributions": [
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/03_mercredi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "responsable"
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/03_mercredi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py",
+      "support/postprocessing.py"
+    ]
   },
   {
-    "id": "A4",
+    "id": "J3.2",
+    "jour": 3,
+    "date": "2026-11-04",
+    "tache": "to optimize the energy at once at several different frequencies ;",
     "responsable": "Antoine",
-    "voie": "VT",
+    "contributeurs": [
+      "Yann",
+      "Olympia",
+      "Joachim"
+    ],
+    "contributions": [
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/03_mercredi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "responsable"
+      },
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/03_mercredi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur"
+      },
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/03_mercredi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "contributeur"
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/03_mercredi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py",
+      "support/postprocessing.py"
+    ]
+  },
+  {
+    "id": "J3.3",
+    "jour": 3,
+    "date": "2026-11-04",
+    "tache": "to study which quantity of the porous material gives the most optimal result ;",
+    "responsable": "Mathis",
+    "contributeurs": [
+      "Yann",
+      "Olympia",
+      "Antoine"
+    ],
+    "contributions": [
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/03_mercredi.md",
+        "fichier_cible": "support/preprocessing.py",
+        "role": "responsable"
+      },
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/03_mercredi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      },
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/03_mercredi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "contributeur"
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/03_mercredi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py",
+      "support/postprocessing.py",
+      "support/preprocessing.py"
+    ]
+  },
+  {
+    "id": "J4.1",
+    "jour": 4,
     "date": "2026-11-05",
-    "tache": "Arrêts et robustesse",
-    "fichiers_cibles": [
-      "support/demo_control_polycopie2024.py"
+    "tache": "To continue the analysis of the performances ;",
+    "responsable": "Olympia",
+    "contributeurs": [
+      "Yann",
+      "Mathis",
+      "Joachim",
+      "Antoine"
     ],
-    "fiche": "Antoine/04_jeudi.md",
-    "nombre_taches": 1
+    "contributions": [
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/04_jeudi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "responsable"
+      },
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/04_jeudi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur"
+      },
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/04_jeudi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur"
+      },
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/04_jeudi.md",
+        "fichier_cible": "support/preprocessing.py",
+        "role": "contributeur"
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/04_jeudi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py",
+      "support/postprocessing.py",
+      "support/preprocessing.py"
+    ]
   },
   {
-    "id": "A5",
-    "responsable": "Antoine",
-    "voie": "VT",
-    "date": "2026-11-06",
-    "tache": "Validation et oral",
-    "fichiers_cibles": [
-      "support/demo_control_polycopie2024.py"
+    "id": "J4.2",
+    "jour": 4,
+    "date": "2026-11-05",
+    "tache": "To conclude which product to produce/develop.",
+    "responsable": "Olympia",
+    "contributeurs": [
+      "Yann",
+      "Mathis",
+      "Joachim",
+      "Antoine"
     ],
-    "fiche": "Antoine/05_vendredi.md",
-    "nombre_taches": 1
+    "contributions": [
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/04_jeudi.md",
+        "fichier_cible": null,
+        "role": "responsable"
+      },
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/04_jeudi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      },
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/04_jeudi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      },
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/04_jeudi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      },
+      {
+        "membre": "Yann",
+        "fiche": "Yann/04_jeudi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": []
+  },
+  {
+    "id": "J5.1",
+    "jour": 5,
+    "date": "2026-11-06",
+    "tache": "To finalize everything",
+    "responsable": "Yann",
+    "contributeurs": [
+      "Mathis",
+      "Olympia",
+      "Joachim",
+      "Antoine"
+    ],
+    "contributions": [
+      {
+        "membre": "Yann",
+        "fiche": "Yann/05_vendredi.md",
+        "fichier_cible": "support/demo_control_polycopie2024.py",
+        "role": "responsable"
+      },
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      },
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      },
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/05_vendredi.md",
+        "fichier_cible": "support/preprocessing.py",
+        "role": "contributeur"
+      },
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/05_vendredi.md",
+        "fichier_cible": "support/postprocessing.py",
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": [
+      "support/demo_control_polycopie2024.py",
+      "support/postprocessing.py",
+      "support/preprocessing.py"
+    ]
+  },
+  {
+    "id": "J5.2",
+    "jour": 5,
+    "date": "2026-11-06",
+    "tache": "Preparation of the defense",
+    "responsable": "Yann",
+    "contributeurs": [
+      "Mathis",
+      "Olympia",
+      "Joachim",
+      "Antoine"
+    ],
+    "contributions": [
+      {
+        "membre": "Yann",
+        "fiche": "Yann/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "responsable"
+      },
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      },
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      },
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      },
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": []
+  },
+  {
+    "id": "J5.3",
+    "jour": 5,
+    "date": "2026-11-06",
+    "tache": "Finalization of the rapport by the team.",
+    "responsable": "Yann",
+    "contributeurs": [
+      "Mathis",
+      "Olympia",
+      "Joachim",
+      "Antoine"
+    ],
+    "contributions": [
+      {
+        "membre": "Yann",
+        "fiche": "Yann/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "responsable"
+      },
+      {
+        "membre": "Antoine",
+        "fiche": "Antoine/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      },
+      {
+        "membre": "Joachim",
+        "fiche": "Joachim/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      },
+      {
+        "membre": "Mathis",
+        "fiche": "Mathis/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      },
+      {
+        "membre": "Olympia",
+        "fiche": "Olympia/05_vendredi.md",
+        "fichier_cible": null,
+        "role": "contributeur"
+      }
+    ],
+    "fichiers_cibles": []
   }
 ]

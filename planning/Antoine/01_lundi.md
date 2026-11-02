@@ -1,24 +1,75 @@
-# Antoine — Lundi, 2 novembre 2026
+# Antoine — Lundi 2 novembre 2026
 
-Objectif : conserver une quantité physique de matériau avec une projection simple.
+Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une même tâche est partagée avec les autres membres indiqués dans le Gantt, et cette fiche décrit la contribution d’Antoine. On reprend toujours la dernière version des fichiers communs. Les modifications de la démonstration suivent Joachim, puis Antoine, puis Yann.
 
-**Fichier partagé.** On récupère la dernière version transmise par le membre précédent, puis on renvoie le fichier entier après vérification. Une seule personne applique ses modifications à la fois. Chaque tâche ci-dessous concerne un seul fichier de `support/` et ne crée aucun module Python.
+## formulate optimization problem ;
 
-## Tâche 1 — Projection sous contrainte de quantité
+**Repère :** J1.5. **Rôle :** responsable.
 
-**Fichier à compléter :** `support/demo_control_polycopie2024.py`, uniquement une nouvelle fonction `project_density` et ses contrôles.
+**Contribution d’Antoine.** On formule les variables de conception, le critère à minimiser et la contrainte de quantité de matériau.
 
-**Ce qu'on fait.** On ramène une distribution d'essai entre zéro et un en conservant une longueur absorbante totale. La longueur est calculée avec les faces réellement voisines du fluide, ce qui permet de comparer des murs de longueurs différentes. On prépare ensuite le schéma de descente projetée pour le point du lundi.
-
-**Avant de commencer.** Joachim transmet d'abord le fichier contenant son critère. On travaille sur cette version, puis on la renvoie à Yann pour l'intégration. Les ajouts restent dans le même fichier partagé.
+**Fichier à modifier :** aucun pour cette contribution d’analyse ou de restitution.
 
 **Fichiers à joindre :**
 
-- `support/demo_control_polycopie2024.py`, dernière version reçue de Joachim
-- `support/_env.py`, `support/preprocessing.py`, `support/processing.py` et `support/postprocessing.py`, versions actuelles en lecture seule pour les imports et les contrôles
-- `context/GAllaire-OptimParam.pdf`, notamment les pages PDF 18 à 20 sur le gradient projeté
-- `context/Sujet-EI-EXT-2026.md`
+- support/demo_control_polycopie2024.py et support/processing.py, versions actuelles en lecture seule
+- context/GAllaire-OptimParam.pdf, pages PDF 18–20 et 25–29
+- context/Sujet-EI-EXT-2026.md
 
+**Prompt à copier :**
+
+```text
+Formule le problème d’optimisation ResoniCS à partir du critère défini par Joachim. La densité chi est réelle, vaut entre zéro et un aux nœuds Robin de conception et reste nulle hors du mur modifiable. À géométrie fixée, le coût est l’intégrale intérieure de pression au carré obtenue après résolution de Helmholtz.
+
+Le poids d’une variable est la longueur discrète fournie par Yann, égale au pas multiplié par le nombre de contacts avec un intérieur. Imposer dot(design_weights,chi)=material_length_m conserve une longueur absorbante absolue. Les Robin d’ouverture sont exclues de la conception. À épaisseur et profondeur constantes, le volume est proportionnel à cette longueur. Précise les conditions de faisabilité et l’ensemble admissible. La comparaison des formes utilise des optimisations séparées et n’impose pas l’aire unité de l’ancien devoir.
+
+Explique le cas entièrement recouvert comme référence demandée par l’énoncé, avec sa quantité propre, et non comme une borne minimale assurée. Présente les données à fixer avant la descente : source, matériau, fréquence, géométrie, budget et éventuelle normalisation du coût.
+
+Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie les affirmations sur les documents et résultats joints. Signale les données manquantes au lieu d’inventer un résultat.
+```
+
+**Contrôle et passage de main.** On fait valider le problème à quantité fixée avec Joachim, Mathis et Yann avant de programmer la projection.
+
+## to choose porous material(s) and its quantity ;
+
+**Repère :** J1.7. **Rôle :** contributeur.
+
+**Contribution d’Antoine.** On exprime le budget physique choisi par Mathis avec les longueurs représentées par le maillage.
+
+**Fichier à modifier :** aucun pour cette contribution d’analyse ou de restitution.
+
+**Fichiers à joindre :**
+
+- support/demo_control_polycopie2024.py et support/processing.py, versions actuelles en lecture seule
+- Le matériau, l’épaisseur, la profondeur et la quantité proposés par Mathis, puis les poids du mur calculés par Yann
+- context/Sujet-EI-EXT-2026.md
+
+**Prompt à copier :**
+
+```text
+Vérifie la quantité proposée par Mathis pour le mur. Donne le lien entre longueur absorbante pondérée, épaisseur, profondeur et volume de poreux. Vérifie les unités et la faisabilité du budget sur tous les profils retenus. Une même fraction du nombre de nœuds Robin ne conserve pas forcément la même quantité physique entre des contours de longueurs différentes.
+
+Prépare les valeurs et les hypothèses de quantité à transmettre au groupe. Si un paramètre manque, identifie-le. Ne choisis pas de quantité physique arbitraire pour rendre un test faisable. Les budgets synthétiques de contrôle seront séparés des budgets réels.
+
+Donne ta réponse dans le message, sans créer ni modifier de fichier. Appuie les affirmations sur les documents et résultats joints. Signale les données manquantes au lieu d’inventer un résultat.
+```
+
+**Contrôle et passage de main.** On remet à Mathis et Yann la règle de mesure du budget, puis on utilise cette même règle dans la projection.
+
+## formulate/consider the numerical gradient descent method.
+
+**Repère :** J1.10. **Rôle :** responsable.
+
+**Contribution d’Antoine.** On formule la descente projetée et on programme la projection qui conserve le budget de matériau.
+
+**Fichier à modifier :** `support/demo_control_polycopie2024.py` uniquement.
+
+**Fichiers à joindre :**
+
+- support/demo_control_polycopie2024.py, dernière version complète, seule cible à modifier
+- support/_env.py, support/preprocessing.py, support/processing.py et support/postprocessing.py, versions actuelles en lecture seule
+- context/GAllaire-OptimParam.pdf, pages PDF 18–20 et 25–29
+- context/Sujet-EI-EXT-2026.md
 
 **Prompt à copier :**
 
@@ -36,4 +87,4 @@ Après le code, explique le futur algorithme de gradient projeté : évaluation 
 Renvoie le fichier complet avec de courts commentaires français sans équations, puis les contrôles réellement exécutés ou leurs appels si tu ne peux pas les exécuter. Ne modifie pas encore your_optimization_procedure.
 ```
 
-**Vérification et transmission.** On exécute `check_projection()` depuis `support`. On transmet la version complète à Yann, puis on présente au point collectif la conservation du budget et le schéma de descente qui sera activé après validation du gradient.
+**Contrôle et passage de main.** Après la version de Joachim, on lance check_projection() puis on transmet le fichier complet à Yann. On présente le schéma de descente au point collectif avant son activation mardi.

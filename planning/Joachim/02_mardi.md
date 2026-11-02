@@ -1,23 +1,22 @@
-# Joachim — Mardi, 3 novembre 2026
+# Joachim — Mardi 3 novembre 2026
 
-Objectif : calculer un gradient fiable avant la première descente acoustique.
+Les titres ci-dessous reprennent mot pour mot les tirets de l’énoncé. Une même tâche est partagée avec les autres membres indiqués dans le Gantt, et cette fiche décrit la contribution de Joachim. On reprend toujours la dernière version des fichiers communs. Les modifications de la démonstration suivent Joachim, puis Antoine, puis Yann.
 
-**Fichier partagé.** On récupère la dernière version transmise par le membre précédent, puis on renvoie le fichier entier après vérification. Une seule personne applique ses modifications à la fois. Chaque tâche ci-dessous concerne un seul fichier de `support/` et ne crée aucun module Python.
+## Optimize numerically for one or several of the most problematic frequencies (at which there is a maximum of the energy) ;
 
-## Tâche 1 — État adjoint et contrôle par différences centrées
+**Repère :** J2.4. **Rôle :** contributeur.
 
-**Fichier à compléter :** `support/demo_control_polycopie2024.py`, en ajoutant `evaluate_density` et `check_gradient`, sans modifier les fonctions d'Antoine ni le lancement des campagnes.
+**Contribution de Joachim.** On programme l’état adjoint et le gradient, puis on les vérifie avant les descentes à une fréquence problématique.
 
-**Ce qu'on fait.** On résout le système direct, puis un système adjoint complexe. Chaque face de mur contribue au gradient de sa variable de matériau. On vérifie ce gradient avec de petites perturbations du coût avant de l'utiliser pour optimiser.
+**Fichier à modifier :** `support/demo_control_polycopie2024.py` uniquement.
 
 **Fichiers à joindre :**
 
-- `support/demo_control_polycopie2024.py`, version complète contenant le critère de lundi et la projection d'Antoine
-- `support/_env.py`, `support/preprocessing.py`, `support/processing.py` et `support/postprocessing.py`, versions actuelles en lecture seule pour les imports et les contrôles
-- `context/Dirichlet_Nonhomogene.pdf`
-- `context/GAllaire-OptimParam.pdf`, pages PDF 25 à 29
-- `context/Sujet-EI-EXT-2026.md`
-
+- support/demo_control_polycopie2024.py, dernière version complète, seule cible à modifier
+- support/_env.py, support/preprocessing.py, support/processing.py et support/postprocessing.py, versions actuelles en lecture seule
+- context/Dirichlet_Nonhomogene.pdf, les deux pages
+- context/GAllaire-OptimParam.pdf, pages PDF 18–20 et 25–29
+- context/Sujet-EI-EXT-2026.md
 
 **Prompt à copier :**
 
@@ -37,4 +36,4 @@ Pour check_gradient(), construis localement un petit assembleur synthétique inv
 Ajoute des commentaires en phrases françaises, sans équations. Renvoie le fichier complet, une explication courte et les tests réellement exécutés ou leurs appels si tu ne peux pas les lancer.
 ```
 
-**Vérification et transmission.** On lance le test synthétique, puis le même contrôle centré avec l'assemblage réel transmis par Yann. On attend une baisse initiale de l'erreur avant la limite d'arrondi. On remet ensuite le fichier à Antoine, qui peut activer la descente uniquement après validation du gradient.
+**Contrôle et passage de main.** On vérifie d’abord le cas synthétique, puis on transmet le fichier à Antoine. Après intégration par Yann, on refait le contrôle centré sur l’assemblage acoustique réel avant le premier lancement de descente.

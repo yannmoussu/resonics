@@ -1,10 +1,10 @@
-# Yann — Vendredi 6 novembre
+# Yann — Vendredi 6 novembre 2026
 
-**But du jour.** Vérifier l'exécution et les livrables, puis répéter la soutenance à cinq. Le vendredi après-midi est réservé à vingt minutes d'exposé et dix minutes de questions.
+Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les développements techniques sont les étapes de ma contribution, dans les fichiers partagés. Chaque étape de code modifie uniquement son fichier cible.
 
-**Passage de main.** Attendre l'approbation des fonctions théoriques et du matériau, puis faire la dernière exécution sur les fichiers communs. Chacun valide les résultats et les explications de sa partie.
+## To finalize everything
 
-## Tâche 1 — Vérifier le point d'entrée du projet
+**Repère :** J5.1. **Rôle :** responsable.
 
 **Fichier à modifier si nécessaire :** [support/demo_control_polycopie2024.py](../../support/demo_control_polycopie2024.py).
 
@@ -28,9 +28,11 @@ Teste d'abord un cas court puis le cas final avec les paramètres validés. Donn
 
 **Résultat attendu.** Le programme principal appelle uniquement les modules fournis complétés. Les autres fichiers restent sous la responsabilité de leurs auteurs et toute correction scientifique est revalidée.
 
-## Tâche 2 — Préparer la synthèse et répéter
+## Preparation of the defense
 
-**Fichier Python à modifier :** aucun pour cette tâche de restitution. Les fichiers du rapport et de la présentation seront traités séparément lorsqu'ils seront rédigés.
+**Repère :** J5.2. **Rôle :** responsable.
+
+**Fichier à modifier :** aucun pour cette préparation orale. La réponse est transmise au groupe pour sa répétition.
 
 **Ce qui est fait.** On rassemble les contributions approuvées et on vérifie qu'elles couvrent l'énoncé. On conserve les templates LaTeX du projet précédent, les légendes courtes et les figures lisibles. Yann présente le modèle et la chaîne de calcul, puis les quatre autres membres prennent leur partie.
 
@@ -51,3 +53,28 @@ Donne pour Yann une explication orale du modèle et des fonctions de calcul, une
 ```
 
 **Résultat attendu.** Les cinq membres valident leur portion, les légendes et les nombres correspondent aux calculs et l'exposé respecte la durée prévue.
+
+## Finalization of the rapport by the team.
+
+**Repère :** J5.3. **Rôle :** responsable.
+
+**Contribution de Yann.** On vérifie collectivement le texte final et la concordance entre le rapport, les figures et les calculs.
+
+**Fichier à modifier :** aucun, cette contribution est une analyse à transmettre au groupe.
+
+### Fichiers à joindre
+
+- `context/Sujet-EI-EXT-2026.md`, version actuelle.
+- `support/demo_control_polycopie2024.py`, version actuelle.
+
+### Prompt à copier
+
+```text
+À partir de l'énoncé, du rapport actuel et des résultats validés joints, fais une relecture de finalisation dans ta réponse, sans créer de fichier et sans modifier de code.
+Vérifie que chaque tiret du sujet a une réponse, que toutes les valeurs utilisées sont annoncées et que les figures ont une interprétation appuyée sur leurs données. Vérifie les unités, les sources, les budgets, les conventions de Robin, l'étude selon la forme, l'optimisation et les contrôles. Conserve les formulations personnelles correctes et corrige les fautes de langue.
+Regroupe les remarques par partie et donne les corrections ponctuelles proposées pour que chaque membre valide sa contribution. La compilation et les modifications LaTeX ultérieures se font sur un seul fichier cible à la fois et reprennent le template du projet précédent. Si un fichier de rapport n'est pas joint, indique ce qui est nécessaire à la relecture, sans inventer son contenu.
+```
+
+**Contrôle et transmission.** Joindre le rapport actuel et les contributions approuvées. Les cinq membres valident leur texte, les chiffres et les figures avant le rendu.
+
+**Passage de main du programme principal :** Joachim → Antoine → Yann. Les résultats sont ensuite transmis à Olympia et aux autres responsables pour validation.

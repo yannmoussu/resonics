@@ -1,45 +1,123 @@
-# Olympia — Mardi 3 novembre — Courbes de référence et pics d’énergie
+# Olympia — Mardi 3 novembre
 
-**Organisation.** On travaille à partir des versions à jour. On ne modifie que le fichier cible et on conserve les fonctions déjà écrites par les autres. Les fonctions nouvelles sont ajoutées dans ce fichier et les fonctions des jours précédents sont conservées. Aucune de ces fiches ne demande de créer un nouveau module Python.
+**Organisation.** On utilise les versions complètes et à jour. Chaque contribution de code porte sur un seul fichier de `support/`, les dépendances restent en lecture seule et aucun nouveau module Python n’est créé. Les intitulés ci-dessous reprennent exactement les tirets de l’énoncé.
 
-## Tâche — Courbes de référence et pics d’énergie
+## Study the energy on the chosen plage of frequencies for a fully absorbent wall of the plane shape and to define the local maxima ;
+
+**Repère :** J2.1. **Rôle :** responsable.
+
+**Contribution d’Olympia.** On trace la réponse du mur plan entièrement recouvert et on repère les fréquences candidates à des maxima locaux.
 
 **Fichier à compléter :** `support/postprocessing.py`.
 
-On trace d'abord les courbes des murs entièrement recouverts, puis celles des distributions initiales à budget limité. On repère les fréquences des maxima locaux et on demande à Yann de recalculer plus finement autour des pics, puis on illustre la première optimisation avec des échelles de couleur communes.
-
 ### Fichiers à joindre
 
-- `support/postprocessing.py`
-- `support/demo_control_polycopie2024.py`
-- `support/_env.py`
-- `context/Sujet-EI-EXT-2026.md`
-
-- Les données de calcul transmises par Yann pour la journée, avec les paramètres et les tableaux `records`. Pour les cartes ou historiques, joindre également les champs et les itérations réellement enregistrés. Si ces données ne sont pas encore disponibles, les demander avant toute conclusion physique.
-
-On joint les fichiers complets et à jour. Seul le fichier cible est modifiable ; les autres servent à comprendre les appels et les conventions.
+- `support/postprocessing.py` — cible à modifier.
+- `support/demo_control_polycopie2024.py` — lecture seule.
+- `support/_env.py` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
 
 ### Prompt à copier
 
 ```text
-Complète uniquement support/postprocessing.py. Utilise records, liste de dictionnaires contenant case_id, frequency_hz, energy, level, state, material_length_m, spacestep_m, relative_residual et metadata. Les calculs réels viendront de Yann ; si les données manquent, vérifie les tracés avec un petit jeu synthétique identifié comme tel.
+Modifie uniquement support/postprocessing.py joint et renvoie sa version complète si une modification est nécessaire. Les autres fichiers sont fournis en lecture seule. Conserve les fonctions des autres membres et les signatures validées.
 
-Ajoute plot_frequency_response(records, filename=None) et find_energy_peaks(frequencies_hz, energies). Trie les fréquences et refuse les valeurs invalides. Détecte les maxima intérieurs, traite les plateaux explicitement et signale les extrémités élevées sans les présenter comme des maxima intérieurs démontrés. Retourne les fréquences et les énergies candidates ainsi que les intervalles voisins à raffiner. Le tracé ne réalise aucun nouveau calcul acoustique.
+records est une liste de dictionnaires avec case_id, frequency_hz, energy, level, state, material_length_m, spacestep_m, relative_residual et metadata. state vaut full, initial, mono ou multi. Les paramètres de source, de matériau, les fréquences de conception et les conditions de calcul sont décrits dans metadata. Ajoute plot_frequency_response(records,filename=None) et find_energy_peaks(frequencies_hz,energies). Commence par les données du mur plan entièrement recouvert. Trie les fréquences et refuse les données invalides. Détecte les maxima intérieurs, traite les plateaux explicitement et signale les extrémités élevées sans les annoncer comme des maxima intérieurs démontrés. Retourne les fréquences et énergies candidates ainsi que les intervalles voisins à raffiner. Le module de tracé ne recalcule pas de solution acoustique. Le critère intérieur vaut h**2*sum(abs(u)**2), ce qui n’est pas directement une puissance dissipée. Si les données réelles manquent, utilise un petit jeu synthétique identifié pour vérifier les figures et demande les vrais résultats avant de conclure.
 
-Trace successivement le mur plan entièrement recouvert, les autres profils entièrement recouverts puis les distributions initiales de ces profils. Ajoute l'état mono s'il a effectivement été calculé. Distingue les budgets absolus et ne présente pas le mur entièrement recouvert comme une borne minimale assurée. Le critère vaut h**2*sum(abs(u)**2) aux nœuds intérieurs et représente un critère de pression, pas directement une puissance dissipée.
-
-Ajoute plot_field_comparison(u_before, u_after, domain_omega, spacestep, filename=None). Représente abs(u) avec la même échelle de couleur pour les deux champs et masque l'extérieur ainsi que les valeurs de bord non reconstruites. Le solveur laisse les valeurs de bord à zéro ; ce ne sont pas des traces physiques. N'affiche pas une normalisation séparée qui ferait perdre la comparaison des amplitudes. Les légendes et les titres restent courts.
-
-Rends uniquement la version complète du fichier cible et une courte explication des modifications et des contrôles. Ne crée aucun autre fichier Python. Conserve toutes les fonctions sans rapport avec cette tâche et les modifications déjà faites par les autres. Les commentaires sont de courtes phrases françaises expliquant les étapes, sans formules mathématiques. Les petits contrôles restent dans ce même fichier et ne se lancent pas lors de son import.
+Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de courtes phrases françaises sans équations ni symboles mathématiques. Les petits contrôles restent dans ce même fichier et ne se lancent pas lors de son import. Après le fichier complet, donne une courte explication et les contrôles réellement exécutés. Si tu ne peux pas les lancer, indique les appels à faire sans annoncer leur réussite.
 ```
 
-### Résultat attendu et contrôles
+**Contrôle attendu.** La courbe plane et les intervalles de pics sont lisibles, puis Yann confirme les pics par des calculs plus fins.
 
-- Les références demandées au deuxième jour sont lisibles et identifiables.
-- Les pics sont candidats à confirmer par des calculs plus fins, avec leurs intervalles.
-- Les distributions initiale et optimisée sont comparées au même budget lorsque cette comparaison est annoncée.
-- Une même couleur entre deux cartes signifie une même amplitude.
+**Passage de main.** Retourner les intervalles à Yann, puis actualiser la courbe lorsque les fréquences supplémentaires ont été calculées.
 
-### Passage de main
+## Study the same question for different shapes of fully absorbent walls ;
 
-Yann transmet les premières courbes après intégration. Olympia lui renvoie les intervalles des pics pour raffinement, puis actualise les figures avant la validation du jour.
+**Repère :** J2.2. **Rôle :** responsable.
+
+**Contribution d’Olympia.** On applique la même analyse aux autres formes entièrement recouvertes avec les mêmes paramètres physiques.
+
+**Fichier à compléter :** `support/postprocessing.py`.
+
+### Fichiers à joindre
+
+- `support/postprocessing.py` — cible à modifier.
+- `support/demo_control_polycopie2024.py` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
+
+### Prompt à copier
+
+```text
+Modifie uniquement support/postprocessing.py joint et renvoie sa version complète si une modification est nécessaire. Les autres fichiers sont fournis en lecture seule. Conserve les fonctions des autres membres et les signatures validées.
+
+records est une liste de dictionnaires avec case_id, frequency_hz, energy, level, state, material_length_m, spacestep_m, relative_residual et metadata. state vaut full, initial, mono ou multi. Les paramètres de source, de matériau, les fréquences de conception et les conditions de calcul sont décrits dans metadata. Réutilise plot_frequency_response et find_energy_peaks pour comparer les niveaux zéro, un et deux entièrement recouverts. Ajoute seulement les adaptations de regroupement ou de légende nécessaires dans postprocessing.py. Garde source, matériau et bande identiques. Affiche la quantité absorbante de chaque référence, car les longueurs de paroi peuvent différer. Les profils sont comparés selon leur forme réelle et non selon une courbe triangulaire supposée. Fournis les intervalles de pics à préciser et ne présente pas le recouvrement complet comme une borne minimale assurée du critère.
+
+Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de courtes phrases françaises sans équations ni symboles mathématiques. Les petits contrôles restent dans ce même fichier et ne se lancent pas lors de son import. Après le fichier complet, donne une courte explication et les contrôles réellement exécutés. Si tu ne peux pas les lancer, indique les appels à faire sans annoncer leur réussite.
+```
+
+**Contrôle attendu.** Les courbes sont identifiées par forme et quantité. La méthode de repérage des pics est identique à celle du mur plan.
+
+**Passage de main.** Communiquer à Yann les intervalles à raffiner et au groupe les différences de réponse observées entre formes.
+
+## Compare the energy of the initial distribution of the porous material (this time the wall has not only absorbing parts but also reflective ones) with the energy for the fully absorbing wall.
+
+**Repère :** J2.3. **Rôle :** responsable.
+
+**Contribution d’Olympia.** On confronte les courbes de la distribution initiale à budget limité avec celles des murs entièrement recouverts.
+
+**Fichier à compléter :** `support/postprocessing.py`.
+
+### Fichiers à joindre
+
+- `support/postprocessing.py` — cible à modifier.
+- `support/demo_control_polycopie2024.py` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
+
+### Prompt à copier
+
+```text
+Modifie uniquement support/postprocessing.py joint et renvoie sa version complète si une modification est nécessaire. Les autres fichiers sont fournis en lecture seule. Conserve les fonctions des autres membres et les signatures validées.
+
+records est une liste de dictionnaires avec case_id, frequency_hz, energy, level, state, material_length_m, spacestep_m, relative_residual et metadata. state vaut full, initial, mono ou multi. Les paramètres de source, de matériau, les fréquences de conception et les conditions de calcul sont décrits dans metadata. Complète les regroupements et tracés existants pour comparer les états initial et full d’une même géométrie. Contrôle la compatibilité de la source, de la loi de matériau, du pas et de la bande avant de calculer un rapport. Fais apparaître les quantités absolues et conserve les énergies brutes. Le recouvrement complet peut utiliser plus de matériau que l’état initial. Ne mélange pas des candidats incompatibles. Si une réduction est exprimée en décibels à partir des énergies, emploie 10*log10(E_reference/E_configuration) pour des valeurs strictement positives et indique la référence.
+
+Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de courtes phrases françaises sans équations ni symboles mathématiques. Les petits contrôles restent dans ce même fichier et ne se lancent pas lors de son import. Après le fichier complet, donne une courte explication et les contrôles réellement exécutés. Si tu ne peux pas les lancer, indique les appels à faire sans annoncer leur réussite.
+```
+
+**Contrôle attendu.** La référence, la forme et le budget de chaque courbe sont explicites, puis le rapport éventuel utilise des énergies positives compatibles.
+
+**Passage de main.** Transmettre les courbes comparables au groupe pour sélectionner les fréquences problématiques à optimiser.
+
+## Optimize numerically for one or several of the most problematic frequencies (at which there is a maximum of the energy) ;
+
+**Repère :** J2.4. **Rôle :** contributeur.
+
+**Contribution d’Olympia.** On illustre la première optimisation conduite par Antoine et calculée par Yann avec les répartitions, les champs et l’historique.
+
+**Fichier à compléter :** `support/postprocessing.py`.
+
+### Fichiers à joindre
+
+- `support/postprocessing.py` — cible à modifier.
+- `support/demo_control_polycopie2024.py` — lecture seule.
+- `support/_env.py` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
+
+### Prompt à copier
+
+```text
+Modifie uniquement support/postprocessing.py joint et renvoie sa version complète si une modification est nécessaire. Les autres fichiers sont fournis en lecture seule. Conserve les fonctions des autres membres et les signatures validées.
+
+À partir des champs, densités et historiques réels transmis par Yann, ajoute plot_field_comparison(u_before,u_after,domain_omega,spacestep,filename=None). Représente abs(u) avec une même échelle pour les deux champs. Masque le complémentaire et les valeurs de bord non reconstruites, car les zéros retournés au bord par le solveur ne sont pas des traces physiques.
+
+Compare les densités et les champs avant/après à fréquence annoncée et budget identique. Trace l’état initial puis seulement les itérations acceptées de l’optimiseur. Une queue de zéros préallouée doit être exclue. Les données absentes ne deviennent pas des performances nulles. Les titres restent courts et descriptifs. Ne recode pas la descente ni le solveur dans postprocessing.py.
+
+Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de courtes phrases françaises sans équations ni symboles mathématiques. Les petits contrôles restent dans ce même fichier et ne se lancent pas lors de son import. Après le fichier complet, donne une courte explication et les contrôles réellement exécutés. Si tu ne peux pas les lancer, indique les appels à faire sans annoncer leur réussite.
+```
+
+**Contrôle attendu.** Une même couleur représente une même amplitude. Le budget et la baisse du critère correspondent aux valeurs réellement calculées.
+
+**Passage de main.** Faire valider l’interprétation par Antoine et Yann avant de présenter les premières figures d’optimisation.

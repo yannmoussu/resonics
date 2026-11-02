@@ -1,6 +1,8 @@
 # ResoniCS — Planning par personne et par jour
 
-Chaque membre dispose de **cinq fiches**, une par jour du 2 au 6 novembre 2026. Chaque tâche indique ce qui est fait, le fichier à compléter, les fichiers à joindre, un prompt prêt à copier et les contrôles attendus.
+Chaque membre dispose de **cinq fiches**, une par jour du 2 au 6 novembre 2026. Les titres des tâches reprennent **mot pour mot les 22 tirets de l’[énoncé](../context/Sujet-EI-EXT-2026.md)**, dans leur ordre et à la journée prévue. Le Gantt, les fiches et les exports CSV/JSON utilisent ces mêmes intitulés.
+
+Une tâche peut mobiliser plusieurs personnes. Sa phrase reste identique dans leurs fiches et chacune décrit sa contribution, les fichiers à joindre, un prompt prêt à copier et les contrôles attendus. Les étapes techniques sont détaillées sous le titre officiel.
 
 | Membre | Lundi | Mardi | Mercredi | Jeudi | Vendredi |
 |---|---|---|---|---|---|
@@ -28,7 +30,7 @@ Les résultats et paramètres produits les jours précédents sont joints lorsqu
 | `support/postprocessing.py` | Olympia prépare les figures et les comparaisons à partir des calculs |
 | `support/_env.py` | Constantes communes utilisées en lecture seule |
 
-Une tâche concerne **un seul fichier à la fois**, et les fichiers sont communs au groupe. Les fonctions nouvelles sont ajoutées dans ces fichiers existants. Aucun nouveau module Python n'est prévu et les programmes de `support/` n'ont pas été modifiés pendant cette préparation.
+Chaque contribution de code concerne **un seul fichier à la fois**, et les fichiers sont communs au groupe. Les contributions d’analyse ou de restitution indiquent qu’aucun fichier Python n’est à modifier. Les fonctions nouvelles sont ajoutées dans ces fichiers existants. Aucun nouveau module Python n'est prévu et les programmes de `support/` n'ont pas été modifiés pendant cette préparation.
 
 Pour éviter d'écraser des contributions, le passage de main est **Yann → Mathis** dans `preprocessing.py` le lundi, et **Joachim → Antoine → Yann** dans la démonstration. Les fonctions de calcul et les tracés peuvent avancer en parallèle dans leurs fichiers respectifs. Après l'intégration, Joachim et Yann contrôlent le gradient acoustique réel avant la première descente. Les corrections ultérieures reprennent toujours la dernière version partagée.
 
@@ -36,15 +38,21 @@ Pour éviter d'écraser des contributions, le passage de main est **Yann → Mat
 
 [![Planning de la semaine](build/gantt.png)](gantt.pdf)
 
-- **Lundi :** modèle, données physiques, étude théorique, objectif et projection.
-- **Mardi :** références entièrement recouvertes, pics et première optimisation.
-- **Mercredi :** optimisation commune à plusieurs fréquences, quantités et validation de bande.
-- **Jeudi :** raffinement, plusieurs départs et choix du produit.
-- **Vendredi :** vérifications finales et soutenance de vingt minutes à cinq, puis dix minutes de questions.
+Le Gantt comporte **une ligne par tiret**, avec le responsable en gras, ses contributeurs et une barre dans la journée correspondante. Il est fourni en **A3 paysage** pour garder les intitulés complets lisibles.
 
-Le groupe prépare son état d'avancement avant le point quotidien prévu dans la fenêtre de **14h30 à 17h**. Les codes du Gantt associent l'initiale du membre au numéro du jour, par exemple Y1 pour Yann lundi.
+| Journée | Nombre de tâches de l'énoncé |
+|---|---|
+| Lundi 2 novembre | 10 |
+| Mardi 3 novembre | 4 |
+| Mercredi 4 novembre | 3 |
+| Jeudi 5 novembre | 2 |
+| Vendredi 6 novembre | 3 |
 
-Le [Gantt PDF](gantt.pdf), sa [source LaTeX](build/gantt.tex), le [CSV](build/repartition.csv) et le [JSON](repartition.json) donnent une vue synthétique. Les consignes copiables sont uniquement dans les fiches quotidiennes ; l'ancien cahier général et les anciennes fiches par module sont remplacés par cette organisation. Les [documents de référence](lecture_et_sources.md) servent à retrouver les supports utiles.
+Les repères **J1.1**, **J1.2**, etc. désignent le jour et le rang du tiret. Ils permettent de retrouver une même tâche dans le Gantt et dans les différentes fiches, sans modifier sa phrase. Le cadrage initial de la startup et la soutenance sont repris comme indications de calendrier, en dehors des 22 tirets.
+
+Le groupe prépare son état d'avancement avant le point quotidien prévu dans la fenêtre de **14h30 à 17h**. La soutenance du vendredi après-midi dure **vingt minutes à cinq**, puis **dix minutes de questions**.
+
+Le [Gantt PDF](gantt.pdf), sa [source LaTeX](build/gantt.tex), le [CSV](build/repartition.csv) et le [JSON](repartition.json) reprennent les 22 tâches. Les prompts sont dans les fiches quotidiennes. Les [documents de référence](lecture_et_sources.md) servent à retrouver les supports utiles.
 
 ## Compiler le Gantt
 

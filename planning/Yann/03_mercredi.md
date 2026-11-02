@@ -1,36 +1,89 @@
-# Yann — Mercredi 4 novembre
+# Yann — Mercredi 4 novembre 2026
 
-**But du jour.** Lancer les comparaisons multiréquences et de quantité avec la même chaîne de calcul, puis fournir les résultats pour l'analyse sur toute la bande.
+Les titres ci-dessous reprennent exactement les tâches de l’énoncé. Les développements techniques sont les étapes de ma contribution, dans les fichiers partagés. Chaque étape de code modifie uniquement son fichier cible.
 
-**Passage de main.** Prendre la démonstration après l'ajout multiréquence de Joachim et les contrôles de budget d'Antoine. Les fonctions de matériau et de tracé sont celles publiées par Mathis et Olympia. Les paramètres déjà validés restent identiques entre les expériences comparables.
+## Analyze the obtained results to compare to the efficient performances on the fixed range of frequencies ; to compare to a fully absorbing wall ;
 
-## Tâche 1 — Piloter les expériences de bande et de quantité
+**Repère :** J3.1. **Rôle :** contributeur.
 
-**Fichier à modifier :** [support/demo_control_polycopie2024.py](../../support/demo_control_polycopie2024.py).
+**Contribution de Yann.** On recalcule les réponses des distributions obtenues sur toute la bande, y compris entre les fréquences de conception.
 
-**Ce qui est fait.** On lance une optimisation avec une seule distribution de matériau commune à plusieurs fréquences. On compare ensuite plusieurs budgets absolus et on recalcule les réponses sur des fréquences qui n'ont pas servi à optimiser.
+**Fichier à modifier :** `support/demo_control_polycopie2024.py`.
 
-**Fichiers à joindre avec le prompt :**
+### Fichiers à joindre
 
-- `support/demo_control_polycopie2024.py`, dernière version après Joachim puis Antoine, à modifier.
-- Les quatre autres fichiers actuels de `support/`, en lecture seule.
-- `context/Sujet-EI-EXT-2026.md` et les paramètres validés du groupe.
+- `support/demo_control_polycopie2024.py`, version actuelle.
+- `support/preprocessing.py`, version actuelle.
+- `support/processing.py`, version actuelle.
+- `support/postprocessing.py`, version actuelle.
+- `support/_env.py`, version actuelle.
+- `context/Sujet-EI-EXT-2026.md`, version actuelle.
 
-**Prompt à copier :**
+### Prompt à copier
 
 ```text
-Modifie uniquement demo_control_polycopie2024.py joint. Conserve les fonctions des autres membres, les cellules imposées et toutes les interfaces déjà validées. Aucun nouveau fichier Python n'est créé.
-
-Ajoute les appels de campagne suivants dans les zones modifiables :
-- Compare les niveaux géométriques à quantité absorbante absolue identique. La géométrie reste fixe pendant chaque optimisation. Garde les références entièrement recouvertes, initiales à budget limité et optimisées à une fréquence.
-- Lance evaluate_band de Joachim avec une même densité chi pour toutes les fréquences de conception. Fixe les poids de somme un et les éventuelles normalisations avant la descente. Ces références restent communes aux candidats comparés. Appelle l'optimiseur existant avec ce callback. Ne moyenne pas des densités optimisées séparément. evaluate_band renvoie u=None ; pour une carte, réévalue la densité finale à une fréquence annoncée avec evaluate_density.
-- Compare quelques budgets communs à toutes les formes, faisables et annoncés en longueur, puis volume si épaisseur et profondeur sont fixées. Réutilise la projection d'Antoine lorsque l'initialisation vient d'un autre budget. N'interprète pas une fraction de nœuds comme une longueur identique entre profils.
-- Recalcule pour chaque distribution finale une bande de validation incluant des fréquences intermédiaires et des voisinages de pics. Si des fréquences ont été ajoutées pour préciser un pic, réévalue les poids de quadrature du coût de bande ; leur simple accumulation ne doit pas changer arbitrairement l'importance du voisinage.
-- Prépare les mêmes records que mardi, avec state='multi' pour l'optimisation commune, et conserve paramètres, budgets, résidus et causes d'arrêt. Appelle les tracés de postprocessing disponibles et transmets les tableaux bruts à Olympia.
-
-Ajoute aussi un petit scénario distinct de contrôle ouvert/réfléchissant pour Joachim. La source supérieure reste inchangée. Pour le scénario ouvert, transforme seulement une paroi latérale en Robin de Sommerfeld avec alpha_code=+1j*k. Sépare son masque de celui du matériau de conception, conserve le coin source selon une règle annoncée, et exclue cette ouverture de get_design_faces et du budget. Le scénario du tunnel réfléchissant reste celui des comparaisons de produit. Ne suppose pas que l'énergie ouverte est inférieure à chaque fréquence.
-
-Contrôle les dimensions, la passivité validée, les résidus et la faisabilité de chaque expérience avant d'afficher un résultat. Les données manquantes restent explicitement signalées. Les commentaires expliquent les étapes par des phrases françaises. Donne les appels à exécuter et un résumé des résultats réellement calculés.
+Modifie uniquement demo_control_polycopie2024.py joint et renvoie le fichier complet, sans créer de module. Les autres fichiers sont en lecture seule. Conserve les cellules imposées et toutes les fonctions validées des autres membres. Les commentaires sont des phrases françaises expliquant les étapes, sans notation mathématique. Ne lance aucune campagne à l'import et ne présente aucun résultat synthétique comme une performance physique.
+Pour chaque densité initiale ou optimisée de mardi, calcule une bande de validation commune avec des points intermédiaires et des voisinages de pics. Conserve les références entièrement recouvertes et leurs quantités. Transmets les records à Olympia pour le critère moyen pondéré et le maximum échantillonné.
+Sépare les fréquences ayant servi à optimiser de celles ajoutées pour valider. Donne les paramètres, le budget, les résidus et les motifs d'arrêt. Si le classement dépend d'un pic mal résolu, raffine les calculs correspondants.
+En complément de l'étude théorique J1.6, fournis à Joachim une comparaison numérique ouverte/réfléchissante avec source supérieure inchangée. L'ouverture concerne un côté latéral, son alpha_code=+1j*k, son masque est exclu de la conception et du budget. La règle des coins source est annoncée. Le tunnel réfléchissant reste le scénario de comparaison des produits ; ne déduis pas une inégalité universelle entre les coûts.
 ```
 
-**Résultat attendu.** Une comparaison à source et paramètres identiques sur toute la bande, avec budgets mesurés, fréquences de conception identifiées et validation indépendante. Joachim reçoit aussi les deux séries ouverte/réfléchissante pour son analyse.
+**Contrôle et transmission.** Olympia et Joachim reçoivent les réponses réellement calculées, avec les différences entre conception et validation.
+
+## to optimize the energy at once at several different frequencies ;
+
+**Repère :** J3.2. **Rôle :** contributeur.
+
+**Contribution de Yann.** On optimise une distribution unique de matériau commune à plusieurs fréquences.
+
+**Fichier à modifier :** `support/demo_control_polycopie2024.py`.
+
+### Fichiers à joindre
+
+- `support/demo_control_polycopie2024.py`, version actuelle.
+- `support/preprocessing.py`, version actuelle.
+- `support/processing.py`, version actuelle.
+- `support/postprocessing.py`, version actuelle.
+- `support/_env.py`, version actuelle.
+- `context/Sujet-EI-EXT-2026.md`, version actuelle.
+
+### Prompt à copier
+
+```text
+Modifie uniquement demo_control_polycopie2024.py joint et renvoie le fichier complet, sans créer de module. Les autres fichiers sont en lecture seule. Conserve les cellules imposées et toutes les fonctions validées des autres membres. Les commentaires sont des phrases françaises expliquant les étapes, sans notation mathématique. Ne lance aucune campagne à l'import et ne présente aucun résultat synthétique comme une performance physique.
+Branche evaluate_band de Joachim avec un callback assemble_frequency(chi,frequency_hz). Celui-ci renvoie le même dictionnaire que l'assembleur monofréquence. Les fréquences, les poids de somme un et les références optionnelles strictement positives sont fixés avant la descente et communs aux candidats comparés.
+Appelle l'optimiseur existant avec une fermeture evaluate(chi,with_gradient=True) qui utilise ce coût de bande. La même densité sert à toutes les fréquences et on ne moyenne pas des densités optimisées séparément. evaluate_band renvoie u=None ; pour une carte, réévalue la densité finale à une fréquence annoncée avec evaluate_density.
+Recalcule ensuite la bande de validation indépendante et publie les records state='multi'. Si des points ont été ajoutés près d'un pic, recalcule les poids d'intégration, afin que leur simple accumulation ne modifie pas arbitrairement l'importance de ce voisinage. Vérifie les résidus, la faisabilité et le coût final.
+```
+
+**Contrôle et transmission.** Antoine valide les appels de descente et Olympia reçoit les courbes sur la bande, avec les fréquences de conception identifiées.
+
+## to study which quantity of the porous material gives the most optimal result ;
+
+**Repère :** J3.3. **Rôle :** contributeur.
+
+**Contribution de Yann.** On lance les mêmes expériences pour plusieurs quantités physiques de poreux et on transmet les résultats au groupe.
+
+**Fichier à modifier :** `support/demo_control_polycopie2024.py`.
+
+### Fichiers à joindre
+
+- `support/demo_control_polycopie2024.py`, version actuelle.
+- `support/preprocessing.py`, version actuelle.
+- `support/processing.py`, version actuelle.
+- `support/postprocessing.py`, version actuelle.
+- `support/_env.py`, version actuelle.
+- `context/Sujet-EI-EXT-2026.md`, version actuelle.
+
+### Prompt à copier
+
+```text
+Modifie uniquement demo_control_polycopie2024.py joint et renvoie le fichier complet, sans créer de module. Les autres fichiers sont en lecture seule. Conserve les cellules imposées et toutes les fonctions validées des autres membres. Les commentaires sont des phrases françaises expliquant les étapes, sans notation mathématique. Ne lance aucune campagne à l'import et ne présente aucun résultat synthétique comme une performance physique.
+Prends les budgets absolus validés avec Mathis et Antoine. Vérifie leur faisabilité pour toutes les formes. Avec une épaisseur et une profondeur constantes, le volume vaut longueur absorbante multipliée par épaisseur et profondeur. Si ces dimensions changent entre matériaux, adapte la longueur pour annoncer réellement un volume identique.
+Pour chaque budget, projette l'initialisation avec la fonction existante, puis lance les optimisations et la validation de bande sans changer la source ni la loi de matériau. Conserve les références entièrement recouvertes avec leurs quantités propres.
+Transmets à Olympia coûts de bande, maxima échantillonnés, densités finales et arrêts, ainsi que les longueurs et volumes. Les budgets sont des quantités physiques et non des pourcentages de nœuds.
+```
+
+**Contrôle et transmission.** Mathis valide les unités et les volumes, Antoine les contraintes et Olympia illustre les résultats réellement calculés.
+
+**Passage de main du programme principal :** Joachim → Antoine → Yann. Les résultats sont ensuite transmis à Olympia et aux autres responsables pour validation.

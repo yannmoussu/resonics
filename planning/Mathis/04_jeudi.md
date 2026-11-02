@@ -1,41 +1,57 @@
-# Mathis — Jeudi 5 novembre — Choix physique du matériau
+# Mathis — Jeudi 5 novembre
 
-**Organisation.** On travaille à partir des versions à jour. On ne modifie que le fichier cible et on conserve les fonctions déjà écrites par les autres. Les fonctions nouvelles sont ajoutées dans ce fichier et les fonctions des jours précédents sont conservées. Aucune de ces fiches ne demande de créer un nouveau module Python.
+**Organisation.** On utilise les versions complètes et à jour. Chaque contribution de code porte sur un seul fichier de `support/`, les dépendances restent en lecture seule et aucun nouveau module Python n’est créé. Les intitulés ci-dessous reprennent exactement les tirets de l’énoncé.
 
-## Tâche — Choix physique du matériau
+## To continue the analysis of the performances ;
+
+**Repère :** J4.1. **Rôle :** contributeur.
+
+**Contribution de Mathis.** On vérifie que les hypothèses et les paramètres physiques restent valables pour les campagnes raffinées et les candidats encore comparés.
 
 **Fichier à compléter :** `support/preprocessing.py`.
 
-On relit les hypothèses du matériau au regard des résultats calculés et des dimensions retenues. On précise les données fiables, les contraintes d'épaisseur et les éventuelles limites de validité, puis on valide les paramètres du produit choisi en groupe.
-
 ### Fichiers à joindre
 
-- `support/preprocessing.py`
-- `support/demo_control_polycopie2024.py`
-- `context/Sujet-EI-EXT-2026.md`
-
-- Les paramètres validés et les résultats de comparaison transmis par Yann et Olympia.
-
-On joint les fichiers complets et à jour. Seul le fichier cible est modifiable ; les autres servent à comprendre les appels et les conventions.
+- `support/preprocessing.py` — cible à modifier.
+- `support/demo_control_polycopie2024.py` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
 
 ### Prompt à copier
 
 ```text
-Relis et, si nécessaire, corrige uniquement support/preprocessing.py. Conserve les fonctions et interfaces déjà intégrées. Contrôle la cohérence des paramètres du matériau finalement retenu : unités de l'impédance, coefficient Robin en inverse de mètres, épaisseur, célérité, masse volumique, bande de validité et provenance.
+Modifie uniquement support/preprocessing.py joint et renvoie sa version complète si une modification est nécessaire. Les autres fichiers sont fournis en lecture seule. Conserve les fonctions des autres membres et les signatures validées.
 
-Vérifie qu'un changement de matériau ou d'épaisseur ne laisse pas dans le dictionnaire une ancienne valeur de coefficient. Les hypothèses propres à la loi utilisée doivent être lisibles et contrôlées lorsque les données permettent de le faire. N'annonce aucune sensibilité chiffrée sans calcul ni plage de paramètres sourcée.
+Relis les paramètres du matériau avec les résultats réels de la campagne joints. Vérifie unités d’impédance, coefficient Robin en inverse de mètres, épaisseur, célérité, masse volumique, domaine de validité et provenance. Un changement de matériau ou d’épaisseur doit recalculer les coefficients. Contrôle les hypothèses de la loi lorsque les données le permettent et signale les points impossibles à vérifier. Corrige preprocessing.py uniquement en cas d’erreur identifiée. Ne chiffre aucune sensibilité sans plage de paramètres justifiée et sans calcul.
 
-Prépare dans ta réponse une courte fiche de choix : matériau retenu, données d'entrée, quantité physique, motifs tirés des calculs du groupe et limites factuelles de la loi. Si les résultats de comparaison ne sont pas joints, donne la trame sans inventer le classement. Cette fiche sera intégrée ensuite au rapport et à l'oral par Yann ; ne crée aucun document supplémentaire dans le programme.
-
-Rends uniquement la version complète du fichier cible et une courte explication des modifications et des contrôles. Ne crée aucun autre fichier Python. Conserve toutes les fonctions sans rapport avec cette tâche et les modifications déjà faites par les autres. Les commentaires sont de courtes phrases françaises expliquant les étapes, sans formules mathématiques. Les petits contrôles restent dans ce même fichier et ne se lancent pas lors de son import.
+Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de courtes phrases françaises sans équations ni symboles mathématiques. Les petits contrôles restent dans ce même fichier et ne se lancent pas lors de son import. Après le fichier complet, donne une courte explication et les contrôles réellement exécutés. Si tu ne peux pas les lancer, indique les appels à faire sans annoncer leur réussite.
 ```
 
-### Résultat attendu et contrôles
+**Contrôle attendu.** Les candidats sont évalués avec leurs paramètres actuels et les calculs hors validité sont identifiés.
 
-- Les mêmes paramètres sont utilisés par tous les calculs retenus.
-- Les résultats hors de la bande de validité sont écartés ou identifiés.
-- Le groupe peut expliquer le matériau choisi et sa quantité avec des données vérifiables.
+**Passage de main.** Prévenir Yann si une correction impose de reprendre la campagne avant de figer les figures.
 
-### Passage de main
+## To conclude which product to produce/develop.
 
-Mathis valide sa partie avant le point de groupe et donne à Yann le texte court et les valeurs définitives. Les figures de comparaison restent produites par Olympia.
+**Repère :** J4.2. **Rôle :** contributeur.
+
+**Contribution de Mathis.** On explique le choix physique du matériau et sa quantité à partir des comparaisons disponibles.
+
+**Fichier à compléter :** aucun pour cette contribution d’analyse ou de restitution.
+
+### Fichiers à joindre
+
+- `support/preprocessing.py` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
+
+### Prompt à copier
+
+```text
+À partir des paramètres et des comparaisons réellement fournis, rédige un paragraphe de choix du matériau : nom, épaisseur, loi complexe, quantité physique, bande de validité et raisons tirées des calculs. Précise les hypothèses qui comptent pour le produit choisi. Si une comparaison manque, identifie-la plutôt que d’inventer un classement. Donne le texte dans ta réponse sans créer de fichier.
+
+```
+
+**Contrôle attendu.** Le choix cite des résultats disponibles et annonce les valeurs de matériau effectivement utilisées.
+
+**Passage de main.** Soumettre la contribution au choix collectif et transmettre le texte approuvé à Yann.

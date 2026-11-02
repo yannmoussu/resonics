@@ -1,44 +1,90 @@
-# Olympia — Mercredi 4 novembre — Comparaisons multibandes et quantités de matériau
+# Olympia — Mercredi 4 novembre
 
-**Organisation.** On travaille à partir des versions à jour. On ne modifie que le fichier cible et on conserve les fonctions déjà écrites par les autres. Les fonctions nouvelles sont ajoutées dans ce fichier et les fonctions des jours précédents sont conservées. Aucune de ces fiches ne demande de créer un nouveau module Python.
+**Organisation.** On utilise les versions complètes et à jour. Chaque contribution de code porte sur un seul fichier de `support/`, les dépendances restent en lecture seule et aucun nouveau module Python n’est créé. Les intitulés ci-dessous reprennent exactement les tirets de l’énoncé.
 
-## Tâche — Comparaisons multibandes et quantités de matériau
+## Analyze the obtained results to compare to the efficient performances on the fixed range of frequencies ; to compare to a fully absorbing wall ;
+
+**Repère :** J3.1. **Rôle :** responsable.
+
+**Contribution d’Olympia.** On analyse les distributions retenues sur toute la bande et on les compare à la référence entièrement recouverte.
 
 **Fichier à compléter :** `support/postprocessing.py`.
 
-On compare la distribution initiale, l'optimisation sur un pic et l'optimisation sur plusieurs fréquences sur toute la bande. On montre aussi l'effet du budget de matériau et les éventuelles dégradations entre les fréquences utilisées pour l'optimisation.
-
 ### Fichiers à joindre
 
-- `support/postprocessing.py`
-- `support/demo_control_polycopie2024.py`
-- `context/Sujet-EI-EXT-2026.md`
-
-- Les données de calcul transmises par Yann pour la journée, avec les paramètres et les tableaux `records`. Pour les cartes ou historiques, joindre également les champs et les itérations réellement enregistrés. Si ces données ne sont pas encore disponibles, les demander avant toute conclusion physique.
-
-On joint les fichiers complets et à jour. Seul le fichier cible est modifiable ; les autres servent à comprendre les appels et les conventions.
+- `support/postprocessing.py` — cible à modifier.
+- `support/demo_control_polycopie2024.py` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
 
 ### Prompt à copier
 
 ```text
-Complète uniquement support/postprocessing.py en conservant les fonctions déjà intégrées. records contient case_id, frequency_hz, energy, level, state, material_length_m, spacestep_m, relative_residual et metadata. state distingue full, initial, mono et multi. Les fréquences d'optimisation sont indiquées dans metadata ; la grille de validation doit aussi contenir d'autres fréquences calculées par Yann.
+Modifie uniquement support/postprocessing.py joint et renvoie sa version complète si une modification est nécessaire. Les autres fichiers sont fournis en lecture seule. Conserve les fonctions des autres membres et les signatures validées.
 
-Ajoute summarize_band(records, frequency_weights=None). Pour chaque configuration comparable, retourne le maximum échantillonné, sa fréquence et un critère moyen pondéré. Si aucun poids n'est fourni, utilise une quadrature trapézoïdale normalisée sur les fréquences triées. Les poids doivent être cohérents avec l'espacement : une zone où les pics ont été raffinés ne doit pas compter davantage uniquement parce qu'elle comporte plus de points. Ne prétends pas mesurer le maximum continu entre les fréquences calculées.
+records est une liste de dictionnaires avec case_id, frequency_hz, energy, level, state, material_length_m, spacestep_m, relative_residual et metadata. state vaut full, initial, mono ou multi. Les paramètres de source, de matériau, les fréquences de conception et les conditions de calcul sont décrits dans metadata. Ajoute summarize_band(records,frequency_weights=None). Pour chaque configuration comparable, retourne le maximum échantillonné, sa fréquence et un critère moyen pondéré. Sans poids fournis, utilise une quadrature trapézoïdale normalisée sur les fréquences triées. Une zone de pics raffinée ne doit pas peser davantage uniquement parce qu’elle contient plus de points. Ne prétends pas connaître le maximum continu entre les fréquences calculées. Conserve les courbes brutes pour initial, mono et full, en distinguant les quantités. Signale les groupes incompatibles ou les données manquantes.
 
-Ajoute un tracé comparant initial, mono, multi et full sur la même bande, puis un tracé du critère en fonction de material_length_m. Annote les fréquences d'optimisation et distingue-les des fréquences de validation. Compare à même source et à même loi de matériau. Les volumes sont obtenus avec l'épaisseur et la profondeur documentées ; un pourcentage de nœuds ne remplace pas une quantité physique.
-
-Si une réduction est exprimée en décibels à partir des énergies, utilise 10*log10(E_reference/E_configuration), précise la référence et ne calcule ce rapport que pour des énergies strictement positives. Il s'agit d'un indicateur relatif du critère de pression de la simulation. Signale les données manquantes et les groupes incompatibles au lieu de les mélanger.
-
-Rends uniquement la version complète du fichier cible et une courte explication des modifications et des contrôles. Ne crée aucun autre fichier Python. Conserve toutes les fonctions sans rapport avec cette tâche et les modifications déjà faites par les autres. Les commentaires sont de courtes phrases françaises expliquant les étapes, sans formules mathématiques. Les petits contrôles restent dans ce même fichier et ne se lancent pas lors de son import.
+Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de courtes phrases françaises sans équations ni symboles mathématiques. Les petits contrôles restent dans ce même fichier et ne se lancent pas lors de son import. Après le fichier complet, donne une courte explication et les contrôles réellement exécutés. Si tu ne peux pas les lancer, indique les appels à faire sans annoncer leur réussite.
 ```
 
-### Résultat attendu et contrôles
+**Contrôle attendu.** La comparaison inclut des fréquences qui n’ont pas servi à optimiser et utilise les mêmes références et poids entre candidats.
 
-- Les comparaisons portent sur toute la bande, y compris hors des fréquences de conception.
-- Les mêmes poids et références sont utilisés entre les produits comparés.
-- Les courbes montrent l'effet de plusieurs quantités effectivement calculées.
-- Les cas donnant un critère de pression plus faible à une seule fréquence ne sont pas déclarés meilleurs sur toute la bande.
+**Passage de main.** Transmettre au groupe les dégradations éventuelles hors du pic de conception et demander à Yann les calculs complémentaires utiles.
 
-### Passage de main
+## to optimize the energy at once at several different frequencies ;
 
-Antoine fournit les distributions optimisées à Yann, qui calcule la validation fréquentielle. Olympia produit alors les comparaisons et indique les fréquences où un calcul complémentaire est utile.
+**Repère :** J3.2. **Rôle :** contributeur.
+
+**Contribution d’Olympia.** On montre l’effet d’une distribution commune optimisée à plusieurs fréquences sur la bande de validation.
+
+**Fichier à compléter :** `support/postprocessing.py`.
+
+### Fichiers à joindre
+
+- `support/postprocessing.py` — cible à modifier.
+- `support/demo_control_polycopie2024.py` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
+
+### Prompt à copier
+
+```text
+Modifie uniquement support/postprocessing.py joint et renvoie sa version complète si une modification est nécessaire. Les autres fichiers sont fournis en lecture seule. Conserve les fonctions des autres membres et les signatures validées.
+
+records est une liste de dictionnaires avec case_id, frequency_hz, energy, level, state, material_length_m, spacestep_m, relative_residual et metadata. state vaut full, initial, mono ou multi. Les paramètres de source, de matériau, les fréquences de conception et les conditions de calcul sont décrits dans metadata. Réutilise les tracés et summarize_band pour comparer les états initial, mono et multi d’une même forme au même budget. Annote les fréquences de conception présentes dans metadata et distingue-les des autres fréquences de validation. Les fréquences raffinées demandent des poids de quadrature adaptés. Les cartes éventuelles utilisent une réévaluation de la densité finale à une fréquence annoncée, car le coût de bande n’a pas de champ unique. Ne compare pas une moyenne de densités indépendantes à une véritable optimisation commune.
+
+Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de courtes phrases françaises sans équations ni symboles mathématiques. Les petits contrôles restent dans ce même fichier et ne se lancent pas lors de son import. Après le fichier complet, donne une courte explication et les contrôles réellement exécutés. Si tu ne peux pas les lancer, indique les appels à faire sans annoncer leur réussite.
+```
+
+**Contrôle attendu.** Les mêmes conventions de coût et de normalisation sont utilisées. Les gains et dégradations entre les fréquences de conception restent visibles.
+
+**Passage de main.** Faire relire les légendes et la méthode de pondération à Joachim, puis transmettre les figures à Yann.
+
+## to study which quantity of the porous material gives the most optimal result ;
+
+**Repère :** J3.3. **Rôle :** contributeur.
+
+**Contribution d’Olympia.** On représente l’évolution des performances en fonction de la quantité physique de matériau.
+
+**Fichier à compléter :** `support/postprocessing.py`.
+
+### Fichiers à joindre
+
+- `support/postprocessing.py` — cible à modifier.
+- `support/demo_control_polycopie2024.py` — lecture seule.
+- `context/Sujet-EI-EXT-2026.md` — lecture seule.
+- Les paramètres validés, les tableaux et les figures réels de la journée. Pour les tracés, joindre également les champs ou historiques utilisés ; si ces données manquent, les demander avant toute conclusion physique.
+
+### Prompt à copier
+
+```text
+Modifie uniquement support/postprocessing.py joint et renvoie sa version complète si une modification est nécessaire. Les autres fichiers sont fournis en lecture seule. Conserve les fonctions des autres membres et les signatures validées.
+
+records est une liste de dictionnaires avec case_id, frequency_hz, energy, level, state, material_length_m, spacestep_m, relative_residual et metadata. state vaut full, initial, mono ou multi. Les paramètres de source, de matériau, les fréquences de conception et les conditions de calcul sont décrits dans metadata. Ajoute une courbe du critère moyen pondéré et du maximum échantillonné en fonction de material_length_m. Les valeurs proviennent des optimisations à différents budgets réellement réalisées par Yann et Antoine. Pour un volume, utilise épaisseur et profondeur documentées par Mathis. Vérifie que source, loi, géométrie et bande sont comparables. Si les épaisseurs varient, identifie les comparaisons à même volume. Ne remplace jamais une longueur par une fraction de nœuds. Ne crée aucun chiffre manquant pour compléter une courbe.
+
+Ne crée aucun autre fichier Python. Les commentaires et docstrings sont de courtes phrases françaises sans équations ni symboles mathématiques. Les petits contrôles restent dans ce même fichier et ne se lancent pas lors de son import. Après le fichier complet, donne une courte explication et les contrôles réellement exécutés. Si tu ne peux pas les lancer, indique les appels à faire sans annoncer leur réussite.
+```
+
+**Contrôle attendu.** Les quantités et leurs unités sont explicites et les courbes proviennent de budgets effectivement évalués.
+
+**Passage de main.** Discuter les compromis avec Mathis et Antoine, puis remettre la figure au groupe pour le choix de produit.
