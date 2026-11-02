@@ -19,173 +19,145 @@ import postprocessing
 def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
                            beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
                            Alpha, mu, chi, V_obj):
-    """On réduit l'énergie en répartissant une quantité fixée de matériau.
+    """On répartit une quantité fixée de matériau pour réduire le critère.
 
-    On reçoit la géométrie, les données du problème, le coefficient du matériau,
-    un pas initial et la répartition de départ. On renvoie la répartition finale,
-    les énergies acceptées, le champ final et sa dérivée par rapport au matériau.
-    La quantité imposée est une fraction des points du mur dans cette géométrie.
-    Le paramètre omega reçoit le nombre d'onde utilisé par le solveur.
+    On renvoie la répartition, les coûts acceptés, le champ et le gradient final.
+    Le paramètre omega reçoit le nombre d'onde du solveur.
     """
-    interior = domain_omega == _env.NODE_INTERIOR
-    robin = domain_omega == _env.NODE_ROBIN
-    if not numpy.any(robin):
-        raise ValueError("Le domaine doit contenir une frontière Robin.")
-    if not numpy.isfinite(spacestep) or spacestep <= 0:
-        raise ValueError("Le pas spatial doit être positif et fini.")
-    if not numpy.isfinite(mu) or mu <= 0:
-        raise ValueError("Le pas de descente doit être positif et fini.")
-    if not numpy.isfinite(V_obj) or not 0 <= V_obj <= 1:
-        raise ValueError("La fraction de matériau doit être entre zéro et un.")
-    if numpy.shape(chi) != numpy.shape(domain_omega) or not numpy.isrealobj(chi):
-        raise ValueError("La répartition doit être un tableau réel de la taille du domaine.")
-    if not numpy.all(numpy.isfinite(chi)) or not numpy.isfinite(Alpha):
-        raise ValueError("La répartition et le coefficient doivent être finis.")
-    if numpy.any(beta_pde[interior] == 0):
-        raise ValueError("Le coefficient de diffusion doit être non nul dans le domaine.")
-
-    target = float(V_obj * numpy.count_nonzero(robin))
-    nrows, ncols = domain_omega.shape
-
-    def project_density(proposal):
-        """On borne la répartition et on retrouve la quantité de matériau imposée."""
-        values = proposal[robin]
-        projected = numpy.zeros(domain_omega.shape, dtype=numpy.float64)
-        if target == 0:
-            return projected
-        if target == values.size:
-            projected[robin] = 1.0
-            return projected
-
-        # On cherche par dichotomie le décalage commun aux valeurs du mur.
-        lower = float(values.min() - 1.0)
-        upper = float(values.max())
-        for _ in range(60):
-            shift = (lower + upper) / 2.0
-            bounded = numpy.clip(values - shift, 0.0, 1.0)
-            if bounded.sum() > target:
-                lower = shift
-            else:
-                upper = shift
-        projected[robin] = numpy.clip(values - (lower + upper) / 2.0, 0.0, 1.0)
-        return projected
-
-    def compute_state(density):
-        """On assemble le système fourni et on calcule le champ et son énergie."""
-        # On prépare le coefficient du mur sans modifier les données reçues.
-        boundary_coefficient = numpy.zeros_like(alpha_rob, dtype=numpy.complex128)
-        boundary_coefficient[robin] = Alpha * density[robin]
-
-        # On reprend les mêmes contributions que dans le solveur fourni.
-        matrix, rhs = processing.compute_stiffness_matrix(
-            domain_omega, spacestep, f, beta_pde
-        )
-        mass, _ = processing.compute_mass_matrix(domain_omega, spacestep, alpha_pde)
-        matrix = matrix + omega**2 * mass
-        matrix, rhs = processing.compute_dirichlet_condition(
-            domain_omega, f_dir, alpha_dir, beta_pde, matrix, rhs
-        )
-        matrix, rhs = processing.compute_neumann_condition(
-            domain_omega, spacestep, f_neu, beta_neu, beta_pde, matrix, rhs
-        )
-        matrix, rhs = processing.compute_robin_condition(
-            domain_omega, spacestep, f_rob, boundary_coefficient,
-            beta_rob, beta_pde, matrix, rhs
-        )
-        matrix = matrix.tocsr()
-        state = scipy.sparse.linalg.spsolve(matrix, rhs.ravel())
-        field = numpy.zeros(domain_omega.shape, dtype=numpy.complex128)
-        field[interior] = state.reshape(domain_omega.shape)[interior]
-        if not numpy.all(numpy.isfinite(state)):
-            return matrix, state, field, numpy.inf
-        value = your_compute_objective_function(domain_omega, field, spacestep)
-        return matrix, state, field, value
-
-    def compute_gradient(matrix, state, density):
-        """On utilise le champ adjoint pour calculer l'effet de chaque point du mur."""
-        # On calcule le second membre adjoint à partir du champ dans le fluide.
-        adjoint_rhs = numpy.zeros_like(state)
-        adjoint_rhs[interior.ravel()] = 2.0 * spacestep**2 * state[interior.ravel()]
-        adjoint = scipy.sparse.linalg.spsolve(matrix.conjugate().transpose(), adjoint_rhs)
-        if not numpy.all(numpy.isfinite(adjoint)):
-            raise ValueError("Le calcul adjoint n'a pas donné de champ fini.")
-
-        # On additionne les contributions des voisins intérieurs de chaque point Robin.
-        gradient = numpy.zeros(domain_omega.shape, dtype=numpy.float64)
-        for i, j in zip(*numpy.nonzero(interior)):
-            row = i * ncols + j
-            for bi, bj in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):
-                if robin[bi, bj]:
-                    scale = spacestep * Alpha / beta_pde[i, j]
-                    denominator = beta_rob[bi, bj] - scale * density[bi, bj]
-                    diagonal_derivative = scale * beta_rob[bi, bj] / denominator**2
-                    rhs_derivative = spacestep * f_rob[bi, bj] * scale / denominator**2
-                    gradient[bi, bj] += numpy.real(
-                        numpy.conjugate(adjoint[row])
-                        * (rhs_derivative - diagonal_derivative * state[row])
-                    )
-        if not numpy.all(numpy.isfinite(gradient)):
-            raise ValueError("Le calcul de la dérivée n'a pas donné de valeurs finies.")
-        return gradient
-
-    # On démarre avec une copie admissible et son énergie réellement calculée.
-    chi = project_density(numpy.array(chi, dtype=numpy.float64, copy=True))
-    matrix, state, u, value = compute_state(chi)
-    if not numpy.isfinite(value):
-        raise ValueError("Le calcul initial n'a pas donné de champ fini.")
-    grad = compute_gradient(matrix, state, chi)
+    # On prépare la répartition initiale, son champ et son gradient.
+    chi = project_density(chi, domain_omega, V_obj)
+    matrix, state, u, value = compute_state(
+        domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
+        beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, Alpha * chi,
+    )
+    grad = compute_gradient(
+        domain_omega, spacestep, Alpha, chi, beta_pde, beta_rob, f_rob, matrix, state,
+    )
     history = [value]
     stop_reason = "nombre maximal d'itérations atteint"
 
-    # On cherche une amélioration en conservant les bornes et la quantité de matériau.
     for iteration in range(100):
-        projected = project_density(chi - grad)
+        projected = project_density(chi - grad, domain_omega, V_obj)
         if numpy.max(numpy.abs(projected - chi)) <= 1e-7:
             stop_reason = "variation projetée suffisamment petite"
             break
 
+        # On réduit le pas jusqu'à obtenir une diminution suffisante du critère.
         step = mu
-        accepted = False
         while step >= 1e-5:
-            candidate = project_density(chi - step * grad)
-            direction = candidate - chi
-            candidate_matrix, candidate_state, candidate_u, candidate_value = compute_state(candidate)
-
-            # On accepte seulement une diminution cohérente avec la direction calculée.
-            sufficient_decrease = value + 1e-4 * numpy.sum(grad * direction)
-            if numpy.isfinite(candidate_value) and candidate_value <= sufficient_decrease:
-                accepted = True
+            candidate = project_density(chi - step * grad, domain_omega, V_obj)
+            candidate_matrix, candidate_state, candidate_u, candidate_value = compute_state(
+                domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
+                beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, Alpha * candidate,
+            )
+            limit = value + 1e-4 * numpy.sum(grad * (candidate - chi))
+            if numpy.isfinite(candidate_value) and candidate_value <= limit:
+                chi, u, value = candidate, candidate_u, candidate_value
+                matrix, state = candidate_matrix, candidate_state
+                history.append(value)
                 break
             step /= 2.0
 
-        if not accepted:
+        if step < 1e-5:
             stop_reason = "pas de descente devenu trop petit"
             break
 
-        # On conserve uniquement les étapes acceptées puis on actualise la dérivée.
-        chi = candidate
-        matrix, state, u, value = candidate_matrix, candidate_state, candidate_u, candidate_value
-        history.append(value)
-        grad = compute_gradient(matrix, state, chi)
+        # On actualise le gradient après chaque étape acceptée.
+        grad = compute_gradient(
+            domain_omega, spacestep, Alpha, chi, beta_pde, beta_rob, f_rob, matrix, state,
+        )
         mu = 1.1 * step
         print("Itération", iteration + 1, ": énergie =", value)
 
     print("Arrêt de la descente :", stop_reason)
-    energy = numpy.asarray(history, dtype=numpy.float64).reshape(-1, 1)
-    return chi, energy, u, grad
+    return chi, numpy.asarray(history, dtype=numpy.float64).reshape(-1, 1), u, grad
 
 
 def your_compute_objective_function(domain_omega, u, spacestep):
     """On calcule le critère à partir du module de pression sur les points intérieurs."""
-    if numpy.shape(u) != numpy.shape(domain_omega):
-        raise ValueError("Le champ et le domaine doivent avoir la même taille.")
-    if not numpy.isfinite(spacestep) or spacestep <= 0:
-        raise ValueError("Le pas spatial doit être positif et fini.")
     interior_values = numpy.asarray(u)[domain_omega == _env.NODE_INTERIOR]
-    if not numpy.all(numpy.isfinite(interior_values)):
-        raise ValueError("Le champ doit être fini sur les points intérieurs.")
-    # On multiplie la somme des amplitudes au carré par l'aire représentée par un point.
     return float(spacestep**2 * numpy.sum(numpy.abs(interior_values)**2))
+
+
+def project_density(proposal, domain_omega, V_obj):
+    """On borne les valeurs du mur en conservant la quantité de matériau imposée."""
+    robin = domain_omega == _env.NODE_ROBIN
+    values = proposal[robin]
+    target = float(V_obj * numpy.count_nonzero(robin))
+    projected = numpy.zeros(domain_omega.shape, dtype=numpy.float64)
+    if target == 0:
+        return projected
+    if target == values.size:
+        projected[robin] = 1.0
+        return projected
+
+    # On cherche le décalage commun par dichotomie.
+    lower = float(values.min() - 1.0)
+    upper = float(values.max())
+    for _ in range(60):
+        shift = (lower + upper) / 2.0
+        if numpy.clip(values - shift, 0.0, 1.0).sum() > target:
+            lower = shift
+        else:
+            upper = shift
+    projected[robin] = numpy.clip(values - (lower + upper) / 2.0, 0.0, 1.0)
+    return projected
+
+
+def compute_state(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
+                  beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob):
+    """On assemble le système fourni et on renvoie le champ avec son coût."""
+    # On reprend les mêmes contributions que dans le solveur fourni.
+    matrix, rhs = processing.compute_stiffness_matrix(domain_omega, spacestep, f, beta_pde)
+    mass, _ = processing.compute_mass_matrix(domain_omega, spacestep, alpha_pde)
+    matrix = matrix + omega**2 * mass
+    matrix, rhs = processing.compute_dirichlet_condition(
+        domain_omega, f_dir, alpha_dir, beta_pde, matrix, rhs,
+    )
+    matrix, rhs = processing.compute_neumann_condition(
+        domain_omega, spacestep, f_neu, beta_neu, beta_pde, matrix, rhs,
+    )
+    matrix, rhs = processing.compute_robin_condition(
+        domain_omega, spacestep, f_rob, alpha_rob, beta_rob, beta_pde, matrix, rhs,
+    )
+    matrix = matrix.tocsr()
+    state = scipy.sparse.linalg.spsolve(matrix, rhs.ravel())
+    interior = domain_omega == _env.NODE_INTERIOR
+    field = numpy.zeros(domain_omega.shape, dtype=numpy.complex128)
+    field[interior] = state.reshape(domain_omega.shape)[interior]
+    value = your_compute_objective_function(domain_omega, field, spacestep)
+    if not numpy.all(numpy.isfinite(state)):
+        value = numpy.inf
+    return matrix, state, field, value
+
+
+def compute_gradient(domain_omega, spacestep, Alpha, density,
+                     beta_pde, beta_rob, f_rob, matrix, state):
+    """On calcule l'effet de chaque point du mur à l'aide du champ adjoint."""
+    interior = domain_omega == _env.NODE_INTERIOR
+    robin = domain_omega == _env.NODE_ROBIN
+    ncols = domain_omega.shape[1]
+
+    # On résout le problème adjoint avec le champ dans le fluide.
+    adjoint_rhs = numpy.zeros_like(state)
+    adjoint_rhs[interior.ravel()] = 2.0 * spacestep**2 * state[interior.ravel()]
+    adjoint = scipy.sparse.linalg.spsolve(matrix.conjugate().transpose(), adjoint_rhs)
+
+    # On additionne les contributions des voisins intérieurs de chaque point Robin.
+    gradient = numpy.zeros(domain_omega.shape, dtype=numpy.float64)
+    for i, j in zip(*numpy.nonzero(interior)):
+        row = i * ncols + j
+        for bi, bj in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):
+            if robin[bi, bj]:
+                scale = spacestep * Alpha / beta_pde[i, j]
+                denominator = beta_rob[bi, bj] - scale * density[bi, bj]
+                diagonal_derivative = scale * beta_rob[bi, bj] / denominator**2
+                rhs_derivative = spacestep * f_rob[bi, bj] * scale / denominator**2
+                gradient[bi, bj] += numpy.real(
+                    numpy.conjugate(adjoint[row])
+                    * (rhs_derivative - diagonal_derivative * state[row])
+                )
+    return gradient
 
 
 if __name__ == '__main__':
