@@ -165,6 +165,17 @@ if __name__ == '__main__':
 
     # -- plot chi, u, and energy
     postprocessing._plot_uncontroled_solution(u0, chi0)
+    # On masque le bord et l’extérieur, dont la pression n’est pas renvoyée.
+    initial_pressure = numpy.ma.masked_where(
+        domain_omega != _env.NODE_INTERIOR, numpy.abs(u0)
+    )
+    postprocessing.myimshow(
+        initial_pressure[:int(max(y)) + 2],
+        title="Module de la pression initiale", colorbar=True,
+        cmap="viridis", filename=os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "fig_u0_module.png"
+        ),
+    )
     postprocessing._plot_controled_solution(un, chin)
     err = un - u0
     postprocessing._plot_error(err)
