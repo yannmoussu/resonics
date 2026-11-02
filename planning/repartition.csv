@@ -1,0 +1,26 @@
+id,responsable,voie,fichier,debut,fin,tache
+Y1,Yann,VN,resonics.py,2026-11-02 09:00,2026-11-02 14:30,Solveur et contrats
+Y2,Yann,VN,resonics.py,2026-11-03 09:00,2026-11-03 14:30,Intégration et contrôles
+Y3,Yann,VN,resonics.py,2026-11-04 09:00,2026-11-04 14:30,Raffinement et coût
+Y4,Yann,VN,resonics.py,2026-11-05 09:00,2026-11-05 14:30,Exécution reproductible
+Y5,Yann,VN,resonics.py,2026-11-06 09:00,2026-11-06 12:30,Livrables et répétition
+M1,Mathis,VN,materiaux.py,2026-11-02 09:00,2026-11-02 14:30,Bandes et modèle matériau
+M2,Mathis,VN,materiaux.py,2026-11-03 09:00,2026-11-03 14:30,Coefficients et passivité
+M3,Mathis,VN,materiaux.py,2026-11-04 09:00,2026-11-04 14:30,Comparaison des matériaux
+M4,Mathis,VN,materiaux.py,2026-11-05 09:00,2026-11-05 14:30,Choix du matériau
+M5,Mathis,VN,materiaux.py,2026-11-06 09:00,2026-11-06 12:30,Synthèse matériau
+O1,Olympia,VN,campagnes.py,2026-11-02 09:00,2026-11-02 14:30,Plan des expériences
+O2,Olympia,VN,campagnes.py,2026-11-03 09:00,2026-11-03 14:30,Références et pics
+O3,Olympia,VN,campagnes.py,2026-11-04 09:00,2026-11-04 14:30,Validation sur la bande
+O4,Olympia,VN,campagnes.py,2026-11-05 09:00,2026-11-05 14:30,Comparaison des produits
+O5,Olympia,VN,campagnes.py,2026-11-06 09:00,2026-11-06 12:30,Figures et répétition
+J1,Joachim,VT,objectif.py,2026-11-02 09:00,2026-11-02 14:30,Objectif et adjoint
+J2,Joachim,VT,objectif.py,2026-11-03 09:00,2026-11-03 14:30,Gradient et bord ouvert
+J3,Joachim,VT,objectif.py,2026-11-04 09:00,2026-11-04 14:30,Objectif multibande
+J4,Joachim,VT,objectif.py,2026-11-05 09:00,2026-11-05 14:30,Validation des analyses
+J5,Joachim,VT,objectif.py,2026-11-06 09:00,2026-11-06 12:30,Synthèse théorique
+A1,Antoine,VT,optimisation.py,2026-11-02 09:00,2026-11-02 14:30,Projection et interface
+A2,Antoine,VT,optimisation.py,2026-11-03 09:00,2026-11-03 14:30,Descente à un pic
+A3,Antoine,VT,optimisation.py,2026-11-04 09:00,2026-11-04 14:30,Bande et budgets
+A4,Antoine,VT,optimisation.py,2026-11-05 09:00,2026-11-05 14:30,Arrêts et robustesse
+A5,Antoine,VT,optimisation.py,2026-11-06 09:00,2026-11-06 12:30,Synthèse optimisation

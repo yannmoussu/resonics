@@ -1,0 +1,227 @@
+[
+  {
+    "id": "Y1",
+    "responsable": "Yann",
+    "voie": "VN",
+    "fichier": "resonics.py",
+    "debut": "2026-11-02 09:00",
+    "fin": "2026-11-02 14:30",
+    "tache": "Solveur et contrats"
+  },
+  {
+    "id": "Y2",
+    "responsable": "Yann",
+    "voie": "VN",
+    "fichier": "resonics.py",
+    "debut": "2026-11-03 09:00",
+    "fin": "2026-11-03 14:30",
+    "tache": "Intégration et contrôles"
+  },
+  {
+    "id": "Y3",
+    "responsable": "Yann",
+    "voie": "VN",
+    "fichier": "resonics.py",
+    "debut": "2026-11-04 09:00",
+    "fin": "2026-11-04 14:30",
+    "tache": "Raffinement et coût"
+  },
+  {
+    "id": "Y4",
+    "responsable": "Yann",
+    "voie": "VN",
+    "fichier": "resonics.py",
+    "debut": "2026-11-05 09:00",
+    "fin": "2026-11-05 14:30",
+    "tache": "Exécution reproductible"
+  },
+  {
+    "id": "Y5",
+    "responsable": "Yann",
+    "voie": "VN",
+    "fichier": "resonics.py",
+    "debut": "2026-11-06 09:00",
+    "fin": "2026-11-06 12:30",
+    "tache": "Livrables et répétition"
+  },
+  {
+    "id": "M1",
+    "responsable": "Mathis",
+    "voie": "VN",
+    "fichier": "materiaux.py",
+    "debut": "2026-11-02 09:00",
+    "fin": "2026-11-02 14:30",
+    "tache": "Bandes et modèle matériau"
+  },
+  {
+    "id": "M2",
+    "responsable": "Mathis",
+    "voie": "VN",
+    "fichier": "materiaux.py",
+    "debut": "2026-11-03 09:00",
+    "fin": "2026-11-03 14:30",
+    "tache": "Coefficients et passivité"
+  },
+  {
+    "id": "M3",
+    "responsable": "Mathis",
+    "voie": "VN",
+    "fichier": "materiaux.py",
+    "debut": "2026-11-04 09:00",
+    "fin": "2026-11-04 14:30",
+    "tache": "Comparaison des matériaux"
+  },
+  {
+    "id": "M4",
+    "responsable": "Mathis",
+    "voie": "VN",
+    "fichier": "materiaux.py",
+    "debut": "2026-11-05 09:00",
+    "fin": "2026-11-05 14:30",
+    "tache": "Choix du matériau"
+  },
+  {
+    "id": "M5",
+    "responsable": "Mathis",
+    "voie": "VN",
+    "fichier": "materiaux.py",
+    "debut": "2026-11-06 09:00",
+    "fin": "2026-11-06 12:30",
+    "tache": "Synthèse matériau"
+  },
+  {
+    "id": "O1",
+    "responsable": "Olympia",
+    "voie": "VN",
+    "fichier": "campagnes.py",
+    "debut": "2026-11-02 09:00",
+    "fin": "2026-11-02 14:30",
+    "tache": "Plan des expériences"
+  },
+  {
+    "id": "O2",
+    "responsable": "Olympia",
+    "voie": "VN",
+    "fichier": "campagnes.py",
+    "debut": "2026-11-03 09:00",
+    "fin": "2026-11-03 14:30",
+    "tache": "Références et pics"
+  },
+  {
+    "id": "O3",
+    "responsable": "Olympia",
+    "voie": "VN",
+    "fichier": "campagnes.py",
+    "debut": "2026-11-04 09:00",
+    "fin": "2026-11-04 14:30",
+    "tache": "Validation sur la bande"
+  },
+  {
+    "id": "O4",
+    "responsable": "Olympia",
+    "voie": "VN",
+    "fichier": "campagnes.py",
+    "debut": "2026-11-05 09:00",
+    "fin": "2026-11-05 14:30",
+    "tache": "Comparaison des produits"
+  },
+  {
+    "id": "O5",
+    "responsable": "Olympia",
+    "voie": "VN",
+    "fichier": "campagnes.py",
+    "debut": "2026-11-06 09:00",
+    "fin": "2026-11-06 12:30",
+    "tache": "Figures et répétition"
+  },
+  {
+    "id": "J1",
+    "responsable": "Joachim",
+    "voie": "VT",
+    "fichier": "objectif.py",
+    "debut": "2026-11-02 09:00",
+    "fin": "2026-11-02 14:30",
+    "tache": "Objectif et adjoint"
+  },
+  {
+    "id": "J2",
+    "responsable": "Joachim",
+    "voie": "VT",
+    "fichier": "objectif.py",
+    "debut": "2026-11-03 09:00",
+    "fin": "2026-11-03 14:30",
+    "tache": "Gradient et bord ouvert"
+  },
+  {
+    "id": "J3",
+    "responsable": "Joachim",
+    "voie": "VT",
+    "fichier": "objectif.py",
+    "debut": "2026-11-04 09:00",
+    "fin": "2026-11-04 14:30",
+    "tache": "Objectif multibande"
+  },
+  {
+    "id": "J4",
+    "responsable": "Joachim",
+    "voie": "VT",
+    "fichier": "objectif.py",
+    "debut": "2026-11-05 09:00",
+    "fin": "2026-11-05 14:30",
+    "tache": "Validation des analyses"
+  },
+  {
+    "id": "J5",
+    "responsable": "Joachim",
+    "voie": "VT",
+    "fichier": "objectif.py",
+    "debut": "2026-11-06 09:00",
+    "fin": "2026-11-06 12:30",
+    "tache": "Synthèse théorique"
+  },
+  {
+    "id": "A1",
+    "responsable": "Antoine",
+    "voie": "VT",
+    "fichier": "optimisation.py",
+    "debut": "2026-11-02 09:00",
+    "fin": "2026-11-02 14:30",
+    "tache": "Projection et interface"
+  },
+  {
+    "id": "A2",
+    "responsable": "Antoine",
+    "voie": "VT",
+    "fichier": "optimisation.py",
+    "debut": "2026-11-03 09:00",
+    "fin": "2026-11-03 14:30",
+    "tache": "Descente à un pic"
+  },
+  {
+    "id": "A3",
+    "responsable": "Antoine",
+    "voie": "VT",
+    "fichier": "optimisation.py",
+    "debut": "2026-11-04 09:00",
+    "fin": "2026-11-04 14:30",
+    "tache": "Bande et budgets"
+  },
+  {
+    "id": "A4",
+    "responsable": "Antoine",
+    "voie": "VT",
+    "fichier": "optimisation.py",
+    "debut": "2026-11-05 09:00",
+    "fin": "2026-11-05 14:30",
+    "tache": "Arrêts et robustesse"
+  },
+  {
+    "id": "A5",
+    "responsable": "Antoine",
+    "voie": "VT",
+    "fichier": "optimisation.py",
+    "debut": "2026-11-06 09:00",
+    "fin": "2026-11-06 12:30",
+    "tache": "Synthèse optimisation"
+  }
+]
