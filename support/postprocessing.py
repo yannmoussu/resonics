@@ -129,8 +129,8 @@ def _plot_energy_history(energy):
     return
 
 
-def plot_rer_b_frequency_sweep(results, output_dir=None):
-    """Enregistre le spectre du RER B et son énergie en fonction de la fréquence."""
+def plot_rer_b_frequency_sweep(results, source, output_dir=None):
+    """On trace la source choisie et le coût du champ en fonction de la fréquence."""
     if output_dir is None:
         output_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -141,7 +141,7 @@ def plot_rer_b_frequency_sweep(results, output_dir=None):
     # On trace le spectre au-delà des fréquences simulées sans résoudre Helmholtz.
     spectrum_frequencies = numpy.linspace(0.0, 3500.0, 701)
     spectrum_amplitudes = numpy.array([
-        preprocessing.source_rer_b(frequency) for frequency in spectrum_frequencies
+        source(0.0, 2.0 * numpy.pi * frequency) for frequency in spectrum_frequencies
     ])
     fig, ax = matplotlib.pyplot.subplots()
     ax.plot(spectrum_frequencies, spectrum_amplitudes)
@@ -150,7 +150,7 @@ def plot_rer_b_frequency_sweep(results, output_dir=None):
     ax.set_xlim(0.0, 3500.0)
     ax.set_xlabel("Fréquence (Hz)")
     ax.set_ylabel("Amplitude relative")
-    ax.set_title("Source acoustique hypothétique du RER B")
+    ax.set_title("Amplitude de la source choisie")
     ax.legend()
     ax.grid(True)
     fig.tight_layout()

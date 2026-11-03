@@ -2,7 +2,7 @@
 
 **Objectif du jour 1.** Expliquer le modèle et obtenir un premier champ avec son énergie. La dérivée et la descente sont expliquées à la main.
 
-**Cas de départ.** RER B, source uniforme unitaire en haut et c=343 m/s. Le premier essai est proposé à 500 Hz. La bande 250–2 000 Hz vient de SOTA.md. Avec le maillage actuel, on commence au plus à 1 500 Hz et on vérifie les dix points par longueur d’onde. Les trois gaussiennes restent un essai de sensibilité facultatif.
+**Cas de départ.** Le choix `SOURCE` du programme principal est commun au champ initial, à la descente et à la courbe de fréquences. On utilise par défaut `source_rer_b(y, omega)` et la laine de roche `MATERIAUX["LAINE_ROCHE"]`, avec `ALPHA0=[-50, 50]`. Le coefficient suit la convention `d_n u - alpha(omega)*chi*u=0` et est calculé à chaque pulsation. Le cas initial utilise `OMEGA=3430 rad/s`, puis la bande va de 50 à 3 500 Hz, avec N=128, M=256 et c=343 m/s.
 
 ## the model to consider,
 
@@ -28,7 +28,7 @@ Les fichiers concernés sont en lecture seule. Fournis une explication pour le t
 
 1. Reprends Helmholtz au §7.3 du polycopié. Définis la pression complexe u, le nombre d’onde k=2*pi*f/c et la répartition de matériau chi. Prends c=343 m/s comme dans le code actuel et annonce cette valeur.
 2. Sur un schéma, place la source de Dirichlet uniforme unitaire en haut, les côtés Neumann réfléchissants et le mur Robin en bas. Une valeur uniforme impose aussi la même phase sur toute la source.
-3. Explique que l’on fixe une forme, puis que l’on déplace le matériau sur cette forme. Vérifie la convention du coefficient Robin avec Yann avant de relier le coefficient du cours à Alpha dans le code.
+3. Explique que l’on fixe une forme, puis que l’on déplace le matériau sur cette forme. Utilise la même convention Robin que le support, avec un signe moins devant alpha, pour présenter le coefficient calculé.
 
 Utilise la version reçue du fichier commun et les résultats réellement calculés. Explique chaque grandeur et chaque étape. Les commentaires du code sont des phrases françaises sans équations.
 ```
@@ -61,7 +61,7 @@ Les fichiers concernés sont en lecture seule. Fournis une explication pour le t
 
 1. Retrouve dans le §7.3 les hypothèses sur le domaine, les conditions aux limites et le coefficient du matériau.
 2. Énonce simplement le résultat d’existence et d’unicité sous ces hypothèses. Explique qu’il garantit un champ déterminé pour une source et une paroi données.
-3. Relie l’absorption à la partie dissipative du coefficient, avec la convention temporelle du cours. Distingue le coefficient de matériau validé du nombre d’exemple Alpha=10-10j.
+3. Relie l’absorption à la partie dissipative du coefficient, avec la convention temporelle du cours. Précise le coefficient calculé de la laine de roche et sa convention de signe.
 
 Utilise la version reçue du fichier commun et les résultats réellement calculés. Explique chaque grandeur et chaque étape. Les commentaires du code sont des phrases françaises sans équations.
 ```
@@ -163,7 +163,7 @@ Les fichiers concernés sont en lecture seule. Fournis une explication pour le t
 
 1. Reprends le §7.5 et la note sur Dirichlet non homogène. Définis une petite variation de chi et la variation d’énergie qu’elle produit, à source fixée.
 2. Présente l’adjoint comme un deuxième champ calculé pour déterminer cette variation, puis donne son équation et la formule de dérivée du cours. Définis les conjugaisons et utilise le champ total avec la source imposée.
-3. Explique à Antoine le signe de la dérivée : une variation dans une direction où elle est négative devrait diminuer l’énergie. Écris les étapes à programmer mardi et prépare avec Yann la correspondance de signe du coefficient Robin.
+3. Explique à Antoine le signe de la dérivée : une variation dans une direction où elle est négative devrait diminuer l’énergie. Écris les étapes à programmer mardi et reprends avec Yann la convention de signe du coefficient Robin déjà utilisée par le programme.
 
 Utilise la version reçue du fichier commun et les résultats réellement calculés. Explique chaque grandeur et chaque étape. Les commentaires du code sont des phrases françaises sans équations.
 ```

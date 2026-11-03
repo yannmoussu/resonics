@@ -5,6 +5,7 @@
 import matplotlib.pyplot
 import numpy
 import os
+import sys
 import scipy.sparse.linalg
 
 
@@ -13,7 +14,16 @@ import _env
 import preprocessing
 import processing
 import postprocessing
-#import solutions
+from compute_alpha import compute_alpha, MATERIAUX
+
+
+# On choisit la source commune au champ initial, à la descente et aux fréquences.
+SOURCE = preprocessing.source_rer_b
+# SOURCE = preprocessing.source_constant
+CAR_MAT = MATERIAUX["LAINE_ROCHE"]
+ALPHA0 = [-50.0, 50.0]  # On donne les parties réelle et imaginaire du point initial.
+OMEGA = 3430.0  # On exprime la pulsation en radians par seconde.
+C = 343.0  # On exprime la célérité en mètres par seconde.
 
 
 def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
@@ -217,12 +227,9 @@ if __name__ == '__main__':
     spacestep = 1.0 / N  # mesh size
 
     # -- set parameters of the partial differential equation
-    kx = -1.0
-    ky = -1.0
-    wavenumber = numpy.sqrt(kx**2 + ky**2)  # wavenumber
-    wavenumber = 10.0
-    c = 343
-    omega = wavenumber*c
+    omega = OMEGA
+    c = C
+    wavenumber = omega / c
 
     # ----------------------------------------------------------------------
     # -- Do not modify this cell, these are the values that you will be assessed against.
@@ -239,27 +246,21 @@ if __name__ == '__main__':
     # ----------------------------------------------------------------------
     # -- Fell free to modify the function call in this cell.
     # ----------------------------------------------------------------------
-    # -- define boundary conditions
-    # planar wave defined on top
+    # On repère les positions le long du bord supérieur.
+    y_source = (numpy.arange(N) - (N - 1) / 2) * spacestep
     f_dir[:, :] = 0.0
-    f_dir[0, 0:N] = 1.0
-    # spherical wave defined on top
-    #f_dir[:, :] = 0.0
-    #f_dir[0, int(N/2)] = 10.0
-
-    # -- initialize
-    alpha_rob[:, :] = - wavenumber * 1j
+    f_dir[0, :] = SOURCE(y_source, omega)
 
     # -- define material density matrix
     chi = preprocessing._set_chi(M, N, x, y)
     chi = preprocessing.set2zero(chi, domain_omega)
 
-    # -- define absorbing material
-    # -- this is the function you have written during your project
-    from compute_alpha import compute_alpha, g1, MATERIAUX, Alpha0
-    Alpha = compute_alpha(omega, g1, MATERIAUX["LAINE_ROCHE"], Alpha0)[0]
-    Alpha = Alpha[0]+1j*Alpha[1]
-    print(Alpha)
+    # On identifie le coefficient avant de résoudre le problème acoustique.
+    coefficients, success, message = compute_alpha(omega, SOURCE, CAR_MAT, ALPHA0)
+    if not success:
+        sys.exit("Échec du calcul du coefficient : " + str(message))
+    Alpha = coefficients[0] + 1j * coefficients[1]
+    print("Coefficient du matériau :", Alpha)
     alpha_rob = Alpha * chi
 
     # -- set parameters for optimization
@@ -285,7 +286,7 @@ if __name__ == '__main__':
     # ----------------------------------------------------------------------
     # -- Fell free to modify the function call in this cell.
     # ----------------------------------------------------------------------
-    # On améliore la répartition avec le coefficient provisoire du matériau.
+    # On améliore la répartition avec la source et le matériau choisis.
     chi, energy, u, grad = your_optimization_procedure(
         domain_omega, spacestep, wavenumber, f, f_dir, f_neu, f_rob,
         beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
@@ -319,9 +320,11 @@ if __name__ == '__main__':
     results = processing.run_rer_b_frequency_sweep(
         domain_omega, spacestep, frequencies_hz,
         f, f_dir, f_neu, f_rob,
-        beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, Alpha * chi0,
+        beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob,
+        chi0, SOURCE, CAR_MAT, ALPHA0, sound_speed_m_s=C,
     )
     # On enregistre les deux courbes dans le dossier de ce programme.
-    postprocessing.plot_rer_b_frequency_sweep(results)
+    if results is not None:
+        postprocessing.plot_rer_b_frequency_sweep(results, SOURCE)
 
     print('End.')

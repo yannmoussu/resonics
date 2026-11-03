@@ -27,7 +27,7 @@
 \section*{Ce qui est déjà prêt}
 Le nom ResoniCS et le cas d'usage RER B sont retenus. L'état de l'art est enrichi et sourcé. Le modèle de Helmholtz, la source somme de trois gaussiennes et les premiers résultats sont décrits dans le rapport. Les fonctions de coût, de projection, de calcul du champ, de gradient et de descente sont programmées et vérifiées.
 
-La phase continue de la descente diminue le critère de 2,944346 à 0,572995 en 100 étapes acceptées. Le tri final conserve 204 points garnis parmi les 512 points du mur et son coût recalculé vaut 0,589684. Le calcul utilise encore \code{Alpha=10-10j}, coefficient d'exemple défini en J1.8 ci-dessous. \textbf{Joachim} s'occupe du choix du matériau et de son coefficient.
+La phase continue de la descente diminue le critère de 1,126340 à 0,223515 en 100 étapes acceptées. Le tri final conserve 204 points garnis parmi les 512 points du mur et son coût recalculé vaut 0,223519. La source et les paramètres du matériau sont choisis au début du programme. Le coefficient de la laine de roche est calculé par \code{compute_alpha}, à la pulsation initiale puis à chaque fréquence de la courbe.
 
 \section*{Bilan des dix attendus}
 \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.3cm}>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{2.1cm}>{\raggedright\arraybackslash}X@{}}
@@ -40,15 +40,15 @@ J1.3 & Fréquences, dimensions, source & À harmoniser & Valider les distances e
 J1.4 & Propriétés de la solution & À rédiger & Préciser sous quelles hypothèses le champ est unique et une répartition de matériau minimise l'énergie.\\[3pt]
 J1.5 & Problème d'optimisation & À formaliser & Écrire le minimum de l'intégrale du carré du module de la pression, à fréquence et quantité de matériau fixées.\\[3pt]
 J1.6 & Paroi ouverte ou réfléchissante & À traiter & Comparer les modèles et leurs bilans avec la condition de Sommerfeld.\\[3pt]
-J1.7 & Matériau et quantité & À finaliser & Recevoir le choix de Joachim et justifier les 204 points garnis sur 512 du premier essai.\\[3pt]
-J1.8 & Coefficient complexe de Robin & En attente & Obtenir le coefficient du matériau à chaque fréquence étudiée, ses unités et son signe dans le code.\\[3pt]
+J1.7 & Matériau et quantité & Données disponibles & Documenter la laine de roche choisie et justifier les 204 points garnis sur 512.\\[3pt]
+J1.8 & Coefficient complexe de Robin & Calcul intégré & Vérifier et présenter les paramètres de l’identification et les valeurs calculées dans la convention du support.\\[3pt]
 J1.9 & Dérivée de l'énergie & Code prêt & Écrire la variation de l'énergie quand on modifie la répartition, puis expliquer le calcul adjoint.\\[3pt]
 J1.10 & Descente de gradient & Fait & Reprendre la méthode testée avec le coefficient du matériau retenu.\\
 \bottomrule
 \end{tabularx}
 
 \section*{Ordre de priorité}
-Compléter J1.4 et J1.6, recevoir les données du matériau pour J1.7--J1.8, puis achever la formulation de J1.5 et J1.9. En parallèle, fixer les unités et les réglages de J1.3 pour que chacun travaille sur le même cas.
+Compléter J1.4 et J1.6, documenter les données du matériau et le calcul du coefficient de J1.7--J1.8, puis achever la formulation de J1.5 et J1.9. En parallèle, fixer les unités et les réglages de J1.3 pour que chacun travaille sur le même cas.
 
 \section*{J1.3 --- Quelles dimensions, quels paramètres et quels documents ?}
 \textbf{L'échelle physique désigne la distance en mètres entre deux points de grille.} Le programme utilise actuellement \code{spacestep=0.0078125}. Le rapport interprète cette valeur comme $h=0,0078125\,\mathrm{m}$, soit 7,8125 mm entre voisins. Il faut valider ce choix comme hypothèse de notre modèle, puis donner les dimensions du domaine d'air et du relief qu'il représente.
@@ -63,27 +63,27 @@ Avec $j$ l'indice de colonne et $i$ l'indice de ligne, les coordonnées sont $x_
 \midrule
 Grille et contour & $N=128$ colonnes, $M=256$ lignes, $h=0,0078125$ m sous l'hypothèse précédente, niveau 2 du motif fourni. Le niveau compte les itérations successives de construction du motif.\\[3pt]
 Célérité $c$ & Vitesse du son retenue : $343\,\mathrm{m\,s^{-1}}$. Conserver la même valeur dans les conversions fréquence--nombre d'onde.\\[3pt]
-Fréquence $f$ et nombre d'onde $k$ & $f$ compte les oscillations par seconde, en Hz, et $k=2\pi f/c$ est en $\mathrm{m^{-1}}$. Le code fixe $k=10$, donc $f\simeq545,90$ Hz. Remplacer l'ancienne proposition de 500 Hz dans les fiches par le cas effectivement utilisé.\\[3pt]
+Fréquence $f$ et nombre d'onde $k$ & La pulsation initiale \code{OMEGA} vaut $3\,430\,\mathrm{rad\,s^{-1}}$. La fréquence est $f=\omega/(2\pi)\simeq545,90$ Hz et le nombre d'onde transmis au solveur est $k=\omega/c=10\,\mathrm{m^{-1}}$.\\[3pt]
 Bande calculée & 50 à 3\,500 Hz, pas de 50 Hz, soit 70 résolutions. La bande couvre les trois composantes du spectre affiché de 0 à 3\,500 Hz. La fréquence nulle correspond à un problème statique.\\[3pt]
 Longueur d'onde $\lambda$ & $\lambda=c/f$. Vérifier $\lambda/h\geq10$. À 3\,500 Hz, cela donne 12,544 points par longueur d'onde avec la grille actuelle.\\[3pt]
-Amplitude imposée $G(f)$ & Le cas initial et la descente utilisent une amplitude uniforme égale à 1. La courbe fréquentielle impose la somme des gaussiennes, définie ci-dessous. Garder cette distinction dans les légendes et le texte.\\[3pt]
-Répartition et coefficient & Quantité initiale : 204 points garnis sur 512 points de paroi. Le coefficient provisoire est \code{Alpha=10-10j}. Le sens de ces valeurs est détaillé en J1.5 et J1.8.\\
+Amplitude imposée $G(f)$ & Le choix \code{SOURCE} sélectionne \code{source_constant(y, omega)} ou \code{source_rer_b(y, omega)} pour le champ initial, la descente et la courbe fréquentielle. Son amplitude initiale vaut $0,617187$ dans le cas actuel.\\[3pt]
+Répartition et coefficient & Quantité initiale : 204 points garnis sur 512 points de paroi. Coefficient initial de la laine de roche : $(-18,154584+21,197637\mathrm{i})\,\mathrm{m^{-1}}$.\\
 \bottomrule
 \end{tabularx}
 
-La fonction \code{source_rer_b} calcule une amplitude relative $G(f)$ en additionnant trois gaussiennes. Pour chaque composante, le centre est la fréquence de son maximum, l'écart-type règle sa largeur et le poids est son amplitude lorsqu'elle est prise seule. Les triplets \emph{(centre en Hz ; écart-type en Hz ; poids sans unité)} sont actuellement $(200\,;100\,;1)$, $(800\,;350\,;0,8)$ et $(2\,500\,;150\,;0,5)$. Ce sont les paramètres à conserver ou à modifier explicitement ensemble si l'on change la source.
+La fonction \code{source_rer_b(y, omega)} reçoit une position et une pulsation. Elle convertit la pulsation en fréquence par $f=\omega/(2\pi)$ et calcule l'amplitude relative $G(f)$ en additionnant trois gaussiennes. Les triplets \emph{(centre en Hz ; écart-type en Hz ; poids sans unité)} sont $(200;100;1)$, $(800;350;0,8)$ et $(2\,500;150;0,5)$. La fonction \code{source_constant(y, omega)} renvoie un. Le choix \code{SOURCE} est commun à tous les calculs.
 
 \textbf{Les documents à harmoniser sont précisément les suivants :}
 \begin{itemize}
 \item \code{report/report.tex} : les sections sur le domaine, la source et la méthode numérique, notamment le tableau des paramètres, puis le PDF compilé.
-\item \code{planning/README.md}, les cinq fiches \code{01_lundi.md} des dossiers Yann, Mathis, Olympia, Joachim et Antoine, ainsi que \code{planning/repartition.json} et son export \code{planning/build/repartition.csv} : les anciennes mentions de 500 Hz et de bande doivent correspondre au cas retenu. Le résumé de départ du Gantt, dans \code{planning/build/gantt.tex}, puis ses versions PDF et PNG sont également concernés. Vérifier enfin \code{planning/README_JOUR2.md}.
+\item \code{planning/README.md}, les fiches individuelles, \code{planning/repartition.json} et son export \code{planning/build/repartition.csv} reprennent les choix actuels. Garder ces valeurs cohérentes avec le programme quand on modifie la source, le matériau ou la bande. Le résumé du Gantt et \code{planning/README_JOUR2.md} sont concernés de la même façon.
 \end{itemize}
 \textbf{Les valeurs de référence sont à lire dans} \code{support/demo_control_polycopie2024.py} pour la grille, le niveau, le nombre d'onde, la répartition et la bande, \code{source_rer_b} dans \code{support/preprocessing.py} pour les gaussiennes, et \code{run_rer_b_frequency_sweep} dans \code{support/processing.py} pour la célérité. Conserver les blocs protégés. L'attribution du matériau à Joachim doit aussi être répercutée dans les fiches et le planning.
 
 \section*{J1.4 --- De quelle solution et de quel minimum parle-t-on ?}
 \textbf{Première question : le champ acoustique est-il bien défini ?} Pour une forme du domaine, une fréquence, une source, un coefficient de paroi et une répartition de matériau tous fixés, on cherche le champ complexe de pression $u_f$. L'existence signifie qu'un champ satisfait le problème de Helmholtz et ses conditions aux limites. L'unicité signifie que ces mêmes données donnent un seul champ. La dépendance continue aux données signifie qu'une petite variation des données produit une variation contrôlée de la solution.
 
-\textbf{À faire :} reprendre le théorème 7.4.3 du §7.4.3 du polycopié \code{context/Poly-ST5-57-2026.pdf}. Préciser les hypothèses sur le domaine, la régularité des données, les frontières et la portion garnie, ainsi que les signes du coefficient dans la convention du cours. En particulier, le cours suppose $\operatorname{Re}\alpha>0$ et $\operatorname{Im}\alpha<0$, où $\operatorname{Re}$ et $\operatorname{Im}$ désignent les parties réelle et imaginaire. La répartition doit être positive avec une borne inférieure strictement positive sur une portion de bord de longueur positive. Expliquer aussi l'adaptation à la pression imposée non nulle en haut du domaine, présentée au même chapitre. Vérifier ces hypothèses avec le coefficient que donnera Joachim.
+\textbf{À faire :} reprendre le théorème 7.4.3 du §7.4.3 du polycopié \code{context/Poly-ST5-57-2026.pdf}. Préciser les hypothèses sur le domaine, la régularité des données, les frontières et la portion garnie, ainsi que les signes du coefficient dans la convention du support utilisée ici. Avec ce signe, les hypothèses dissipatives du cours s’écrivent $\operatorname{Re}\alpha<0$ et $\operatorname{Im}\alpha>0$, où $\operatorname{Re}$ et $\operatorname{Im}$ désignent les parties réelle et imaginaire. La répartition doit être positive avec une borne inférieure strictement positive sur une portion de bord de longueur positive. Expliquer aussi l'adaptation à la pression imposée non nulle en haut du domaine, présentée au même chapitre. Vérifier ces hypothèses avec le coefficient que donnera Joachim.
 
 \textbf{Deuxième question : une meilleure répartition existe-t-elle ?} Le minimum est la plus petite valeur du critère de J1.5 parmi les répartitions autorisées. Le théorème 7.4.4 du même paragraphe donne, sous ses hypothèses, l'existence d'au moins une répartition qui atteint ce minimum lorsque l'on autorise des valeurs de matériau comprises entre zéro et un. Il faut citer ce résultat avec la classe de répartitions retenue. L'unicité du champ pour chaque répartition ne suffit pas à conclure que la meilleure répartition est unique.
 
@@ -108,39 +108,39 @@ Ici $x$ est un point du domaine, $\Omega_h$ est l'ensemble des points intérieur
 \qquad
 \sum_{b\in\Gamma_{R,h}}\chi_b=V_{\mathrm{obj}}S=204
 \end{equation*}
-$\Gamma_{R,h}$ est l'ensemble des points du mur portant la condition de Robin et $b$ désigne un de ces points. Leur nombre est $S=512$. La fraction imposée vaut $V_{\mathrm{obj}}=204/512\simeq0,398438$, soit environ 40\,\%. Dans le code, $\chi$ est nul en dehors de ces points. La fréquence $f_0\simeq545,90$ Hz correspond à $k=10\,\mathrm{m^{-1}}$, avec la source uniforme unitaire du premier essai.
+$\Gamma_{R,h}$ est l'ensemble des points du mur portant la condition de Robin et $b$ désigne un de ces points. Leur nombre est $S=512$. La fraction imposée vaut $V_{\mathrm{obj}}=204/512\simeq0,398438$, soit environ 40\,\%. Dans le code, $\chi$ est nul en dehors de ces points. La fréquence $f_0\simeq545,90$ Hz correspond à $k=10\,\mathrm{m^{-1}}$, avec la source sélectionnée par \code{SOURCE}.
 
 Le minimum recherché est donc la plus faible valeur de cette somme de pression au carré obtenue en plaçant cette quantité de matériau sur cette forme. La fonction \code{your_compute_objective_function} évalue le critère, et \code{your_optimization_procedure} cherche à le diminuer. Les valeurs intermédiaires de $\chi$ constituent la répartition continue admise par la méthode du cours. La somme imposée est une quantité nodale pour ce premier cas, dont la justification physique reste à donner en J1.7.
 
-\textbf{À faire :} ajouter cette formulation, définir toutes ses grandeurs et préciser ce qui reste fixe dans \code{report/report.tex}. La phase continue fait passer le coût de 2,944346 à 0,572995 en 100 étapes. Après le tri en valeurs zéro et un, le coût est recalculé et vaut 0,589684. L'historique distingue ces deux étapes. L'arrêt de la descente ne démontre pas qu'un minimum global est atteint. Le calcul d'un critère cumulé sur plusieurs fréquences relève de l'étape ultérieure du projet.
+\textbf{À faire :} ajouter cette formulation et définir toutes ses grandeurs dans \code{report/report.tex}. La descente utilise la source choisie et le coefficient de la laine de roche à la pulsation fixée. Le coût continu passe de 1,126340 à 0,223515, puis le coût binaire vaut 0,223519. L'historique distingue ces deux étapes et l'arrêt ne démontre pas qu'un minimum global est atteint.
 
 \section*{J1.7 et J1.8 --- Quel matériau, quelle quantité, quel coefficient ?}
-\textbf{J1.7 :} recevoir le nom du matériau de Joachim et justifier la quantité du premier essai, représentée par les 204 points garnis sur 512. Pour annoncer une longueur absorbante, la mesurer le long de la paroi. Pour annoncer un volume, préciser en plus l'épaisseur et la profondeur de la coupe. Conserver le sens de la fraction nodale dans le premier calcul.
+\textbf{J1.7 :} documenter les données de la laine de roche choisie et justifier la quantité du premier essai, représentée par les 204 points garnis sur 512. Pour annoncer une longueur absorbante, la mesurer le long de la paroi. Pour annoncer un volume, préciser en plus l'épaisseur et la profondeur de la coupe. Conserver le sens de la fraction nodale dans le premier calcul.
 
 \textbf{Le coefficient de J1.8 est celui de la condition de Robin du matériau poreux.} Dans le rapport, cette condition est
 \begin{equation*}
-\partial_n u_f+\alpha(f)\chi u_f=0
+\partial_n u_f-\alpha(\omega)\chi u_f=0
 \qquad
-\alpha(f)=a(f)+\mathrm{i}b(f)
+\alpha(\omega)=a(\omega)+\mathrm{i}b(\omega)
 \end{equation*}
-$n$ est la normale extérieure à l'air, $\partial_n u_f$ est la dérivée du champ dans cette direction, $a(f)$ et $b(f)$ sont les parties réelle et imaginaire du coefficient et $\mathrm{i}^2=-1$. Le coefficient relie la pression au mur à sa variation dans la direction normale et représente l'effet acoustique du matériau. Avec les coefficients normalisés du support et des longueurs en mètres, $\alpha$ est en $\mathrm{m^{-1}}$. Sa valeur dépend du matériau et de la fréquence. Il faut également annoncer la convention temporelle, ici $e^{-\mathrm{i}2\pi ft}$ avec $t$ le temps en secondes, qui fixe l'interprétation des signes.
+$n$ est la normale extérieure à l'air, $\partial_n u_f$ est la dérivée du champ dans cette direction, $a(\omega)$ et $b(\omega)$ sont les parties réelle et imaginaire du coefficient et $\mathrm{i}^2=-1$. Le coefficient relie la pression au mur à sa variation dans la direction normale et représente l'effet acoustique du matériau. Avec les coefficients normalisés du support et des longueurs en mètres, $\alpha$ est en $\mathrm{m^{-1}}$. Sa valeur dépend du matériau et de la fréquence. Il faut également annoncer la convention temporelle, ici $e^{-\mathrm{i}2\pi ft}$ avec $t$ le temps en secondes, qui fixe l'interprétation des signes.
 
-\textbf{Correspondance avec le code.} La fonction \code{compute_robin_condition} utilise, avec les coefficients unitaires et le second membre Robin nul, la convention $\partial_nu_f-\mathrm{Alpha}\chi u_f=0$. Il faut donc transmettre
+\textbf{Correspondance avec le code.} La fonction \code{compute_alpha(omega, g, car_mat, alpha0)} renvoie les parties réelle et imaginaire du coefficient dans la même convention que \code{compute_robin_condition}. On les regroupe en un nombre complexe, puis on forme le tableau
 \begin{equation*}
-\mathrm{Alpha}(f)=-\alpha(f)
+\mathrm{Alpha}=\alpha(\omega)
 \qquad
-\code{alpha_rob}=\mathrm{Alpha}(f)\,\chi
+\code{alpha_rob}=\mathrm{Alpha}\,\chi
 \end{equation*}
-\code{Alpha} est le nombre complexe du matériau et \code{alpha_rob} est le tableau qui inclut sa répartition sur le mur. Le \code{j} de Python désigne l'unité imaginaire. L'exemple \code{Alpha=10-10j} donne donc $\alpha=-10+10\mathrm{i}$ dans le rapport. Ces signes diffèrent des hypothèses citées en J1.4, ce qui impose de vérifier la convention et la valeur du matériau avant d'appliquer ces garanties au cas physique.
+Le \code{j} de Python désigne l'unité imaginaire. La convention temporelle et les signes sont donc identiques dans le rapport, l'identification et le solveur.
 
-\textbf{À demander précisément à Joachim :}
+\textbf{Données à présenter pour J1.7--J1.8 :}
 \begin{enumerate}
-\item Le matériau retenu et le tableau de toutes les données utilisées pour le caractériser, avec pour chacune le nom de la grandeur, le symbole, la valeur, l'unité et la source.
-\item La méthode de calcul du coefficient, en s'appuyant sur le §3.2.4 du polycopié, qui rapproche un modèle du matériau poreux et un modèle équivalent avec condition de Robin.
-\item La valeur numérique de $\alpha$ à la fréquence du premier essai, environ 545,90 Hz, avec son unité, la convention temporelle et la condition de Robin dont elle provient. Si Joachim a utilisé une autre fréquence, la faire préciser et recalculer le coefficient au point retenu.
-\item Pour la courbe de 50 à 3\,500 Hz, les valeurs aux 70 fréquences ou une fonction donnant $\alpha(f)$. Si une valeur constante est proposée, faire préciser la bande et l'approximation qui la justifient.
+\item Le matériau \code{MATERIAUX["LAINE_ROCHE"]}, avec la porosité $0,97$, la tortuosité $1,1$ et la résistivité $30\,000\,\mathrm{Pa\,s\,m^{-2}}$.
+\item L'identification du §3.2.4 du polycopié, les longueurs auxiliaires $l=2,5$ m et $L=10$ m, les 41 modes de Fourier et les poids $A=B=1$.
+\item Le couple initial \code{ALPHA0=[-50, 50]}, les tolérances \code{xatol=1e-6} et \code{fatol=1e-10}, puis l'indicateur de réussite du calcul.
+\item La source \code{SOURCE(y, omega)} choisie et le coefficient calculé à chaque pulsation $\omega=2\pi f$. Le champ initial et la descente utilisent $\omega_0=3\,430\,\mathrm{rad\,s^{-1}}$, puis la courbe emploie les 70 fréquences de 50 à 3\,500 Hz.
 \end{enumerate}
-\textbf{À obtenir :} un tableau dans \code{report/report.tex}, puis la valeur convertie \code{Alpha} dans le bloc autorisé de \code{support/demo_control_polycopie2024.py}. La fonction de calcul fréquentiel conserve actuellement le même coefficient sur toute la bande, donc il faudra adapter son utilisation si la loi retenue dépend de $f$. Chaque point fréquentiel doit utiliser sa propre valeur du coefficient. Garder les blocs protégés inchangés.
+\textbf{À obtenir :} les paramètres et les résultats de l'identification dans le rapport, avec le même signe devant le coefficient dans tous les fichiers. Les valeurs sont calculées dans \code{compute_alpha.py} et utilisées directement par le programme principal et le calcul fréquentiel. Les blocs protégés sont conservés.
 
 \section*{Autres points à terminer}
 \tache{Étude ouverte/réfléchissante --- J1.6}{

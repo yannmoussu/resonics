@@ -2,7 +2,7 @@
 
 **Objectif du jour.** On regarde toute la bande et on teste quelques fréquences et quantités ensemble avec les calculs déjà construits.
 
-**Cas de départ.** Bruit de roulement du RER B. Premier essai proposé à 500 Hz avec c=343 m/s. Les comparaisons utilisent une pression imposée unitaire avec la même phase sur le bord supérieur. La plage 250–2 000 Hz de SOTA.md reste indicative. Avec la grille actuelle, on commence sur 250–1 500 Hz avant d’élargir si nécessaire.
+**Cas de départ.** Le choix `SOURCE` du programme principal est commun au champ initial, à la descente et à la courbe de fréquences. On utilise par défaut `source_rer_b(y, omega)` et la laine de roche `MATERIAUX["LAINE_ROCHE"]`, avec `ALPHA0=[-50, 50]`. Le coefficient suit la convention `d_n u - alpha(omega)*chi*u=0` et est calculé à chaque pulsation. Le cas initial utilise `OMEGA=3430 rad/s`, puis la bande va de 50 à 3 500 Hz, avec N=128, M=256 et c=343 m/s.
 
 ## Analyze the obtained results to compare to the efficient performances on the fixed range of frequencies ; to compare to a fully absorbing wall ;
 
@@ -30,7 +30,7 @@ Utiliser aussi les paramètres et résultats déjà obtenus pour cette tâche.
 Modifie seulement demo_control_polycopie2024.py. Conserve intégralement les deux blocs « Do not modify this cell, these are the values that you will be assessed against. », avec leurs lignes, commentaires et indentation. Garde l’appel de solve_helmholtz et les copies chi0 et u0. Complète les fonctions étudiantes et les blocs « Fell free to modify the function call in this cell. ». Les essais supplémentaires utilisent leurs propres tableaux après les blocs protégés. Conserve les signatures et les retours du support.
 
 1. Reprends les répartitions initiale, optimisée à une fréquence et entièrement recouverte.
-2. Recalcule leur énergie sur les mêmes fréquences avec la source unitaire. Ajoute quelques points entre les fréquences calculées si un pic semble mal décrit.
+2. Recalcule leur énergie sur les mêmes fréquences avec la source choisie dans le programme principal. Ajoute quelques points entre les fréquences calculées si un pic semble mal décrit.
 3. Transmets les courbes à Olympia en indiquant la fréquence d’optimisation et la quantité de chaque cas.
 
 Réutilise les calculs présents. Ajoute seulement le calcul nécessaire à ces étapes. Les commentaires restent des phrases françaises. Aucun nouveau fichier Python.
@@ -104,7 +104,7 @@ Utiliser aussi les paramètres et résultats déjà obtenus pour cette tâche.
 Modifie seulement demo_control_polycopie2024.py. Conserve intégralement les deux blocs « Do not modify this cell, these are the values that you will be assessed against. », avec leurs lignes, commentaires et indentation. Garde l’appel de solve_helmholtz et les copies chi0 et u0. Complète les fonctions étudiantes et les blocs « Fell free to modify the function call in this cell. ». Les essais supplémentaires utilisent leurs propres tableaux après les blocs protégés. Conserve les signatures et les retours du support.
 
 1. Choisis avec Mathis et Antoine deux ou trois quantités réalisables. Ils donnent la correspondance entre chi et la longueur absorbante, ou le volume si l’épaisseur et la profondeur sont fixées.
-2. Pour chaque quantité, reprends la même recherche et la même bande avec la source unitaire.
+2. Pour chaque quantité, reprends la même recherche et la même bande avec la source choisie dans le programme principal.
 3. Pour comparer des formes différentes, utilise une même quantité physique et note celle réellement obtenue sur chaque grille. Transmets les résultats à Olympia.
 
 Réutilise les calculs présents. Ajoute seulement le calcul nécessaire à ces étapes. Les commentaires restent des phrases françaises. Aucun nouveau fichier Python.

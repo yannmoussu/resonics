@@ -8,7 +8,7 @@
 | [Note Dirichlet non homogène](../context/Dirichlet_Nonhomogene.pdf) | Source imposée et rôle du champ total dans la dérivée |
 | [Optimisation — Allaire](../context/GAllaire-OptimParam.pdf) | Complément facultatif si une étape de descente demande une explication |
 | [Mur antibruit — Filoche](../context/Mur-antibruit-Filoche.pdf) | Exemples physiques et état de l’art |
-| [Note sur la source](../context/ResoniCS_modelisation_source_RER_B.md) | Hypothèses du spectre illustratif ; pour le MVP, la source unitaire sert de référence et le spectre sert seulement de comparaison complémentaire |
+| [Note sur la source](../context/ResoniCS_modelisation_source_RER_B.md) | Hypothèses du spectre illustratif ; le choix SOURCE du programme principal sélectionne la source constante ou le spectre RER pour tous les calculs |
 | [Code fourni](../support/) | Point de départ des calculs, avec les fonctions et blocs protégés conservés |
 
 Les pages indiquées sont les numéros imprimés du polycopié ; les pages du fichier PDF ont un décalage de dix. Le cas ISOREL et ses paramètres sont ainsi page imprimée 47, page 57 du PDF.

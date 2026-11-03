@@ -2,7 +2,7 @@
 
 **Objectif du jour 2.** Lire les premières courbes, puis obtenir une première baisse d’énergie en déplaçant le matériau.
 
-**Cas de départ.** RER B, source uniforme unitaire en haut et c=343 m/s. Le premier essai est proposé à 500 Hz. La bande 250–2 000 Hz vient de SOTA.md. Avec le maillage actuel, on commence au plus à 1 500 Hz et on vérifie les dix points par longueur d’onde. Les trois gaussiennes restent un essai de sensibilité facultatif.
+**Cas de départ.** Le choix `SOURCE` du programme principal est commun au champ initial, à la descente et à la courbe de fréquences. On utilise par défaut `source_rer_b(y, omega)` et la laine de roche `MATERIAUX["LAINE_ROCHE"]`, avec `ALPHA0=[-50, 50]`. Le coefficient suit la convention `d_n u - alpha(omega)*chi*u=0` et est calculé à chaque pulsation. Le cas initial utilise `OMEGA=3430 rad/s`, puis la bande va de 50 à 3 500 Hz, avec N=128, M=256 et c=343 m/s.
 
 ## Optimize numerically for one or several of the most problematic frequencies (at which there is a maximum of the energy) ;
 
