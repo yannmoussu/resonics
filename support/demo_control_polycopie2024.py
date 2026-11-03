@@ -34,12 +34,10 @@ def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu,
         domain_omega, spacestep, Alpha, chi, beta_pde, beta_rob, f_rob, matrix, state,
     )
     history = [value]
-    stop_reason = "nombre maximal d'itérations atteint"
 
-    for iteration in range(100):
+    for _ in range(100):
         projected = project_density(chi - grad, domain_omega, V_obj)
         if numpy.max(numpy.abs(projected - chi)) <= 1e-7:
-            stop_reason = "variation projetée suffisamment petite"
             break
 
         # On réduit le pas jusqu'à obtenir une diminution suffisante du critère.
@@ -59,7 +57,6 @@ def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu,
             step /= 2.0
 
         if step < 1e-5:
-            stop_reason = "pas de descente devenu trop petit"
             break
 
         # On actualise le gradient après chaque étape acceptée.
@@ -67,9 +64,7 @@ def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu,
             domain_omega, spacestep, Alpha, chi, beta_pde, beta_rob, f_rob, matrix, state,
         )
         mu = 1.1 * step
-        print("Itération", iteration + 1, ": énergie =", value)
 
-    print("Arrêt de la descente :", stop_reason)
     return chi, numpy.asarray(history, dtype=numpy.float64).reshape(-1, 1), u, grad
 
 
