@@ -27,7 +27,7 @@
 \section*{Ce qui est déjà prêt}
 Le nom ResoniCS et le cas d'usage RER B sont retenus. L'état de l'art est enrichi et sourcé. Le modèle de Helmholtz, la source somme de trois gaussiennes et les premiers résultats sont décrits dans le rapport. Les fonctions de coût, de projection, de calcul du champ, de gradient et de descente sont programmées et vérifiées.
 
-La descente diminue le critère de 2,944346 à 0,572995 en 100 étapes acceptées, en conservant une somme des valeurs de matériau égale à 204 sur le mur. Elle utilise encore \code{Alpha=10-10j}, coefficient d'exemple défini en J1.8 ci-dessous. \textbf{Joachim} s'occupe du choix du matériau et de son coefficient.
+La phase continue de la descente diminue le critère de 2,944346 à 0,572995 en 100 étapes acceptées. Le tri final conserve 204 points garnis parmi les 512 points du mur et son coût recalculé vaut 0,589684. Le calcul utilise encore \code{Alpha=10-10j}, coefficient d'exemple défini en J1.8 ci-dessous. \textbf{Joachim} s'occupe du choix du matériau et de son coefficient.
 
 \section*{Bilan des dix attendus}
 \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.3cm}>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{2.1cm}>{\raggedright\arraybackslash}X@{}}
@@ -112,7 +112,7 @@ $\Gamma_{R,h}$ est l'ensemble des points du mur portant la condition de Robin et
 
 Le minimum recherché est donc la plus faible valeur de cette somme de pression au carré obtenue en plaçant cette quantité de matériau sur cette forme. La fonction \code{your_compute_objective_function} évalue le critère, et \code{your_optimization_procedure} cherche à le diminuer. Les valeurs intermédiaires de $\chi$ constituent la répartition continue admise par la méthode du cours. La somme imposée est une quantité nodale pour ce premier cas, dont la justification physique reste à donner en J1.7.
 
-\textbf{À faire :} ajouter cette formulation, définir toutes ses grandeurs et préciser ce qui reste fixe dans \code{report/report.tex}. La baisse de 2,944346 à 0,572995 en 100 étapes montre une amélioration numérique. L'arrêt actuel au nombre maximal d'étapes ne permet pas d'affirmer que le minimum est atteint. Le calcul d'un critère cumulé sur plusieurs fréquences relève de l'étape ultérieure du projet.
+\textbf{À faire :} ajouter cette formulation, définir toutes ses grandeurs et préciser ce qui reste fixe dans \code{report/report.tex}. La phase continue fait passer le coût de 2,944346 à 0,572995 en 100 étapes. Après le tri en valeurs zéro et un, le coût est recalculé et vaut 0,589684. L'historique distingue ces deux étapes. L'arrêt de la descente ne démontre pas qu'un minimum global est atteint. Le calcul d'un critère cumulé sur plusieurs fréquences relève de l'étape ultérieure du projet.
 
 \section*{J1.7 et J1.8 --- Quel matériau, quelle quantité, quel coefficient ?}
 \textbf{J1.7 :} recevoir le nom du matériau de Joachim et justifier la quantité du premier essai, représentée par les 204 points garnis sur 512. Pour annoncer une longueur absorbante, la mesurer le long de la paroi. Pour annoncer un volume, préciser en plus l'épaisseur et la profondeur de la coupe. Conserver le sens de la fraction nodale dans le premier calcul.
@@ -149,7 +149,7 @@ Avec une même source et une même forme, écrire le problème à paroi réfléc
 
 \tache{Dérivée et descente --- J1.9 et J1.10}{
 Écrire comment le critère $J$ varie lorsque l'on modifie légèrement $\chi$, en conservant la quantité de matériau. Le gradient regroupe les dérivées du coût par rapport aux valeurs de $\chi$ sur le mur. Expliquer le rôle du champ adjoint, un second champ calculé pour obtenir toutes ces dérivées avec une résolution supplémentaire. Relier les formules des §§7.5--7.6 du cours aux fonctions \code{compute_gradient} et \code{your_optimization_procedure}.\par
-\emph{À obtenir :} la dérivée explicitée dans le rapport et, après réception du coefficient physique, une nouvelle descente à source et quantité fixées, avec son historique et son motif d'arrêt.}
+\emph{À obtenir :} la dérivée explicitée dans le rapport et, après réception du coefficient physique, une nouvelle descente à source et quantité fixées, avec son historique, sa répartition finale binaire et les coûts avant et après le tri.}
 
 \textbf{Le jour 1 est prêt lorsque} le groupe peut expliquer le modèle, les garanties sous leurs hypothèses, la comparaison théorique, le minimum recherché, sa dérivée et la descente, puis présenter un matériau documenté et tous les paramètres du premier essai. Les comparaisons systématiques de formes et les optimisations à plusieurs fréquences relèvent des jours suivants.
 \end{document}

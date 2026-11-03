@@ -33,6 +33,7 @@ def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu,
     numb_iter = 100
     energy = numpy.zeros((numb_iter+1, 1), dtype=numpy.float64)
     chi = project_density(chi, domain_omega, V_obj)
+    delta = 1e-7
     while k < numb_iter and mu > 10**(-5):
         print('---- iteration number = ', k)
         print('1. computing solution of Helmholtz problem, i.e., u')
@@ -48,9 +49,6 @@ def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu,
         grad = compute_gradient(
             domain_omega, spacestep, Alpha, chi, beta_pde, beta_rob, f_rob, p, state,
         )
-        projected_density = project_density(chi - grad, domain_omega, V_obj)
-        if numpy.max(numpy.abs(projected_density - chi)) <= 1e-7:
-            break
         ene = numpy.inf
         bool_a = False
         while ene >= energy[k] and mu > 10 ** -5:
@@ -65,36 +63,53 @@ def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu,
             )
             print('    d. computing objective function, i.e., energy (E)')
             ene = compute_objective_function(domain_omega, u, spacestep)
-            limit = energy[k, 0] + 1e-4 * numpy.sum(grad * (candidate - chi))
-            bool_a = numpy.isfinite(ene) and ene <= limit
+            bool_a = ene < energy[k, 0]
             if bool_a:
                 # The step is increased if the energy decreased
                 mu = mu * 1.1
+                variation = numpy.max(numpy.abs(candidate - chi))
                 chi = candidate
                 energy[k + 1, 0] = ene
                 break
             else:
                 # The step is decreased is the energy increased
                 mu = mu / 2
-                # On poursuit les essais lorsqu'une proposition est refusée.
                 ene = numpy.inf
         if not bool_a:
             break
         k += 1
+        if variation < delta:
+            break
+
+    if k == 0:
+        _, _, u = compute_state(
+            domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
+            beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, Alpha * chi,
+        )
+        energy[0, 0] = compute_objective_function(domain_omega, u, spacestep)
+    energy = energy[:k + 1]
+
+    # On garnit les points dont les densités sont les plus grandes.
+    robin = domain_omega == _env.NODE_ROBIN
+    order = numpy.argsort(-chi[robin])
+    number = int(round(V_obj * len(order)))
+    values = numpy.zeros(len(order))
+    values[order[:number]] = 1.0
+    chi = numpy.zeros((M, N))
+    chi[robin] = values
 
     print('end. computing solution of Helmholtz problem, i.e., u')
     matrix, state, u = compute_state(
         domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
         beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, Alpha * chi,
     )
-    # On renvoie le coût et le gradient de la répartition finale.
-    energy[k, 0] = compute_objective_function(domain_omega, u, spacestep)
+    # On ajoute séparément le coût de la répartition binaire.
+    ene = compute_objective_function(domain_omega, u, spacestep)
+    energy = numpy.vstack((energy, [[ene]]))
     p = compute_adjoint(domain_omega, spacestep, matrix, state)
     grad = compute_gradient(
         domain_omega, spacestep, Alpha, chi, beta_pde, beta_rob, f_rob, p, state,
     )
-    # On conserve uniquement les valeurs du coût effectivement calculées.
-    energy = energy[:k + 1]
 
     return chi, energy, u, grad
 

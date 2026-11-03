@@ -253,9 +253,11 @@ On fait ensuite un pas dans la direction opposée au gradient, puis on ramène l
 \qquad
 \sum_{j\in\Gamma_{R,h}}\chi_j^{n+1}=V_{\mathrm{obj}}S
 \end{equation*}
-Le nombre $\zeta_n>0$ est le pas, $g^n$ le gradient et $\ell_n$ un décalage commun. On détermine ce décalage par 60 étapes de dichotomie. Les valeurs intermédiaires de $\chi$ constituent une répartition continue pour le calcul et devront être distinguées d'un placement final de portions entièrement garnies.
+Le nombre $\zeta_n>0$ est le pas, $g^n$ le gradient et $\ell_n$ un décalage commun. On détermine ce décalage par 60 étapes de dichotomie. Pendant la descente, les valeurs intermédiaires de $\chi$ permettent de rechercher une répartition continue. À la fin, on classe les valeurs obtenues sur les points Robin, puis on attribue la valeur un aux 204 points ayant les plus grandes valeurs et zéro aux autres, comme proposé au §7.6 du polycopié \cite{cours}. On obtient ainsi une répartition binaire à quantité fixée, avec des portions garnies et des portions réfléchissantes.
 
-Dans l'essai, le pas initial vaut 5. On le divise par deux lorsqu'une proposition ne diminue pas suffisamment le coût, avec un coefficient de diminution de $10^{-4}$, puis on multiplie le pas accepté par 1,1. Le calcul s'arrête après 100 étapes au maximum, si le pas devient inférieur à $10^{-5}$ ou si le changement projeté pour un pas unitaire ne dépasse plus $10^{-7}$. L'historique conserve seulement le coût initial et ceux des étapes acceptées.
+Dans l'essai, le pas initial vaut 5. On accepte une proposition lorsque son coût est strictement inférieur au coût précédent, puis on multiplie le pas par 1,1 conformément au programme fourni. Si le coût ne diminue pas, on divise le pas par deux et on essaie une nouvelle proposition. Le calcul s'arrête après 100 étapes au maximum, si le pas devient inférieur ou égal à $10^{-5}$ ou si la plus grande variation entre deux répartitions successives acceptées est inférieure à $\delta=10^{-7}$.
+
+Après le tri final, on recalcule le champ, le coût et le gradient pour la répartition binaire. L'historique conserve le coût initial et ceux des étapes continues acceptées, puis ajoute le coût binaire comme une dernière valeur distincte. Le tri modifie la répartition et peut donc faire remonter le coût, ce qui sera examiné séparément dans les résultats.
 
 \section{Premiers résultats numériques}
 \subsection{Spectre de l'excitation}
@@ -304,15 +306,23 @@ La figure~\ref{fig:repartition} présente la répartition initiale $\chi$. Les p
 \end{figure}
 
 \subsection{Essai de la descente avec le coefficient provisoire}
-La figure~\ref{fig:descente} montre les valeurs réellement acceptées pour le cas initial à $k_0=10\,\mathrm{m^{-1}}$, avec la source unitaire et le coefficient d'exemple. Le critère passe de 2,944346 à 0,572995 en 100 étapes. La somme des valeurs de matériau reste égale à 204 sur les 512 points Robin, à la précision du calcul.
+La figure~\ref{fig:descente} présente le cas initial à $k_0=10\,\mathrm{m^{-1}}$, avec la source unitaire et le coefficient d'exemple. La courbe suit la phase continue, dont le critère passe de 2,944346 à 0,572995 en 100 étapes acceptées. Le marqueur de la répartition binaire indique le coût 0,589684 obtenu après le tri final. La somme des valeurs de matériau reste égale à 204 sur les 512 points Robin.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.78\textwidth]{fig_energy_real.jpg}
-\caption{Évolution du critère au cours des étapes acceptées de la descente}
+\caption{Évolution du critère pendant la descente et après projection binaire}
 \label{fig:descente}
 \end{figure}
 
-La diminution confirme le fonctionnement de la recherche à quantité fixée pour ce cas numérique. L'arrêt correspond ici au nombre maximal d'étapes, donc il ne démontre pas qu'un minimum a été atteint. Le résultat conserve 135 valeurs intermédiaires de $\chi$ sur le mur. Il vérifie la méthode avec le coefficient provisoire et ne constitue pas une mesure d'absorption d'un matériau identifié.
+Le tri final fait ici remonter le coût de 0,572995 à 0,589684. Le coût de la répartition binaire reste inférieur à celui du placement initial. L'arrêt correspond au nombre maximal d'étapes, donc il ne démontre pas qu'un minimum a été atteint. Ces résultats vérifient la méthode avec le coefficient provisoire. Le choix d'un matériau documenté permettra ensuite d'interpréter sa performance acoustique.
+
+La figure~\ref{fig:repartitionfinale} montre le placement final des 204 points garnis. Toutes les valeurs de $\chi$ sur le mur sont alors égales à zéro ou à un, donc chaque point représente une portion réfléchissante ou une portion garnie.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.60\textwidth]{fig_chin_re_plot.jpg}
+\caption{Répartition finale binaire du matériau sur le mur}
+\label{fig:repartitionfinale}
+\end{figure}
 
 Les courbes fréquentielles des figures~\ref{fig:spectre} et~\ref{fig:energie} restent celles de la répartition initiale. Le remplacement du coefficient par celui du matériau retenu permettra de refaire la descente et de comparer les champs dans des conditions physiques documentées.
 

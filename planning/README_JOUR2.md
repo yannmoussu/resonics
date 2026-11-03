@@ -18,7 +18,7 @@ Chaque contribution concerne un seul fichier Python existant. On partage la dern
 
 ### Ce que l’on réutilise
 
-Le [programme principal](../support/demo_control_polycopie2024.py) contient déjà `your_compute_objective_function`, `your_optimization_procedure`, `project_density`, `compute_state` et `compute_gradient`. On les appelle directement. Le coût, le gradient et la conservation de la quantité ont été vérifiés.
+Le [programme principal](../support/demo_control_polycopie2024.py) contient déjà `your_compute_objective_function`, `your_optimization_procedure`, `project_density`, `compute_state`, `compute_adjoint` et `compute_gradient`. On les appelle directement. Le coût, le gradient et la conservation de la quantité ont été vérifiés.
 
 Les [calculs fréquentiels](../support/processing.py) et les [tracés](../support/postprocessing.py) existent aussi. On conserve une source uniforme sur le bord supérieur, dont l’amplitude suit les trois gaussiennes de `source_rer_b`.
 
@@ -69,17 +69,17 @@ Si le matériau attend encore une donnée, on peut préparer les figures avec le
 **Repère : J2.4.** On améliore d’abord un seul pic confirmé.
 
 1. **Yann — programme principal.** On appelle la descente existante à cette fréquence, avec son nombre d’onde, le coefficient du matériau et la même amplitude de source que pour le champ initial comparé.
-2. **Antoine — analyse.** On vérifie les valeurs entre zéro et un, la quantité initiale conservée, le coût final et le motif d’arrêt. Le gradient étant déjà contrôlé, on le revérifie si une modification change sa dépendance au matériau.
-3. **Olympia — tracés.** On montre la répartition et le module du champ avant/après avec des échelles communes, puis l’historique des coûts acceptés. Les frontières et l’extérieur sont masqués lorsque leur pression n’est pas renvoyée par le solveur.
+2. **Antoine — analyse.** On vérifie la diminution du coût pendant la phase continue et la variation entre deux répartitions acceptées. Le tri final conserve les plus grandes valeurs pour obtenir uniquement des zéros et des uns sur le mur, avec 204 points garnis dans le cas actuel. On vérifie la quantité, puis on recalcule le coût de ce placement binaire. Le gradient étant déjà contrôlé, on le revérifie si une modification change sa dépendance au matériau.
+3. **Olympia — tracés.** On montre la répartition et le module du champ avant/après avec des échelles communes. L’historique distingue la courbe de la phase continue du dernier coût après tri binaire, qui peut remonter. Les frontières et l’extérieur sont masqués lorsque leur pression n’est pas renvoyée par le solveur.
 4. **Mathis — rapport.** On décrit ce qui a diminué, la quantité utilisée et la portée du résultat. Un autre pic peut donner lieu à un essai indépendant. Une répartition commune à plusieurs fréquences appartient au jour 3.
 
-**Résultat attendu :** un placement amélioré à fréquence fixée, avec son coût et ses contraintes vérifiées. Atteindre 100 étapes ne démontre pas un optimum.
+**Résultat attendu :** un placement binaire issu de la descente à fréquence fixée, avec sa quantité vérifiée et les coûts avant et après tri. Atteindre 100 étapes ne démontre pas un optimum.
 
 ### MVP attendu en fin de journée
 
 - [ ] Données du matériau documentées, ou coefficient d’essai explicitement annoncé.
 - [ ] Courbe plane, comparaison des formes et comparaison initial/plein.
-- [ ] Une descente sur un pic confirmé, avec quantité conservée et historique réel.
+- [ ] Une descente sur un pic confirmé, avec quantité conservée, placement final binaire et historique distinguant les deux phases.
 - [ ] Figures nommées, échelles cohérentes et interprétation courte pour chaque comparaison.
 - [ ] Résultats intégrés au [rapport](../report/report.tex), avec les limites de l’essai.
 

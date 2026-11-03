@@ -112,11 +112,17 @@ def _plot_error(err):
     return
 
 def _plot_energy_history(energy):
-    """On trace les valeurs du critère aux étapes acceptées de la descente."""
-    matplotlib.pyplot.plot(numpy.asarray(energy).ravel())
-    matplotlib.pyplot.title("Évolution du critère pendant la descente")
-    matplotlib.pyplot.xlabel("Étape acceptée")
+    """On trace le coût pendant la descente puis après le passage en binaire."""
+    values = numpy.asarray(energy).ravel()
+    matplotlib.pyplot.plot(values[:-1], label="Descente continue")
+    last = len(values) - 2
+    matplotlib.pyplot.plot([last, last], [values[-2], values[-1]], ":", color="tab:orange")
+    matplotlib.pyplot.scatter(last, values[-1], marker="s", color="tab:orange",
+                              label="Répartition finale binaire", zorder=3)
+    matplotlib.pyplot.title("Descente et répartition finale du matériau")
+    matplotlib.pyplot.xlabel("Étape acceptée de la descente")
     matplotlib.pyplot.ylabel("Critère d'énergie")
+    matplotlib.pyplot.legend()
     filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fig_energy_real.jpg')
     matplotlib.pyplot.savefig(filename)
     matplotlib.pyplot.close()
