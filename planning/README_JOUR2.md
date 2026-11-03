@@ -18,7 +18,7 @@ Chaque contribution concerne un seul fichier Python existant. On partage la dern
 
 ### Ce que l’on réutilise
 
-Le [programme principal](../support/demo_control_polycopie2024.py) contient déjà `your_compute_objective_function`, `your_optimization_procedure`, `project_density`, `compute_state`, `compute_adjoint` et `compute_gradient`. On les appelle directement. Le coût, le gradient et la conservation de la quantité ont été vérifiés.
+Le [programme principal](../support/demo_control_polycopie2024.py) contient `your_compute_objective_function` et `your_optimization_procedure`. Les calculs `compute_state`, `compute_adjoint` et `compute_gradient` sont définis dans `processing.py`, tandis que `project_density` est définie dans `preprocessing.py`. Le programme principal les importe pour sa descente. Le coût, le gradient et la conservation de la quantité ont été vérifiés. Pour lancer les études du jour 2, on choisit `ETUDE="jour2"` en tête du programme principal.
 
 Les [calculs fréquentiels](../support/processing.py) et les [tracés](../support/postprocessing.py) utilisent la source choisie dans le programme principal. `source_constant(y, omega)` renvoie un, et `source_rer_b(y, omega)` renvoie la somme de gaussiennes après conversion de la pulsation en hertz. Le champ initial, la descente et la courbe fréquentielle partagent le même choix.
 

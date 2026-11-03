@@ -435,3 +435,40 @@ def source_rer_b(y, omega):
             -0.5 * ((frequency_hz - centre) / largeur) ** 2
         )
     return float(amplitude)
+
+
+def project_density(proposal, domain_omega, V_obj):
+    """On borne les valeurs du mur en conservant la quantité de matériau imposée."""
+    robin = domain_omega == _env.NODE_ROBIN
+    values = proposal[robin]
+    target = float(V_obj * numpy.count_nonzero(robin))
+    projected = numpy.zeros(domain_omega.shape, dtype=numpy.float64)
+    if target == 0:
+        return projected
+    if target == values.size:
+        projected[robin] = 1.0
+        return projected
+
+    # On cherche le décalage commun par dichotomie.
+    lower = float(values.min() - 1.0)
+    upper = float(values.max())
+    for _ in range(60):
+        shift = (lower + upper) / 2.0
+        if numpy.clip(values - shift, 0.0, 1.0).sum() > target:
+            lower = shift
+        else:
+            upper = shift
+    projected[robin] = numpy.clip(values - (lower + upper) / 2.0, 0.0, 1.0)
+    return projected
+
+
+def binarize_chi(chi_cont, domain_omega, V_obj):
+    """On garnit les points du mur dont les densités sont les plus grandes."""
+    robin = domain_omega == _env.NODE_ROBIN
+    order = numpy.argsort(-chi_cont[robin])
+    number = int(round(V_obj * len(order)))
+    values = numpy.zeros(len(order))
+    values[order[:number]] = 1.0
+    binary = numpy.zeros_like(chi_cont, dtype=numpy.float64)
+    binary[robin] = values
+    return binary

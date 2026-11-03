@@ -2,11 +2,9 @@
 
 
 # Python packages
-import matplotlib.pyplot
 import numpy
 import os
 import sys
-import scipy.sparse.linalg
 
 
 # MRG packages
@@ -15,6 +13,8 @@ import preprocessing
 import processing
 import postprocessing
 from compute_alpha import compute_alpha, MATERIAUX
+from preprocessing import project_density
+from processing import compute_state, compute_adjoint, compute_gradient
 
 
 # On choisit la source commune au champ initial, à la descente et aux fréquences.
@@ -24,6 +24,15 @@ CAR_MAT = MATERIAUX["LAINE_ROCHE"]
 ALPHA0 = [50.0, -50.0]  # On donne les parties réelle et imaginaire du point initial.
 OMEGA = 3430.0  # On exprime la pulsation en radians par seconde.
 C = 343.0  # On exprime la célérité en mètres par seconde.
+
+# On choisit la démonstration, une journée ou les quatre journées.
+ETUDE = "demo"  # On peut choisir jour1, jour2, jour3, jour4 ou tous.
+N_POINTS = 128
+FREQUENCES_HZ = numpy.arange(50.0, 3501.0, 50.0)
+N_ITERATIONS = 80
+FRACTION_GARNIE = 0.30
+QUANTITES = [0.10, 0.30, 0.50, 0.70, 1.0]
+MATERIAUX_A_COMPARER = ["LAINE_ROCHE", "MELAMINE", "LAINE_VERRE"]
 
 
 def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
@@ -134,94 +143,63 @@ def your_compute_objective_function(domain_omega, u, spacestep):
 compute_objective_function = your_compute_objective_function
 
 
-def project_density(proposal, domain_omega, V_obj):
-    """On borne les valeurs du mur en conservant la quantité de matériau imposée."""
-    robin = domain_omega == _env.NODE_ROBIN
-    values = proposal[robin]
-    target = float(V_obj * numpy.count_nonzero(robin))
-    projected = numpy.zeros(domain_omega.shape, dtype=numpy.float64)
-    if target == 0:
-        return projected
-    if target == values.size:
-        projected[robin] = 1.0
-        return projected
-
-    # On cherche le décalage commun par dichotomie.
-    lower = float(values.min() - 1.0)
-    upper = float(values.max())
-    for _ in range(60):
-        shift = (lower + upper) / 2.0
-        if numpy.clip(values - shift, 0.0, 1.0).sum() > target:
-            lower = shift
-        else:
-            upper = shift
-    projected[robin] = numpy.clip(values - (lower + upper) / 2.0, 0.0, 1.0)
-    return projected
-
-
-def compute_state(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
-                  beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob):
-    """On assemble le système fourni et on renvoie le champ calculé."""
-    # On reprend les mêmes contributions que dans le solveur fourni.
-    matrix, rhs = processing.compute_stiffness_matrix(domain_omega, spacestep, f, beta_pde)
-    mass, _ = processing.compute_mass_matrix(domain_omega, spacestep, alpha_pde)
-    matrix = matrix + omega**2 * mass
-    matrix, rhs = processing.compute_dirichlet_condition(
-        domain_omega, f_dir, alpha_dir, beta_pde, matrix, rhs,
-    )
-    matrix, rhs = processing.compute_neumann_condition(
-        domain_omega, spacestep, f_neu, beta_neu, beta_pde, matrix, rhs,
-    )
-    matrix, rhs = processing.compute_robin_condition(
-        domain_omega, spacestep, f_rob, alpha_rob, beta_rob, beta_pde, matrix, rhs,
-    )
-    matrix = matrix.tocsr()
-    state = scipy.sparse.linalg.spsolve(matrix, rhs.ravel())
-    interior = domain_omega == _env.NODE_INTERIOR
-    field = numpy.zeros(domain_omega.shape, dtype=numpy.complex128)
-    field[interior] = state.reshape(domain_omega.shape)[interior]
-    return matrix, state, field
-
-
-def compute_adjoint(domain_omega, spacestep, matrix, state):
-    """On résout le système adjoint à partir du champ dans le fluide."""
-    interior = domain_omega == _env.NODE_INTERIOR
-    adjoint_rhs = numpy.zeros_like(state)
-    adjoint_rhs[interior.ravel()] = 2.0 * spacestep**2 * state[interior.ravel()]
-    return scipy.sparse.linalg.spsolve(matrix.conjugate().transpose(), adjoint_rhs)
+def run_studies(selection):
+    """On lance les calculs choisis puis on transmet leurs résultats aux tracés."""
+    if selection not in ("jour1", "jour2", "jour3", "jour4", "tous"):
+        print("On choisit demo, jour1, jour2, jour3, jour4 ou tous dans ETUDE.")
+        return
+    if selection in ("jour1", "tous"):
+        result = processing.study_porous_materials(
+            FREQUENCES_HZ, SOURCE, ALPHA0, MATERIAUX_A_COMPARER,
+        )
+        if result is None:
+            return
+        postprocessing.plot_porous_materials(result)
+        result = processing.study_sommerfeld_open_air_vs_reflexive(
+            N_POINTS, FREQUENCES_HZ, SOURCE, CAR_MAT, ALPHA0, C,
+        )
+        if result is None:
+            return
+        postprocessing.plot_sommerfeld_comparison(result)
+        result = processing.validate_adjoint_gradient(
+            N_POINTS, 12, OMEGA, SOURCE, CAR_MAT, ALPHA0, C,
+        )
+        if result is None:
+            return
+        postprocessing.plot_gradient_validation(result)
+    if selection in ("jour2", "tous"):
+        result = processing.run_day2_studies(
+            N_POINTS, FREQUENCES_HZ, N_ITERATIONS, FRACTION_GARNIE,
+            SOURCE, CAR_MAT, ALPHA0, C,
+        )
+        if result is None:
+            return
+        postprocessing.plot_day2_studies(result)
+    if selection in ("jour3", "tous"):
+        result = processing.run_day3_studies(
+            N_POINTS, FREQUENCES_HZ, N_ITERATIONS, FRACTION_GARNIE,
+            QUANTITES, SOURCE, CAR_MAT, ALPHA0, C,
+        )
+        if result is None:
+            return
+        postprocessing.plot_day3_studies(result)
+    if selection in ("jour4", "tous"):
+        result = processing.run_day4_studies(
+            N_POINTS, FREQUENCES_HZ, N_ITERATIONS, FRACTION_GARNIE,
+            SOURCE, CAR_MAT, ALPHA0, C, MATERIAUX_A_COMPARER,
+        )
+        if result is None:
+            return
+        postprocessing.plot_day4_studies(result)
 
 
-def compute_gradient(domain_omega, spacestep, Alpha, density,
-                     beta_pde, beta_rob, f_rob, adjoint, state):
-    """On calcule l'effet de chaque point du mur à l'aide du champ adjoint."""
-    interior = domain_omega == _env.NODE_INTERIOR
-    robin = domain_omega == _env.NODE_ROBIN
-    ncols = domain_omega.shape[1]
-
-    # On additionne les contributions des voisins intérieurs de chaque point Robin.
-    gradient = numpy.zeros(domain_omega.shape, dtype=numpy.float64)
-    for i, j in zip(*numpy.nonzero(interior)):
-        row = i * ncols + j
-        for bi, bj in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):
-            if robin[bi, bj]:
-                scale = spacestep * Alpha / beta_pde[i, j]
-                denominator = beta_rob[bi, bj] + scale * density[bi, bj]
-                diagonal_derivative = -scale * beta_rob[bi, bj] / denominator**2
-                rhs_derivative = -spacestep * f_rob[bi, bj] * scale / denominator**2
-                gradient[bi, bj] += numpy.real(
-                    numpy.conjugate(adjoint[row])
-                    * (rhs_derivative - diagonal_derivative * state[row])
-                )
-    return gradient
-
-
-if __name__ == '__main__':
+if __name__ == '__main__' and ETUDE == 'demo':
 
     # ----------------------------------------------------------------------
     # -- Fell free to modify the function call in this cell.
     # ----------------------------------------------------------------------
     # -- set parameters of the geometry
-    N = 128  # On affine la grille pour les hautes fréquences.
+    N = N_POINTS  # On reprend la résolution choisie au début du fichier.
     M = 2 * N  # number of points along y-axis
     level = 2 # level of the fractal
     spacestep = 1.0 / N  # mesh size
@@ -316,7 +294,7 @@ if __name__ == '__main__':
 
     # On conserve la répartition initiale pour la courbe fréquentielle de référence.
     # On couvre les trois composantes de la source avec la même grille.
-    frequencies_hz = numpy.arange(50.0, 3501.0, 50.0)
+    frequencies_hz = FREQUENCES_HZ
     results = processing.run_rer_b_frequency_sweep(
         domain_omega, spacestep, frequencies_hz,
         f, f_dir, f_neu, f_rob,
@@ -328,3 +306,7 @@ if __name__ == '__main__':
         postprocessing.plot_rer_b_frequency_sweep(results, SOURCE)
 
     print('End.')
+
+
+if __name__ == "__main__" and ETUDE != "demo":
+    run_studies(ETUDE)

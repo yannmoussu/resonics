@@ -10,15 +10,15 @@
 
 **Ce qui est fait.** Calculer le gradient nécessaire à la première descente.
 
-**Fichier à modifier :** `support/demo_control_polycopie2024.py`, seulement pour les changements nécessaires.
+**Fichier à modifier :** `support/processing.py`, seulement pour les fonctions de calcul ajoutées.
 
 ### Fichiers concernés
 
 - `SOTA.md` — lecture seule.
 - `context/Sujet-EI-EXT-2026.md` — lecture seule.
-- `support/demo_control_polycopie2024.py` — fichier à modifier.
+- `support/demo_control_polycopie2024.py` — lecture seule.
 - `support/preprocessing.py` — lecture seule.
-- `support/processing.py` — lecture seule.
+- `support/processing.py` — fichier à modifier.
 - `support/postprocessing.py` — lecture seule.
 - `support/_env.py` — lecture seule.
 - `context/Poly-ST5-57-2026.pdf` — lecture seule.
@@ -27,11 +27,11 @@
 ### Contexte
 
 ```text
-Modifie seulement demo_control_polycopie2024.py. Conserve intégralement les deux blocs « Do not modify this cell, these are the values that you will be assessed against. », leurs commentaires et leur indentation. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Complète les fonctions étudiantes et les blocs « Fell free to modify the function call in this cell. ». Les fonctions fournies restent inchangées et les ajouts restent dans ce seul fichier.
+Modifie seulement les fonctions de calcul ajoutées dans processing.py, en particulier compute_state, compute_adjoint, compute_gradient et validate_adjoint_gradient. Conserve les fonctions initiales du support et la convention du polycopié. Le programme principal importe ces calculs et conserve ses deux blocs protégés.
 
-1. Ajoute dans la démonstration le calcul de l’adjoint décrit lundi. Reprends les appels d’assemblage de processing.py pour obtenir exactement le système A U=b du solveur fourni, sans modifier ses fonctions. U est le champ rangé dans un vecteur. Pour le critère J=U.conj().T W U, W vaut h² aux points intérieurs et zéro ailleurs.
+1. Vérifie dans compute_state et compute_adjoint le calcul de l’adjoint décrit lundi. Reprends les appels d’assemblage de processing.py pour obtenir exactement le système A U=b du solveur fourni, sans modifier ses fonctions. U est le champ rangé dans un vecteur. Pour le critère J=U.conj().T W U, W vaut h² aux points intérieurs et zéro ailleurs.
 2. Résous A.conj().T P=2*W*U : P est l’adjoint discret et conj().T désigne la transposée conjuguée. Avec la source fixée et f_rob nul, une variation de chi modifie A et la dérivée vaut -Re(P.conj().T A_prime U). Déduis A_prime de la formule Robin réellement assemblée. Pour les coefficients unitaires du support, le terme diagonal -h*Alpha*chi/(1+h*Alpha*chi) a pour dérivée -h*Alpha/(1+h*Alpha*chi)**2. Additionne les contributions des voisins intérieurs de chaque point Robin.
-3. Vérifie une seule direction de variation d sur une petite grille : compare la somme grad*d à (J(chi+t*d)-J(chi-t*d))/(2*t), pour deux petites valeurs de t. Utilise une chi permettant les perturbations. Explique les valeurs obtenues, puis transmets le calcul de coût, champ et gradient à Antoine.
+3. Utilise validate_adjoint_gradient et vérifie une seule direction de variation d sur une petite grille : compare la somme grad*d à (J(chi+t*d)-J(chi-t*d))/(2*t), pour deux petites valeurs de t. Utilise une chi permettant les perturbations. Explique les valeurs obtenues, puis transmets le calcul de coût, champ et gradient à Antoine.
 
 Utilise la version reçue du fichier commun et les résultats réellement calculés. Explique chaque grandeur et chaque étape. Les commentaires du code sont des phrases françaises sans équations.
 ```
