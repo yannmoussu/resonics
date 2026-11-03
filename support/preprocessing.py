@@ -421,9 +421,9 @@ def source_rer_b(frequency_hz):
     frequency_hz = float(frequency_hz)
 
     composantes = (
-        (200.0, 100.0, 1.0),   # On représente les basses fréquences.
-        (800.0, 350.0, 0.8),   # On représente le bruit de roulement.
-        (2500.0, 150.0, 0.5),  # On représente une composante de crissement.
+        (200.0, 100.0, 1.0),   # Basses fréquences (moteur, ventilation, etc.)
+        (800.0, 350.0, 0.8),   # Bruit de roulement
+        (2500.0, 150.0, 0.5),  # Bruit de crissement.
     )
     amplitude = 0.0
     for centre, largeur, poids in composantes:
