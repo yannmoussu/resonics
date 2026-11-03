@@ -221,6 +221,8 @@ if __name__ == '__main__':
     ky = -1.0
     wavenumber = numpy.sqrt(kx**2 + ky**2)  # wavenumber
     wavenumber = 10.0
+    c = 343
+    omega = wavenumber*c
 
     # ----------------------------------------------------------------------
     # -- Do not modify this cell, these are the values that you will be assessed against.
@@ -253,10 +255,11 @@ if __name__ == '__main__':
     chi = preprocessing.set2zero(chi, domain_omega)
 
     # -- define absorbing material
-    Alpha = 10.0 - 10.0 * 1j
     # -- this is the function you have written during your project
-    #import compute_alpha
-    #Alpha = compute_alpha.compute_alpha(...)
+    from compute_alpha import compute_alpha, g1, MATERIAUX, Alpha0
+    Alpha = compute_alpha(omega, g1, MATERIAUX["LAINE_ROCHE"], Alpha0)[0]
+    Alpha = Alpha[0]+1j*Alpha[1]
+    print(Alpha)
     alpha_rob = Alpha * chi
 
     # -- set parameters for optimization
