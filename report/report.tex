@@ -106,21 +106,21 @@ La célérité est fixée à $c=343\,\mathrm{m\,s^{-1}}$. À la fréquence $f$, 
 \end{equation*}
 
 \subsection{Conditions aux limites et matériau}
-La fonction $\chi$ décrit la présence de matériau sur $\Gamma_R$. Une valeur nulle correspond à une portion réfléchissante, une valeur égale à un à une portion garnie. Des valeurs intermédiaires sont admises lors de la recherche d'une répartition. On utilise dans tout le projet la convention du programme fourni :
+La fonction $\chi$ décrit la présence de matériau sur $\Gamma_R$. Une valeur nulle correspond à une portion réfléchissante, une valeur égale à un à une portion garnie. Des valeurs intermédiaires sont admises lors de la recherche d'une répartition. On utilise dans tout le projet la convention du polycopié :
 \begin{equation*}
 \begin{cases}
 u_f=g(y,\omega) & \text{sur }\Gamma_D\\[2pt]
 \partial_nu_f=0 & \text{sur }\Gamma_N\\[2pt]
-\partial_nu_f-\alpha(\omega)\chi u_f=0 & \text{sur }\Gamma_R
+\partial_nu_f+\alpha(\omega)\chi u_f=0 & \text{sur }\Gamma_R
 \end{cases}
 \end{equation*}
 La condition de \textbf{Dirichlet} impose la pression en haut du domaine. La condition de \textbf{Neumann} annule la dérivée normale sur les côtés et représente des parois rigides réfléchissantes. La condition de \textbf{Robin} relie la pression à sa dérivée normale sur le mur. Le coefficient complexe $\alpha$ décrit l'effet du matériau dans cette convention et il est exprimé en $\mathrm{m^{-1}}$ lorsque les longueurs sont en mètres. Dans le programme, \code{Alpha} désigne ce nombre et \code{alpha_rob} est le tableau obtenu en le multipliant par la répartition $\chi$.
 
 Avec les coefficients unitaires du support et un second membre Robin nul, \code{compute_robin_condition} utilise
 \begin{equation*}
-u_B=\frac{u_I}{1-h\alpha(\omega)\chi_B}
+u_B=\frac{u_I}{1+h\alpha(\omega)\chi_B}
 \end{equation*}
-Ici $u_B$ est la valeur au bord, $u_I$ celle du point intérieur voisin et $h$ le pas. Cette expression reprend le même signe que la condition précédente. Avec ce choix, les hypothèses dissipatives du cours se traduisent par $\operatorname{Re}\alpha<0$ et $\operatorname{Im}\alpha>0$ pour la convention temporelle retenue \cite{cours}. La fonction \code{compute_alpha} fournit directement le coefficient dans cette écriture.
+Ici $u_B$ est la valeur au bord, $u_I$ celle du point intérieur voisin et $h$ le pas. Cette expression reprend le même signe que la condition précédente. Avec ce choix, les hypothèses dissipatives du cours se traduisent par $\operatorname{Re}\alpha>0$ et $\operatorname{Im}\alpha<0$ pour la convention temporelle retenue \cite{cours}. La fonction \code{compute_alpha} fournit directement le coefficient dans cette écriture.
 
 \subsection{Identification du coefficient de la laine de roche}
 La fonction \code{compute_alpha}, dans \code{compute_alpha.py}, met en œuvre l'identification présentée au §3.2.4 du polycopié \cite{cours}. Elle compare un modèle où l'onde pénètre dans le matériau poreux et un modèle équivalent avec une condition de Robin. L'erreur donne un poids $A$ à la différence des champs au carré et un poids $B$ à celle de leurs gradients. La routine \code{scipy.optimize.minimize} ajuste les parties réelle et imaginaire du coefficient par la méthode de Nelder--Mead, qui déplace des couples d'essai pour réduire cette erreur.
@@ -143,7 +143,7 @@ Demi-largeur $l$ et longueur $L$ du domaine auxiliaire & $2,5$ m et $10$ m\\
 Paramètre $\Delta x_\alpha$ et troncature $N_\alpha=L/\Delta x_\alpha$ & $0,5$ m et $20$\\
 Indices de Fourier conservés & $-20$ à $20$, soit 41 modes\\
 Poids de l'erreur $A$ et $B$ & $1$ et $1$\\
-Couple initial \code{ALPHA0} & $(-50;50)$\\
+Couple initial \code{ALPHA0} & $(50;-50)$\\
 Tolérances \code{xatol} et \code{fatol} & $10^{-6}$ et $10^{-10}$\\
 \bottomrule
 \end{tabular}
@@ -153,7 +153,7 @@ Tolérances \code{xatol} et \code{fatol} & $10^{-6}$ et $10^{-10}$\\
 
 Les longueurs $l$ et $L$ définissent le domaine auxiliaire de l'identification. La troncature $N_\alpha$ fixe les modes de Fourier utilisés dans ce calcul, indépendamment de la grille du champ acoustique. La fonction \code{materiau} convertit les trois caractéristiques du matériau en coefficients du modèle poreux, puis \code{compute_alpha} cherche le coefficient de Robin à la pulsation fournie. Son indicateur \code{success} est vérifié avant d'utiliser le résultat.
 
-À la pulsation initiale $\omega_0=3\,430\,\mathrm{rad\,s^{-1}}$, le calcul donne $\alpha(\omega_0)=-18,154584+21,197637\ii\,\mathrm{m^{-1}}$. Le coefficient reste fixé à cette valeur pendant la descente à fréquence unique. Le calcul fréquentiel le redétermine pour chaque nouvelle pulsation, avec la même source et les mêmes caractéristiques de matériau.
+À la pulsation initiale $\omega_0=3\,430\,\mathrm{rad\,s^{-1}}$, le calcul donne $\alpha(\omega_0)=18,154584-21,197637\ii\,\mathrm{m^{-1}}$. Le coefficient reste fixé à cette valeur pendant la descente à fréquence unique. Le calcul fréquentiel le redétermine pour chaque nouvelle pulsation, avec la même source et les mêmes caractéristiques de matériau.
 
 \begin{table}[htbp]
 \centering
@@ -161,15 +161,15 @@ Les longueurs $l$ et $L$ définissent le domaine auxiliaire de l'identification.
 \toprule
 Fréquence (Hz) & Coefficient $\alpha(\omega)$ en $\mathrm{m^{-1}}$\\
 \midrule
-50 & $-5,894818+5,979421\ii$\\
-2500 & $-30,137224+58,478507\ii$\\
-3500 & $-31,996643+77,112209\ii$\\
+50 & $5,894818-5,979421\ii$\\
+2500 & $30,137224-58,478507\ii$\\
+3500 & $31,996643-77,112209\ii$\\
 \bottomrule
 \end{tabular}
 \caption{Valeurs du coefficient de la laine de roche à trois fréquences}
 \label{tab:alpha}
 \end{table}
-Le tableau~\ref{tab:alpha} présente trois valeurs du coefficient identifié. Il permet de constater sa variation avec la fréquence et les signes adoptés dans le support.
+Le tableau~\ref{tab:alpha} présente trois valeurs du coefficient identifié. Il permet de constater sa variation avec la fréquence et les signes adoptés dans le polycopié.
 
 \subsection{Mur plan et contours préfractals}
 La comparaison prévue porte sur le mur plan de niveau 0 et sur les contours préfractals de niveaux 1 et 2. Le générateur \code{create_motif_koch} remplace un segment par huit segments orthogonaux, chacun quatre fois plus court. Le motif fourni utilise donc des angles droits. Le niveau 1 applique une fois ce motif et le niveau 2 le répète sur les segments obtenus.
@@ -242,7 +242,7 @@ Source du cas initial & \code{source_rer_b}, amplitude $0,617187$\\
 Pulsation initiale $\omega_0$ & $3\,430\,\mathrm{rad\,s^{-1}}$\\
 Nombre d'onde initial $k_0$ & $10\,\mathrm{m^{-1}}$\\
 Fréquence initiale déduite $ck_0/(2\pi)$ & $545,90\,\mathrm{Hz}$\\
-Coefficient initial \code{Alpha} & $(-18,154584+21,197637\ii)\,\mathrm{m^{-1}}$\\
+Coefficient initial \code{Alpha} & $(18,154584-21,197637\ii)\,\mathrm{m^{-1}}$\\
 Points Robin garnis / points Robin & $204/512$\\
 Fraction nodale initiale \code{V_obj} & $0,398438$\\
 Fréquences du calcul spectral & 50 à 3\,500 Hz\\

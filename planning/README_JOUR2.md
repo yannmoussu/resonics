@@ -27,7 +27,7 @@ Les [calculs fréquentiels](../support/processing.py) et les [tracés](../suppor
 - Première bande : **50–3 500 Hz par pas de 50 Hz**, soit 70 fréquences, avec **c=343 m/s**.
 - Grille actuelle : **N=128, M=256, h=0,0078125 m**. À 3 500 Hz, elle donne **12,544 points par longueur d’onde**.
 - La donnée appelée `omega` par le solveur reçoit **k=2*pi*f/c**, et non la fréquence en hertz.
-- Le matériau courant est `MATERIAUX["LAINE_ROCHE"]`. `compute_alpha` calcule directement le coefficient dans la convention du support `d_n u - alpha(omega)*chi*u=0`, avec le couple de départ `ALPHA0=[-50, 50]`. On utilise sa valeur complexe directement dans `alpha_rob=Alpha*chi`.
+- Le matériau courant est `MATERIAUX["LAINE_ROCHE"]`. `compute_alpha` calcule directement le coefficient dans la convention du polycopié `d_n u + alpha(omega)*chi*u=0`, avec le couple de départ `ALPHA0=[50, -50]`. On utilise sa valeur complexe directement dans `alpha_rob=Alpha*chi`.
 - Le cas initial utilise `OMEGA=3430 rad/s`, soit **545,90 Hz**, et la source choisie par `SOURCE`. Le cas actuel est le contour de niveau 2. Le maximum échantillonné de la réponse à la source choisie se situe à **400 Hz** avec la loi de la laine de roche recalculée à chaque fréquence.
 
 Le coefficient de matériau est désormais calculé avant chaque résolution. Les comparaisons de murs conservent les mêmes caractéristiques de matériau et la même fonction source.

@@ -41,7 +41,7 @@ J1.4 & Propriétés de la solution & À rédiger & Préciser sous quelles hypoth
 J1.5 & Problème d'optimisation & À formaliser & Écrire le minimum de l'intégrale du carré du module de la pression, à fréquence et quantité de matériau fixées.\\[3pt]
 J1.6 & Paroi ouverte ou réfléchissante & À traiter & Comparer les modèles et leurs bilans avec la condition de Sommerfeld.\\[3pt]
 J1.7 & Matériau et quantité & Données disponibles & Documenter la laine de roche choisie et justifier les 204 points garnis sur 512.\\[3pt]
-J1.8 & Coefficient complexe de Robin & Calcul intégré & Vérifier et présenter les paramètres de l’identification et les valeurs calculées dans la convention du support.\\[3pt]
+J1.8 & Coefficient complexe de Robin & Calcul intégré & Vérifier et présenter les paramètres de l’identification et les valeurs calculées dans la convention du polycopié.\\[3pt]
 J1.9 & Dérivée de l'énergie & Code prêt & Écrire la variation de l'énergie quand on modifie la répartition, puis expliquer le calcul adjoint.\\[3pt]
 J1.10 & Descente de gradient & Fait & Reprendre la méthode testée avec le coefficient du matériau retenu.\\
 \bottomrule
@@ -67,7 +67,7 @@ Fréquence $f$ et nombre d'onde $k$ & La pulsation initiale \code{OMEGA} vaut $3
 Bande calculée & 50 à 3\,500 Hz, pas de 50 Hz, soit 70 résolutions. La bande couvre les trois composantes du spectre affiché de 0 à 3\,500 Hz. La fréquence nulle correspond à un problème statique.\\[3pt]
 Longueur d'onde $\lambda$ & $\lambda=c/f$. Vérifier $\lambda/h\geq10$. À 3\,500 Hz, cela donne 12,544 points par longueur d'onde avec la grille actuelle.\\[3pt]
 Amplitude imposée $G(f)$ & Le choix \code{SOURCE} sélectionne \code{source_constant(y, omega)} ou \code{source_rer_b(y, omega)} pour le champ initial, la descente et la courbe fréquentielle. Son amplitude initiale vaut $0,617187$ dans le cas actuel.\\[3pt]
-Répartition et coefficient & Quantité initiale : 204 points garnis sur 512 points de paroi. Coefficient initial de la laine de roche : $(-18,154584+21,197637\mathrm{i})\,\mathrm{m^{-1}}$.\\
+Répartition et coefficient & Quantité initiale : 204 points garnis sur 512 points de paroi. Coefficient initial de la laine de roche : $(18,154584-21,197637\mathrm{i})\,\mathrm{m^{-1}}$.\\
 \bottomrule
 \end{tabularx}
 
@@ -83,7 +83,7 @@ La fonction \code{source_rer_b(y, omega)} reçoit une position et une pulsation.
 \section*{J1.4 --- De quelle solution et de quel minimum parle-t-on ?}
 \textbf{Première question : le champ acoustique est-il bien défini ?} Pour une forme du domaine, une fréquence, une source, un coefficient de paroi et une répartition de matériau tous fixés, on cherche le champ complexe de pression $u_f$. L'existence signifie qu'un champ satisfait le problème de Helmholtz et ses conditions aux limites. L'unicité signifie que ces mêmes données donnent un seul champ. La dépendance continue aux données signifie qu'une petite variation des données produit une variation contrôlée de la solution.
 
-\textbf{À faire :} reprendre le théorème 7.4.3 du §7.4.3 du polycopié \code{context/Poly-ST5-57-2026.pdf}. Préciser les hypothèses sur le domaine, la régularité des données, les frontières et la portion garnie, ainsi que les signes du coefficient dans la convention du support utilisée ici. Avec ce signe, les hypothèses dissipatives du cours s’écrivent $\operatorname{Re}\alpha<0$ et $\operatorname{Im}\alpha>0$, où $\operatorname{Re}$ et $\operatorname{Im}$ désignent les parties réelle et imaginaire. La répartition doit être positive avec une borne inférieure strictement positive sur une portion de bord de longueur positive. Expliquer aussi l'adaptation à la pression imposée non nulle en haut du domaine, présentée au même chapitre. Vérifier ces hypothèses avec le coefficient que donnera Joachim.
+\textbf{À faire :} reprendre le théorème 7.4.3 du §7.4.3 du polycopié \code{context/Poly-ST5-57-2026.pdf}. Préciser les hypothèses sur le domaine, la régularité des données, les frontières et la portion garnie, ainsi que les signes du coefficient dans la convention du polycopié utilisée ici. Avec ce signe, les hypothèses dissipatives du cours s’écrivent $\operatorname{Re}\alpha>0$ et $\operatorname{Im}\alpha<0$, où $\operatorname{Re}$ et $\operatorname{Im}$ désignent les parties réelle et imaginaire. La répartition doit être positive avec une borne inférieure strictement positive sur une portion de bord de longueur positive. Expliquer aussi l'adaptation à la pression imposée non nulle en haut du domaine, présentée au même chapitre. Vérifier ces hypothèses avec le coefficient que donnera Joachim.
 
 \textbf{Deuxième question : une meilleure répartition existe-t-elle ?} Le minimum est la plus petite valeur du critère de J1.5 parmi les répartitions autorisées. Le théorème 7.4.4 du même paragraphe donne, sous ses hypothèses, l'existence d'au moins une répartition qui atteint ce minimum lorsque l'on autorise des valeurs de matériau comprises entre zéro et un. Il faut citer ce résultat avec la classe de répartitions retenue. L'unicité du champ pour chaque répartition ne suffit pas à conclure que la meilleure répartition est unique.
 
@@ -119,7 +119,7 @@ Le minimum recherché est donc la plus faible valeur de cette somme de pression 
 
 \textbf{Le coefficient de J1.8 est celui de la condition de Robin du matériau poreux.} Dans le rapport, cette condition est
 \begin{equation*}
-\partial_n u_f-\alpha(\omega)\chi u_f=0
+\partial_n u_f+\alpha(\omega)\chi u_f=0
 \qquad
 \alpha(\omega)=a(\omega)+\mathrm{i}b(\omega)
 \end{equation*}
@@ -137,7 +137,7 @@ Le \code{j} de Python désigne l'unité imaginaire. La convention temporelle et 
 \begin{enumerate}
 \item Le matériau \code{MATERIAUX["LAINE_ROCHE"]}, avec la porosité $0,97$, la tortuosité $1,1$ et la résistivité $30\,000\,\mathrm{Pa\,s\,m^{-2}}$.
 \item L'identification du §3.2.4 du polycopié, les longueurs auxiliaires $l=2,5$ m et $L=10$ m, les 41 modes de Fourier et les poids $A=B=1$.
-\item Le couple initial \code{ALPHA0=[-50, 50]}, les tolérances \code{xatol=1e-6} et \code{fatol=1e-10}, puis l'indicateur de réussite du calcul.
+\item Le couple initial \code{ALPHA0=[50, -50]}, les tolérances \code{xatol=1e-6} et \code{fatol=1e-10}, puis l'indicateur de réussite du calcul.
 \item La source \code{SOURCE(y, omega)} choisie et le coefficient calculé à chaque pulsation $\omega=2\pi f$. Le champ initial et la descente utilisent $\omega_0=3\,430\,\mathrm{rad\,s^{-1}}$, puis la courbe emploie les 70 fréquences de 50 à 3\,500 Hz.
 \end{enumerate}
 \textbf{À obtenir :} les paramètres et les résultats de l'identification dans le rapport, avec le même signe devant le coefficient dans tous les fichiers. Les valeurs sont calculées dans \code{compute_alpha.py} et utilisées directement par le programme principal et le calcul fréquentiel. Les blocs protégés sont conservés.

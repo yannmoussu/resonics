@@ -21,7 +21,7 @@ from compute_alpha import compute_alpha, MATERIAUX
 SOURCE = preprocessing.source_rer_b
 # SOURCE = preprocessing.source_constant
 CAR_MAT = MATERIAUX["LAINE_ROCHE"]
-ALPHA0 = [-50.0, 50.0]  # On donne les parties réelle et imaginaire du point initial.
+ALPHA0 = [50.0, -50.0]  # On donne les parties réelle et imaginaire du point initial.
 OMEGA = 3430.0  # On exprime la pulsation en radians par seconde.
 C = 343.0  # On exprime la célérité en mètres par seconde.
 
@@ -205,9 +205,9 @@ def compute_gradient(domain_omega, spacestep, Alpha, density,
         for bi, bj in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):
             if robin[bi, bj]:
                 scale = spacestep * Alpha / beta_pde[i, j]
-                denominator = beta_rob[bi, bj] - scale * density[bi, bj]
-                diagonal_derivative = scale * beta_rob[bi, bj] / denominator**2
-                rhs_derivative = spacestep * f_rob[bi, bj] * scale / denominator**2
+                denominator = beta_rob[bi, bj] + scale * density[bi, bj]
+                diagonal_derivative = -scale * beta_rob[bi, bj] / denominator**2
+                rhs_derivative = -spacestep * f_rob[bi, bj] * scale / denominator**2
                 gradient[bi, bj] += numpy.real(
                     numpy.conjugate(adjoint[row])
                     * (rhs_derivative - diagonal_derivative * state[row])

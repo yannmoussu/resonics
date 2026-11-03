@@ -108,7 +108,7 @@ class FastHelmholtzSolver:
         """On complète la matrice avec le nombre d'onde et le coefficient du mur."""
         diagonal = self.base_diag + omega**2 * self.mass_diag
         ratio = alpha_rob[self.rob_node_i, self.rob_node_j] / self.rob_beta_pde
-        contribution = ratio * self.h / (self.rob_beta_rob - ratio * self.h)
+        contribution = -ratio * self.h / (self.rob_beta_rob + ratio * self.h)
         np.add.at(diagonal, self.rob_int_idx, contribution)
         return self.off_diag_mat + scipy.sparse.diags(diagonal, format='csc')
 
@@ -117,7 +117,7 @@ class FastHelmholtzSolver:
         rhs = self.base_rhs_int.copy()
         ratio = alpha_rob[self.rob_node_i, self.rob_node_j] / self.rob_beta_pde
         wall_load = self.f_rob[self.rob_node_i, self.rob_node_j]
-        contribution = self.h * wall_load / (self.rob_beta_rob - ratio * self.h)
+        contribution = self.h * wall_load / (self.rob_beta_rob + ratio * self.h)
         np.add.at(rhs, self.rob_int_idx, contribution)
         return rhs
 
@@ -151,10 +151,10 @@ class FastHelmholtzSolver:
         gradient = np.zeros(self.domain.shape, dtype=np.float64)
         scale = self.h * Alpha / self.rob_beta_pde
         density = chi[self.rob_node_i, self.rob_node_j]
-        denominator = self.rob_beta_rob - scale * density
-        matrix_derivative = scale * self.rob_beta_rob / denominator**2
+        denominator = self.rob_beta_rob + scale * density
+        matrix_derivative = -scale * self.rob_beta_rob / denominator**2
         load = self.f_rob[self.rob_node_i, self.rob_node_j]
-        rhs_derivative = self.h * load * scale / denominator**2
+        rhs_derivative = -self.h * load * scale / denominator**2
         interior_u = u[self.mask_int][self.rob_int_idx]
         interior_p = p[self.mask_int][self.rob_int_idx]
         contribution = np.real(np.conj(interior_p) * (rhs_derivative - matrix_derivative * interior_u))

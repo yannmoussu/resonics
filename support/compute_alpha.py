@@ -96,13 +96,13 @@ def lambda1(k, omega, mat):
     return 1/sqrt(2)*sqrt(k**2 - mat[2]*omega**2/mat[0] + sqrt((k**2 - mat[2]*omega**2/mat[0])**2 + (mat[1]*omega/mat[0])**2)) - 1/sqrt(2)*sqrt(mat[2]*omega**2/mat[0] - k**2 + sqrt((k**2 - mat[2]*omega**2/mat[0])**2 + (mat[1]*omega/mat[0])**2))*1j
 
 def f(x, l0):
-    return (l0*eta0 + x)*np.exp(-l0*L) + (l0*eta0 - x)*np.exp(l0*L)
+    return (l0*eta0 - x)*np.exp(-l0*L) + (l0*eta0 + x)*np.exp(l0*L)
 
 def chi(alpha, gk, mat, l0, l1):
-    return gk*((l0*eta0-l1*mat[0])/f(-l1*mat[0], l0) - (l0*eta0+alpha)/f(alpha, l0))
+    return gk*((l0*eta0-l1*mat[0])/f(l1*mat[0], l0) - (l0*eta0-alpha)/f(alpha, l0))
 
 def gamma(alpha, gk, mat, l0, l1):
-    return gk*((l0*eta0+l1*mat[0])/f(-l1*mat[0], l0) - (l0*eta0-alpha)/f(alpha, l0))
+    return gk*((l0*eta0+l1*mat[0])/f(l1*mat[0], l0) - (l0*eta0+alpha)/f(alpha, l0))
 
 def e_k(alpha, k, omega, gk, mat, l0, l1):
     c = chi(alpha, gk, mat, l0, l1)
@@ -124,7 +124,7 @@ def erreur(alpha, omega, mat, tab_k, tab_fourier, tab_l0, tab_l1):
 
 ### Determination du alpha optimal ###
 
-Alpha0 = [-50, 50]  # On choisit le point de départ dans la convention du support.
+Alpha0 = [50, -50]  # On choisit le point de départ dans la convention du polycopié.
 
 def passage_CetR(alpha_reel, omega, mat, tab_k, tab_fourier, tab_l0, tab_l1):
 
@@ -140,7 +140,7 @@ def passage_CetR(alpha_reel, omega, mat, tab_k, tab_fourier, tab_l0, tab_l1):
 def compute_alpha(omega, g, car_mat, alpha0):
     
     """ On détermine ici le paramètre alpha optimal en fonction de la pulsation (qui n'a pas forcément d'impact), de la fonction g et du materiau.
-    On utilise le signe du support pour le point de départ et le coefficient renvoyé.
+    On utilise le signe du polycopié pour le point de départ et le coefficient renvoyé.
     Le résultat contient les parties réelle et imaginaire, le succès et le message de la minimisation."""
     
     mat = materiau(car_mat)

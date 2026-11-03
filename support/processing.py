@@ -270,7 +270,7 @@ def compute_neumann_condition(domain, space_step, f_neu, beta_neu, beta_pde, mat
 
 def compute_robin_condition(domain, space_step, f_rob, alpha_rob, beta_rob, beta_pde, mat, rhs):
     """
-    This function generate the robin boundary condition.
+    On assemble la condition de Robin avec le signe du polycopié.
 
     :param domain:
     :param space_step:
@@ -296,27 +296,27 @@ def compute_robin_condition(domain, space_step, f_rob, alpha_rob, beta_rob, beta
                 row = i * N + j
                 if north:
                     mat[row, row - N] -= beta_pde[i - 1, j]
-                    mat[row, row] += beta_pde[i, j] + (alpha_rob[i - 1, j] / beta_pde[i, j]) * h / (
-                            beta_rob[i - 1, j] - (alpha_rob[i - 1, j] / beta_pde[i, j] * h))
-                    rhs[row] += (h / (beta_rob[i - 1, j] - ((alpha_rob[i - 1, j] / beta_pde[i, j]) * h))) * f_rob[
+                    mat[row, row] += beta_pde[i, j] - (alpha_rob[i - 1, j] / beta_pde[i, j]) * h / (
+                            beta_rob[i - 1, j] + (alpha_rob[i - 1, j] / beta_pde[i, j] * h))
+                    rhs[row] += (h / (beta_rob[i - 1, j] + ((alpha_rob[i - 1, j] / beta_pde[i, j]) * h))) * f_rob[
                         i - 1, j]
                 if south:
                     mat[row, row + N] -= beta_pde[i + 1, j]
-                    mat[row, row] += beta_pde[i, j] + (alpha_rob[i + 1, j] / beta_pde[i, j]) * h / (
-                            beta_rob[i + 1, j] - (alpha_rob[i + 1, j] / beta_pde[i, j] * h))
-                    rhs[row] += (h / (beta_rob[i + 1, j] - ((alpha_rob[i + 1, j] / beta_pde[i, j]) * h))) * f_rob[
+                    mat[row, row] += beta_pde[i, j] - (alpha_rob[i + 1, j] / beta_pde[i, j]) * h / (
+                            beta_rob[i + 1, j] + (alpha_rob[i + 1, j] / beta_pde[i, j] * h))
+                    rhs[row] += (h / (beta_rob[i + 1, j] + ((alpha_rob[i + 1, j] / beta_pde[i, j]) * h))) * f_rob[
                         i + 1, j]
                 if east:
                     mat[row, row + 1] -= beta_pde[i, j + 1]
-                    mat[row, row] += beta_pde[i, j] + (alpha_rob[i, j + 1] / beta_pde[i, j]) * h / (
-                            beta_rob[i, j + 1] - (alpha_rob[i, j + 1] / beta_pde[i, j] * h))
-                    rhs[row] += (h / (beta_rob[i, j + 1] - ((alpha_rob[i, j + 1] / beta_pde[i, j]) * h))) * f_rob[
+                    mat[row, row] += beta_pde[i, j] - (alpha_rob[i, j + 1] / beta_pde[i, j]) * h / (
+                            beta_rob[i, j + 1] + (alpha_rob[i, j + 1] / beta_pde[i, j] * h))
+                    rhs[row] += (h / (beta_rob[i, j + 1] + ((alpha_rob[i, j + 1] / beta_pde[i, j]) * h))) * f_rob[
                         i, j + 1]
                 if west:
                     mat[row, row - 1] -= beta_pde[i, j - 1]
-                    mat[row, row] += beta_pde[i, j] + (alpha_rob[i, j - 1] / beta_pde[i, j]) * h / (
-                            beta_rob[i, j - 1] - (alpha_rob[i, j - 1] / beta_pde[i, j] * h))
-                    rhs[row] += (h / (beta_rob[i, j - 1] - ((alpha_rob[i, j - 1] / beta_pde[i, j]) * h))) * f_rob[
+                    mat[row, row] += beta_pde[i, j] - (alpha_rob[i, j - 1] / beta_pde[i, j]) * h / (
+                            beta_rob[i, j - 1] + (alpha_rob[i, j - 1] / beta_pde[i, j] * h))
+                    rhs[row] += (h / (beta_rob[i, j - 1] + ((alpha_rob[i, j - 1] / beta_pde[i, j]) * h))) * f_rob[
                         i, j - 1]
 
     return mat, rhs
@@ -427,7 +427,7 @@ def solve_helmholtz(domain, space_step, omega,
 
 
 def compute_robin_condition_down(domain, u, space_step, beta_rob, alpha_rob):
-    """
+    """On évalue la condition de Robin avec la normale extérieure et la pression moyenne.
 
     :param domain:
     :param u:
@@ -448,23 +448,23 @@ def compute_robin_condition_down(domain, u, space_step, beta_rob, alpha_rob):
                 east = is_on_robin_boundary(domain[i, j + 1])
                 west = is_on_robin_boundary(domain[i, j - 1])
                 if north:
-                    value[i - 1, j] += beta_rob[i - 1, j] * (u[i, j] - u[i - 1, j]) / h + alpha_rob[
+                    value[i - 1, j] += beta_rob[i - 1, j] * (u[i - 1, j] - u[i, j]) / h + alpha_rob[
                         i - 1, j] * (u[i - 1, j] + u[i, j]) / 2
                 if south:
-                    value[i + 1, j] += beta_rob[i + 1, j] * (u[i, j] - u[i + 1, j]) / h + alpha_rob[
+                    value[i + 1, j] += beta_rob[i + 1, j] * (u[i + 1, j] - u[i, j]) / h + alpha_rob[
                         i + 1, j] * (u[i + 1, j] + u[i, j]) / 2
                 if east:
-                    value[i, j + 1] += beta_rob[i, j + 1] * (u[i, j] - u[i, j + 1]) / h + alpha_rob[
+                    value[i, j + 1] += beta_rob[i, j + 1] * (u[i, j + 1] - u[i, j]) / h + alpha_rob[
                         i, j + 1] * (u[i, j + 1] + u[i, j]) / 2
                 if west:
-                    value[i, j - 1] += beta_rob[i, j - 1] * (u[i, j] - u[i, j - 1]) / h + alpha_rob[
+                    value[i, j - 1] += beta_rob[i, j - 1] * (u[i, j - 1] - u[i, j]) / h + alpha_rob[
                         i, j - 1] * (u[i, j - 1] + u[i, j]) / 2
 
     return value
 
 
 def compute_robin_condition_up(domain, u, space_step, beta_rob, alpha_rob):
-    """
+    """On évalue la condition de Robin avec la normale extérieure et la pression moyenne.
 
     :param domain:
     :param u:
@@ -488,16 +488,16 @@ def compute_robin_condition_up(domain, u, space_step, beta_rob, alpha_rob):
                 east = is_on_robin_boundary(domain[i, j + 1])
                 west = is_on_robin_boundary(domain[i, j - 1])
                 if north:
-                    value[i - 1, j] += beta_rob[i - 1, j] * (u[i, j] - u[i - 1, j]) / h + alpha_rob[
+                    value[i - 1, j] += beta_rob[i - 1, j] * (u[i - 1, j] - u[i, j]) / h + alpha_rob[
                         i - 1, j] * (u[i - 1, j] + u[i, j]) / 2
                 if south:
-                    value[i + 1, j] += beta_rob[i + 1, j] * (u[i, j] - u[i + 1, j]) / h + alpha_rob[
+                    value[i + 1, j] += beta_rob[i + 1, j] * (u[i + 1, j] - u[i, j]) / h + alpha_rob[
                         i + 1, j] * (u[i + 1, j] + u[i, j]) / 2
                 if east:
-                    value[i, j + 1] += beta_rob[i, j + 1] * (u[i, j] - u[i, j + 1]) / h + alpha_rob[
+                    value[i, j + 1] += beta_rob[i, j + 1] * (u[i, j + 1] - u[i, j]) / h + alpha_rob[
                         i, j + 1] * (u[i, j + 1] + u[i, j]) / 2
                 if west:
-                    value[i, j - 1] += beta_rob[i, j - 1] * (u[i, j] - u[i, j - 1]) / h + alpha_rob[
+                    value[i, j - 1] += beta_rob[i, j - 1] * (u[i, j - 1] - u[i, j]) / h + alpha_rob[
                         i, j - 1] * (u[i, j - 1] + u[i, j]) / 2
 
     return value
@@ -547,7 +547,7 @@ def run_rer_b_frequency_sweep(domain_omega, spacestep, frequencies_hz,
     for ind, frequency_hz in enumerate(frequencies):
         omega = 2.0 * numpy.pi * float(frequency_hz)
         k = omega / sound_speed_m_s
-        # On détermine le coefficient du matériau dans la convention du support.
+        # On détermine le coefficient du matériau dans la convention du polycopié.
         coefficients, success, message = compute_alpha(omega, g, car_mat, alpha0)
         if not success:
             print("Échec du calcul du coefficient à", frequency_hz, "Hz :", message)

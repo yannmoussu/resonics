@@ -1,6 +1,6 @@
 # Études numériques ResoniCS pour le bruit du RER B
 
-Les fichiers de `support/` rassemblent le programme initial, le calcul du coefficient de matériau et les études des quatre journées. Les calculs emploient les différences finies et la même convention de Robin que le support fourni.
+Les fichiers de `support/` rassemblent le programme initial, le calcul du coefficient de matériau et les études des quatre journées. Les calculs emploient les différences finies et la même convention de Robin que le polycopié.
 
 ## Paramètres communs
 
@@ -8,7 +8,7 @@ On choisit les paramètres suivants au début de `demo_control_polycopie2024.py`
 
 - `SOURCE` vaut `preprocessing.source_constant` ou `preprocessing.source_rer_b`. Ces fonctions prennent la position sur le bord et la pulsation en arguments. La première renvoie une amplitude unitaire et la seconde une somme de gaussiennes représentant un spectre simplifié de RER B.
 - `CAR_MAT` contient les caractéristiques du matériau dans le dictionnaire `compute_alpha.MATERIAUX`. Par défaut, il s'agit de `LAINE_ROCHE`.
-- `ALPHA0` fixe le point de départ de la minimisation qui identifie le coefficient de Robin, dans la convention du support.
+- `ALPHA0` fixe le point de départ de la minimisation qui identifie le coefficient de Robin, dans la convention du polycopié.
 - `C` est la célérité du son, fixée à `343 m/s`, et `OMEGA` est la pulsation du calcul à une fréquence.
 
 Les études fréquentielles utilisent par défaut les fréquences de 50 à 3 500 Hz avec un pas de 50 Hz. On prend `N = 128`, `M = 2*N` et un pas spatial de `1/N m`. La longueur d'onde à 3 500 Hz contient ainsi environ 12,5 pas de grille. La finesse géométrique et la résolution des pics doivent également être vérifiées pour interpréter une étude donnée.
@@ -19,7 +19,7 @@ Pour chaque fréquence, on convertit les hertz en pulsation par `omega = 2*pi*fr
 
 `compute_alpha.compute_alpha(omega, SOURCE, CAR_MAT, ALPHA0)` renvoie les parties réelle et imaginaire du coefficient, le succès et le message de la minimisation. Les études arrêtent leur calcul si cette identification échoue ou si le coefficient obtenu est incompatible avec la convention attendue.
 
-La condition de bord du support s'écrit `d_n u - alpha*chi*u = 0`. On emploie directement le coefficient identifié, de partie réelle négative et de partie imaginaire positive. Pour une sortie ouverte du domaine rectangulaire, on prend `alpha = +i*k`. La densité `chi` représente la répartition du matériau sur les points de Robin.
+La condition de bord du polycopié s'écrit `d_n u + alpha*chi*u = 0`. On emploie directement le coefficient identifié, de partie réelle positive et de partie imaginaire négative. Pour une sortie ouverte du domaine rectangulaire, on prend `alpha = -i*k`. La densité `chi` représente la répartition du matériau sur les points de Robin.
 
 Le dictionnaire actuel contient notamment la laine de roche, la mélamine et la laine de verre, définies par leur porosité, leur tortuosité et leur résistivité à l'air. Les comparaisons utilisent ces données. Le modèle d'identification actuel ne comporte pas de paramètre d'épaisseur de couche.
 

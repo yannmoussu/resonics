@@ -70,8 +70,8 @@ def study_sommerfeld_open_air_vs_reflexive(N=128, frequencies=None):
         omega = 2.0 * np.pi * frequency
         wavenumber = omega / C
         solver.set_source(SOURCE, omega)
-        # On applique le signe de Robin du support à la sortie ouverte.
-        for j, alpha in enumerate((0.0, 1j * wavenumber, alphas[i])):
+        # On applique le signe de Robin du polycopié à la sortie ouverte.
+        for j, alpha in enumerate((0.0, -1j * wavenumber, alphas[i])):
             boundary = np.zeros(domain.shape, dtype=complex)
             boundary[robin] = alpha
             energies[i, j] = solver.compute_energy(solver.solve(wavenumber, boundary))

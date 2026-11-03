@@ -43,10 +43,10 @@ def compute_material_coefficients(frequencies, car_mat=CAR_MAT):
         pair, success, message = compute_alpha(2.0 * np.pi * frequency,
                                                SOURCE, car_mat, ALPHA0)
         alpha = complex(pair[0], pair[1])
-        if not success or not np.isfinite(alpha) or alpha.real >= 0 or alpha.imag <= 0:
+        if not success or not np.isfinite(alpha) or alpha.real <= 0 or alpha.imag >= 0:
             print("Coefficient non validé à", frequency, "Hz pour", car_mat, ":", message)
             return None
-        # On conserve directement le signe de la condition de Robin du support.
+        # On conserve directement le signe de la condition de Robin du polycopié.
         alphas.append(alpha)
     return np.asarray(alphas, dtype=np.complex128)
 
