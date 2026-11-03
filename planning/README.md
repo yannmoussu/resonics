@@ -4,7 +4,7 @@ Chaque contribution ajoute un petit résultat que les cinq membres peuvent expli
 
 ## Documents de suivi
 
-Ces documents tiennent compte du code et des choix les plus récents :
+Ces documents tiennent compte du code et des choix les plus récents. Les fiches individuelles conservent des propositions initiales, dont les paramètres doivent être remplacés par ceux ci-dessous :
 
 - [Reste à faire pour le jour 1 — PDF](reste_a_faire_jour1.pdf)
 - [Feuille de route du jour 2 — README](README_JOUR2.md)
@@ -26,12 +26,12 @@ Pour le fichier commun, Joachim complète le calcul d’énergie, puis Yann ajou
 ## Un cas simple pour commencer
 
 - **Application :** bruit de roulement du RER B. La bande 250–2 000 Hz vient de [SOTA.md](../SOTA.md) et reste indicative.
-- **Premier essai proposé :** 500 Hz et c=343 m/s, valeur déjà utilisée pour les courbes fréquentielles. On passe au solveur le nombre d’onde k=2*pi*f/c.
-- **Grille :** N=50, M=100 et h=0,02 dans le support. On conserve le générateur, avec `level=1` pour le contour irrégulier et `level=0` pour la référence plane.
-- **Source de comparaison :** valeur unitaire uniforme sur le bord supérieur, avec la même phase en tout point.
-- **Matériau :** un seul pour commencer. Le cas ISOREL du §3.2.4 du polycopié fournit des données pour calculer un coefficient. Mathis vérifie ces données avant de les utiliser.
+- **Premier essai actuel :** k=10, soit environ 545,90 Hz avec c=343 m/s. On passe au solveur le nombre d’onde k=2*pi*f/c.
+- **Grille affinée :** N=128, M=256 et h=0,0078125 m dans le support. On conserve le générateur, avec `level=2` pour le cas irrégulier actuel et `level=0` pour la référence plane.
+- **Source :** amplitude unitaire pour le cas initial, puis amplitude gaussienne pour les courbes fréquentielles. La source reste uniforme sur le bord supérieur, avec la même phase en tout point.
+- **Matériau :** un seul pour commencer. Le cas ISOREL du §3.2.4 du polycopié fournit des données pour calculer un coefficient. Joachim fournit les données du matériau et son coefficient.
 
-À chaque fréquence, la longueur d’onde doit contenir au moins dix points de grille. Avec h=0,02 et c=343 m/s, une première étude 250–1 500 Hz respecte cette règle. Étudier jusqu’à 2 000 Hz demandera un pas plus petit. On annonce la bande effectivement calculée.
+À chaque fréquence, la longueur d’onde doit contenir au moins dix points de grille. Avec h=0,0078125 m et c=343 m/s, on dispose de 12,544 points par longueur d’onde à 3 500 Hz. On calcule désormais 70 fréquences de 50 à 3 500 Hz par pas de 50 Hz, ce qui couvre les trois composantes de la source. La fréquence nulle correspond à un problème statique.
 
 `Alpha=10-10j` est encore le coefficient d’exemple du programme. Un résultat obtenu avec cette valeur montre le fonctionnement du calcul. Le choix physique du matériau demandera son coefficient documenté et une convention de signe cohérente avec le solveur.
 
@@ -47,9 +47,9 @@ u_G=G(f)u_1,\qquad J_G=|G(f)|^2J_1
 
 Le facteur est commun à tous les panneaux. Pour G non nul, il conserve donc leur classement à cette fréquence. Le coefficient du matériau reste le même.
 
-Sur plusieurs fréquences, les facteurs diffèrent. Ils donnent davantage de poids à certaines fréquences et peuvent ainsi changer la géométrie ou la répartition retenue. Pour le MVP, on construit d’abord les courbes avec la source unitaire. Si le temps le permet, on multiplie ensuite ces énergies par les valeurs de |G(f)|² pour voir l’effet du spectre choisi. Cette étape utilise les résultats déjà obtenus.
+Sur plusieurs fréquences, les facteurs diffèrent. Ils donnent davantage de poids à certaines fréquences et peuvent ainsi changer la géométrie ou la répartition retenue. Le calcul fréquentiel actuel applique directement la source gaussienne. Un calcul unitaire complémentaire peut aider à distinguer l’effet de la source de celui du mur.
 
-Le programme actuel trace déjà un cas pondéré entre **100 et 1 500 Hz, par pas de 50 Hz**, avec c=343 m/s. Comme G est déjà appliqué à la source de ce calcul, ses énergies contiennent déjà ce facteur. La note [sur la source](../context/ResoniCS_modelisation_source_RER_B.md) décrit les hypothèses, mais les références à une ancienne bande et à une autre convention de grille sont à distinguer des réglages actuels du support.
+Le programme actuel trace déjà un cas pondéré entre **50 et 3 500 Hz, par pas de 50 Hz**, avec c=343 m/s. Comme G est déjà appliqué à la source de ce calcul, ses énergies contiennent déjà ce facteur. La note [sur la source](../context/ResoniCS_modelisation_source_RER_B.md) décrit les hypothèses, mais les références à une ancienne bande et à une autre convention de grille sont à distinguer des réglages actuels du support.
 
 ## Construction progressive du résultat
 

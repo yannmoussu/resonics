@@ -140,7 +140,7 @@ def plot_rer_b_frequency_sweep(results, output_dir=None):
     fig, ax = matplotlib.pyplot.subplots()
     ax.plot(spectrum_frequencies, spectrum_amplitudes)
     ax.axvspan(frequencies[0], frequencies[-1], color="gray", alpha=0.15,
-               label="Plage simulée")
+               label="Fréquences calculées")
     ax.set_xlim(0.0, 3500.0)
     ax.set_xlabel("Fréquence (Hz)")
     ax.set_ylabel("Amplitude relative")

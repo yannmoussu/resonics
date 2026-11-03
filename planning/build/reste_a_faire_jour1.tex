@@ -27,7 +27,7 @@
 \section*{Ce qui est déjà prêt}
 Le nom ResoniCS et le cas d'usage RER B sont retenus. L'état de l'art est enrichi et sourcé. Le modèle de Helmholtz, la source somme de trois gaussiennes et les premiers résultats sont décrits dans le rapport. Les fonctions de coût, de projection, de calcul du champ, de gradient et de descente sont programmées et vérifiées.
 
-La descente diminue le critère de 1,64386 à 0,701126 en 100 étapes acceptées, en conservant une somme des valeurs de matériau égale à 39 sur le mur. Elle utilise encore \code{Alpha=10-10j}, coefficient d'exemple défini en J1.8 ci-dessous. \textbf{Joachim} s'occupe du choix du matériau et de son coefficient.
+La descente diminue le critère de 2,944346 à 0,572995 en 100 étapes acceptées, en conservant une somme des valeurs de matériau égale à 204 sur le mur. Elle utilise encore \code{Alpha=10-10j}, coefficient d'exemple défini en J1.8 ci-dessous. \textbf{Joachim} s'occupe du choix du matériau et de son coefficient.
 
 \section*{Bilan des dix attendus}
 \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{1.3cm}>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{2.1cm}>{\raggedright\arraybackslash}X@{}}
@@ -40,7 +40,7 @@ J1.3 & Fréquences, dimensions, source & À harmoniser & Valider les distances e
 J1.4 & Propriétés de la solution & À rédiger & Préciser sous quelles hypothèses le champ est unique et une répartition de matériau minimise l'énergie.\\[3pt]
 J1.5 & Problème d'optimisation & À formaliser & Écrire le minimum de l'intégrale du carré du module de la pression, à fréquence et quantité de matériau fixées.\\[3pt]
 J1.6 & Paroi ouverte ou réfléchissante & À traiter & Comparer les modèles et leurs bilans avec la condition de Sommerfeld.\\[3pt]
-J1.7 & Matériau et quantité & À finaliser & Recevoir le choix de Joachim et justifier les 39 points garnis sur 98 du premier essai.\\[3pt]
+J1.7 & Matériau et quantité & À finaliser & Recevoir le choix de Joachim et justifier les 204 points garnis sur 512 du premier essai.\\[3pt]
 J1.8 & Coefficient complexe de Robin & En attente & Obtenir le coefficient du matériau à chaque fréquence étudiée, ses unités et son signe dans le code.\\[3pt]
 J1.9 & Dérivée de l'énergie & Code prêt & Écrire la variation de l'énergie quand on modifie la répartition, puis expliquer le calcul adjoint.\\[3pt]
 J1.10 & Descente de gradient & Fait & Reprendre la méthode testée avec le coefficient du matériau retenu.\\
@@ -51,9 +51,9 @@ J1.10 & Descente de gradient & Fait & Reprendre la méthode testée avec le coef
 Compléter J1.4 et J1.6, recevoir les données du matériau pour J1.7--J1.8, puis achever la formulation de J1.5 et J1.9. En parallèle, fixer les unités et les réglages de J1.3 pour que chacun travaille sur le même cas.
 
 \section*{J1.3 --- Quelles dimensions, quels paramètres et quels documents ?}
-\textbf{L'échelle physique désigne la distance en mètres entre deux points de grille.} Le programme utilise actuellement \code{spacestep=0.02}. Le rapport interprète cette valeur comme $h=0,02\,\mathrm{m}$, soit 2 cm entre voisins. Il faut valider ce choix comme hypothèse de notre modèle, puis donner les dimensions du domaine d'air et du relief qu'il représente.
+\textbf{L'échelle physique désigne la distance en mètres entre deux points de grille.} Le programme utilise actuellement \code{spacestep=0.0078125}. Le rapport interprète cette valeur comme $h=0,0078125\,\mathrm{m}$, soit 7,8125 mm entre voisins. Il faut valider ce choix comme hypothèse de notre modèle, puis donner les dimensions du domaine d'air et du relief qu'il représente.
 
-Avec $j$ l'indice de colonne et $i$ l'indice de ligne, les coordonnées sont $x_j=jh$ et $y_i=ih$, en comptant les lignes depuis le bord supérieur. Les $N=50$ colonnes couvrent ainsi des abscisses de 0 à 0,98 m. Pour le contour de niveau 1, les ordonnées du mur vont de 0,76 à 1,24 m, soit un écart de 0,48 m. Les $M=100$ lignes contiennent aussi des points extérieurs à l'air. On relève donc la hauteur de la cavité et la taille des motifs à partir du domaine marqué par \code{domain_omega}, puis on les indique sur un schéma coté.
+Avec $j$ l'indice de colonne et $i$ l'indice de ligne, les coordonnées sont $x_j=jh$ et $y_i=ih$, en comptant les lignes depuis le bord supérieur. Les $N=128$ colonnes couvrent ainsi des abscisses de 0 à 0,9921875 m. Pour le contour de niveau 2, les ordonnées du mur vont de 0,6875 à 1,3125 m, soit un écart de 0,6250 m. Les $M=256$ lignes contiennent aussi des points extérieurs à l'air. On relève donc la hauteur de la cavité et la taille des motifs à partir du domaine marqué par \code{domain_omega}, puis on les indique sur un schéma coté.
 
 \textbf{À faire :} confirmer que ces dimensions représentent bien le cas étudiant choisi. Si l'on retient une autre taille, actualiser les dimensions et le pas de grille, puis vérifier de nouveau la règle des dix points par longueur d'onde. À fréquence, célérité et matériau fixés, le nombre d'onde et le coefficient de paroi restent identiques dans les mêmes unités. Si l'on annonce un volume de matériau, préciser aussi son épaisseur et la profondeur représentée par la coupe en deux dimensions.
 
@@ -61,13 +61,13 @@ Avec $j$ l'indice de colonne et $i$ l'indice de ligne, les coordonnées sont $x_
 \toprule
 \textbf{Grandeur} & \textbf{Valeur actuelle et vérification à faire}\\
 \midrule
-Grille et contour & $N=50$ colonnes, $M=100$ lignes, $h=0,02$ m sous l'hypothèse précédente, niveau 1 du motif fourni. Le niveau compte les itérations successives de construction du motif.\\[3pt]
+Grille et contour & $N=128$ colonnes, $M=256$ lignes, $h=0,0078125$ m sous l'hypothèse précédente, niveau 2 du motif fourni. Le niveau compte les itérations successives de construction du motif.\\[3pt]
 Célérité $c$ & Vitesse du son retenue : $343\,\mathrm{m\,s^{-1}}$. Conserver la même valeur dans les conversions fréquence--nombre d'onde.\\[3pt]
 Fréquence $f$ et nombre d'onde $k$ & $f$ compte les oscillations par seconde, en Hz, et $k=2\pi f/c$ est en $\mathrm{m^{-1}}$. Le code fixe $k=10$, donc $f\simeq545,90$ Hz. Remplacer l'ancienne proposition de 500 Hz dans les fiches par le cas effectivement utilisé.\\[3pt]
-Bande calculée & 100 à 1\,500 Hz, pas de 50 Hz, soit 29 résolutions. Le spectre de source affiché de 0 à 3\,500 Hz est seulement un tracé d'amplitude sur cet intervalle.\\[3pt]
-Longueur d'onde $\lambda$ & $\lambda=c/f$. Vérifier $\lambda/h\geq10$. À 1\,500 Hz, cela donne 11,43 points par longueur d'onde avec la grille actuelle.\\[3pt]
+Bande calculée & 50 à 3\,500 Hz, pas de 50 Hz, soit 70 résolutions. La bande couvre les trois composantes du spectre affiché de 0 à 3\,500 Hz. La fréquence nulle correspond à un problème statique.\\[3pt]
+Longueur d'onde $\lambda$ & $\lambda=c/f$. Vérifier $\lambda/h\geq10$. À 3\,500 Hz, cela donne 12,544 points par longueur d'onde avec la grille actuelle.\\[3pt]
 Amplitude imposée $G(f)$ & Le cas initial et la descente utilisent une amplitude uniforme égale à 1. La courbe fréquentielle impose la somme des gaussiennes, définie ci-dessous. Garder cette distinction dans les légendes et le texte.\\[3pt]
-Répartition et coefficient & Quantité initiale : 39 points garnis sur 98 points de paroi. Le coefficient provisoire est \code{Alpha=10-10j}. Le sens de ces valeurs est détaillé en J1.5 et J1.8.\\
+Répartition et coefficient & Quantité initiale : 204 points garnis sur 512 points de paroi. Le coefficient provisoire est \code{Alpha=10-10j}. Le sens de ces valeurs est détaillé en J1.5 et J1.8.\\
 \bottomrule
 \end{tabularx}
 
@@ -106,16 +106,16 @@ Ici $x$ est un point du domaine, $\Omega_h$ est l'ensemble des points intérieur
 \quad\text{sous}\quad
 0\leq\chi_b\leq1\ \text{pour tout }b\in\Gamma_{R,h}
 \qquad
-\sum_{b\in\Gamma_{R,h}}\chi_b=V_{\mathrm{obj}}S=39
+\sum_{b\in\Gamma_{R,h}}\chi_b=V_{\mathrm{obj}}S=204
 \end{equation*}
-$\Gamma_{R,h}$ est l'ensemble des points du mur portant la condition de Robin et $b$ désigne un de ces points. Leur nombre est $S=98$. La fraction imposée vaut $V_{\mathrm{obj}}=39/98\simeq0,397959$, soit environ 40\,\%. Dans le code, $\chi$ est nul en dehors de ces points. La fréquence $f_0\simeq545,90$ Hz correspond à $k=10\,\mathrm{m^{-1}}$, avec la source uniforme unitaire du premier essai.
+$\Gamma_{R,h}$ est l'ensemble des points du mur portant la condition de Robin et $b$ désigne un de ces points. Leur nombre est $S=512$. La fraction imposée vaut $V_{\mathrm{obj}}=204/512\simeq0,398438$, soit environ 40\,\%. Dans le code, $\chi$ est nul en dehors de ces points. La fréquence $f_0\simeq545,90$ Hz correspond à $k=10\,\mathrm{m^{-1}}$, avec la source uniforme unitaire du premier essai.
 
 Le minimum recherché est donc la plus faible valeur de cette somme de pression au carré obtenue en plaçant cette quantité de matériau sur cette forme. La fonction \code{your_compute_objective_function} évalue le critère, et \code{your_optimization_procedure} cherche à le diminuer. Les valeurs intermédiaires de $\chi$ constituent la répartition continue admise par la méthode du cours. La somme imposée est une quantité nodale pour ce premier cas, dont la justification physique reste à donner en J1.7.
 
-\textbf{À faire :} ajouter cette formulation, définir toutes ses grandeurs et préciser ce qui reste fixe dans \code{report/report.tex}. La baisse de 1,64386 à 0,701126 en 100 étapes montre une amélioration numérique. L'arrêt actuel au nombre maximal d'étapes ne permet pas d'affirmer que le minimum est atteint. Le calcul d'un critère cumulé sur plusieurs fréquences relève de l'étape ultérieure du projet.
+\textbf{À faire :} ajouter cette formulation, définir toutes ses grandeurs et préciser ce qui reste fixe dans \code{report/report.tex}. La baisse de 2,944346 à 0,572995 en 100 étapes montre une amélioration numérique. L'arrêt actuel au nombre maximal d'étapes ne permet pas d'affirmer que le minimum est atteint. Le calcul d'un critère cumulé sur plusieurs fréquences relève de l'étape ultérieure du projet.
 
 \section*{J1.7 et J1.8 --- Quel matériau, quelle quantité, quel coefficient ?}
-\textbf{J1.7 :} recevoir le nom du matériau de Joachim et justifier la quantité du premier essai, représentée par les 39 points garnis sur 98. Pour annoncer une longueur absorbante, la mesurer le long de la paroi. Pour annoncer un volume, préciser en plus l'épaisseur et la profondeur de la coupe. Conserver le sens de la fraction nodale dans le premier calcul.
+\textbf{J1.7 :} recevoir le nom du matériau de Joachim et justifier la quantité du premier essai, représentée par les 204 points garnis sur 512. Pour annoncer une longueur absorbante, la mesurer le long de la paroi. Pour annoncer un volume, préciser en plus l'épaisseur et la profondeur de la coupe. Conserver le sens de la fraction nodale dans le premier calcul.
 
 \textbf{Le coefficient de J1.8 est celui de la condition de Robin du matériau poreux.} Dans le rapport, cette condition est
 \begin{equation*}
@@ -138,7 +138,7 @@ $n$ est la normale extérieure à l'air, $\partial_n u_f$ est la dérivée du ch
 \item Le matériau retenu et le tableau de toutes les données utilisées pour le caractériser, avec pour chacune le nom de la grandeur, le symbole, la valeur, l'unité et la source.
 \item La méthode de calcul du coefficient, en s'appuyant sur le §3.2.4 du polycopié, qui rapproche un modèle du matériau poreux et un modèle équivalent avec condition de Robin.
 \item La valeur numérique de $\alpha$ à la fréquence du premier essai, environ 545,90 Hz, avec son unité, la convention temporelle et la condition de Robin dont elle provient. Si Joachim a utilisé une autre fréquence, la faire préciser et recalculer le coefficient au point retenu.
-\item Pour la courbe de 100 à 1\,500 Hz, les valeurs aux 29 fréquences ou une fonction donnant $\alpha(f)$. Si une valeur constante est proposée, faire préciser la bande et l'approximation qui la justifient.
+\item Pour la courbe de 50 à 3\,500 Hz, les valeurs aux 70 fréquences ou une fonction donnant $\alpha(f)$. Si une valeur constante est proposée, faire préciser la bande et l'approximation qui la justifient.
 \end{enumerate}
 \textbf{À obtenir :} un tableau dans \code{report/report.tex}, puis la valeur convertie \code{Alpha} dans le bloc autorisé de \code{support/demo_control_polycopie2024.py}. La fonction de calcul fréquentiel conserve actuellement le même coefficient sur toute la bande, donc il faudra adapter son utilisation si la loi retenue dépend de $f$. Chaque point fréquentiel doit utiliser sa propre valeur du coefficient. Garder les blocs protégés inchangés.
 

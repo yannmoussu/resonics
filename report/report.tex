@@ -25,9 +25,9 @@
 \newcommand{\ii}{\mathrm{i}}
 \newcommand{\code}[1]{\texttt{\detokenize{#1}}}
 % Valeurs du calcul fréquentiel effectivement exécuté.
-\newcommand{\frequencePic}{1\,150}
-\newcommand{\energiePic}{25,0147}
-\newcommand{\energieBande}{4\,132,884}
+\newcommand{\frequencePic}{1250}
+\newcommand{\energiePic}{14,9376}
+\newcommand{\energieBande}{4624,538}
 \hypersetup{pdftitle={ResoniCS -- Optimisation acoustique d'un mur antibruit pour le RER B},pdfauthor={Auteurs à compléter}}
 
 \begin{document}
@@ -129,7 +129,7 @@ Dans les premiers calculs, \code{Alpha} vaut $10-10\ii$, soit $\alpha=-10+10\ii$
 \subsection{Mur plan et contours préfractals}
 La comparaison prévue porte sur le mur plan de niveau 0 et sur les contours préfractals de niveaux 1 et 2. Le générateur \code{create_motif_koch} remplace un segment par huit segments orthogonaux, chacun quatre fois plus court. Le motif fourni utilise donc des angles droits. Le niveau 1 applique une fois ce motif et le niveau 2 le répète sur les segments obtenus.
 
-Les résultats présentés ici concernent uniquement le niveau 1. Le tableau~\ref{tab:parametres} indique les paramètres effectivement utilisés. La grille de stockage comporte aussi des points extérieurs au fluide, donc ses dimensions ne doivent pas être assimilées à celles du domaine d'air. Pour $N=50$ et $h=0,02$, les abscisses des points stockés vont de 0 à 0,98 dans la convention de longueur retenue. Le mur irrégulier se situe entre les ordonnées 0,76 et 1,24. Ces dimensions décrivent le cas numérique ; leur correspondance avec un panneau à installer reste à définir.
+Les résultats présentés ici concernent uniquement le niveau 2. Le tableau~\ref{tab:parametres} indique les paramètres effectivement utilisés. La grille de stockage comporte aussi des points extérieurs au fluide, donc ses dimensions ne doivent pas être assimilées à celles du domaine d'air. Pour $N=128$ et $h=0,0078125$, les abscisses des points stockés vont de 0 à 0,9921875 m. Le mur irrégulier se situe entre les ordonnées 0,6875 et 1,3125 m. Le maillage est affiné pour représenter les fréquences jusqu'à 3\,500 Hz. Ces dimensions décrivent le cas numérique et leur correspondance avec un panneau à installer reste à définir.
 
 \section{Modélisation de la source acoustique du RER B}
 \subsection{Une excitation uniforme sur le bord supérieur}
@@ -189,18 +189,18 @@ On ajoute ensuite le terme $k_f^2u_{i,j}$ et les contributions des conditions au
 \toprule
 Paramètre & Valeur utilisée\\
 \midrule
-Grille de stockage $M\times N$ & $100\times50$\\
-Pas $h$, interprété en mètres & $0,02$\\
-Niveau du contour calculé & 1\\
+Grille de stockage $M\times N$ & $256\times128$\\
+Pas $h$, interprété en mètres & $0,0078125$\\
+Niveau du contour calculé & 2\\
 Célérité $c$ & $343\,\mathrm{m\,s^{-1}}$\\
 Source du cas initial & Uniforme, amplitude 1\\
 Nombre d'onde initial $k_0$ & $10\,\mathrm{m^{-1}}$\\
 Fréquence initiale déduite $ck_0/(2\pi)$ & $545,90\,\mathrm{Hz}$\\
 Coefficient \code{Alpha} & $(10-10\ii)\,\mathrm{m^{-1}}$\\
-Points Robin garnis / points Robin & $39/98$\\
-Fraction nodale initiale \code{V_obj} & $0,397959$\\
-Fréquences du calcul spectral & 100 à 1\,500 Hz\\
-Pas fréquentiel et nombre de fréquences & 50 Hz, 29 valeurs\\
+Points Robin garnis / points Robin & $204/512$\\
+Fraction nodale initiale \code{V_obj} & $0,398438$\\
+Fréquences du calcul spectral & 50 à 3\,500 Hz\\
+Pas fréquentiel et nombre de fréquences & 50 Hz, 70 valeurs\\
 \bottomrule
 \end{tabular}
 \caption{Paramètres des premiers calculs}
@@ -216,7 +216,7 @@ La longueur d'onde est $\lambda_f=c/f$. La règle d'au moins dix points de grill
 \begin{equation*}
 \frac{\lambda_f}{h}=\frac{c}{fh}\geq10
 \end{equation*}
-Avec $h=0,02$ et $c=343\,\mathrm{m\,s^{-1}}$, la limite correspondante est $1\,715\,\mathrm{Hz}$. À $1\,500\,\mathrm{Hz}$, on dispose d'environ 11,43 points par longueur d'onde. La bande effectivement calculée de 100 à 1\,500 Hz respecte donc cette règle. À $2\,500\,\mathrm{Hz}$, il faudrait $h\leq0,01372\,\mathrm{m}$. Le tracé du spectre jusqu'à $3\,500\,\mathrm{Hz}$ est une évaluation de la source, sans résolution acoustique à ces fréquences.
+Pour atteindre 3\,500 Hz avec au moins dix points par longueur d'onde, il faut $h\leq343/(10\times3\,500)=0,0098$ m. On retient $N=128$, donc $h=1/128=0,0078125$ m. À 3\,500 Hz, on dispose alors de 12,544 points par longueur d'onde et la limite correspondant à dix points vaut 4\,390,4 Hz. La bande calculée s'étend de 50 à 3\,500 Hz par pas de 50 Hz et couvre les trois composantes de la source. La fréquence nulle correspond à une excitation statique, donc le calcul acoustique commence à la première fréquence positive de cette grille. Cette règle spatiale est distincte du pas fréquentiel de 50 Hz, qui pourra être réduit autour des pics pour préciser leur position.
 
 La fonction \code{run_rer_b_frequency_sweep} construit un tableau Dirichlet indépendant pour chaque fréquence. Les coefficients de paroi et la géométrie sont conservés pendant ce calcul. La dépendance réelle du coefficient poreux en fréquence reste ainsi à introduire.
 
@@ -236,7 +236,7 @@ L'indicateur intégré sur la bande $[f_1,f_q]$ est obtenu par la règle des tra
 \mathcal J_h(\chi)=\sum_{r=1}^{q-1}
 \frac{f_{r+1}-f_r}{2}\left[J_h(f_r,\chi)+J_h(f_{r+1},\chi)\right]
 \end{equation*}
-Ici, $q=29$ est le nombre de fréquences calculées. Dans la convention où $h$ est en mètres, $J_h$ représente une amplitude relative au carré multipliée par une aire, et l'intégration fréquentielle ajoute un facteur en hertz. Le facteur spectral $|G(f)|^2$ est déjà contenu dans le champ calculé. On intègre donc directement les énergies obtenues, sans leur appliquer une seconde pondération par la source. Cet indicateur rassemble des amplitudes relatives sur la bande et n'est ni une énergie calibrée en joules ni un niveau en décibels.
+Ici, $q=70$ est le nombre de fréquences calculées. Dans la convention où $h$ est en mètres, $J_h$ représente une amplitude relative au carré multipliée par une aire, et l'intégration fréquentielle ajoute un facteur en hertz. Le facteur spectral $|G(f)|^2$ est déjà contenu dans le champ calculé. On intègre donc directement les énergies obtenues, sans leur appliquer une seconde pondération par la source. Cet indicateur rassemble des amplitudes relatives sur la bande et n'est ni une énergie calibrée en joules ni un niveau en décibels.
 
 \subsection{Première descente à quantité fixée}
 La fonction \code{your_optimization_procedure} reprend la descente projetée du §7.6 du polycopié \cite{cours}. On fixe la géométrie, la fréquence et le coefficient du matériau, puis on modifie seulement $\chi$. Ses valeurs restent entre zéro et un sur les points Robin, avec une somme imposée $V_{\mathrm{obj}}S$, où $S$ est leur nombre. Cette contrainte nodale convient au premier essai sur une forme fixée.
@@ -267,10 +267,10 @@ La figure~\ref{fig:spectre} présente le modèle spectral sur 0 à 3\,500 Hz, é
 \label{fig:spectre}
 \end{figure}
 
-Le calcul acoustique s'arrête à 1\,500 Hz. Il couvre ainsi la composante basse fréquence et la partie principale de la composante de roulement choisie. La contribution centrée à 2\,500 Hz est affichée pour rendre le modèle lisible, mais ses effets sur le champ ne sont pas évalués par cette bande.
+Le calcul acoustique s'étend désormais jusqu'à 3\,500 Hz. Il couvre la composante basse fréquence, celle de roulement et celle centrée à 2\,500 Hz. La zone grisée correspond aux fréquences positives comprises entre 50 et 3\,500 Hz, pour lesquelles le champ est effectivement calculé à intervalles de 50 Hz.
 
 \subsection{Énergie calculée sur la bande}
-La figure~\ref{fig:energie} montre uniquement les 29 fréquences effectivement simulées. Chaque point utilise la même géométrie, la même répartition initiale et le même coefficient de paroi. Seuls le nombre d'onde et l'amplitude de la source varient.
+La figure~\ref{fig:energie} montre les 70 fréquences effectivement simulées. Chaque point utilise la même géométrie, la même répartition initiale et le même coefficient de paroi. Seuls le nombre d'onde et l'amplitude de la source varient.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.78\textwidth]{fig_rer_b_energie.png}
@@ -278,14 +278,14 @@ La figure~\ref{fig:energie} montre uniquement les 29 fréquences effectivement s
 \label{fig:energie}
 \end{figure}
 
-Le maximum échantillonné vaut \energiePic{} et est obtenu à \frequencePic{} Hz. L'intégration des valeurs calculées donne \energieBande{} dans la normalisation du modèle. Deux autres pics marqués sont observés à 600 Hz et 800 Hz, avec des valeurs respectives de 11,0386 et 16,9559. Ces nombres décrivent les fréquences testées. Un pas plus petit autour des pics permettrait de mieux préciser leur position.
+Le maximum échantillonné vaut \energiePic{} et est obtenu à \frequencePic{} Hz. L'intégration des valeurs calculées donne \energieBande{} dans la normalisation du modèle. Deux autres pics marqués sont observés à 400 Hz et 600 Hz, avec des valeurs respectives de 10,0653 et 8,7428. Ces nombres décrivent les fréquences testées avec la grille affinée. Un pas fréquentiel plus petit autour des pics permettrait de mieux préciser leur position.
 
-À 1\,150 Hz, l'amplitude imposée vaut environ 0,4852, contre 0,8000 à 800 Hz. Le champ a pourtant une énergie plus grande à 1\,150 Hz. Les variations de la courbe résultent ainsi de la réponse du domaine et du spectre imposé. Les fréquences où la source est forte ne sont pas nécessairement celles où le domaine répond le plus fortement à une excitation unitaire. Une comparaison de murs demandera de conserver la même source pour tous les cas. Le coefficient constant utilisé ici devra également être remplacé par une loi documentée avant d'interpréter cette courbe comme la performance d'un matériau réel.
+À 1250 Hz, l'amplitude imposée vaut environ 0,3501, contre 1,1841 à 200 Hz. Le champ a pourtant une énergie plus grande à 1250 Hz, soit 14,9376 contre 1,4024. Les variations de la courbe résultent ainsi de la réponse du domaine et du spectre imposé. Les fréquences où la source est forte ne sont pas nécessairement celles où le domaine répond le plus fortement à une excitation unitaire. Une comparaison de murs demandera de conserver la même source pour tous les cas. Le coefficient constant utilisé ici devra également être remplacé par une loi documentée avant d'interpréter cette courbe comme la performance d'un matériau réel.
 
 \subsection{Champ initial et répartition de matériau}
 Le cas initial reste celui du programme fourni : $k_0=10\,\mathrm{m^{-1}}$ et une source uniforme unitaire. Sa fréquence équivalente est $545,90\,\mathrm{Hz}$ avec la célérité retenue. Il est distinct des calculs du spectre, qui utilisent l'amplitude $G(f)$.
 
-La figure~\ref{fig:champinitial} montre le module du champ initial sur les points intérieurs du domaine. Les axes des cartes sont les indices de la grille, avec un pas $h=0,02$ entre deux indices. Les zones de valeur élevée correspondent à des oscillations plus fortes. L'énergie de ce cas initial vaut 1,64386 et le maximum du module vaut environ 3,262 dans l'unité relative de pression. La carte sert à repérer la répartition spatiale de la réponse. Une concentration dans certaines zones ne démontre pas à elle seule une meilleure absorption.
+La figure~\ref{fig:champinitial} montre le module du champ initial sur les points intérieurs du domaine. Les axes des cartes sont les indices de la grille, avec un pas $h=0,0078125$ m entre deux indices. Les zones de valeur élevée correspondent à des oscillations plus fortes. L'énergie de ce cas initial vaut 2,944346 et le maximum du module vaut environ 8,277 dans l'unité relative de pression. La carte sert à repérer la répartition spatiale de la réponse. Une concentration dans certaines zones ne démontre pas à elle seule une meilleure absorption.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.62\textwidth]{fig_u0_module_plot.png}
@@ -295,7 +295,7 @@ La figure~\ref{fig:champinitial} montre le module du champ initial sur les point
 
 La carte représente les points intérieurs du domaine ; les frontières et l'extérieur sont masqués.
 
-La figure~\ref{fig:repartition} présente la répartition initiale $\chi$. Les points rouges représentent les 39 points garnis parmi les 98 points Robin, soit la fraction nodale indiquée au tableau~\ref{tab:parametres}. Le reste du tableau contient la valeur zéro. Cette carte représente l'état de départ de la descente présentée ci-dessous.
+La figure~\ref{fig:repartition} présente la répartition initiale $\chi$. Les points rouges représentent les 204 points garnis parmi les 512 points Robin, soit la fraction nodale indiquée au tableau~\ref{tab:parametres}. Le reste du tableau contient la valeur zéro. Cette carte représente l'état de départ de la descente présentée ci-dessous.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.62\textwidth]{fig_chi0_re_plot.jpg}
@@ -304,7 +304,7 @@ La figure~\ref{fig:repartition} présente la répartition initiale $\chi$. Les p
 \end{figure}
 
 \subsection{Essai de la descente avec le coefficient provisoire}
-La figure~\ref{fig:descente} montre les valeurs réellement acceptées pour le cas initial à $k_0=10\,\mathrm{m^{-1}}$, avec la source unitaire et le coefficient d'exemple. Le critère passe de 1,64386 à 0,701126 en 100 étapes. La somme des valeurs de matériau reste égale à 39 sur les 98 points Robin, à la précision du calcul.
+La figure~\ref{fig:descente} montre les valeurs réellement acceptées pour le cas initial à $k_0=10\,\mathrm{m^{-1}}$, avec la source unitaire et le coefficient d'exemple. Le critère passe de 2,944346 à 0,572995 en 100 étapes. La somme des valeurs de matériau reste égale à 204 sur les 512 points Robin, à la précision du calcul.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.78\textwidth]{fig_energy_real.jpg}
@@ -312,7 +312,7 @@ La figure~\ref{fig:descente} montre les valeurs réellement acceptées pour le c
 \label{fig:descente}
 \end{figure}
 
-La diminution confirme le fonctionnement de la recherche à quantité fixée pour ce cas numérique. L'arrêt correspond ici au nombre maximal d'étapes, donc il ne démontre pas qu'un minimum a été atteint. Le résultat conserve 38 valeurs intermédiaires de $\chi$ sur le mur. Il vérifie la méthode avec le coefficient provisoire et ne constitue pas une mesure d'absorption d'un matériau identifié.
+La diminution confirme le fonctionnement de la recherche à quantité fixée pour ce cas numérique. L'arrêt correspond ici au nombre maximal d'étapes, donc il ne démontre pas qu'un minimum a été atteint. Le résultat conserve 135 valeurs intermédiaires de $\chi$ sur le mur. Il vérifie la méthode avec le coefficient provisoire et ne constitue pas une mesure d'absorption d'un matériau identifié.
 
 Les courbes fréquentielles des figures~\ref{fig:spectre} et~\ref{fig:energie} restent celles de la répartition initiale. Le remplacement du coefficient par celui du matériau retenu permettra de refaire la descente et de comparer les champs dans des conditions physiques documentées.
 

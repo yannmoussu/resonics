@@ -33,7 +33,7 @@ def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu,
     grad = compute_gradient(
         domain_omega, spacestep, Alpha, chi, beta_pde, beta_rob, f_rob, matrix, state,
     )
-    history = [value]
+    energy = [value]
 
     for _ in range(100):
         projected = project_density(chi - grad, domain_omega, V_obj)
@@ -52,7 +52,7 @@ def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu,
             if numpy.isfinite(candidate_value) and candidate_value <= limit:
                 chi, u, value = candidate, candidate_u, candidate_value
                 matrix, state = candidate_matrix, candidate_state
-                history.append(value)
+                energy.append(value)
                 break
             step /= 2.0
 
@@ -65,7 +65,7 @@ def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu,
         )
         mu = 1.1 * step
 
-    return chi, numpy.asarray(history, dtype=numpy.float64).reshape(-1, 1), u, grad
+    return chi, numpy.asarray(energy, dtype=numpy.float64).reshape(-1, 1), u, grad
 
 
 def your_compute_objective_function(domain_omega, u, spacestep):
@@ -161,9 +161,9 @@ if __name__ == '__main__':
     # -- Fell free to modify the function call in this cell.
     # ----------------------------------------------------------------------
     # -- set parameters of the geometry
-    N = 50  # number of points along x-axis
+    N = 128  # On affine la grille pour les hautes fréquences.
     M = 2 * N  # number of points along y-axis
-    level = 1 # level of the fractal
+    level = 2 # level of the fractal
     spacestep = 1.0 / N  # mesh size
 
     # -- set parameters of the partial differential equation
@@ -261,8 +261,8 @@ if __name__ == '__main__':
     postprocessing._plot_energy_history(energy)
 
     # On conserve la répartition initiale pour la courbe fréquentielle de référence.
-    # On limite les fréquences pour garder dix points par longueur d’onde.
-    frequencies_hz = numpy.arange(100.0, 1501.0, 50.0)
+    # On couvre les trois composantes de la source avec la même grille.
+    frequencies_hz = numpy.arange(50.0, 3501.0, 50.0)
     results = processing.run_rer_b_frequency_sweep(
         domain_omega, spacestep, frequencies_hz,
         f, f_dir, f_neu, f_rob,

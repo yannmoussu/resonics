@@ -24,11 +24,11 @@ Les [calculs fréquentiels](../support/processing.py) et les [tracés](../suppor
 
 ### Paramètres à confirmer ensemble
 
-- Première bande : **100–1 500 Hz par pas de 50 Hz**, avec **c=343 m/s**.
-- Grille actuelle : **N=50, M=100, h=0,02**. À 1 500 Hz, elle donne environ **11,43 points par longueur d’onde**.
+- Première bande : **50–3 500 Hz par pas de 50 Hz**, soit 70 fréquences, avec **c=343 m/s**.
+- Grille actuelle : **N=128, M=256, h=0,0078125 m**. À 3 500 Hz, elle donne **12,544 points par longueur d’onde**.
 - La donnée appelée `omega` par le solveur reçoit **k=2*pi*f/c**, et non la fréquence en hertz.
 - `Alpha=10-10j` reste un exemple. Joachim transmet le coefficient physique et Yann vérifie sa conversion vers la convention du code. Dans l’écriture du rapport avec un signe plus devant `alpha`, les coefficients unitaires du support conduisent à **Alpha=-alpha**.
-- Le calcul initial à source unitaire correspond à **545,90 Hz**. Le spectre gaussien est appliqué au calcul fréquentiel. Le maximum précédemment observé à 1 150 Hz devra être recalculé avec le matériau retenu.
+- Le calcul initial à source unitaire correspond à **545,90 Hz**. Le spectre gaussien est appliqué au calcul fréquentiel. Le cas actuel utilise le contour de niveau 2. Son maximum échantillonné se situe à 1250 Hz avec le coefficient d’exemple et devra être recalculé avec le matériau retenu.
 
 Si le matériau attend encore une donnée, on peut préparer les figures avec le coefficient d’exemple en les identifiant comme essais numériques.
 
@@ -59,7 +59,7 @@ Si le matériau attend encore une donnée, on peut préparer les figures avec le
 **Repère : J2.3.** On mesure l’effet du recouvrement partiel.
 
 1. **Yann — programme principal.** On reprend une même forme et la répartition initiale donnée par le support. On recalcule sa courbe avec les mêmes données que le recouvrement complet.
-2. **Antoine et Mathis — analyse.** On note les deux quantités. La référence actuelle de niveau 1 compte 39 points garnis sur 98 points Robin, soit environ 40 %. Cette fraction nodale décrit le calcul sur cette forme.
+2. **Antoine et Mathis — analyse.** On note les deux quantités. La référence actuelle de niveau 2 compte 204 points garnis sur 512 points Robin, soit environ 40 %. Cette fraction nodale décrit le calcul sur cette forme.
 3. **Olympia — tracés.** On compare initial et plein sur un même graphique, avec les quantités dans la légende. On choisit avec le groupe un pic élevé de la répartition initiale.
 
 **Résultat attendu :** deux courbes comparables. Cette étape montre l’effet du retrait de matériau et prépare la recherche de son meilleur emplacement.
@@ -83,6 +83,6 @@ Si le matériau attend encore une donnée, on peut préparer les figures avec le
 - [ ] Figures nommées, échelles cohérentes et interprétation courte pour chaque comparaison.
 - [ ] Résultats intégrés au [rapport](../report/report.tex), avec les limites de l’essai.
 
-Le tracé théorique de la source jusqu’à 3 500 Hz n’autorise pas à simuler les champs sur toute cette plage avec la grille actuelle. Les courbes déjà pondérées par les gaussiennes se lisent directement, sans nouvelle multiplication par leur amplitude au carré.
+La grille affinée permet maintenant de calculer le champ de 50 à 3 500 Hz en respectant les dix points par longueur d’onde demandés. La fréquence nulle correspond à un problème statique. Les pics les plus marqués pourront être précisés avec un pas fréquentiel inférieur à 50 Hz. Les courbes déjà pondérées par les gaussiennes se lisent directement, sans nouvelle multiplication par leur amplitude au carré.
 
 Pour valider les comparaisons physiques, les résultats doivent être recalculés avec les données du matériau retenu.
