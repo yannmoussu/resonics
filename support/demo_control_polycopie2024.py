@@ -17,55 +17,75 @@ import postprocessing
 
 
 def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
-                           beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
-                           Alpha, mu, chi, V_obj):
-    """On répartit une quantité fixée de matériau pour réduire le critère.
-
-    On renvoie la répartition, les coûts acceptés, le champ et le gradient final.
-    Le paramètre omega reçoit le nombre d'onde du solveur.
-    """
-    # On prépare la répartition initiale, son champ et son gradient.
+                                beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
+                                Alpha, mu, chi, V_obj):
+    """On répartit une quantité fixée de matériau pour réduire le critère."""
+    k = 0
+    numb_iter = 100
+    energy = numpy.zeros((numb_iter + 1, 1), dtype=numpy.float64)
     chi = project_density(chi, domain_omega, V_obj)
-    matrix, state, u, value = compute_state(
-        domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
-        beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, Alpha * chi,
-    )
-    grad = compute_gradient(
-        domain_omega, spacestep, Alpha, chi, beta_pde, beta_rob, f_rob, matrix, state,
-    )
-    energy = [value]
 
-    for _ in range(100):
-        projected = project_density(chi - grad, domain_omega, V_obj)
-        if numpy.max(numpy.abs(projected - chi)) <= 1e-7:
+    while k < numb_iter and mu > 10**(-5):
+        print('---- iteration number = ', k)
+        print('1. computing solution of Helmholtz problem, i.e., u')
+        matrix, state, u = compute_state(
+            domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
+            beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, Alpha * chi,
+        )
+        print('2. computing solution of adjoint problem, i.e., p')
+        p = compute_adjoint(domain_omega, spacestep, matrix, state)
+        print('3. computing objective function, i.e., energy')
+        energy[k, 0] = your_compute_objective_function(domain_omega, u, spacestep)
+        print('4. computing parametric gradient')
+        grad = compute_gradient(
+            domain_omega, spacestep, Alpha, chi, beta_pde, beta_rob, f_rob, p, state,
+        )
+        projected_density = project_density(chi - grad, domain_omega, V_obj)
+        if numpy.max(numpy.abs(projected_density - chi)) <= 1e-7:
             break
 
-        # On réduit le pas jusqu'à obtenir une diminution suffisante du critère.
-        step = mu
-        while step >= 1e-5:
-            candidate = project_density(chi - step * grad, domain_omega, V_obj)
-            candidate_matrix, candidate_state, candidate_u, candidate_value = compute_state(
+        # On essaie un pas et on conserve seulement les propositions acceptées.
+        ene = numpy.inf
+        bool_a = False
+        while ene >= energy[k, 0] and mu > 10**(-5):
+            print('    a. computing gradient descent')
+            descent = chi - mu * grad
+            print('    b. computing projected gradient')
+            candidate = project_density(descent, domain_omega, V_obj)
+            print('    c. computing solution of Helmholtz problem, i.e., u')
+            _, _, candidate_u = compute_state(
                 domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
                 beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, Alpha * candidate,
             )
-            limit = value + 1e-4 * numpy.sum(grad * (candidate - chi))
-            if numpy.isfinite(candidate_value) and candidate_value <= limit:
-                chi, u, value = candidate, candidate_u, candidate_value
-                matrix, state = candidate_matrix, candidate_state
-                energy.append(value)
+            print('    d. computing objective function, i.e., energy (E)')
+            ene = your_compute_objective_function(domain_omega, candidate_u, spacestep)
+            limit = energy[k, 0] + 1e-4 * numpy.sum(grad * (candidate - chi))
+            bool_a = numpy.isfinite(ene) and ene <= limit
+            if bool_a:
+                chi = candidate
+                energy[k + 1, 0] = ene
+                mu = mu * 1.1
                 break
-            step /= 2.0
-
-        if step < 1e-5:
+            else:
+                mu = mu / 2
+                # On poursuit les essais lorsqu'une proposition est refusée.
+                ene = numpy.inf
+        if not bool_a:
             break
+        k += 1
 
-        # On actualise le gradient après chaque étape acceptée.
-        grad = compute_gradient(
-            domain_omega, spacestep, Alpha, chi, beta_pde, beta_rob, f_rob, matrix, state,
-        )
-        mu = 1.1 * step
-
-    return chi, numpy.asarray(energy, dtype=numpy.float64).reshape(-1, 1), u, grad
+    print('end. computing solution of Helmholtz problem, i.e., u')
+    matrix, state, u = compute_state(
+        domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
+        beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, Alpha * chi,
+    )
+    # On renvoie le coût et le gradient de la répartition finale.
+    energy[k, 0] = your_compute_objective_function(domain_omega, u, spacestep)
+    p = compute_adjoint(domain_omega, spacestep, matrix, state)
+    grad = compute_gradient(
+        domain_omega, spacestep, Alpha, chi, beta_pde, beta_rob, f_rob, p, state,
+    )
+    return chi, energy[:k + 1], u, grad
 
 
 def your_compute_objective_function(domain_omega, u, spacestep):
@@ -101,7 +121,7 @@ def project_density(proposal, domain_omega, V_obj):
 
 def compute_state(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
                   beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob):
-    """On assemble le système fourni et on renvoie le champ avec son coût."""
+    """On assemble le système fourni et on renvoie le champ calculé."""
     # On reprend les mêmes contributions que dans le solveur fourni.
     matrix, rhs = processing.compute_stiffness_matrix(domain_omega, spacestep, f, beta_pde)
     mass, _ = processing.compute_mass_matrix(domain_omega, spacestep, alpha_pde)
@@ -120,23 +140,23 @@ def compute_state(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
     interior = domain_omega == _env.NODE_INTERIOR
     field = numpy.zeros(domain_omega.shape, dtype=numpy.complex128)
     field[interior] = state.reshape(domain_omega.shape)[interior]
-    value = your_compute_objective_function(domain_omega, field, spacestep)
-    if not numpy.all(numpy.isfinite(state)):
-        value = numpy.inf
-    return matrix, state, field, value
+    return matrix, state, field
+
+
+def compute_adjoint(domain_omega, spacestep, matrix, state):
+    """On résout le système adjoint à partir du champ dans le fluide."""
+    interior = domain_omega == _env.NODE_INTERIOR
+    adjoint_rhs = numpy.zeros_like(state)
+    adjoint_rhs[interior.ravel()] = 2.0 * spacestep**2 * state[interior.ravel()]
+    return scipy.sparse.linalg.spsolve(matrix.conjugate().transpose(), adjoint_rhs)
 
 
 def compute_gradient(domain_omega, spacestep, Alpha, density,
-                     beta_pde, beta_rob, f_rob, matrix, state):
+                     beta_pde, beta_rob, f_rob, adjoint, state):
     """On calcule l'effet de chaque point du mur à l'aide du champ adjoint."""
     interior = domain_omega == _env.NODE_INTERIOR
     robin = domain_omega == _env.NODE_ROBIN
     ncols = domain_omega.shape[1]
-
-    # On résout le problème adjoint avec le champ dans le fluide.
-    adjoint_rhs = numpy.zeros_like(state)
-    adjoint_rhs[interior.ravel()] = 2.0 * spacestep**2 * state[interior.ravel()]
-    adjoint = scipy.sparse.linalg.spsolve(matrix.conjugate().transpose(), adjoint_rhs)
 
     # On additionne les contributions des voisins intérieurs de chaque point Robin.
     gradient = numpy.zeros(domain_omega.shape, dtype=numpy.float64)
