@@ -8,6 +8,9 @@ Ces documents tiennent compte du code et des choix les plus récents. Les fiches
 
 - [Reste à faire pour le jour 1 — PDF](reste_a_faire_jour1.pdf)
 - [Feuille de route du jour 2 — README](README_JOUR2.md)
+- [Guide des études numériques réunies dans support](../support/SYNTHESE_PROJET_RESONICS.md)
+
+Les études des quatre journées sont maintenant réunies dans `support/`. Elles utilisent les mêmes fonctions de source et les matériaux de `compute_alpha.MATERIAUX`. Le guide précise les commandes et les fichiers de résultats produits par chaque étude.
 
 ## Premier résultat lundi
 
