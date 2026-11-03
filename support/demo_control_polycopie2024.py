@@ -17,14 +17,22 @@ import postprocessing
 
 
 def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
-                                beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
-                                Alpha, mu, chi, V_obj):
-    """On répartit une quantité fixée de matériau pour réduire le critère."""
-    k = 0
-    numb_iter = 100
-    energy = numpy.zeros((numb_iter + 1, 1), dtype=numpy.float64)
-    chi = project_density(chi, domain_omega, V_obj)
+                           beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
+                           Alpha, mu, chi, V_obj):
+    """This function return the optimized density.
 
+    Parameter:
+        cf solvehelmholtz's remarks
+        Alpha: complex, it corresponds to the absorbtion coefficient;
+        mu: float, it is the initial step of the gradient's descent;
+        V_obj: float, it characterizes the volume constraint on the density chi.
+    """
+
+    k = 0
+    (M, N) = numpy.shape(domain_omega)
+    numb_iter = 100
+    energy = numpy.zeros((numb_iter+1, 1), dtype=numpy.float64)
+    chi = project_density(chi, domain_omega, V_obj)
     while k < numb_iter and mu > 10**(-5):
         print('---- iteration number = ', k)
         print('1. computing solution of Helmholtz problem, i.e., u')
@@ -35,7 +43,7 @@ def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu,
         print('2. computing solution of adjoint problem, i.e., p')
         p = compute_adjoint(domain_omega, spacestep, matrix, state)
         print('3. computing objective function, i.e., energy')
-        energy[k, 0] = your_compute_objective_function(domain_omega, u, spacestep)
+        energy[k, 0] = compute_objective_function(domain_omega, u, spacestep)
         print('4. computing parametric gradient')
         grad = compute_gradient(
             domain_omega, spacestep, Alpha, chi, beta_pde, beta_rob, f_rob, p, state,
@@ -43,30 +51,30 @@ def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu,
         projected_density = project_density(chi - grad, domain_omega, V_obj)
         if numpy.max(numpy.abs(projected_density - chi)) <= 1e-7:
             break
-
-        # On essaie un pas et on conserve seulement les propositions acceptées.
         ene = numpy.inf
         bool_a = False
-        while ene >= energy[k, 0] and mu > 10**(-5):
+        while ene >= energy[k] and mu > 10 ** -5:
             print('    a. computing gradient descent')
             descent = chi - mu * grad
             print('    b. computing projected gradient')
             candidate = project_density(descent, domain_omega, V_obj)
             print('    c. computing solution of Helmholtz problem, i.e., u')
-            _, _, candidate_u = compute_state(
+            _, _, u = compute_state(
                 domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
                 beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, Alpha * candidate,
             )
             print('    d. computing objective function, i.e., energy (E)')
-            ene = your_compute_objective_function(domain_omega, candidate_u, spacestep)
+            ene = compute_objective_function(domain_omega, u, spacestep)
             limit = energy[k, 0] + 1e-4 * numpy.sum(grad * (candidate - chi))
             bool_a = numpy.isfinite(ene) and ene <= limit
             if bool_a:
+                # The step is increased if the energy decreased
+                mu = mu * 1.1
                 chi = candidate
                 energy[k + 1, 0] = ene
-                mu = mu * 1.1
                 break
             else:
+                # The step is decreased is the energy increased
                 mu = mu / 2
                 # On poursuit les essais lorsqu'une proposition est refusée.
                 ene = numpy.inf
@@ -80,18 +88,25 @@ def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu,
         beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, Alpha * chi,
     )
     # On renvoie le coût et le gradient de la répartition finale.
-    energy[k, 0] = your_compute_objective_function(domain_omega, u, spacestep)
+    energy[k, 0] = compute_objective_function(domain_omega, u, spacestep)
     p = compute_adjoint(domain_omega, spacestep, matrix, state)
     grad = compute_gradient(
         domain_omega, spacestep, Alpha, chi, beta_pde, beta_rob, f_rob, p, state,
     )
-    return chi, energy[:k + 1], u, grad
+    # On conserve uniquement les valeurs du coût effectivement calculées.
+    energy = energy[:k + 1]
+
+    return chi, energy, u, grad
 
 
 def your_compute_objective_function(domain_omega, u, spacestep):
     """On calcule le critère à partir du module de pression sur les points intérieurs."""
     interior_values = numpy.asarray(u)[domain_omega == _env.NODE_INTERIOR]
     return float(spacestep**2 * numpy.sum(numpy.abs(interior_values)**2))
+
+
+# Les deux noms désignent le même calcul du coût.
+compute_objective_function = your_compute_objective_function
 
 
 def project_density(proposal, domain_omega, V_obj):
