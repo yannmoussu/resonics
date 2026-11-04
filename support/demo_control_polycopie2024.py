@@ -5,6 +5,9 @@
 import numpy
 import os
 import sys
+import time
+import json
+from pathlib import Path
 
 
 # MRG packages
@@ -20,21 +23,31 @@ from processing import compute_state, compute_adjoint, compute_gradient
 # On choisit la source commune au champ initial, à la descente et aux fréquences.
 SOURCE = preprocessing.source_rer_b
 # SOURCE = preprocessing.source_constant
-CAR_MAT = MATERIAUX["LAINE_ROCHE"]
+MATERIAL_NAME = "OUATE_POLYESTER"
+CAR_MAT = MATERIAUX[MATERIAL_NAME]
 ALPHA0 = [50.0, -50.0]  # On donne les parties réelle et imaginaire du point initial.
 OMEGA = 3430.0  # On exprime la pulsation en radians par seconde.
 C = 343.0  # On exprime la célérité en mètres par seconde.
 
 # On choisit une étude ou l’ensemble des comparaisons.
-# Les choix sont demo, trois_pics, materiaux_validation, monofrequence,
+# Les choix sont demo, trois_pics, spectre_complet, materiaux_validation, monofrequence,
 # multifrequence, comparaison_dispositifs et tous.
-ETUDE = "demo"
+ETUDE = "spectre_complet"
 N_POINTS = 128
 FREQUENCES_HZ = numpy.arange(50.0, 3501.0, 50.0)
 N_ITERATIONS = 80
 FRACTION_GARNIE = 0.30
 QUANTITES = [0.10, 0.30, 0.50, 0.70, 1.0]
-MATERIAUX_A_COMPARER = ["LAINE_ROCHE", "MELAMINE", "LAINE_VERRE"]
+MATERIAUX_A_COMPARER = ["MELAMINE", "LAINE_VERRE", "OUATE_POLYESTER"]
+
+# On règle les contrôles de précision en fréquence séparément du pas de descente.
+FREQUENCY_INTEGRAL_TOLERANCE = 0.01
+FREQUENCY_PEAK_TOLERANCE = 0.05
+FREQUENCY_MAX_GAP_HZ = 25.0
+FREQUENCY_REFINEMENTS = 12
+VALIDATION_INITIAL_STEP_HZ = 10.0
+VALIDATION_REFINEMENTS = 8
+GEOMETRY_LEVEL = 2
 
 
 def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
@@ -136,129 +149,67 @@ def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu,
 
 
 
-def your_optimization_procedure_three_peaks(
-    domain_omega, spacestep, chi, V_obj,
+def your_optimization_procedure_spectrum(
+    domain_omega, spacestep, chi, V_obj, frequencies_hz=None,
     f=None, f_neu=None, f_rob=None,
     beta_pde=None, alpha_pde=None, alpha_dir=None, beta_neu=None, beta_rob=None,
-    source=preprocessing.source_rer_b, car_mat=CAR_MAT, alpha0=ALPHA0,
-    sound_speed_m_s=C, mu=5.0, numb_iter=N_ITERATIONS, alphas=None,
+    source=None, car_mat=None, alpha0=None,
+    sound_speed_m_s=C, mu=5.0, numb_iter=N_ITERATIONS, alphas=None, weights=None,
 ):
-    """Minimise J_200(chi) + J_800(chi) + J_2500(chi) avec un seul mur chi.
-
-    Les trois fréquences viennent des centres de preprocessing.RER_B_GAUSSIANS.
-    La source est évaluée à chaque pulsation. Si alphas est omis, Alpha est
-    identifié une fois par fréquence et conservé pendant la descente.
-
-    Renvoie un dictionnaire avec chi binaire, chi relaxé, les historiques des
-    trois coûts et de leur somme, les trois champs finaux et le gradient total.
-    La dernière ligne des historiques est le coût APRES le tri binaire.
-    """
-    frequencies_hz = numpy.array(
-        [centre for centre, largeur, poids in preprocessing.RER_B_GAUSSIANS],
-        dtype=numpy.float64,
-    )
-    wavenumbers = 2.0 * numpy.pi * frequencies_hz / sound_speed_m_s
-    if sound_speed_m_s / (frequencies_hz.max() * spacestep) < 10.0:
-        print("Attention : moins de 10 points de maillage par longueur d'onde à 2500 Hz.")
-
-    if len(frequencies_hz) != 3:
-        raise ValueError("La source RER B doit comporter exactement trois gaussiennes.")
-    if not (0.0 <= V_obj <= 1.0):
-        raise ValueError("V_obj doit être compris entre 0 et 1.")
-
+    """On optimise un seul placement avec les énergies pondérées des fréquences données."""
+    frequencies_hz = numpy.asarray(FREQUENCES_HZ if frequencies_hz is None else frequencies_hz, dtype=float)
+    source = SOURCE if source is None else source
+    car_mat = CAR_MAT if car_mat is None else car_mat
+    alpha0 = ALPHA0 if alpha0 is None else alpha0
     if alphas is None:
-        alphas = processing.compute_material_coefficients(
-            frequencies_hz, source, car_mat, alpha0,
-        )
-        if alphas is None:
-            raise ValueError("Impossible d'identifier Alpha aux trois fréquences.")
-    alphas = numpy.asarray(alphas, dtype=numpy.complex128)
-    if alphas.shape != (3,) or not numpy.all(numpy.isfinite(alphas)):
-        raise ValueError("Il faut trois coefficients Alpha complexes finis.")
-
+        alphas = processing.compute_material_coefficients(frequencies_hz, source, car_mat, alpha0)
+    if alphas is None:
+        return None
+    alphas = numpy.asarray(alphas, dtype=complex)
+    if alphas.shape != frequencies_hz.shape or not numpy.isfinite(alphas).all():
+        print("On fournit un coefficient complexe fini pour chaque fréquence.")
+        return None
+    if weights is None:
+        weights = processing.spectral_quadrature_weights(frequencies_hz)
     solver = processing.FastHelmholtzSolver(
         domain_omega, spacestep, f=f, f_neu=f_neu, f_rob=f_rob,
         beta_pde=beta_pde, alpha_pde=alpha_pde, alpha_dir=alpha_dir,
         beta_neu=beta_neu, beta_rob=beta_rob,
     )
-    chi = project_density(chi, domain_omega, V_obj)
-    mu = float(mu)
+    return processing.optimize_frequency_distribution(
+        solver, 2.0 * numpy.pi * frequencies_hz / sound_speed_m_s, alphas, chi,
+        weights=weights, V_obj=V_obj, mu_init=mu, numb_iter=numb_iter,
+        source=source, sound_speed_m_s=sound_speed_m_s, verbose=True,
+    )
 
-    def evaluate(distribution, with_gradient=False):
-        """Calcule les trois J, leur gradient total éventuel, et les trois champs."""
-        energies = numpy.zeros(3, dtype=numpy.float64)
-        total_gradient = numpy.zeros(domain_omega.shape, dtype=numpy.float64)
-        fields = {}
-        for index, (frequency, wavenumber, Alpha) in enumerate(
-            zip(frequencies_hz, wavenumbers, alphas)
-        ):
-            omega = 2.0 * numpy.pi * frequency
-            solver.set_source(source, omega)
-            if with_gradient:
-                u, p = solver.solve_state_and_adjoint(wavenumber, Alpha * distribution)
-                total_gradient += solver.compute_gradient(u, p, distribution, Alpha)
-            else:
-                u = solver.solve(wavenumber, Alpha * distribution)
-            energies[index] = solver.compute_energy(u)
-            fields[float(frequency)] = u
-        return energies, total_gradient, fields
 
-    initial_energies, _, _ = evaluate(chi)
-    history_by_frequency = [initial_energies]
-    history_total = [float(numpy.sum(initial_energies))]
+def your_optimization_procedure_three_peaks(
+    domain_omega, spacestep, chi, V_obj,
+    f=None, f_neu=None, f_rob=None,
+    beta_pde=None, alpha_pde=None, alpha_dir=None, beta_neu=None, beta_rob=None,
+    source=None, car_mat=None, alpha0=None,
+    sound_speed_m_s=C, mu=5.0, numb_iter=N_ITERATIONS, alphas=None,
+):
+    """On conserve la somme des énergies aux trois centres comme comparaison."""
+    frequencies = numpy.asarray([part[0] for part in preprocessing.RER_B_GAUSSIANS])
+    result = your_optimization_procedure_spectrum(
+        domain_omega, spacestep, chi, V_obj, frequencies,
+        f, f_neu, f_rob, beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob,
+        source, car_mat, alpha0, sound_speed_m_s, mu, numb_iter, alphas,
+        weights=numpy.ones(len(frequencies)),
+    )
+    if result is None:
+        return None
+    # On conserve la sortie historique de ce mode et on isole aussi la partie continue.
+    result["continuous_energy_history"] = result["energy_history"].copy()
+    result["energy_history"] = numpy.vstack((result["energy_history"], [[result["binary_energy"]]]))
+    result["energy_by_frequency"] = numpy.vstack((result["energy_by_frequency"], result["binary_energies"]))
+    return result
 
-    for iteration in range(numb_iter):
-        if mu <= 1e-5:
-            break
-        current_energies, gradient_total, _ = evaluate(chi, with_gradient=True)
-        current_total = float(numpy.sum(current_energies))
-        accepted = False
-
-        while mu > 1e-5:
-            descent = chi - mu * gradient_total
-            candidate = project_density(descent, domain_omega, V_obj)
-            candidate_energies, _, _ = evaluate(candidate)
-            candidate_total = float(numpy.sum(candidate_energies))
-
-            if numpy.isfinite(candidate_total) and candidate_total < current_total:
-                variation = numpy.max(numpy.abs(candidate - chi))
-                chi = candidate
-                history_by_frequency.append(candidate_energies)
-                history_total.append(candidate_total)
-                mu = mu * 1.1
-                accepted = True
-                break
-            mu = mu / 2.0
-
-        if not accepted:
-            break
-        print(f"3 pics - étape {iteration + 1} : J_total = {history_total[-1]:.6g}")
-        if variation < 1e-7:
-            break
-
-    chi_relaxed = chi.copy()
-    chi_binary = preprocessing.binarize_chi(chi_relaxed, domain_omega, V_obj)
-
-    # Après le passage en binaire, on recalcule les trois champs et gradients.
-    final_energies, final_gradient, final_fields = evaluate(chi_binary, with_gradient=True)
-    history_by_frequency.append(final_energies)
-    history_total.append(float(numpy.sum(final_energies)))
-
-    return {
-        "frequencies_hz": frequencies_hz,
-        "alphas": alphas,
-        "chi": chi_binary,
-        "chi_relaxed": chi_relaxed,
-        "energy_history": numpy.asarray(history_total, dtype=numpy.float64).reshape(-1, 1),
-        "energy_by_frequency": numpy.asarray(history_by_frequency, dtype=numpy.float64),
-        "fields_by_frequency": final_fields,
-        "gradient": final_gradient,
-    }
 
 def your_compute_objective_function(domain_omega, u, spacestep):
     """On calcule le critère à partir du module de pression sur les points intérieurs."""
-    interior_values = numpy.asarray(u)[domain_omega == _env.NODE_INTERIOR]
-    return float(spacestep**2 * numpy.sum(numpy.abs(interior_values)**2))
+    return processing.compute_objective_function(domain_omega, u, spacestep)
 
 
 # Les deux noms désignent le même calcul du coût.
@@ -292,12 +243,14 @@ def run_three_peaks_optimization():
         mu=5.0, numb_iter=N_ITERATIONS,
     )
 
+    if result is None:
+        return None
     energies = result["energy_history"][:, 0]
     components = result["energy_by_frequency"]
     print("Fréquences étudiées (Hz) :", result["frequencies_hz"])
-    print("Coût initial :", energies[0])
-    print("Coût relaxé final :", energies[-2])
-    print("Coût binaire final :", energies[-1])
+    print("Énergie J initiale :", energies[0])
+    print("Énergie J continue finale :", energies[-2])
+    print("Énergie J binaire finale :", energies[-1])
     print("Énergies binaires par fréquence :", components[-1])
     print("Points garnis :", int(numpy.count_nonzero(result["chi"])))
 
@@ -309,6 +262,227 @@ def run_three_peaks_optimization():
         header="step,J_200Hz,J_800Hz,J_2500Hz,J_total", comments="",
     )
     return result
+
+def sample_frequency_configurations(frequencies, configurations, solver, source,
+                                    car_mat, alpha0, sound_speed, cache):
+    """On calcule les énergies manquantes et on conserve les coefficients déjà identifiés."""
+    frequencies = numpy.asarray(frequencies, dtype=float)
+    missing = [float(frequency) for frequency in frequencies if float(frequency) not in cache["alphas"]]
+    if missing:
+        values = processing.compute_material_coefficients(missing, source, car_mat, alpha0)
+        if values is None:
+            return None
+        cache["alphas"].update(zip(missing, values))
+    for name in configurations:
+        cache["energies"].setdefault(name, {})
+    for frequency in frequencies:
+        frequency = float(frequency)
+        pending = [name for name in configurations if frequency not in cache["energies"][name]]
+        if not pending:
+            continue
+        solver.set_source(source, 2.0 * numpy.pi * frequency)
+        for name in pending:
+            field = solver.solve(2.0 * numpy.pi * frequency / sound_speed,
+                                 cache["alphas"][frequency] * configurations[name])
+            energy = solver.compute_energy(field)
+            if not numpy.isfinite(energy):
+                print("Énergie non finie à", frequency, "Hz pour", name)
+                return None
+            cache["energies"][name][frequency] = energy
+    return {name: numpy.asarray([cache["energies"][name][float(frequency)] for frequency in frequencies])
+            for name in configurations}
+
+
+def refine_spectral_grid(frequencies, configurations, solver, source, car_mat,
+                         alpha0, sound_speed, cache, refinements, phase):
+    """On contrôle les trapèzes par leurs milieux puis on raffine les intervalles sensibles."""
+    frequencies = numpy.unique(frequencies)
+    history = []
+    for iteration in range(refinements + 1):
+        middle = (frequencies[:-1] + frequencies[1:]) / 2.0
+        probes = numpy.sort(numpy.concatenate((frequencies, middle)))
+        values = sample_frequency_configurations(probes, configurations, solver, source,
+                                                car_mat, alpha0, sound_speed, cache)
+        if values is None:
+            return None, history
+        widths = numpy.diff(frequencies)
+        errors, changes, peak_changes, interval_scores, peak_scores = [], [], [], [], []
+        for energies in values.values():
+            left, mid, right = energies[:-2:2], energies[1::2], energies[2::2]
+            coarse = widths * (left + right) / 2.0
+            fine = widths * (left + 2.0 * mid + right) / 4.0
+            scale = max(float(numpy.sum(fine)), numpy.finfo(float).tiny)
+            scores = numpy.abs(fine - coarse) / scale
+            errors.append(float(numpy.sum(scores)))
+            changes.append(abs(float(numpy.sum(fine) - numpy.sum(coarse))) / scale)
+            peak = max(float(numpy.max(energies)), numpy.finfo(float).tiny)
+            peak_changes.append(abs(peak - float(numpy.max(energies[::2]))) / peak)
+            interval_scores.append(scores)
+            peak_scores.append(numpy.abs(mid - (left + right) / 2.0) / peak)
+        error, peak_error = max(errors), max(peak_changes)
+        converged = (iteration >= 1 and error <= FREQUENCY_INTEGRAL_TOLERANCE
+                     and peak_error <= FREQUENCY_PEAK_TOLERANCE
+                     and widths.max() <= FREQUENCY_MAX_GAP_HZ)
+        history.append({"phase": phase, "iteration": iteration, "n_points": len(frequencies),
+                        "n_probe_points": len(probes), "max_gap_hz": float(widths.max()),
+                        "minimum_gap_hz": float(widths.min()), "estimated_integral_error": error,
+                        "integral_error": max(changes), "peak_error": peak_error,
+                        "converged": bool(converged)})
+        print(phase, iteration, ":", len(frequencies), "fréquences, erreur d'intégrale estimée =",
+              error, ", variation du maximum =", peak_error, flush=True)
+        if converged:
+            return frequencies, history
+        if iteration == refinements:
+            print("La limite de raffinement est atteinte. On conserve le dernier contrôle dans les résultats.")
+            return probes, history
+        # On garde des points sur toute la bande et on ajoute ceux des zones les moins résolues.
+        scores = numpy.max(interval_scores, axis=0)
+        order = numpy.argsort(scores)[::-1]
+        remaining_budget = FREQUENCY_INTEGRAL_TOLERANCE / 4.0
+        number = numpy.searchsorted(numpy.cumsum(scores[order]), max(0.0, scores.sum() - remaining_budget)) + 1
+        selected = numpy.zeros(len(widths), dtype=bool)
+        selected[order[:number]] = True
+        selected |= ((numpy.max(peak_scores, axis=0) > FREQUENCY_PEAK_TOLERANCE)
+                     | (widths > FREQUENCY_MAX_GAP_HZ))
+        if not selected.any():
+            selected[numpy.argmax(numpy.max(interval_scores, axis=0))] = True
+        frequencies = numpy.sort(numpy.concatenate((frequencies, middle[selected])))
+    return frequencies, history
+
+
+def run_full_spectrum_optimization(N=None, iterations=None, frequencies_hz=None,
+                                   material_name=None, output_dir=None, warm_start=True):
+    """On compare le mur initial, les trois pics et une optimisation sur toute la bande."""
+    started = time.perf_counter()
+    N = N_POINTS if N is None else int(N)
+    iterations = N_ITERATIONS if iterations is None else int(iterations)
+    material_name = MATERIAL_NAME if material_name is None else material_name
+    frequencies = numpy.asarray(FREQUENCES_HZ if frequencies_hz is None else frequencies_hz, dtype=float)
+    frequencies = numpy.unique(frequencies)
+    if len(frequencies) < 2 or numpy.any(frequencies <= 0):
+        print("On fournit au moins deux fréquences positives pour une étude sur la bande.")
+        return None
+    output_dir = (Path(__file__).resolve().parent / "resultats_spectre_complet" / material_name
+                  if output_dir is None else Path(output_dir))
+    output_dir.mkdir(parents=True, exist_ok=True)
+    car_mat = MATERIAUX[material_name]
+    h = 1.0 / N
+    domain, x, y, _, _ = preprocessing._set_geometry_of_domain(2 * N, N, GEOMETRY_LEVEL)
+    initial = preprocessing.set2zero(preprocessing._set_chi(2 * N, N, x, y), domain)
+    robin_count = numpy.count_nonzero(domain == _env.NODE_ROBIN)
+    volume = float(initial.sum() / robin_count)
+    highest_frequency = max(float(frequencies[-1]), max(part[0] for part in preprocessing.RER_B_GAUSSIANS))
+    spatial_ratio = C / (highest_frequency * h)
+    if spatial_ratio < 10:
+        print("Attention : le maillage de cet essai représente moins de dix points par longueur d'onde.")
+
+    three = your_optimization_procedure_three_peaks(
+        domain, h, initial, volume, source=SOURCE, car_mat=car_mat,
+        alpha0=ALPHA0, sound_speed_m_s=C, numb_iter=iterations,
+    )
+    if three is None:
+        return None
+    solver = processing.FastHelmholtzSolver(domain, h)
+    cache = {"alphas": dict(zip(three["frequencies_hz"], three["alphas"])), "energies": {}}
+    references = {"initial": initial, "three_peaks": three["chi"]}
+    start_band = three["chi_relaxed"] if warm_start else initial
+    training_configurations = {"starting_density": start_band, "three_peaks": three["chi"]}
+    grid, sampling_history = refine_spectral_grid(
+        frequencies, training_configurations, solver, SOURCE, car_mat, ALPHA0, C,
+        cache, FREQUENCY_REFINEMENTS, "optimisation",
+    )
+    if grid is None:
+        return None
+    alphas = numpy.asarray([cache["alphas"][float(frequency)] for frequency in grid])
+    (output_dir / "echantillonnage_initial.json").write_text(json.dumps(sampling_history, indent=2), encoding="utf-8")
+    numpy.savez_compressed(output_dir / "avant_descente.npz", frequencies_hz=grid, alphas=alphas,
+                           chi_initial=initial, chi_start_band=start_band, chi_three_peaks=three["chi"], domain=domain)
+    print("On optimise une grille fixe de", len(grid), "fréquences couvrant", grid[0], "à", grid[-1], "Hz.", flush=True)
+    band = your_optimization_procedure_spectrum(
+        domain, h, start_band, volume, grid, source=SOURCE, car_mat=car_mat,
+        alpha0=ALPHA0, sound_speed_m_s=C, numb_iter=iterations, alphas=alphas,
+    )
+    if band is None:
+        return None
+
+    numpy.savez_compressed(output_dir / "descente_avant_validation.npz",
+                           frequencies_hz=grid, alphas=alphas, chi_initial=initial,
+                           chi_continuous=band["chi_relaxed"], chi_binary=band["chi"],
+                           energy_history=band["energy_history"], binary_energy=band["binary_energy"],
+                           chi_three_peaks=three["chi"], domain=domain)
+    # On contrôle les quatre champs avec une autre grille et de nouveaux points intermédiaires.
+    configurations = {**references, "band_continuous": band["chi_relaxed"], "band_binary": band["chi"]}
+    regular = numpy.arange(frequencies[0], frequencies[-1], VALIDATION_INITIAL_STEP_HZ)
+    validation_start = numpy.unique(numpy.concatenate((regular, [frequencies[-1]], (grid[:-1] + grid[1:]) / 2.0)))
+    validation_grid, validation_history = refine_spectral_grid(
+        validation_start, configurations, solver, SOURCE, car_mat, ALPHA0, C,
+        cache, VALIDATION_REFINEMENTS, "validation",
+    )
+    if validation_grid is None:
+        return None
+    # On retient aussi tous les milieux déjà testés lors du dernier contrôle.
+    validation_grid = numpy.sort(numpy.concatenate((validation_grid, (validation_grid[:-1] + validation_grid[1:]) / 2.0)))
+    evaluation = sample_frequency_configurations(validation_grid, configurations, solver,
+                                                 SOURCE, car_mat, ALPHA0, C, cache)
+    if evaluation is None:
+        return None
+    width = float(frequencies[-1] - frequencies[0])
+    weights = processing.spectral_quadrature_weights(validation_grid, normalise=False)
+    initial_integral = float(weights @ evaluation["initial"])
+    metrics = {}
+    for name, energies in evaluation.items():
+        integral = float(weights @ energies)
+        peak_index = int(numpy.argmax(energies))
+        metrics[name] = {"integral_J": integral, "mean_J": integral / width,
+                         "maximum_J": float(energies[peak_index]),
+                         "frequency_max_hz": float(validation_grid[peak_index]),
+                         "reduction_relative": (initial_integral - integral) / initial_integral
+                         if initial_integral > 0 else 0.0}
+    parameters = {"N": N, "M": 2 * N, "h_m": h, "geometry_level": GEOMETRY_LEVEL,
+                  "material_name": material_name, "material_parameters": list(car_mat),
+                  "source_name": SOURCE.__name__, "source_gaussians": list(preprocessing.RER_B_GAUSSIANS),
+                  "sound_speed_m_s": C, "V_obj": volume, "robin_points": int(robin_count),
+                  "binary_covered_points": int(round(volume * robin_count)),
+                  "initialization_band": "three_peaks_continuous" if warm_start else "original_wall",
+                  "three_peaks_accepted_iterations": int(three["accepted_steps"]),
+                  "total_accepted_iterations": int(three["accepted_steps"] + band["accepted_steps"]),
+                  "iterations_requested": iterations, "accepted_iterations": int(band["accepted_steps"]),
+                  "frequencies_initial_hz": frequencies.tolist(), "frequencies_optimization_hz": grid.tolist(),
+                  "frequencies_validation_hz": validation_grid.tolist(),
+                  "optimization_minimum_gap_hz": float(numpy.min(numpy.diff(grid))),
+                  "optimization_maximum_gap_hz": float(numpy.max(numpy.diff(grid))),
+                  "validation_maximum_gap_hz": float(numpy.max(numpy.diff(validation_grid))),
+                  "frequency_integral_tolerance": FREQUENCY_INTEGRAL_TOLERANCE,
+                  "frequency_peak_tolerance": FREQUENCY_PEAK_TOLERANCE,
+                  "frequency_maximum_gap_target_hz": FREQUENCY_MAX_GAP_HZ,
+                  "frequency_refinement_limit": FREQUENCY_REFINEMENTS,
+                  "validation_initial_step_hz": VALIDATION_INITIAL_STEP_HZ,
+                  "validation_refinement_limit": VALIDATION_REFINEMENTS,
+                  "sampling_converged": sampling_history[-1]["converged"],
+                  "validation_converged": validation_history[-1]["converged"],
+                  "points_per_shortest_wavelength": spatial_ratio, "spatial_resolution_ok": bool(spatial_ratio >= 10),
+                  "robin_convention": "plus_alpha", "alpha0": list(ALPHA0),
+                  "descent_objective": "moyenne de bande avec poids trapezoidaux normalises",
+                  "integral_multiplier_hz": width, "gradient_step_initial": 5.0,
+                  "gradient_step_minimum": 1e-5, "density_variation_tolerance": 1e-7,
+                  "gradient_step_increase_factor": 1.1, "gradient_step_decrease_factor": 2.0,
+                  "elapsed_seconds": time.perf_counter() - started}
+    for name, estimate in (("band_continuous", float(band["energy_history"][-1, 0]) * width),
+                           ("band_binary", float(band["binary_energy"]) * width)):
+        fine = metrics[name]["integral_J"]
+        parameters["quadrature_discrepancy_" + name] = abs(estimate - fine) / max(abs(fine), numpy.finfo(float).tiny)
+    evaluation["frequencies_hz"] = validation_grid
+    evaluation["alphas"] = numpy.asarray([cache["alphas"][float(frequency)] for frequency in validation_grid])
+    result = {"domain": domain, "spacestep": h, "chi_initial": initial, "chi_start_band": start_band,
+              "three_peaks": three, "band": band, "evaluation": evaluation,
+              "metrics": metrics, "parameters": parameters,
+              "sampling_history": sampling_history, "validation_history": validation_history}
+    postprocessing.plot_full_spectrum_study(result, output_dir)
+    print("Résultats enregistrés dans", output_dir, flush=True)
+    for name, indicators in metrics.items():
+        print(name, ":", indicators, flush=True)
+    return result
+
 
 def run_studies(selection):
     """On lance les calculs choisis puis on transmet leurs résultats aux tracés."""
@@ -370,8 +544,6 @@ def run_studies(selection):
             return
         combined = processing.combine_comparable_configurations(reference, fixed_budget)
         postprocessing.plot_fixed_budget_comparison(combined)
-        selected = processing.evaluate_selected_configuration(combined, SOURCE, C)
-        postprocessing.plot_selected_configuration(selected)
 
 
 if __name__ == '__main__' and ETUDE == 'demo':
@@ -492,5 +664,8 @@ if __name__ == '__main__' and ETUDE == 'demo':
 if __name__ == "__main__" and ETUDE == "trois_pics":
     run_three_peaks_optimization()
 
-if __name__ == "__main__" and ETUDE not in ("demo", "trois_pics"):
+if __name__ == "__main__" and ETUDE == "spectre_complet":
+    run_full_spectrum_optimization()
+
+if __name__ == "__main__" and ETUDE not in ("demo", "trois_pics", "spectre_complet"):
     run_studies(ETUDE)

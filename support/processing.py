@@ -531,58 +531,38 @@ def replace_old_by_new(u, oldvalue, newvalue):
                 u[i, j] = newvalue
     return u
 
+def compute_objective_function(domain_omega, u, spacestep):
+    """On calcule l'énergie du champ sur les points intérieurs du domaine."""
+    interior = np.asarray(u)[domain_omega == _env.NODE_INTERIOR]
+    return float(spacestep**2 * np.sum(np.abs(interior)**2))
+
+
 def run_rer_b_frequency_sweep(domain_omega, spacestep, frequencies_hz,
                             f, f_dir, f_neu, f_rob, beta_pde, alpha_pde,
                             alpha_dir, beta_neu, beta_rob, chi, g, car_mat,
                             alpha0, sound_speed_m_s=343.0):
-    """On calcule le champ avec la source et le matériau choisis à chaque fréquence."""
-    frequencies = numpy.asarray(frequencies_hz, dtype=numpy.float64)
-    amplitudes = numpy.empty_like(frequencies)
-    energies = numpy.empty_like(frequencies)
-    alphas = numpy.empty(frequencies.size, dtype=numpy.complex128)
-    solutions = {}
-    y_source = (numpy.arange(domain_omega.shape[1]) - (domain_omega.shape[1] - 1) / 2) * spacestep
-
-    for ind, frequency_hz in enumerate(frequencies):
-        omega = 2.0 * numpy.pi * float(frequency_hz)
-        k = omega / sound_speed_m_s
-        # On détermine le coefficient du matériau dans la convention du polycopié.
-        coefficients, success, message = compute_alpha(omega, g, car_mat, alpha0)
-        if not success:
-            print("Échec du calcul du coefficient à", frequency_hz, "Hz :", message)
-            return None
-        Alpha = coefficients[0] + 1j * coefficients[1]
-        alphas[ind] = Alpha
-        alpha_rob_freq = Alpha * chi
-
-        # On applique le même profil de source au bord supérieur.
-        amplitudes[ind] = g(0.0, omega)
-        f_dir_freq = numpy.zeros_like(f_dir)
-        f_dir_freq[0, :] = g(y_source, omega)
-        u_freq = solve_helmholtz(
-            domain_omega, spacestep, k, f, f_dir_freq, f_neu, f_rob,
-            beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob_freq,
-        )
-        interior = domain_omega == _env.NODE_INTERIOR
-        energies[ind] = spacestep**2 * numpy.sum(numpy.abs(u_freq[interior])**2)
-        solutions[float(frequency_hz)] = u_freq
-
-    # On intègre les coûts, qui contiennent déjà l'amplitude de la source.
-    if frequencies.size > 1:
-        band_energy = float(numpy.sum(
-            (frequencies[1:] - frequencies[:-1])
-            * (energies[1:] + energies[:-1]) / 2.0
-        ))
-    else:
-        band_energy = float(energies[0])
-    return {
-        "frequencies_hz": frequencies,
-        "amplitudes": amplitudes,
-        "alphas": alphas,
-        "energies": energies,
-        "solutions": solutions,
-        "band_energy": band_energy,
-    }
+    """On réutilise la même évaluation fréquentielle avec les paramètres du domaine fourni."""
+    frequencies = np.asarray(frequencies_hz, dtype=np.float64)
+    weights = spectral_quadrature_weights(frequencies, normalise=False)
+    if weights is None:
+        return None
+    alphas = compute_material_coefficients(frequencies, g, car_mat, alpha0)
+    if alphas is None:
+        return None
+    solver = FastHelmholtzSolver(
+        domain_omega, spacestep, f=f, f_dir=f_dir, f_neu=f_neu, f_rob=f_rob,
+        beta_pde=beta_pde, alpha_pde=alpha_pde, alpha_dir=alpha_dir,
+        beta_neu=beta_neu, beta_rob=beta_rob,
+    )
+    values = evaluate_frequency_objective(
+        solver, chi, 2.0 * np.pi * frequencies / sound_speed_m_s, alphas,
+        weights, g, sound_speed_m_s,
+    )
+    return {"frequencies_hz": frequencies,
+            "amplitudes": np.asarray([g(0.0, 2.0 * np.pi * frequency) for frequency in frequencies]),
+            "alphas": alphas, "energies": values["energies"],
+            "solutions": dict(zip(map(float, frequencies), values["fields"])),
+            "band_energy": values["total"]}
 
 
 def compute_state(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
@@ -761,11 +741,14 @@ class FastHelmholtzSolver:
         u[self.mask_int] = interior_values
         return u
 
-    def solve_state_and_adjoint(self, omega, alpha_rob):
-        """On calcule le champ puis son adjoint à partir du même système."""
+    def solve_state_and_adjoint(self, omega, alpha_rob, state=None):
+        """On calcule le champ et son adjoint, ou on réutilise un champ déjà calculé."""
         matrix = self._assemble_system_matrix(omega, alpha_rob)
         factorization = scipy.sparse.linalg.splu(matrix)
-        interior_values = factorization.solve(self._assemble_rhs(alpha_rob))
+        if state is None:
+            interior_values = factorization.solve(self._assemble_rhs(alpha_rob))
+        else:
+            interior_values = np.asarray(state)[self.mask_int]
         adjoint_values = factorization.solve(2.0 * self.h**2 * interior_values, trans='H')
         u = np.zeros(self.domain.shape, dtype=np.complex128)
         p = np.zeros(self.domain.shape, dtype=np.complex128)
@@ -775,7 +758,7 @@ class FastHelmholtzSolver:
 
     def compute_energy(self, u):
         """On additionne les modules au carré du champ sur les points intérieurs."""
-        return float(self.h**2 * np.sum(np.abs(u[self.mask_int])**2))
+        return compute_objective_function(self.domain, u, self.h)
 
     def compute_gradient(self, u, p, chi, Alpha):
         """On calcule la dérivée du coût par rapport à chaque valeur du matériau."""
@@ -809,49 +792,114 @@ def optimize_single_frequency(solver, wavenumber, Alpha, chi_init, V_obj=0.3,
     return chi, history, u, gradient
 
 
-def optimize_multi_frequency(solver, wavenumbers, Alphas, chi_init, weights=None,
-                             V_obj=0.3, mu_init=5.0, numb_iter=100, min_mu=1e-5, verbose=False,
-                             source=None, sound_speed_m_s=343.0):
-    """On recherche une même répartition pour plusieurs fréquences pondérées."""
+def spectral_quadrature_weights(frequencies, normalise=True):
+    """On calcule les poids des trapèzes, éventuellement divisés par la largeur de bande."""
+    frequencies = np.asarray(frequencies, dtype=np.float64)
+    if frequencies.ndim != 1 or not frequencies.size or not np.all(np.isfinite(frequencies)):
+        print("On fournit une liste non vide de fréquences finies.")
+        return None
+    if frequencies.size == 1:
+        return np.ones(1)
+    intervals = np.diff(frequencies)
+    if np.any(intervals <= 0):
+        print("On fournit les fréquences distinctes dans leur ordre croissant.")
+        return None
+    weights = np.zeros(len(frequencies))
+    weights[:-1] += intervals / 2.0
+    weights[1:] += intervals / 2.0
+    if normalise:
+        weights /= frequencies[-1] - frequencies[0]
+    return weights
+
+
+def prepare_frequency_rhs(solver, wavenumbers, source=None, sound_speed_m_s=343.0):
+    """On conserve les seconds membres de source pour les réutiliser pendant la descente."""
+    right_hand_sides = []
+    for wavenumber in wavenumbers:
+        if source is not None:
+            solver.set_source(source, float(wavenumber) * sound_speed_m_s)
+        right_hand_sides.append(solver.base_rhs_int.copy())
+    return right_hand_sides
+
+
+def evaluate_frequency_objective(solver, chi, wavenumbers, Alphas, weights=None,
+                                 source=None, sound_speed_m_s=343.0,
+                                 with_gradient=False, frequency_rhs=None,
+                                 fields=None, keep_fields=True):
+    """On additionne les énergies fréquentielles et, au besoin, leurs gradients pondérés."""
+    wavenumbers = np.asarray(wavenumbers, dtype=np.float64)
+    Alphas = np.asarray(Alphas, dtype=np.complex128)
+    weights = np.ones(len(wavenumbers)) if weights is None else np.asarray(weights, dtype=float)
+    if frequency_rhs is None:
+        frequency_rhs = prepare_frequency_rhs(solver, wavenumbers, source, sound_speed_m_s)
+    energies = np.zeros(len(wavenumbers))
+    gradient = np.zeros(solver.domain.shape) if with_gradient else None
+    saved_fields = [] if keep_fields else None
+    for index, (wavenumber, Alpha, weight) in enumerate(zip(wavenumbers, Alphas, weights)):
+        # On retrouve le second membre sans reconstruire toutes les contributions de la grille.
+        solver.base_rhs_int = frequency_rhs[index]
+        field = None if fields is None else fields[index]
+        if with_gradient:
+            field, adjoint = solver.solve_state_and_adjoint(wavenumber, Alpha * chi, state=field)
+            gradient += weight * solver.compute_gradient(field, adjoint, chi, Alpha)
+        elif field is None:
+            field = solver.solve(wavenumber, Alpha * chi)
+        energies[index] = solver.compute_energy(field)
+        if keep_fields:
+            saved_fields.append(field)
+    return {"energies": energies, "total": float(weights @ energies),
+            "gradient": gradient, "fields": saved_fields}
+
+
+def optimize_frequency_distribution(solver, wavenumbers, Alphas, chi_init,
+                                    weights=None, V_obj=0.3, mu_init=5.0,
+                                    numb_iter=80, min_mu=1e-5, verbose=False,
+                                    source=None, sound_speed_m_s=343.0,
+                                    variation_tolerance=1e-7, binarize=True):
+    """On optimise une densité commune avec un critère fréquentiel pondéré et fixe."""
     wavenumbers = np.asarray(wavenumbers, dtype=np.float64)
     Alphas = np.asarray(Alphas, dtype=np.complex128)
     weights = np.ones(len(wavenumbers)) if weights is None else np.asarray(weights, dtype=np.float64)
-    weights = weights / weights.sum()
+    if (wavenumbers.ndim != 1 or not wavenumbers.size or Alphas.shape != wavenumbers.shape
+            or weights.shape != wavenumbers.shape or not np.all(np.isfinite(wavenumbers))
+            or not np.all(np.isfinite(Alphas)) or not np.all(np.isfinite(weights))
+            or np.any(weights < 0) or weights.sum() <= 0 or not 0 <= V_obj <= 1):
+        print("On vérifie les fréquences, leurs coefficients, leurs poids et la fraction de matériau.")
+        return None
+    frequency_rhs = prepare_frequency_rhs(solver, wavenumbers, source, sound_speed_m_s)
     chi = preprocessing.project_density(chi_init, solver.domain, V_obj)
+    current = evaluate_frequency_objective(
+        solver, chi, wavenumbers, Alphas, weights, frequency_rhs=frequency_rhs,
+    )
+    history = [current["total"]]
+    per_frequency = [current["energies"].copy()]
     mu = float(mu_init)
-    costs = np.zeros(len(wavenumbers))
-    for m, (wavenumber, Alpha) in enumerate(zip(wavenumbers, Alphas)):
-        if source is not None:
-            solver.set_source(source, wavenumber * sound_speed_m_s)
-        costs[m] = solver.compute_energy(solver.solve(wavenumber, Alpha * chi))
-    history = [float(weights @ costs)]
-    per_frequency = [costs.copy()]
-
+    accepted_mu = []
     for iteration in range(numb_iter):
         if mu <= min_mu:
             break
-        gradient = np.zeros(solver.domain.shape)
-        for weight, wavenumber, Alpha in zip(weights, wavenumbers, Alphas):
-            if source is not None:
-                solver.set_source(source, wavenumber * sound_speed_m_s)
-            u, p = solver.solve_state_and_adjoint(wavenumber, Alpha * chi)
-            gradient += weight * solver.compute_gradient(u, p, chi, Alpha)
-
+        # On reprend les champs acceptés pour ne calculer que leurs adjoints.
+        state_and_gradient = evaluate_frequency_objective(
+            solver, chi, wavenumbers, Alphas, weights, with_gradient=True,
+            frequency_rhs=frequency_rhs, fields=current["fields"], keep_fields=False,
+        )
+        gradient = state_and_gradient["gradient"]
         accepted = False
         while mu > min_mu:
             candidate = preprocessing.project_density(chi - mu * gradient, solver.domain, V_obj)
-            candidate_costs = np.zeros(len(wavenumbers))
-            for m, (wavenumber, Alpha) in enumerate(zip(wavenumbers, Alphas)):
-                if source is not None:
-                    solver.set_source(source, wavenumber * sound_speed_m_s)
-                field = solver.solve(wavenumber, Alpha * candidate)
-                candidate_costs[m] = solver.compute_energy(field)
-            value = float(weights @ candidate_costs)
-            if np.isfinite(value) and value < history[-1]:
-                variation = np.max(np.abs(candidate - chi))
+            if np.array_equal(candidate, chi):
+                break
+            proposal = evaluate_frequency_objective(
+                solver, candidate, wavenumbers, Alphas, weights, frequency_rhs=frequency_rhs,
+            )
+            # On compare la même somme pondérée avant et après la proposition.
+            if np.isfinite(proposal["total"]) and proposal["total"] < history[-1]:
+                variation = float(np.max(np.abs(candidate - chi)))
                 chi = candidate
-                history.append(value)
-                per_frequency.append(candidate_costs.copy())
+                current = proposal
+                history.append(proposal["total"])
+                per_frequency.append(proposal["energies"].copy())
+                accepted_mu.append(mu)
                 mu *= 1.1
                 accepted = True
                 break
@@ -859,10 +907,46 @@ def optimize_multi_frequency(solver, wavenumbers, Alphas, chi_init, weights=None
         if not accepted:
             break
         if verbose:
-            print("Étape", iteration + 1, ": coût =", history[-1])
-        if variation < 1e-7:
+            print("Étape", iteration + 1, ": Énergie J =", history[-1], flush=True)
+        if variation < variation_tolerance:
             break
-    return chi, np.asarray(history), np.asarray(per_frequency)
+
+    result = {"chi_relaxed": chi.copy(), "energy_history": np.asarray(history).reshape(-1, 1),
+              "energy_by_frequency": np.asarray(per_frequency), "weights": weights.copy(),
+              "frequencies_hz": wavenumbers * sound_speed_m_s / (2.0 * np.pi),
+              "alphas": Alphas.copy(), "accepted_steps": len(history) - 1,
+              "accepted_mu": np.asarray(accepted_mu), "mu_final": mu,
+              "chi": chi.copy(), "binary_energy": None, "binary_energies": None,
+              "gradient": None, "fields_by_frequency": {}}
+    if binarize:
+        # On mesure séparément le résultat du tri final des densités.
+        binary = preprocessing.binarize_chi(chi, solver.domain, V_obj)
+        final = evaluate_frequency_objective(
+            solver, binary, wavenumbers, Alphas, weights, with_gradient=True,
+            frequency_rhs=frequency_rhs,
+        )
+        result.update({"chi": binary, "binary_energy": final["total"],
+                       "binary_energies": final["energies"], "gradient": final["gradient"],
+                       "fields_by_frequency": dict(zip(result["frequencies_hz"], final["fields"]))})
+    return result
+
+
+def optimize_multi_frequency(solver, wavenumbers, Alphas, chi_init, weights=None,
+                             V_obj=0.3, mu_init=5.0, numb_iter=100, min_mu=1e-5, verbose=False,
+                             source=None, sound_speed_m_s=343.0):
+    """On conserve la moyenne pondérée et le retour de la procédure multifréquence existante."""
+    weights = np.ones(len(wavenumbers)) if weights is None else np.asarray(weights, dtype=float)
+    if not np.all(np.isfinite(weights)) or weights.sum() <= 0:
+        print("On fournit des poids finis de somme positive.")
+        return None
+    result = optimize_frequency_distribution(
+        solver, wavenumbers, Alphas, chi_init, weights / weights.sum(),
+        V_obj, mu_init, numb_iter, min_mu, verbose, source, sound_speed_m_s,
+        binarize=False,
+    )
+    if result is None:
+        return None
+    return result["chi_relaxed"], result["energy_history"][:, 0], result["energy_by_frequency"]
 
 
 def find_local_maxima(freqs, k_vals, energies, min_prominence_ratio=0.01):
@@ -898,14 +982,13 @@ def compute_material_coefficients(frequencies, source, car_mat, alpha0):
 
 
 def evaluate_spectrum(solver, domain, chi, k_vals, Alphas, source, sound_speed_m_s):
-    """On calcule les coûts avec la source choisie à chaque fréquence."""
-    energies = []
+    """On conserve les énergies seules de l'évaluation fréquentielle commune."""
     chi_wall = np.where(domain == _env.NODE_ROBIN, chi, 0.0)
-    for wavenumber, alpha in zip(k_vals, Alphas):
-        solver.set_source(source, wavenumber * sound_speed_m_s)
-        u = solver.solve(wavenumber, alpha * chi_wall)
-        energies.append(solver.compute_energy(u))
-    return np.asarray(energies)
+    values = evaluate_frequency_objective(
+        solver, chi_wall, k_vals, Alphas, source=source,
+        sound_speed_m_s=sound_speed_m_s, keep_fields=False,
+    )
+    return values["energies"]
 
 
 def select_peak_indices(freqs, k_vals, energies, count=2):
@@ -1418,22 +1501,3 @@ def combine_comparable_configurations(reference_results, fixed_budget_results):
         candidates.append(best)
     combined["candidates"] = candidates
     return combined
-
-
-
-def evaluate_selected_configuration(results, source, sound_speed_m_s):
-    """On compare le meilleur placement à un placement initial binaire de même quantité."""
-    selected = min(results["candidates"], key=lambda case: case["J_band_mean"])
-    key = f"{selected['level']}_{selected['material']}"
-    data = results["candidate_data"][key]
-    domain = data["domain"]
-    h = results["spacestep"]
-    frequencies = results["frequencies"]
-    wavenumbers = 2*np.pi*frequencies/sound_speed_m_s
-    solver = FastHelmholtzSolver(domain, h)
-    initial_binary = preprocessing.binarize_chi(data["initial"], domain, selected["covered_nodes"]/selected["robin_nodes"])
-    initial_spectrum = evaluate_spectrum(solver, domain, initial_binary, wavenumbers, data["alphas"], source, sound_speed_m_s)
-    return {"selected": selected, "domain": domain, "spacestep": h,
-            "density": data["density"], "initial_density": initial_binary,
-            "frequencies": frequencies, "initial_spectrum": initial_spectrum,
-            "spectrum": data["spectrum"], "full_spectrum": data["full_spectrum"]}
