@@ -215,6 +215,83 @@ def compute_gradient(domain_omega, spacestep, Alpha, density,
     return gradient
 
 
+def plot_energy_frequency_one_material(domain_omega, spacestep, frequencies, c, f, f_dir, f_neu, f_rob,
+                                       beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
+                                       chi, g_source, name, material, level, save=True):
+    """This function plots the energy J as a function of the frequency for one material.
+
+    Parameter:
+        frequencies: array, frequencies (Hz) of the study;
+        c: float, speed of sound, k = 2 pi f / c;
+        g_source: function, source used by compute_alpha and imposed on the top boundary;
+        name: string, name of the material (label of the curve);
+        material: material parameters from MATERIAUX;
+        level: int, level of the fractal (used in the title and file name);
+        save: bool, if True the figure is finalized and saved, otherwise the
+        curve is only added to the current figure.
+    """
+    print('Material %s' % name)
+    wavenumbers = 2.0 * numpy.pi * frequencies / c
+    energies = numpy.zeros(len(wavenumbers))
+    alpha0 = ALPHA0
+    # On repère les positions le long du bord supérieur.
+    y_source = (numpy.arange(domain_omega.shape[1]) - (domain_omega.shape[1] - 1) / 2) * spacestep
+    for n, k in enumerate(wavenumbers):
+        # On initialise la recherche avec le coefficient de la fréquence précédente.
+        alpha_opt, success, message = compute_alpha(c * k, g_source, material, alpha0)
+        if not success:
+            print('compute_alpha (f = %g Hz) : %s' % (frequencies[n], message))
+        alpha0 = alpha_opt
+        Alpha_k = alpha_opt[0] + alpha_opt[1] * 1j
+        # On impose la source sur le bord supérieur à cette fréquence.
+        f_dir_freq = numpy.zeros_like(f_dir)
+        f_dir_freq[0, :] = g_source(y_source, c * k)
+        alpha_rob = Alpha_k * chi
+        u = processing.solve_helmholtz(domain_omega, spacestep, k, f, f_dir_freq, f_neu, f_rob,
+                                       beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob)
+        energies[n] = your_compute_objective_function(domain_omega, u, spacestep)
+    matplotlib.pyplot.plot(frequencies, energies, label=name)
+
+    if save:
+        matplotlib.pyplot.xlabel('frequency f (Hz)')
+        matplotlib.pyplot.ylabel('energy J')
+        matplotlib.pyplot.title('Energy vs frequency, fractal level %d, %s, $\\chi = 1$' % (level, name))
+        matplotlib.pyplot.legend()
+        matplotlib.pyplot.savefig(os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            'fig_energy_frequency_level%d_%s.jpg' % (level, name),
+        ))
+        matplotlib.pyplot.close()
+
+    return energies
+
+
+def plot_energy_frequency_all_materials(domain_omega, spacestep, frequencies, c, f, f_dir, f_neu, f_rob,
+                                        beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
+                                        chi, g_source, level):
+    """This function plots, on a single figure, the energy J as a function of
+    the frequency for every material of MATERIAUX.
+
+    Parameter:
+        cf plot_energy_frequency_one_material's remarks
+    """
+    matplotlib.pyplot.figure(figsize=(10, 6))
+    for name, material in MATERIAUX.items():
+        plot_energy_frequency_one_material(domain_omega, spacestep, frequencies, c, f, f_dir, f_neu, f_rob,
+                                           beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
+                                           chi, g_source, name, material, level, save=False)
+
+    matplotlib.pyplot.xlabel('frequency f (Hz)')
+    matplotlib.pyplot.ylabel('energy J')
+    matplotlib.pyplot.title('Energy vs frequency, fractal level %d, $\\chi = 1$' % level)
+    matplotlib.pyplot.legend()
+    matplotlib.pyplot.savefig(os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'fig_energy_frequency_level%d.jpg' % level,
+    ))
+    matplotlib.pyplot.close()
+
+
 if __name__ == '__main__':
 
     # ----------------------------------------------------------------------
@@ -326,5 +403,24 @@ if __name__ == '__main__':
     # On enregistre les deux courbes dans le dossier de ce programme.
     if results is not None:
         postprocessing.plot_rer_b_frequency_sweep(results, SOURCE)
+
+    # On trace l'énergie selon la fréquence pour un mur totalement poreux (chi = 1), pour chaque niveau de fractale.
+    # On affine le pas sous 1000 Hz, où les pics ont une largeur à mi-hauteur d'environ 13 à 26 Hz.
+    frequencies_chi_1 = numpy.concatenate((numpy.arange(50.0, 1000.0, 2.0),
+                                           numpy.arange(1000.0, 3500.1, 5.0)))
+    levels = [0, 1, 2]
+    for level_k in levels:
+        print('Level %d' % level_k)
+        domain_omega_k, _, _, _, _ = preprocessing._set_geometry_of_domain(M, N, level_k)
+        chi_1 = numpy.ones((M, N), dtype=numpy.float64)
+        chi_1 = preprocessing.set2zero(chi_1, domain_omega_k)
+        # pour un seul matériau :
+        plot_energy_frequency_one_material(domain_omega_k, spacestep, frequencies_chi_1, c, f, f_dir, f_neu, f_rob,
+                                           beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
+                                           chi_1, SOURCE, "OUATE_POLYESTER", CAR_MAT, level_k)
+        # pour tous les matériaux :
+        #plot_energy_frequency_all_materials(domain_omega_k, spacestep, frequencies_chi_1, c, f, f_dir, f_neu, f_rob,
+        #                                    beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
+        #                                   chi_1, SOURCE, level_k)
 
     print('End.')
