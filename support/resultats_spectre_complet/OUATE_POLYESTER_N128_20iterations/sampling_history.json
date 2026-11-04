@@ -1,0 +1,62 @@
+[
+  {
+    "phase": "optimisation",
+    "iteration": 0,
+    "n_points": 70,
+    "n_probe_points": 139,
+    "max_gap_hz": 50.0,
+    "minimum_gap_hz": 50.0,
+    "estimated_integral_error": 0.2383113210241451,
+    "integral_error": 0.007653041015109955,
+    "peak_error": 0.4254838512304935,
+    "converged": false
+  },
+  {
+    "phase": "optimisation",
+    "iteration": 1,
+    "n_points": 139,
+    "n_probe_points": 277,
+    "max_gap_hz": 25.0,
+    "minimum_gap_hz": 25.0,
+    "estimated_integral_error": 0.182698480762394,
+    "integral_error": 0.052190049781113385,
+    "peak_error": 0.47380752014952726,
+    "converged": false
+  },
+  {
+    "phase": "optimisation",
+    "iteration": 2,
+    "n_points": 190,
+    "n_probe_points": 379,
+    "max_gap_hz": 25.0,
+    "minimum_gap_hz": 12.5,
+    "estimated_integral_error": 0.06752098305369013,
+    "integral_error": 0.004800313088367559,
+    "peak_error": 0.01211566319228528,
+    "converged": false
+  },
+  {
+    "phase": "optimisation",
+    "iteration": 3,
+    "n_points": 273,
+    "n_probe_points": 545,
+    "max_gap_hz": 25.0,
+    "minimum_gap_hz": 6.25,
+    "estimated_integral_error": 0.019473031734426702,
+    "integral_error": 0.0015165012263189223,
+    "peak_error": 0.07233918747742119,
+    "converged": false
+  },
+  {
+    "phase": "optimisation",
+    "iteration": 4,
+    "n_points": 387,
+    "n_probe_points": 773,
+    "max_gap_hz": 25.0,
+    "minimum_gap_hz": 3.125,
+    "estimated_integral_error": 0.007285552295015828,
+    "integral_error": 0.0010717700020143662,
+    "peak_error": 0.015597643671559703,
+    "converged": true
+  }
+]

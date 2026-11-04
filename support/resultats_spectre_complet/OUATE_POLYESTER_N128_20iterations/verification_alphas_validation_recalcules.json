@@ -1,0 +1,33 @@
+{
+  "method": "recalculation_with_identical_compute_alpha_parameters",
+  "alpha_absolute_tolerance": 1e-10,
+  "energy_relative_tolerance": 1e-08,
+  "energy_absolute_tolerance": 1e-08,
+  "optimization_common_frequencies": 186,
+  "optimization_maximum_alpha_difference": 0.0,
+  "initial_exploration_common_frequencies": 1050,
+  "initial_exploration_maximum_alpha_difference": 0.0,
+  "energy_check_frequencies_hz": [
+    50.0,
+    165.625,
+    178.515625,
+    180.3515625,
+    300.1953125,
+    403.61328125,
+    549.21875,
+    776.09375,
+    1052.34375,
+    1638.75,
+    2484.53125,
+    3500.0
+  ],
+  "initial_maximum_energy_absolute_difference": 0.0,
+  "initial_maximum_energy_relative_difference": 0.0,
+  "three_peaks_maximum_energy_absolute_difference": 0.0,
+  "three_peaks_maximum_energy_relative_difference": 0.0,
+  "band_continuous_maximum_energy_absolute_difference": 0.0,
+  "band_continuous_maximum_energy_relative_difference": 0.0,
+  "band_binary_maximum_energy_absolute_difference": 0.0,
+  "band_binary_maximum_energy_relative_difference": 0.0,
+  "passed": true
+}

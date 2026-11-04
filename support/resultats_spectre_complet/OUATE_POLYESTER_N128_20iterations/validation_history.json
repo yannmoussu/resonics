@@ -1,0 +1,74 @@
+[
+  {
+    "phase": "validation",
+    "iteration": 0,
+    "n_points": 732,
+    "n_probe_points": 1463,
+    "max_gap_hz": 10.0,
+    "minimum_gap_hz": 0.3125,
+    "estimated_integral_error": 0.38927645366691666,
+    "integral_error": 0.10669554729509914,
+    "peak_error": 0.01781723268891933,
+    "converged": false
+  },
+  {
+    "phase": "validation",
+    "iteration": 1,
+    "n_points": 926,
+    "n_probe_points": 1851,
+    "max_gap_hz": 10.0,
+    "minimum_gap_hz": 0.3125,
+    "estimated_integral_error": 0.2177779335540533,
+    "integral_error": 0.023186109289032697,
+    "peak_error": 0.0,
+    "converged": false
+  },
+  {
+    "phase": "validation",
+    "iteration": 2,
+    "n_points": 1194,
+    "n_probe_points": 2387,
+    "max_gap_hz": 10.0,
+    "minimum_gap_hz": 0.15625,
+    "estimated_integral_error": 0.1610300002239591,
+    "integral_error": 0.07309475939626316,
+    "peak_error": 0.704811103503892,
+    "converged": false
+  },
+  {
+    "phase": "validation",
+    "iteration": 3,
+    "n_points": 1466,
+    "n_probe_points": 2931,
+    "max_gap_hz": 10.0,
+    "minimum_gap_hz": 0.078125,
+    "estimated_integral_error": 0.0631240640452125,
+    "integral_error": 0.003187179063344122,
+    "peak_error": 0.0004452937729323859,
+    "converged": false
+  },
+  {
+    "phase": "validation",
+    "iteration": 4,
+    "n_points": 1707,
+    "n_probe_points": 3413,
+    "max_gap_hz": 10.0,
+    "minimum_gap_hz": 0.0390625,
+    "estimated_integral_error": 0.03423913521088799,
+    "integral_error": 0.0039002649504459655,
+    "peak_error": 0.34110107169249526,
+    "converged": false
+  },
+  {
+    "phase": "validation",
+    "iteration": 5,
+    "n_points": 1896,
+    "n_probe_points": 3791,
+    "max_gap_hz": 10.0,
+    "minimum_gap_hz": 0.0390625,
+    "estimated_integral_error": 0.008599888374324325,
+    "integral_error": 0.001468315060429544,
+    "peak_error": 0.0004452937729323859,
+    "converged": true
+  }
+]

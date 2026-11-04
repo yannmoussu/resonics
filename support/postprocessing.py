@@ -874,7 +874,7 @@ def _write_full_spectrum_summary(result, output_dir):
     if "three_peaks_accepted_iterations" in parameters:
         lines += ["", f"Les trois pics ont demandé {parameters['three_peaks_accepted_iterations']} étapes acceptées, puis la bande {parameters['accepted_iterations']} étapes, soit {parameters['total_accepted_iterations']} étapes au total."]
     if "optimization_minimum_gap_hz" in parameters:
-        lines += ["", f"La grille d’optimisation contient {len(band['frequencies_hz'])} fréquences, avec des intervalles de {parameters['optimization_minimum_gap_hz']:.6g} à {parameters['optimization_maximum_gap_hz']:.6g} Hz. La grille d’évaluation contient {len(result['evaluation']['frequencies_hz'])} fréquences."]
+        lines += ["", f"La grille d’optimisation contient {len(band['frequencies_hz'])} fréquences, avec des intervalles de {parameters['optimization_minimum_gap_hz']:.6g} à {parameters['optimization_maximum_gap_hz']:.6g} Hz. La grille d’évaluation contient {len(result['evaluation']['frequencies_hz'])} fréquences, avec des intervalles de {np.min(np.diff(result['evaluation']['frequencies_hz'])):.6g} à {np.max(np.diff(result['evaluation']['frequencies_hz'])):.6g} Hz."]
     if "points_per_shortest_wavelength" in parameters:
         lines += ["", f"Le maillage spatial utilise N = {parameters['N']} et représente {parameters['points_per_shortest_wavelength']:.6g} points par longueur d’onde à la fréquence maximale."]
     if not parameters.get("sampling_converged", True):
@@ -969,9 +969,9 @@ def _plot_frequency_convergence(result, output_dir):
             continue
         points = [row["n_points"] for row in records]
         integral_errors = [max(float(row.get("estimated_integral_error", row.get("integral_error", np.nan))), np.finfo(float).tiny) for row in records]
-        peak_errors = [max(float(row.get("peak_error", np.nan)), np.finfo(float).tiny) for row in records]
+        peak_errors = [float(row.get("peak_error", np.nan)) for row in records]
         axes[0].semilogy(points, integral_errors, marker=marker, color=color, label=label)
-        axes[1].semilogy(points, peak_errors, marker=marker, color=color, label=label)
+        axes[1].plot(points, peak_errors, marker=marker, color=color, label=label)
     parameters = result["parameters"]
     for ax, title, tolerance in zip(axes, ("Erreur relative estimée de l’intégrale", "Erreur relative estimée du maximum"),
                                     (parameters.get("frequency_integral_tolerance"), parameters.get("frequency_peak_tolerance"))):
