@@ -13,6 +13,7 @@ from pathlib import Path
 
 # MRG packages
 import _env
+import processing
 import preprocessing
 
 
@@ -883,7 +884,7 @@ def _write_full_spectrum_summary(result, output_dir):
     for key, label in (("band_continuous", "densité continue"), ("band_binary", "placement binaire")):
         difference = parameters.get("quadrature_discrepancy_" + key)
         if difference is not None:
-            lines += ["", f"Pour le {label}, l’écart relatif entre l’intégrale estimée pendant la descente et celle de la grille d’évaluation vaut {100 * difference:.4g} %."]
+            lines += ["", f"Pour « {label} », l’écart relatif entre l’intégrale estimée pendant la descente et celle de la grille d’évaluation vaut {100 * difference:.4g} %."]
             if difference > .01:
                 lines += ["L’écart dépasse 1 %. La grille de la descente sous-représente ou sur-représente une partie du spectre final, et un raffinement de l’optimisation est nécessaire avant de conclure à sa précision."]
     lines += ["", "Les fichiers sampling_history et validation_history décrivent les essais de raffinement fréquentiel. Les maxima cités sont ceux de la grille effectivement évaluée. La minimisation de l’intégrale ne garantit pas la disparition de tous les pics.", ""]
@@ -1004,3 +1005,228 @@ def plot_full_spectrum_study(result, output_dir=None):
     fig.savefig(output_dir / "fig_historique_energie_bande.png", dpi=180)
     plt.close(fig)
     return output_dir
+
+
+def plot_material_energy_comparison(results, retained_materials, output_dir=None):
+    """On sépare les courbes par matériau pour comparer leurs pics sans les superposer."""
+    import json
+    output_dir = Path(__file__).resolve().parent / "resultats_comparaison_materiaux" if output_dir is None else Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    plt.rcParams.update({"font.size": 13, "axes.labelsize": 13, "xtick.labelsize": 11, "ytick.labelsize": 11})
+    frequencies = results["frequencies"]
+    names = results["material_names"]
+    retained = list(retained_materials)
+    labels = {"MELAMINE": "Mélamine", "LAINE_VERRE": "Laine de verre", "OUATE_POLYESTER": "Ouate polyester"}
+    colors = {"MELAMINE": "#0072B2", "LAINE_VERRE": "#D55E00", "OUATE_POLYESTER": "#009E73"}
+    columns, headers, arrays = [frequencies], ["frequency_hz"], {"frequencies_hz": frequencies}
+    summary = {key: results[key] for key in ("N", "source_name", "sound_speed_m_s", "alpha0", "material_parameters")}
+    summary.update({"frequency_step_hz": float(np.min(np.diff(frequencies))), "retained_materials": retained,
+                    "robin_convention": "normal_derivative + alpha * density * field = 0", "full_wall": {}})
+    for level in results["levels"]:
+        # On utilise les mêmes limites verticales pour les matériaux d'un même niveau.
+        peak = max(float(np.max(results["energies"][name][level])) for name in names)
+        fig, axes = plt.subplots(2, 4, figsize=(14, 6.2), sharex=True, sharey=True, constrained_layout=True)
+        for ax, name in zip(axes.flat, names):
+            energy = results["energies"][name][level]
+            color = colors.get(name, "#777777")
+            ax.plot(frequencies, energy, color=color, lw=1.4)
+            ax.set(title=labels.get(name, name.replace("_", " ").title()), xlim=(50, 3500), ylim=(0, peak * 1.08))
+            ax.grid(alpha=.22)
+            ax.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(4))
+            ax.set_xlabel("Fréquence (Hz)")
+            ax.set_ylabel("Énergie J")
+        for ax in list(axes.flat)[len(names):]:
+            ax.axis("off")
+        fig.suptitle(f"Énergie J des murs entièrement garnis — niveau {level}", fontsize=14)
+        fig.savefig(output_dir / f"fig_energie_tous_materiaux_niveau{level}.png", dpi=180)
+        plt.close(fig)
+        fig, axes = plt.subplots(1, len(retained), figsize=(10.5, 3.8), sharex=True, sharey=True, constrained_layout=True)
+        peak = max(float(np.max(results["energies"][name][level])) for name in retained)
+        for ax, name in zip(np.atleast_1d(axes), retained):
+            energy = results["energies"][name][level]
+            ax.plot(frequencies, energy, color=colors[name], lw=1.6)
+            maxima = processing.find_local_maxima(frequencies, 2 * np.pi * frequencies / results["sound_speed_m_s"], energy)
+            ax.plot(maxima[1], maxima[3], "o", color=colors[name], ms=3)
+            ax.set(title=labels[name], xlabel="Fréquence (Hz)", ylabel="Énergie J", xlim=(50, 3500), ylim=(0, peak * 1.08))
+            ax.grid(alpha=.22)
+            ax.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(4))
+        fig.suptitle(f"Énergie J des trois matériaux étudiés — mur entièrement garni, niveau {level}", fontsize=13)
+        fig.savefig(output_dir / f"fig_energie_trois_materiaux_niveau{level}.png", dpi=180)
+        plt.close(fig)
+        summary["full_wall"][str(level)] = {}
+        for name in names:
+            energy = results["energies"][name][level]
+            index = int(np.argmax(energy))
+            summary["full_wall"][str(level)][name] = {"J_band_mean": processing.mean_cost(frequencies, energy),
+                         "J_max": float(energy[index]), "f_J_max_hz": float(frequencies[index])}
+            columns.append(energy)
+            headers.append(f"J_level{level}_{name}")
+            arrays[f"J_level{level}_{name}"] = energy
+    for name in names:
+        arrays[f"alpha_{name}"] = results["alphas"][name]
+    np.savetxt(output_dir / "energies_materiaux.csv", np.column_stack(columns), delimiter=",", header=",".join(headers), comments="")
+    np.savez(output_dir / "energies_materiaux.npz", **arrays)
+    (output_dir / "comparaison_materiaux.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4), constrained_layout=True)
+    positions = np.arange(len(names))
+    for offset, level in enumerate(results["levels"]):
+        axes[0].bar(positions + (offset - 1) * .25, [summary["full_wall"][str(level)][name]["J_band_mean"] for name in names], width=.25, label=f"Niveau {level}")
+        axes[1].bar(positions + (offset - 1) * .25, [summary["full_wall"][str(level)][name]["J_max"] for name in names], width=.25, label=f"Niveau {level}")
+    for ax, title in zip(axes, ("Énergie J moyenne sur la bande", "Énergie J maximale échantillonnée")):
+        ax.set_xticks(positions, [labels.get(name, name.replace("_", " ").title()) for name in names], rotation=35, ha="right", fontsize=11)
+        ax.set_title(title)
+        ax.set_ylabel("Énergie J")
+        ax.legend(fontsize=11)
+        ax.grid(axis="y", alpha=.2)
+    fig.savefig(output_dir / "fig_bilan_materiaux.png", dpi=180)
+    plt.close(fig)
+    return summary
+
+
+
+def plot_retained_material_studies(material_data=None, output_dir=None):
+    """On compare les trois matériaux en séparant leurs courbes et leurs fréquences cibles."""
+    output_dir = Path(__file__).resolve().parent / "resultats_comparaison_materiaux" if output_dir is None else Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    if material_data is None:
+        material_data = {}
+        for name in ("MELAMINE", "LAINE_VERRE", "OUATE_POLYESTER"):
+            mono_path = output_dir / name / "monofrequence" / "data_monofrequence.npz"
+            multi_path = output_dir / name / "multifrequence" / "data_multifrequence.npz"
+            if not mono_path.exists() or not multi_path.exists():
+                print("On lance d'abord les études monofréquences et multifréquences pour", name)
+                return None
+            material_data[name] = {"mono": dict(np.load(mono_path)), "multi": dict(np.load(multi_path))}
+    names = list(material_data)
+    labels = {"MELAMINE": "Mélamine", "LAINE_VERRE": "Laine de verre", "OUATE_POLYESTER": "Ouate polyester"}
+    colors = {"MELAMINE": "#0072B2", "LAINE_VERRE": "#D55E00", "OUATE_POLYESTER": "#009E73"}
+    plt.rcParams.update({"font.size": 13, "axes.labelsize": 13, "xtick.labelsize": 11, "ytick.labelsize": 11})
+    level = 2
+    # On conserve la même échelle verticale pour chaque comparaison de spectres.
+    spectra = [material_data[name]["multi"][f"E_init_spec_l{level}"] for name in names]
+    max_energy = max(float(np.max(values)) for values in spectra)
+    for mode, filename in (("initial", "fig_repartition_initiale_trois_materiaux.png"),
+                           ("mono", "fig_spectres_mono_trois_materiaux.png"),
+                           ("multi", "fig_spectres_multi_trois_materiaux.png")):
+        fig, axes = plt.subplots(1, len(names), figsize=(10.5, 4), sharex=True, sharey=True, constrained_layout=True)
+        for ax, name in zip(np.atleast_1d(axes), names):
+            data = material_data[name]["multi"]
+            frequencies = data["freqs"]
+            ax.plot(frequencies, data[f"E_init_spec_l{level}"], ls="--", color="#777777", lw=1.5, label="Densité initiale")
+            ax.plot(frequencies, data[f"E_full_spec_l{level}"], color="black", ls=":", lw=1.8, label="Entièrement garni")
+            if mode == "mono":
+                target = float(data[f"mono_frequency_l{level}_peak1"])
+                ax.plot(frequencies, data[f"E_mono_spec_l{level}_peak1"], color=colors[name], lw=1.8, marker="o", ms=3, markevery=5, label=f"Placement à {target:g} Hz")
+            if mode == "multi":
+                targets = data[f"multi_frequencies_l{level}"]
+                ax.plot(frequencies, data[f"E_multi_spec_l{level}"], color=colors[name], lw=1.8, marker="s", ms=3, markevery=5, label="Placement multifréquence")
+                ax.set_title(labels[name] + "\nCibles : " + ", ".join(f"{f:g}" for f in targets) + " Hz", fontsize=11)
+            else:
+                ax.set_title(labels[name], fontsize=13)
+            ax.set(xlabel="Fréquence (Hz)", ylabel="Énergie J", xlim=(50, 3500), ylim=(0, max_energy * 1.08))
+            ax.legend(fontsize=11, loc="upper right")
+            ax.grid(alpha=.22)
+            ax.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(4))
+        fig.savefig(output_dir / filename, dpi=180)
+        plt.close(fig)
+    # On montre uniquement les énergies acceptées, puis le contrôle du placement binaire.
+    for mode, filename in (("mono", "fig_historiques_mono_trois_materiaux.png"),
+                           ("multi", "fig_historiques_multi_trois_materiaux.png")):
+        fig, axes = plt.subplots(1, len(names), figsize=(10.5, 3.8), constrained_layout=True)
+        for ax, name in zip(np.atleast_1d(axes), names):
+            data = material_data[name][mode]
+            if mode == "mono":
+                history = data[f"history_l{level}_peak1"]
+                binary = float(data[f"cost_binary_l{level}_peak1"])
+                targets = [float(data[f"f_target_l{level}_peak1"])]
+            else:
+                history = data[f"multi_history_l{level}"]
+                targets = data[f"multi_frequencies_l{level}"]
+                indices = [int(np.argmin(abs(data["freqs"] - frequency))) for frequency in targets]
+                binary = float(np.mean(data[f"E_multi_spec_l{level}"][indices]))
+            if mode == "multi":
+                individual = data[f"multi_history_frequencies_l{level}"]
+                for column, frequency in enumerate(targets):
+                    ax.plot(individual[:, column], lw=1.1, alpha=.65, label=f"{frequency:g} Hz")
+                ax.plot(np.arange(len(history)), history, "k--", lw=2, label="Moyenne continue")
+            else:
+                ax.plot(np.arange(len(history)), history, color=colors[name], lw=2, label="Densité continue")
+            ax.plot(len(history) - 1, binary, "x", color="black", ms=8, mew=2, label="Placement binaire")
+            ax.set_title(labels[name] + "\n" + ", ".join(f"{f:g}" for f in targets) + " Hz", fontsize=11)
+            ax.set(xlabel="Itération acceptée", ylabel="Énergie J" if mode == "mono" else "Énergie J moyenne des cibles")
+            ax.grid(alpha=.25)
+            ax.legend(fontsize=11)
+        fig.savefig(output_dir / filename, dpi=180)
+        plt.close(fig)
+    # On précise les cibles propres à chaque matériau pour interpréter l'étude de quantité.
+    fig, axes = plt.subplots(len(names), 2, figsize=(11.5, 8.5), constrained_layout=True)
+    for row, name in enumerate(names):
+        data = material_data[name]["multi"]
+        volume = 100 * data[f"actual_volumes_l{level}"]
+        mono_target = float(data[f"volume_mono_frequency_l{level}"])
+        multi_targets = data[f"multi_frequencies_l{level}"]
+        mono_index = int(np.argmin(abs(data["freqs"] - mono_target)))
+        multi_indices = [int(np.argmin(abs(data["freqs"] - frequency))) for frequency in multi_targets]
+        for col, (energy, reference, description) in enumerate((
+            (data[f"J_vol_l{level}"], data[f"E_full_spec_l{level}"][mono_index], f"{mono_target:g} Hz"),
+            (data[f"J_multi_vol_l{level}"], np.mean(data[f"E_full_spec_l{level}"][multi_indices]), ", ".join(f"{f:g}" for f in multi_targets) + " Hz"),
+        )):
+            ax = axes[row, col]
+            ax.plot(volume, energy, "o-", color=colors[name], lw=1.8, label="Placement binaire")
+            ax.axhline(reference, ls="--", color="black", label="Entièrement garni")
+            ax.set(title=f"{labels[name]} — {description}", xlabel="Part du mur garnie (%)", ylabel="Énergie J" if col == 0 else "Énergie J moyenne des cibles")
+            ax.grid(alpha=.22)
+            ax.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(4))
+            ax.legend(fontsize=11)
+    fig.savefig(output_dir / "fig_quantites_trois_materiaux.png", dpi=180)
+    plt.close(fig)
+    # On agrandit aussi les deux comparaisons de quantité pour chaque matériau.
+    for name in names:
+        data = material_data[name]["multi"]
+        volume = 100 * data[f"actual_volumes_l{level}"]
+        mono_target = float(data[f"volume_mono_frequency_l{level}"])
+        multi_targets = data[f"multi_frequencies_l{level}"]
+        mono_index = int(np.argmin(abs(data["freqs"] - mono_target)))
+        multi_indices = [int(np.argmin(abs(data["freqs"] - frequency))) for frequency in multi_targets]
+        fig, axes = plt.subplots(1, 2, figsize=(10.5, 3.8), constrained_layout=True)
+        for ax, energy, reference, description in (
+            (axes[0], data[f"J_vol_l{level}"], data[f"E_full_spec_l{level}"][mono_index], f"Une fréquence : {mono_target:g} Hz"),
+            (axes[1], data[f"J_multi_vol_l{level}"], np.mean(data[f"E_full_spec_l{level}"][multi_indices]), "Cibles : " + ", ".join(f"{f:g}" for f in multi_targets) + " Hz"),
+        ):
+            ax.plot(volume, energy, "o-", color=colors[name], lw=2, label="Placement binaire")
+            ax.axhline(reference, ls="--", color="black", label="Entièrement garni")
+            ax.set(title=description, xlabel="Part du mur garnie (%)", ylabel="Énergie J")
+            ax.tick_params(labelsize=11)
+            ax.grid(alpha=.25)
+            ax.legend(fontsize=11)
+        axes[1].set_ylabel("Énergie J moyenne des cibles")
+        fig.suptitle(labels[name] + " — niveau 2", fontsize=14)
+        fig.savefig(output_dir / f"fig_quantites_{name}.png", dpi=180)
+        plt.close(fig)
+    # On évalue toutes les répartitions sur une bande identique.
+    fig, axes = plt.subplots(1, len(names), figsize=(10.5, 4), sharey=True, constrained_layout=True)
+    rows = []
+    for ax, name in zip(np.atleast_1d(axes), names):
+        data = material_data[name]["multi"]
+        frequencies = data["freqs"]
+        cases = [("Initiale", data[f"E_init_spec_l{level}"]),
+                 ("Une fréquence", data[f"E_mono_spec_l{level}_peak1"]),
+                 ("Plusieurs fréquences", data[f"E_multi_spec_l{level}"]),
+                 ("Entièrement garni", data[f"E_full_spec_l{level}"])]
+        means = [processing.mean_cost(frequencies, values) for label, values in cases]
+        ax.bar(np.arange(len(cases)), means, color=["#AAAAAA", colors[name], colors[name], "#333333"], hatch=["", "//", "", ""])
+        ax.set_xticks(np.arange(len(cases)), [label for label, values in cases], rotation=25, ha="right", fontsize=11)
+        ax.set(title=labels[name], ylabel="Énergie J moyenne sur la bande")
+        ax.grid(axis="y", alpha=.22)
+        for (label, values), mean in zip(cases, means):
+            index = int(np.argmax(values))
+            rows.append({"material": name, "level": level, "placement": label, "J_band_mean": mean,
+                         "J_max": float(values[index]), "f_J_max_hz": float(frequencies[index])})
+    fig.savefig(output_dir / "fig_bilan_placements_trois_materiaux.png", dpi=180)
+    plt.close(fig)
+    with (output_dir / "indicateurs_placements.csv").open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+    return rows
+

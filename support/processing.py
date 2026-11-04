@@ -1501,3 +1501,37 @@ def combine_comparable_configurations(reference_results, fixed_budget_results):
         candidates.append(best)
     combined["candidates"] = candidates
     return combined
+
+
+def study_fully_covered_materials(N, frequencies, source, alpha0, sound_speed_m_s,
+                                  material_names=None, levels=(0, 1, 2)):
+    """On compare les matériaux sur les mêmes murs entièrement garnis et avec la même source."""
+    frequencies = np.asarray(frequencies, dtype=float)
+    names = list(MATERIAUX) if material_names is None else list(material_names)
+    wavenumbers = 2.0 * np.pi * frequencies / sound_speed_m_s
+    h = 1.0 / N
+    energies, coefficients = {}, {}
+    solvers, domains = {}, {}
+    for level in levels:
+        domain, _, _, _, _ = preprocessing._set_geometry_of_domain(2 * N, N, level=level)
+        domains[level] = domain
+        solvers[level] = FastHelmholtzSolver(domain, h)
+    for name in names:
+        print("Comparaison des murs entièrement garnis :", name, flush=True)
+        alphas = compute_material_coefficients(frequencies, source, MATERIAUX[name], alpha0)
+        if alphas is None:
+            return None
+        coefficients[name] = alphas
+        energies[name] = {}
+        for level in levels:
+            # On garnit chaque point du mur puis on calcule le spectre.
+            full = (domains[level] == _env.NODE_ROBIN).astype(float)
+            energies[name][level] = evaluate_spectrum(
+                solvers[level], domains[level], full, wavenumbers, alphas,
+                source, sound_speed_m_s,
+            )
+    return {"frequencies": frequencies, "energies": energies, "alphas": coefficients,
+            "material_names": names, "levels": list(levels), "N": N,
+            "source_name": source.__name__, "sound_speed_m_s": sound_speed_m_s,
+            "alpha0": list(alpha0), "material_parameters": {name: list(MATERIAUX[name]) for name in names}}
+
