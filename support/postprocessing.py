@@ -177,7 +177,7 @@ def plot_rer_b_frequency_sweep(results, source, output_dir=None):
 
 def plot_porous_materials(results, output_dir=None):
     """On trace et on enregistre les coefficients des matériaux comparés."""
-    output_dir = Path(__file__).resolve().parent / "resultats_jour1" if output_dir is None else Path(output_dir)
+    output_dir = Path(__file__).resolve().parent / "resultats_materiaux_validation" if output_dir is None else Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     frequencies = results["frequencies"]
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
@@ -193,14 +193,14 @@ def plot_porous_materials(results, output_dir=None):
         ax.grid(alpha=0.3)
         ax.legend(fontsize=8)
     fig.tight_layout()
-    fig.savefig(output_dir / "fig_j1_comparaison_materiaux.jpg", dpi=160)
+    fig.savefig(output_dir / "fig_comparaison_materiaux.jpg", dpi=160)
     plt.close(fig)
     np.savetxt(output_dir / "comparaison_materiaux.csv", np.column_stack(columns), delimiter=",", header=",".join(names), comments="")
 
 
 def plot_sommerfeld_comparison(results, output_dir=None):
     """On trace les réponses des trois parois et les références continues."""
-    output_dir = Path(__file__).resolve().parent / "resultats_jour1" if output_dir is None else Path(output_dir)
+    output_dir = Path(__file__).resolve().parent / "resultats_materiaux_validation" if output_dir is None else Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     frequencies, energies, theory = results["frequencies"], results["energies"], results["theory"]
     fig, ax = plt.subplots(figsize=(9, 4.8))
@@ -212,14 +212,14 @@ def plot_sommerfeld_comparison(results, output_dir=None):
     ax.grid(alpha=0.3)
     ax.legend(fontsize=8)
     fig.tight_layout()
-    fig.savefig(output_dir / "fig_j1_sommerfeld_vs_reflexif.jpg", dpi=160)
+    fig.savefig(output_dir / "fig_sommerfeld_vs_reflexif.jpg", dpi=160)
     plt.close(fig)
     np.savetxt(output_dir / "comparaison_parois.csv", np.column_stack((frequencies, energies, theory)), delimiter=",", header="frequency_hz,J_reflecting,J_open,J_material,J_open_continuous,J_reflecting_continuous", comments="")
 
 
 def plot_gradient_validation(results, output_dir=None):
     """On trace la comparaison des gradients et l'effet de la perturbation."""
-    output_dir = Path(__file__).resolve().parent / "resultats_jour1" if output_dir is None else Path(output_dir)
+    output_dir = Path(__file__).resolve().parent / "resultats_materiaux_validation" if output_dir is None else Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
     axes[0].plot(results["adjoint"], "o-", label="Adjoint")
@@ -231,16 +231,16 @@ def plot_gradient_validation(results, output_dir=None):
     for ax in axes:
         ax.grid(alpha=0.3)
     fig.tight_layout()
-    fig.savefig(output_dir / "fig_j1_validation_gradient_adjoint.jpg", dpi=160)
+    fig.savefig(output_dir / "fig_validation_gradient_adjoint.jpg", dpi=160)
     plt.close(fig)
     np.savetxt(output_dir / "validation_gradient.csv", np.column_stack((results["chosen_nodes"], results["adjoint"], results["finite_difference"])), delimiter=",", header="row,col,adjoint_derivative,finite_difference_derivative", comments="")
 
 
-def plot_day2_studies(study_results, output_dir=None):
-    """On trace les quatre comparaisons du deuxième jour et on conserve leurs données."""
+def plot_spectra_and_single_frequency_placement(study_results, output_dir=None):
+    """On trace les spectres et les placements à une fréquence puis on conserve leurs données."""
     if study_results is None:
         return None
-    OUTPUT_DIR = str(Path(__file__).resolve().parent / "resultats_jour2" if output_dir is None else output_dir)
+    OUTPUT_DIR = str(Path(__file__).resolve().parent / "resultats_monofrequence" if output_dir is None else output_dir)
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     freqs = study_results["frequencies"]
     full, initial = study_results["full"], study_results["initial"]
@@ -258,7 +258,7 @@ def plot_day2_studies(study_results, output_dir=None):
     ax.grid(alpha=0.3)
     ax.legend()
     fig.tight_layout()
-    fig.savefig(os.path.join(OUTPUT_DIR, "fig_j2_1_mur_plan_absorbant_maxima.jpg"), dpi=160)
+    fig.savefig(os.path.join(OUTPUT_DIR, "fig_mur_plan_absorbant_maxima.jpg"), dpi=160)
     plt.close(fig)
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
@@ -275,7 +275,7 @@ def plot_day2_studies(study_results, output_dir=None):
     axes[1].set_title("Échelle logarithmique")
     fig.suptitle("Spectres des différentes formes de murs entièrement garnis")
     fig.tight_layout()
-    fig.savefig(os.path.join(OUTPUT_DIR, "fig_j2_2_comparaison_formes_fractales.jpg"), dpi=160)
+    fig.savefig(os.path.join(OUTPUT_DIR, "fig_comparaison_formes_fractales.jpg"), dpi=160)
     plt.close(fig)
 
     fig, axes = plt.subplots(1, 3, figsize=(13, 4))
@@ -286,7 +286,7 @@ def plot_day2_studies(study_results, output_dir=None):
         ax.grid(alpha=0.3, which="both")
         ax.legend(fontsize=8)
     fig.tight_layout()
-    fig.savefig(os.path.join(OUTPUT_DIR, "fig_j2_3_initial_partiel_vs_total.jpg"), dpi=160)
+    fig.savefig(os.path.join(OUTPUT_DIR, "fig_repartition_partielle_et_complete.jpg"), dpi=160)
     plt.close(fig)
 
     fig, axes = plt.subplots(2, 3, figsize=(13, 8))
@@ -319,18 +319,18 @@ def plot_day2_studies(study_results, output_dir=None):
     fig.colorbar(scatter, ax=axes[1, 2], label="Point garni ou nu")
     fig.suptitle("Optimisations à une fréquence et coût après passage au placement binaire")
     fig.tight_layout()
-    fig.savefig(os.path.join(OUTPUT_DIR, "fig_j2_4_optimisation_mono_frequence.jpg"), dpi=160)
+    fig.savefig(os.path.join(OUTPUT_DIR, "fig_optimisation_monofrequence.jpg"), dpi=160)
     plt.close(fig)
 
-    np.savez(os.path.join(OUTPUT_DIR, "data_jour2.npz"), **study_results["data"])
+    np.savez(os.path.join(OUTPUT_DIR, "data_monofrequence.npz"), **study_results["data"])
     return OUTPUT_DIR
 
 
-def plot_day3_studies(study_results, output_dir=None):
-    """On trace les trois comparaisons du troisième jour et on conserve leurs données."""
+def plot_multifrequency_placement_and_coverage(study_results, output_dir=None):
+    """On trace les placements multifréquences et l’effet de la quantité de matériau."""
     if study_results is None:
         return None
-    OUTPUT_DIR = str(Path(__file__).resolve().parent / "resultats_jour3" if output_dir is None else output_dir)
+    OUTPUT_DIR = str(Path(__file__).resolve().parent / "resultats_multifrequence" if output_dir is None else output_dir)
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     freqs, studies = study_results["frequencies"], study_results["studies"]
     V_obj = study_results["data"]["volume_fraction"]
@@ -348,7 +348,7 @@ def plot_day3_studies(study_results, output_dir=None):
         ax.legend(fontsize=7)
     fig.suptitle("Spectres des placements binaires optimisés à une seule fréquence")
     fig.tight_layout()
-    fig.savefig(os.path.join(OUTPUT_DIR, "fig_j3_1_analyse_resultats_jour2_spectre.jpg"), dpi=160)
+    fig.savefig(os.path.join(OUTPUT_DIR, "fig_spectres_placements_monofrequence.jpg"), dpi=160)
     plt.close(fig)
 
     fig, axes = plt.subplots(2, 3, figsize=(13, 8))
@@ -375,7 +375,7 @@ def plot_day3_studies(study_results, output_dir=None):
         ax.legend(fontsize=7)
     fig.suptitle("Optimisation commune à plusieurs fréquences et spectres des placements binaires")
     fig.tight_layout()
-    fig.savefig(os.path.join(OUTPUT_DIR, "fig_j3_2_optimisation_multifrequence.jpg"), dpi=160)
+    fig.savefig(os.path.join(OUTPUT_DIR, "fig_optimisation_multifrequence.jpg"), dpi=160)
     plt.close(fig)
 
     fig, axes = plt.subplots(2, 3, figsize=(13, 7))
@@ -398,16 +398,16 @@ def plot_day3_studies(study_results, output_dir=None):
             ax.legend(fontsize=7)
     fig.suptitle("Coûts des placements binaires en fonction de la quantité de matériau")
     fig.tight_layout()
-    fig.savefig(os.path.join(OUTPUT_DIR, "fig_j3_3_etude_quantite_optimale_poreux.jpg"), dpi=160)
+    fig.savefig(os.path.join(OUTPUT_DIR, "fig_cout_quantite_absorbant.jpg"), dpi=160)
     plt.close(fig)
 
-    np.savez(os.path.join(OUTPUT_DIR, "data_jour3.npz"), **study_results["data"])
+    np.savez(os.path.join(OUTPUT_DIR, "data_multifrequence.npz"), **study_results["data"])
     return OUTPUT_DIR
 
 
-def plot_day4_studies(results, output_dir=None):
+def plot_absorber_configuration_comparison(results, output_dir=None):
     """On présente les répartitions, les profils incidents et les candidats comparés."""
-    output_dir = Path(__file__).resolve().parent / "resultats_jour4" if output_dir is None else Path(output_dir)
+    output_dir = Path(__file__).resolve().parent / "resultats_comparaison_dispositifs" if output_dir is None else Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     frequencies, domain = results["frequencies"], results["domain"]
     N, h = results["N"], results["spacestep"]
@@ -439,7 +439,7 @@ def plot_day4_studies(results, output_dir=None):
     axes[1].set_aspect("equal")
     axes[1].legend(fontsize=7)
     fig.tight_layout()
-    fig.savefig(output_dir / "fig_j4_1_industrialisation_binaire_et_hybride.jpg", dpi=160)
+    fig.savefig(output_dir / "fig_repartitions_binaire_et_mixte.jpg", dpi=160)
     plt.close(fig)
     np.savetxt(output_dir / "comparaison_repartitions.csv", np.column_stack((frequencies, results["initial_costs"], results["continuous_costs"], results["binary_costs"], results["mixed_costs"], results["full_costs"])), delimiter=",", header="frequency_hz,J_initial,J_continuous,J_binary,J_mixed,J_full", comments="")
 
@@ -460,7 +460,7 @@ def plot_day4_studies(results, output_dir=None):
     axes[1, 0].set_ylabel("Profondeur (m)")
     fig.suptitle(f"Réponses à différents profils incidents à {results['profile_frequency']:g} Hz")
     fig.tight_layout()
-    fig.savefig(output_dir / "fig_j4_2_robustesse_sources_ondes.jpg", dpi=160)
+    fig.savefig(output_dir / "fig_comparaison_profils_sources.jpg", dpi=160)
     plt.close(fig)
     with (output_dir / "robustesse_sources.csv").open("w", newline="", encoding="utf-8") as stream:
         writer = csv.writer(stream)
@@ -486,9 +486,9 @@ def plot_day4_studies(results, output_dir=None):
         ax.set_xticks(positions, labels, rotation=50, ha="right", fontsize=7)
         ax.grid(axis="y", alpha=0.3)
     fig.tight_layout()
-    fig.savefig(output_dir / "fig_j4_3_tableau_de_bord_produits_resonics.jpg", dpi=160)
+    fig.savefig(output_dir / "fig_comparaison_dispositifs_resonics.jpg", dpi=160)
     plt.close(fig)
-    np.savez(output_dir / "data_jour4.npz", frequencies=frequencies, domain=domain,
+    np.savez(output_dir / "data_comparaison_dispositifs.npz", frequencies=frequencies, domain=domain,
              chi_initial=results["initial"], chi_continuous=results["continuous"], chi_binary=binary,
              initial_costs=results["initial_costs"], continuous_costs=results["continuous_costs"],
              binary_costs=results["binary_costs"], mixed_costs=results["mixed_costs"], full_costs=results["full_costs"],

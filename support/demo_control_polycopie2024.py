@@ -25,8 +25,10 @@ ALPHA0 = [50.0, -50.0]  # On donne les parties réelle et imaginaire du point in
 OMEGA = 3430.0  # On exprime la pulsation en radians par seconde.
 C = 343.0  # On exprime la célérité en mètres par seconde.
 
-# On choisit la démonstration, une journée ou les quatre journées.
-ETUDE = "demo"  # On peut choisir jour1, jour2, jour3, jour4 ou tous.
+# On choisit une étude ou l’ensemble des comparaisons.
+# Les choix sont demo, materiaux_validation, monofrequence,
+# multifrequence, comparaison_dispositifs et tous.
+ETUDE = "demo"
 N_POINTS = 128
 FREQUENCES_HZ = numpy.arange(50.0, 3501.0, 50.0)
 N_ITERATIONS = 80
@@ -145,10 +147,10 @@ compute_objective_function = your_compute_objective_function
 
 def run_studies(selection):
     """On lance les calculs choisis puis on transmet leurs résultats aux tracés."""
-    if selection not in ("jour1", "jour2", "jour3", "jour4", "tous"):
-        print("On choisit demo, jour1, jour2, jour3, jour4 ou tous dans ETUDE.")
+    if selection not in ("materiaux_validation", "monofrequence", "multifrequence", "comparaison_dispositifs", "tous"):
+        print("On choisit demo, materiaux_validation, monofrequence, multifrequence, comparaison_dispositifs ou tous dans ETUDE.")
         return
-    if selection in ("jour1", "tous"):
+    if selection in ("materiaux_validation", "tous"):
         result = processing.study_porous_materials(
             FREQUENCES_HZ, SOURCE, ALPHA0, MATERIAUX_A_COMPARER,
         )
@@ -167,30 +169,30 @@ def run_studies(selection):
         if result is None:
             return
         postprocessing.plot_gradient_validation(result)
-    if selection in ("jour2", "tous"):
-        result = processing.run_day2_studies(
+    if selection in ("monofrequence", "tous"):
+        result = processing.study_spectra_and_single_frequency_placement(
             N_POINTS, FREQUENCES_HZ, N_ITERATIONS, FRACTION_GARNIE,
             SOURCE, CAR_MAT, ALPHA0, C,
         )
         if result is None:
             return
-        postprocessing.plot_day2_studies(result)
-    if selection in ("jour3", "tous"):
-        result = processing.run_day3_studies(
+        postprocessing.plot_spectra_and_single_frequency_placement(result)
+    if selection in ("multifrequence", "tous"):
+        result = processing.study_multifrequency_placement_and_coverage(
             N_POINTS, FREQUENCES_HZ, N_ITERATIONS, FRACTION_GARNIE,
             QUANTITES, SOURCE, CAR_MAT, ALPHA0, C,
         )
         if result is None:
             return
-        postprocessing.plot_day3_studies(result)
-    if selection in ("jour4", "tous"):
-        result = processing.run_day4_studies(
+        postprocessing.plot_multifrequency_placement_and_coverage(result)
+    if selection in ("comparaison_dispositifs", "tous"):
+        result = processing.compare_absorber_configurations(
             N_POINTS, FREQUENCES_HZ, N_ITERATIONS, FRACTION_GARNIE,
             SOURCE, CAR_MAT, ALPHA0, C, MATERIAUX_A_COMPARER,
         )
         if result is None:
             return
-        postprocessing.plot_day4_studies(result)
+        postprocessing.plot_absorber_configuration_comparison(result)
 
 
 if __name__ == '__main__' and ETUDE == 'demo':

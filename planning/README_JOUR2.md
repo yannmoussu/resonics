@@ -18,7 +18,7 @@ Chaque contribution concerne un seul fichier Python existant. On partage la dern
 
 ### Ce que l’on réutilise
 
-Le [programme principal](../support/demo_control_polycopie2024.py) contient `your_compute_objective_function` et `your_optimization_procedure`. Les calculs `compute_state`, `compute_adjoint` et `compute_gradient` sont définis dans `processing.py`, tandis que `project_density` est définie dans `preprocessing.py`. Le programme principal les importe pour sa descente. Le coût, le gradient et la conservation de la quantité ont été vérifiés. Pour lancer les études du jour 2, on choisit `ETUDE="jour2"` en tête du programme principal.
+Le [programme principal](../support/demo_control_polycopie2024.py) contient `your_compute_objective_function` et `your_optimization_procedure`. Les calculs `compute_state`, `compute_adjoint` et `compute_gradient` sont définis dans `processing.py`, tandis que `project_density` est définie dans `preprocessing.py`. Le programme principal les importe pour sa descente. Le coût, le gradient et la conservation de la quantité ont été vérifiés. Pour lancer les études du jour 2, on choisit `ETUDE="monofrequence"` en tête du programme principal.
 
 Les [calculs fréquentiels](../support/processing.py) et les [tracés](../support/postprocessing.py) utilisent la source choisie dans le programme principal. `source_constant(y, omega)` renvoie un, et `source_rer_b(y, omega)` renvoie la somme de gaussiennes après conversion de la pulsation en hertz. Le champ initial, la descente et la courbe fréquentielle partagent le même choix.
 
@@ -50,7 +50,7 @@ Le coefficient de matériau est désormais calculé avant chaque résolution. Le
 1. **Yann — programme principal.** On reprend J2.1 aux niveaux 1 et 2 du générateur fourni, avec le recouvrement complet. On examine d’abord les images du maillage pour vérifier les reliefs.
 2. **Yann — même fichier.** On conserve une grille commune, la même source, le même matériau et les mêmes fréquences. Si les arrondis gênent le niveau 2, on examine un autre choix simple de N pour toutes les formes, puis on vérifie les dimensions et les longueurs d’onde avant le calcul.
 3. **Mathis — analyse.** On relève la quantité de chaque mur entièrement garni. Un contour plus long peut utiliser davantage de matériau.
-4. **Olympia — tracés.** On superpose les courbes et on compare position et hauteur des pics. Chaque nouvelle figure reçoit un nom indiquant le cas, par exemple `fig_j2_plan_plein.png`.
+4. **Olympia — tracés.** On superpose les courbes et on compare position et hauteur des pics. Chaque nouvelle figure reçoit un nom indiquant le cas, par exemple `fig_mur_plan_entierement_garni.png`.
 
 **Résultat attendu :** courbes des trois formes avec leurs paramètres. Les différences renseignent sur le relief et la quantité présente. Elles ne suffisent pas à attribuer toute amélioration à la forme seule.
 

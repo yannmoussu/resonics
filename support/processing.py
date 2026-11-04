@@ -1023,8 +1023,8 @@ def validate_adjoint_gradient(N, samples, omega, source, car_mat, alpha0,
             "steps": steps, "errors": np.asarray(errors), "omega": omega, "N": N}
 
 
-def run_day2_studies(N, frequencies, iterations, V_obj, source, car_mat, alpha0, sound_speed_m_s):
-    """On réalise les quatre études du deuxième jour avec les paramètres communs."""
+def study_spectra_and_single_frequency_placement(N, frequencies, iterations, V_obj, source, car_mat, alpha0, sound_speed_m_s):
+    """On calcule les spectres des murs puis on optimise le placement à une fréquence."""
     freqs = np.arange(50.0, 3501.0, 50.0) if frequencies is None else np.asarray(frequencies, dtype=float)
     if len(freqs) == 0 or N < 16 or N % 16 != 0:
         print("Il faut au moins une fréquence et une largeur multiple de seize pour les deux premiers niveaux.")
@@ -1037,8 +1037,8 @@ def run_day2_studies(N, frequencies, iterations, V_obj, source, car_mat, alpha0,
     if sound_speed_m_s / (np.max(freqs) * spacestep) < 10:
         print("Attention, le maillage comporte moins de dix points par longueur d'onde au maximum de fréquence.")
 
-    # Jour 2, première et deuxième tâches. On compare les murs entièrement garnis.
-    print("Jour 2 : spectres des murs entièrement garnis.")
+    # On compare les murs entièrement garnis.
+    print("Spectres des murs entièrement garnis.")
     levels = [0, 1, 2, 3] if N % 64 == 0 else [0, 1, 2]
     if 3 not in levels:
         print("Le niveau trois est écarté de ce calcul réduit car son motif demande une largeur multiple de soixante-quatre.")
@@ -1053,8 +1053,8 @@ def run_day2_studies(N, frequencies, iterations, V_obj, source, car_mat, alpha0,
 
 
 
-    # Jour 2, troisième tâche. On fixe la quantité de matériau pour chaque mur.
-    print("Jour 2 : répartition initiale et mur entièrement garni.")
+    # On fixe la quantité de matériau pour chaque mur.
+    print("Répartition initiale et mur entièrement garni.")
     initial, chi_initial = {}, {}
     for level in (0, 1, 2):
         x, y = coordinates[level]
@@ -1062,8 +1062,8 @@ def run_day2_studies(N, frequencies, iterations, V_obj, source, car_mat, alpha0,
         chi_initial[level] = preprocessing.project_density(raw, domains[level], V_obj)
         initial[level] = evaluate_spectrum(solvers[level], domains[level], chi_initial[level], k_vals, Alphas, source, sound_speed_m_s)
 
-    # Jour 2, quatrième tâche. On optimise séparément deux fréquences critiques.
-    print("Jour 2 : placements à une fréquence.")
+    # On optimise séparément deux fréquences critiques.
+    print("Placements à une fréquence.")
     results = {}
     for level in (0, 1, 2):
         results[level] = []
@@ -1112,8 +1112,8 @@ def run_day2_studies(N, frequencies, iterations, V_obj, source, car_mat, alpha0,
             "spacestep": spacestep, "volume_fraction": V_obj, "data": data}
 
 
-def run_day3_studies(N, frequencies, iterations, V_obj, quantities, source, car_mat, alpha0, sound_speed_m_s):
-    """On réalise les trois études du troisième jour avec les paramètres communs."""
+def study_multifrequency_placement_and_coverage(N, frequencies, iterations, V_obj, quantities, source, car_mat, alpha0, sound_speed_m_s):
+    """On optimise le placement sur plusieurs fréquences et on compare les quantités de matériau."""
     freqs = np.arange(50.0, 3501.0, 50.0) if frequencies is None else np.asarray(frequencies, dtype=float)
     volumes = np.asarray([.10, .30, .50, .70, 1.0] if quantities is None else quantities, dtype=float)
     if len(freqs) == 0 or len(volumes) == 0 or N < 16 or N % 16 != 0:
@@ -1130,8 +1130,8 @@ def run_day3_studies(N, frequencies, iterations, V_obj, quantities, source, car_
     if sound_speed_m_s / (np.max(freqs) * spacestep) < 10:
         print("Attention, le maillage comporte moins de dix points par longueur d'onde au maximum de fréquence.")
 
-    # Jour 3, première tâche. On observe chaque placement sur toute la bande.
-    print("Jour 3 : spectres des placements à une fréquence.")
+    # On observe chaque placement sur toute la bande.
+    print("Spectres des placements à une fréquence.")
     studies = {}
     for level in (0, 1, 2):
         domain, x, y, _, _ = preprocessing._set_geometry_of_domain(M, N, level=level)
@@ -1160,8 +1160,8 @@ def run_day3_studies(N, frequencies, iterations, V_obj, quantities, source, car_
         }
 
 
-    # Jour 3, deuxième tâche. On minimise la moyenne sur plusieurs fréquences.
-    print("Jour 3 : placements pour plusieurs fréquences.")
+    # On minimise la moyenne sur plusieurs fréquences.
+    print("Placements pour plusieurs fréquences.")
     for level in (0, 1, 2):
         study = studies[level]
         targets = select_peak_indices(freqs, k_vals, study["initial"], count=3)
@@ -1181,8 +1181,8 @@ def run_day3_studies(N, frequencies, iterations, V_obj, quantities, source, car_
               "; coût moyen binaire =", np.mean(spectrum[targets]))
 
 
-    # Jour 3, troisième tâche. On répète le calcul pour les quantités indiquées.
-    print("Jour 3 : étude de la quantité de matériau.")
+    # On répète le calcul pour les quantités indiquées.
+    print("Étude de la quantité de matériau.")
     for level in (0, 1, 2):
         study = studies[level]
         solver, domain = study["solver"], study["domain"]
@@ -1255,7 +1255,7 @@ def mean_cost(frequencies, costs):
     return float(np.trapezoid(costs, frequencies) / (frequencies[-1] - frequencies[0]))
 
 
-def run_day4_studies(N, frequencies, iterations, V_obj, source, car_mat, alpha0,
+def compare_absorber_configurations(N, frequencies, iterations, V_obj, source, car_mat, alpha0,
                      sound_speed_m_s, material_names):
     """On évalue les répartitions, les profils incidents et les matériaux choisis."""
     frequencies = np.asarray(frequencies, dtype=float)
