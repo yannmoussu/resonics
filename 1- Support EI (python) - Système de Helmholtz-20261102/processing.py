@@ -12,6 +12,7 @@ import scipy.sparse.linalg
 
 # MRG packages
 import _env
+import preprocessing
 
 
 def is_in_interior_domain(node):
@@ -529,3 +530,44 @@ def replace_old_by_new(u, oldvalue, newvalue):
             if u[i, j] == oldvalue:
                 u[i, j] = newvalue
     return u
+
+def run_rer_b_frequency_sweep(domain_omega, spacestep, frequencies_hz, f, f_dir, f_neu, f_rob, beta_pde,    alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob, sound_speed_m_s=343.0):
+    """Résout Helmholtz pour chaque fréquence et conserve le cas initial intact.
+
+    Le spectre est appliqué avec la convention de Dirichlet du support.
+    Le matériau et la géométrie sont fixés pendant tout le balayage.
+    """
+    frequencies = numpy.asarray(frequencies_hz, dtype=numpy.float64)
+    amplitudes = numpy.empty_like(frequencies)
+    energies = numpy.empty_like(frequencies)
+    solutions = {}
+
+    # On résout Helmoltz pour chaque fréquence et on stocke les solutions et les énergies.
+    for ind, frequency_hz in enumerate(frequencies):
+        frequency_hz = float(frequency_hz)
+        k = 2.0 * numpy.pi * frequency_hz / sound_speed_m_s
+        amplitudes[ind] = preprocessing.source_rer_b(frequency_hz)
+        f_dir_freq = numpy.zeros_like(f_dir)
+        f_dir_freq[0, :] = amplitudes[ind]
+        u_freq = solve_helmholtz(domain_omega, spacestep, k, f, f_dir_freq, f_neu, f_rob, beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob)
+        interior_mask = domain_omega == _env.NODE_INTERIOR 
+        u_interior = u_freq[interior_mask] # Champ acoustique sur les points intérieurs du domaine
+        squared_amplitude = numpy.abs(u_interior)**2
+        total_amplitude = numpy.sum(squared_amplitude)
+        energy = spacestep**2 * total_amplitude # Énergie totale dans le domaine intérieur
+        energies[ind] = energy
+        solutions[frequency_hz] = u_freq
+
+    # Les énergies contiennent déjà la pondération imposée par la source.
+    if frequencies.size > 1:
+        band_energy = float(numpy.sum((frequencies[1:] - frequencies[:-1]) * (energies[1:] + energies[:-1]) / 2.0)) # Méthode du trapèze pour l'intégration sur la bande de fréquences
+    else:
+        band_energy = float(energies[0])
+
+    return {
+        "frequencies_hz": frequencies,
+        "amplitudes": amplitudes,
+        "energies": energies,
+        "solutions": solutions,
+        "band_energy": band_energy,
+    }

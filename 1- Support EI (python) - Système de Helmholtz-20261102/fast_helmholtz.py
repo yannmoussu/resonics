@@ -248,11 +248,11 @@ def project_chi(chi_cand, domain_omega, V_obj):
     return chi_proj
 
 
-def binarize_chi(chi_cont, domain_omega, V_obj):
+def binarize_chi(chi_cont, domain_omega, V_obj, solver=None, wavenumber=None, Alpha=None):
     """
     Convertit une densité optimisée continue chi in [0, 1] en une distribution
     binaire industrielle chi_bin in {0, 1} respectant le quota V_obj (les K = round(V_obj * S)
-    noeuds de Robin ayant la plus forte densité deviennent 1, les autres 0).
+    noeuds de Robin actifs ayant la plus forte densité deviennent 1, les autres 0).
     """
     mask_rob = (domain_omega == _env.NODE_ROBIN)
     rob_coords = np.argwhere(mask_rob)
@@ -265,18 +265,68 @@ def binarize_chi(chi_cont, domain_omega, V_obj):
         chi_bin[mask_rob] = 1.0
         return chi_bin
 
-    vals = chi_cont[mask_rob]
-    top_indices = np.argsort(vals)[::-1][:n_ones]
+    vals = chi_cont[mask_rob].copy()
+    if solver is not None:
+        active_mask = np.zeros_like(mask_rob)
+        active_mask[solver.rob_node_i, solver.rob_node_j] = True
+        is_active = active_mask[mask_rob]
+        vals[~is_active] = -1.0  # Priorité exclusive aux noeuds de Robin en contact avec le fluide
+
+    order = np.argsort(vals)[::-1]
+    top_indices = order[:n_ones]
     selected = rob_coords[top_indices]
     chi_bin[selected[:, 0], selected[:, 1]] = 1.0
+
+    # Affinement binaire guidé par le gradient adjoint sur {0, 1} si solver est fourni
+    if solver is not None and wavenumber is not None and Alpha is not None:
+        for _ in range(35):
+            alpha_rob = preprocessing.set2zero(Alpha * chi_bin, domain_omega)
+            u_b, p_b = solver.solve_state_and_adjoint(wavenumber, alpha_rob)
+            ene_bin = solver.compute_energy(u_b)
+            grad_b = solver.compute_gradient(u_b, p_b, chi_bin, Alpha)
+            g_rob = grad_b[mask_rob]
+
+            ones_mask = (chi_bin[mask_rob] > 0.5) & is_active
+            zeros_mask = (chi_bin[mask_rob] < 0.5) & is_active
+            if not np.any(ones_mask) or not np.any(zeros_mask):
+                break
+
+            ones_idx = np.where(ones_mask)[0]
+            zeros_idx = np.where(zeros_mask)[0]
+            # Candidats : noeuds à 1 de plus fort gradient positif vs noeuds à 0 de plus fort gradient négatif
+            top_ones = ones_idx[np.argsort(g_rob[ones_idx])[::-1][:5]]
+            top_zeros = zeros_idx[np.argsort(g_rob[zeros_idx])[:5]]
+
+            improved = False
+            for i1 in top_ones:
+                c1 = tuple(rob_coords[i1])
+                for i0 in top_zeros:
+                    if g_rob[i0] >= g_rob[i1]:
+                        continue
+                    c0_pt = tuple(rob_coords[i0])
+                    chi_bin[c1] = 0.0
+                    chi_bin[c0_pt] = 1.0
+                    e_try = solver.compute_energy(solver.solve(wavenumber, preprocessing.set2zero(Alpha * chi_bin, domain_omega)))
+                    if e_try < ene_bin:
+                        improved = True
+                        break
+                    chi_bin[c1] = 1.0
+                    chi_bin[c0_pt] = 0.0
+                if improved:
+                    break
+            if not improved:
+                break
+
     return chi_bin
 
 
 def optimize_single_frequency(solver, wavenumber, Alpha, chi_init, V_obj=0.3,
-                              mu_init=5.0, numb_iter=100, min_mu=1e-5, verbose=False):
+                              mu_init=5.0, numb_iter=100, min_mu=1e-6, verbose=False):
     """
     Optimisation par descente de gradient projeté à une fréquence (nombre d'onde) donnée.
-    Utilise le solveur rapide pré-assemblé (exactement équivalent à your_optimization_procedure).
+    Suit le schéma de demo_control_polycopie2024.py (gradient non normalisé chi - mu * grad,
+    mu *= 1.12 si décroissance, mu /= 2 sinon) avec plafond progressif sur la variation
+    par itération afin de garantir une trajectoire de descente régulière et lisse.
     """
     chi = project_chi(chi_init.copy(), solver.domain, V_obj)
     mu = float(mu_init)
@@ -293,25 +343,33 @@ def optimize_single_frequency(solver, wavenumber, Alpha, chi_init, V_obj=0.3,
             print(f"  [Iter {k:02d}] Energy = {ene_k:.6f}, mu = {mu:.5f}")
 
         grad = solver.compute_gradient(u, p, chi, Alpha)
-        norm_g = np.max(np.abs(grad))
-        grad_normed = grad / norm_g if norm_g > 1e-12 else grad
+        max_g = np.max(np.abs(grad))
+        if max_g < 1e-12:
+            energy_hist[k + 1:] = ene_k
+            break
 
+        if k == 0:
+            mu = 0.025 / max_g
+
+        step_cap = 0.025 * (1.12 ** k)
         ene_trial = ene_k
         chi_best = chi.copy()
         u_best = u.copy()
 
         while ene_trial >= ene_k and mu > min_mu:
-            chi_trial = project_chi(chi - mu * grad_normed, solver.domain, V_obj)
+            eff_mu = min(mu, step_cap / max_g)
+            chi_trial = project_chi(chi - eff_mu * grad, solver.domain, V_obj)
             alpha_rob_trial = preprocessing.set2zero(Alpha * chi_trial, solver.domain)
             u_trial = solver.solve(wavenumber, alpha_rob_trial)
             ene_trial = solver.compute_energy(u_trial)
 
             if ene_trial < ene_k:
-                mu *= 1.1
+                mu = eff_mu * 1.12
                 chi_best = chi_trial
                 u_best = u_trial
+                break
             else:
-                mu /= 2.0
+                mu = eff_mu / 2.0
 
         if ene_trial >= ene_k:
             energy_hist[k + 1:] = ene_k
@@ -330,17 +388,23 @@ def optimize_single_frequency(solver, wavenumber, Alpha, chi_init, V_obj=0.3,
     return chi, energy_hist, u, grad
 
 
-def optimize_multi_frequency(solver, wavenumbers, Alphas, chi_init, weights=None,
-                             V_obj=0.3, mu_init=5.0, numb_iter=100, min_mu=1e-5, verbose=False):
+def optimize_multi_frequency(solver, wavenumbers, Alphas, chi_init, weights=None, source_amps=None,
+                             V_obj=0.3, mu_init=5.0, numb_iter=100, min_mu=1e-6, verbose=False):
     """
     Optimisation multi-fréquentielle simultanée :
         min_{chi}  J_multi(chi) = sum_{m=1}^M w_m * J(u_{omega_m}(chi))
     Le gradient exact est la combinaison linéaire pondérée des gradients adjoints :
         grad J_multi(chi) = sum_{m=1}^M w_m * grad J(u_{omega_m}, p_{omega_m})
+    Supporte les amplitudes spectrales de source source_amps (ex. source RER B).
     """
     wavenumbers = np.asarray(wavenumbers, dtype=np.float64)
     Alphas = np.asarray(Alphas, dtype=np.complex128)
     n_freqs = len(wavenumbers)
+
+    if source_amps is None:
+        source_amps = np.ones(n_freqs, dtype=np.float64)
+    else:
+        source_amps = np.asarray(source_amps, dtype=np.float64)
 
     if weights is None:
         weights = np.ones(n_freqs, dtype=np.float64) / n_freqs
@@ -361,10 +425,11 @@ def optimize_multi_frequency(solver, wavenumbers, Alphas, chi_init, weights=None
         for m in range(n_freqs):
             kw = wavenumbers[m]
             alp = Alphas[m]
+            amp2 = source_amps[m] ** 2
             alpha_rob = preprocessing.set2zero(alp * chi, solver.domain)
             u_m, p_m = solver.solve_state_and_adjoint(kw, alpha_rob)
-            e_m = solver.compute_energy(u_m)
-            g_m = solver.compute_gradient(u_m, p_m, chi, alp)
+            e_m = amp2 * solver.compute_energy(u_m)
+            g_m = amp2 * solver.compute_gradient(u_m, p_m, chi, alp)
 
             per_freq_hist[k, m] = e_m
             total_ene += weights[m] * e_m
@@ -374,33 +439,43 @@ def optimize_multi_frequency(solver, wavenumbers, Alphas, chi_init, weights=None
         if verbose:
             print(f"  [Multi-Iter {k:02d}] Weighted Energy = {total_ene:.6f}, mu = {mu:.5f}")
 
-        norm_g = np.max(np.abs(total_grad))
-        grad_normed = total_grad / norm_g if norm_g > 1e-12 else total_grad
+        max_g = np.max(np.abs(total_grad))
+        if max_g < 1e-12:
+            energy_hist[k + 1:] = total_ene
+            per_freq_hist[k + 1:] = per_freq_hist[k]
+            break
 
+        if k == 0:
+            mu = 0.004 / max_g
+
+        step_cap = 0.004 * (1.085 ** k)
         ene_trial = total_ene
         chi_best = chi.copy()
         per_freq_best = per_freq_hist[k].copy()
 
         while ene_trial >= total_ene and mu > min_mu:
-            chi_trial = project_chi(chi - mu * grad_normed, solver.domain, V_obj)
+            eff_mu = min(mu, step_cap / max_g)
+            chi_trial = project_chi(chi - eff_mu * total_grad, solver.domain, V_obj)
             ene_cand = 0.0
             e_list = np.zeros(n_freqs, dtype=np.float64)
             for m in range(n_freqs):
                 kw = wavenumbers[m]
                 alp = Alphas[m]
+                amp2 = source_amps[m] ** 2
                 alpha_rob_trial = preprocessing.set2zero(alp * chi_trial, solver.domain)
                 u_trial = solver.solve(kw, alpha_rob_trial)
-                e_m = solver.compute_energy(u_trial)
+                e_m = amp2 * solver.compute_energy(u_trial)
                 e_list[m] = e_m
                 ene_cand += weights[m] * e_m
 
             ene_trial = ene_cand
             if ene_trial < total_ene:
-                mu *= 1.1
+                mu = eff_mu * 1.12
                 chi_best = chi_trial
                 per_freq_best = e_list
+                break
             else:
-                mu /= 2.0
+                mu = eff_mu / 2.0
 
         if ene_trial >= total_ene:
             energy_hist[k + 1:] = total_ene
@@ -411,6 +486,19 @@ def optimize_multi_frequency(solver, wavenumbers, Alphas, chi_init, weights=None
         energy_hist[k + 1] = ene_trial
         per_freq_hist[k + 1] = per_freq_best
         k += 1
+
+    if k == numb_iter:
+        total_ene = 0.0
+        for m in range(n_freqs):
+            kw = wavenumbers[m]
+            alp = Alphas[m]
+            amp2 = source_amps[m] ** 2
+            alpha_rob = preprocessing.set2zero(alp * chi, solver.domain)
+            u_m = solver.solve(kw, alpha_rob)
+            e_m = amp2 * solver.compute_energy(u_m)
+            per_freq_hist[numb_iter, m] = e_m
+            total_ene += weights[m] * e_m
+        energy_hist[numb_iter] = total_ene
 
     return chi, energy_hist, per_freq_hist
 

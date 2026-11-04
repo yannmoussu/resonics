@@ -9,6 +9,7 @@ import os
 
 # MRG packages
 import _env
+import preprocessing
 
 
 def myimshow(tab, **kwargs):
@@ -111,13 +112,58 @@ def _plot_error(err):
     return
 
 def _plot_energy_history(energy):
-
-    matplotlib.pyplot.plot(energy) #, cmap = 'jet')#, vmin = 1e-4, vmax = 1e-0)
-    matplotlib.pyplot.title('Energy')
-    #matplotlib.pyplot.colorbar()
-    #matplotlib.pyplot.show()
-    filename = 'fig_energy_real.jpg'
+    """On trace le coût pendant la descente puis après le passage en binaire."""
+    values = numpy.asarray(energy).ravel()
+    matplotlib.pyplot.plot(values[:-1], label="Descente continue")
+    last = len(values) - 2
+    matplotlib.pyplot.plot([last, last], [values[-2], values[-1]], ":", color="tab:orange")
+    matplotlib.pyplot.scatter(last, values[-1], marker="s", color="tab:orange",
+                              label="Répartition finale binaire", zorder=3)
+    matplotlib.pyplot.title("Descente et répartition finale du matériau")
+    matplotlib.pyplot.xlabel("Étape acceptée de la descente")
+    matplotlib.pyplot.ylabel("Critère d'énergie")
+    matplotlib.pyplot.legend()
+    filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fig_energy_real.jpg')
     matplotlib.pyplot.savefig(filename)
     matplotlib.pyplot.close()
+    return
 
+
+def plot_rer_b_frequency_sweep(results, output_dir=None):
+    """Enregistre le spectre du RER B et son énergie en fonction de la fréquence."""
+    if output_dir is None:
+        output_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # On crée le dossier demandé avant d’enregistrer les figures.
+    os.makedirs(output_dir, exist_ok=True)
+    frequencies = results["frequencies_hz"]
+
+    # On trace le spectre au-delà des fréquences simulées sans résoudre Helmholtz.
+    spectrum_frequencies = numpy.linspace(0.0, 3500.0, 701)
+    spectrum_amplitudes = numpy.array([
+        preprocessing.source_rer_b(frequency) for frequency in spectrum_frequencies
+    ])
+    fig, ax = matplotlib.pyplot.subplots()
+    ax.plot(spectrum_frequencies, spectrum_amplitudes)
+    ax.axvspan(frequencies[0], frequencies[-1], color="gray", alpha=0.15,
+               label="Fréquences calculées")
+    ax.set_xlim(0.0, 3500.0)
+    ax.set_xlabel("Fréquence (Hz)")
+    ax.set_ylabel("Amplitude relative")
+    ax.set_title("Source acoustique hypothétique du RER B")
+    ax.legend()
+    ax.grid(True)
+    fig.tight_layout()
+    fig.savefig(os.path.join(output_dir, "fig_rer_b_spectre.png"), dpi=150)
+    matplotlib.pyplot.close(fig)
+
+    fig, ax = matplotlib.pyplot.subplots()
+    ax.plot(frequencies, results["energies"], marker="o", markersize=3)
+    ax.set_xlabel("Fréquence (Hz)")
+    ax.set_ylabel("Énergie acoustique numérique")
+    ax.set_title("Énergie du domaine selon la fréquence")
+    ax.grid(True)
+    fig.tight_layout()
+    fig.savefig(os.path.join(output_dir, "fig_rer_b_energie.png"), dpi=150)
+    matplotlib.pyplot.close(fig)
     return
