@@ -163,6 +163,9 @@ def run_studies(selection):
         if result is None:
             return
         postprocessing.plot_sommerfeld_comparison(result)
+        depths = numpy.linspace(0.5, 1.5, 201)
+        result = processing.study_boundary_depth_dependence(depths, 200.0, SOURCE, C)
+        postprocessing.plot_boundary_depth_dependence(result)
         result = processing.validate_adjoint_gradient(
             N_POINTS, 12, OMEGA, SOURCE, CAR_MAT, ALPHA0, C,
         )
@@ -186,13 +189,24 @@ def run_studies(selection):
             return
         postprocessing.plot_multifrequency_placement_and_coverage(result)
     if selection in ("comparaison_dispositifs", "tous"):
-        result = processing.compare_absorber_configurations(
+        reference = processing.compare_absorber_configurations(
             N_POINTS, FREQUENCES_HZ, N_ITERATIONS, FRACTION_GARNIE,
             SOURCE, CAR_MAT, ALPHA0, C, MATERIAUX_A_COMPARER,
         )
-        if result is None:
+        if reference is None:
             return
-        postprocessing.plot_absorber_configuration_comparison(result)
+        postprocessing.plot_absorber_configuration_comparison(reference)
+        fixed_budget = processing.compare_absorber_configurations(
+            N_POINTS, FREQUENCES_HZ, N_ITERATIONS, FRACTION_GARNIE,
+            SOURCE, CAR_MAT, ALPHA0, C, MATERIAUX_A_COMPARER,
+            fixed_covered_nodes=int(round(FRACTION_GARNIE * N_POINTS)),
+        )
+        if fixed_budget is None:
+            return
+        combined = processing.combine_comparable_configurations(reference, fixed_budget)
+        postprocessing.plot_fixed_budget_comparison(combined)
+        selected = processing.evaluate_selected_configuration(combined, SOURCE, C)
+        postprocessing.plot_selected_configuration(selected)
 
 
 if __name__ == '__main__' and ETUDE == 'demo':

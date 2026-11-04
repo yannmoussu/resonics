@@ -972,6 +972,20 @@ def study_sommerfeld_open_air_vs_reflexive(N, frequencies, source, car_mat,
             "alphas": alphas, "N": N, "sound_speed_m_s": sound_speed_m_s}
 
 
+def study_boundary_depth_dependence(depths, frequency_hz, source, sound_speed_m_s):
+    """On compare les références ouvertes et réfléchissantes pour des rectangles de même aire."""
+    depths = np.asarray(depths, dtype=float)
+    area = 1.0
+    widths = area/depths
+    wavenumber = 2*np.pi*frequency_hz/sound_speed_m_s
+    amplitude_squared = abs(source(0.0, 2*np.pi*frequency_hz))**2
+    denominator = np.cos(wavenumber*depths)**2
+    reflecting = area*amplitude_squared*(.5+np.sin(2*wavenumber*depths)/(4*wavenumber*depths))/denominator
+    reflecting = np.where(denominator > 1e-12, reflecting, np.nan)
+    return {"depths": depths, "widths": widths, "frequency_hz": frequency_hz,
+            "open": np.full_like(depths, area*amplitude_squared), "reflecting": reflecting}
+
+
 def validate_adjoint_gradient(N, samples, omega, source, car_mat, alpha0,
                               sound_speed_m_s):
     """On vérifie le gradient adjoint en perturbant les densités du mur."""
@@ -1049,7 +1063,7 @@ def study_spectra_and_single_frequency_placement(N, frequencies, iterations, V_o
         domains[level], solvers[level], coordinates[level] = domain, solver, (x, y)
         full[level] = evaluate_spectrum(solver, domain, (domain == _env.NODE_ROBIN).astype(float), k_vals, Alphas, source, sound_speed_m_s)
         maxima[level] = find_local_maxima(freqs, k_vals, full[level])
-        print("Niveau", level, ": coût moyen =", np.mean(full[level]), "; pics en Hz =", maxima[level][1])
+        print("Niveau", level, ": moyenne des échantillons =", np.mean(full[level]), "; pics en Hz =", maxima[level][1])
 
 
 
@@ -1256,7 +1270,7 @@ def mean_cost(frequencies, costs):
 
 
 def compare_absorber_configurations(N, frequencies, iterations, V_obj, source, car_mat, alpha0,
-                     sound_speed_m_s, material_names):
+                     sound_speed_m_s, material_names, fixed_covered_nodes=None):
     """On évalue les répartitions, les profils incidents et les matériaux choisis."""
     frequencies = np.asarray(frequencies, dtype=float)
     wavenumbers = 2.0 * np.pi * frequencies / sound_speed_m_s
@@ -1328,42 +1342,98 @@ def compare_absorber_configurations(N, frequencies, iterations, V_obj, source, c
                                "initial_cost": first_cost, "binary_cost": second_cost})
         print(name, ": coût initial =", first_cost, ", coût binaire =", second_cost)
 
-    # On compare les matériaux et les niveaux à fraction nodale identique.
+    # On compare les matériaux et les niveaux avec le budget de matériau choisi.
     material_alphas = {name: compute_material_coefficients(frequencies, source, MATERIAUX[name], alpha0)
                        for name in material_names}
     if any(values is None for values in material_alphas.values()):
         return None
     candidates = []
+    candidate_data = {}
     for level in (0, 1, 2):
         candidate_domain, cx, cy, _, _ = preprocessing._set_geometry_of_domain(M, N, level=level)
         candidate_solver = FastHelmholtzSolver(candidate_domain, h)
         candidate_initial = preprocessing.set2zero(preprocessing._set_chi(M, N, cx, cy), candidate_domain)
         candidate_robin = candidate_domain == _env.NODE_ROBIN
+        candidate_fraction = V_obj
+        if fixed_covered_nodes is not None:
+            if not 0 < fixed_covered_nodes <= np.count_nonzero(candidate_robin):
+                print("Le budget de points garnis doit être positif et tenir sur chaque mur.")
+                return None
+            candidate_fraction = fixed_covered_nodes / np.count_nonzero(candidate_robin)
         candidate_full = np.zeros(candidate_domain.shape)
         candidate_full[candidate_robin] = 1.0
         for name in material_names:
             candidate_alphas = material_alphas[name]
             density, _, _ = optimize_multi_frequency(
                 candidate_solver, target_k, candidate_alphas[targets], candidate_initial,
-                V_obj=V_obj, numb_iter=iterations, source=source, sound_speed_m_s=sound_speed_m_s,
+                V_obj=candidate_fraction, numb_iter=iterations, source=source, sound_speed_m_s=sound_speed_m_s,
             )
-            binary_density = preprocessing.binarize_chi(density, candidate_domain, V_obj)
+            binary_density = preprocessing.binarize_chi(density, candidate_domain, candidate_fraction)
             costs = evaluate_spectrum(candidate_solver, candidate_domain, binary_density, wavenumbers, candidate_alphas, source, sound_speed_m_s)
             reference = evaluate_spectrum(candidate_solver, candidate_domain, candidate_full, wavenumbers, candidate_alphas, source, sound_speed_m_s)
-            candidates.append({"level": level, "material": name, "target_fraction": V_obj,
+            candidate_data[f"{level}_{name}"] = {
+                "domain": candidate_domain, "density": binary_density,
+                "initial": preprocessing.project_density(candidate_initial, candidate_domain, candidate_fraction),
+                "spectrum": costs, "full_spectrum": reference, "alphas": candidate_alphas,
+            }
+            candidates.append({"level": level, "material": name, "target_fraction": candidate_fraction,
                                "robin_nodes": int(candidate_robin.sum()), "covered_nodes": int(binary_density.sum()),
                                "J_band_mean": mean_cost(frequencies, costs), "J_max": float(costs.max()),
                                "J_full_band_mean": mean_cost(frequencies, reference)})
             print("Candidat", level, name, ": coût moyen =", candidates[-1]["J_band_mean"])
 
-    print("Les comparaisons conservent la fraction nodale, dont la quantité totale dépend du niveau.")
+    if fixed_covered_nodes is None:
+        print("La fraction nodale est commune et la quantité totale dépend du niveau.")
+    else:
+        print("Le nombre de points garnis est commun à toutes les configurations :", fixed_covered_nodes)
     return {"frequencies": frequencies, "domain": domain, "N": N, "spacestep": h,
             "iterations_requested": iterations, "volume_fraction": V_obj,
             "source_name": source.__name__, "material_parameters": np.asarray(car_mat),
             "sound_speed_m_s": sound_speed_m_s,
-            "candidates": candidates, "history": history, "target_indices": targets,
+            "candidates": candidates, "candidate_data": candidate_data, "fixed_covered_nodes": fixed_covered_nodes, "history": history, "target_indices": targets,
             "initial": initial, "continuous": continuous, "binary": binary,
             "initial_costs": initial_costs, "continuous_costs": continuous_costs,
             "binary_costs": binary_costs, "mixed_costs": mixed_costs, "full_costs": full_costs,
             "alternative_material": alternative, "source_costs": source_costs,
             "profile_fields": profile_fields, "profile_frequency": frequencies[test_index]}
+
+
+
+def combine_comparable_configurations(reference_results, fixed_budget_results):
+    """On retient les meilleurs placements binaires disponibles au même budget."""
+    budget = fixed_budget_results["fixed_covered_nodes"]
+    combined = fixed_budget_results.copy()
+    combined["candidate_data"] = dict(fixed_budget_results["candidate_data"])
+    candidates = []
+    for fixed in fixed_budget_results["candidates"]:
+        best = dict(fixed)
+        best["relaxation"] = "budget_exact"
+        for previous in reference_results["candidates"]:
+            same_case = previous["level"] == fixed["level"] and previous["material"] == fixed["material"]
+            if same_case and previous["covered_nodes"] == budget and previous["J_band_mean"] < best["J_band_mean"]:
+                best = dict(previous)
+                best["relaxation"] = "fraction_initiale"
+                key = f"{fixed['level']}_{fixed['material']}"
+                combined["candidate_data"][key] = reference_results["candidate_data"][key]
+        candidates.append(best)
+    combined["candidates"] = candidates
+    return combined
+
+
+
+def evaluate_selected_configuration(results, source, sound_speed_m_s):
+    """On compare le meilleur placement à un placement initial binaire de même quantité."""
+    selected = min(results["candidates"], key=lambda case: case["J_band_mean"])
+    key = f"{selected['level']}_{selected['material']}"
+    data = results["candidate_data"][key]
+    domain = data["domain"]
+    h = results["spacestep"]
+    frequencies = results["frequencies"]
+    wavenumbers = 2*np.pi*frequencies/sound_speed_m_s
+    solver = FastHelmholtzSolver(domain, h)
+    initial_binary = preprocessing.binarize_chi(data["initial"], domain, selected["covered_nodes"]/selected["robin_nodes"])
+    initial_spectrum = evaluate_spectrum(solver, domain, initial_binary, wavenumbers, data["alphas"], source, sound_speed_m_s)
+    return {"selected": selected, "domain": domain, "spacestep": h,
+            "density": data["density"], "initial_density": initial_binary,
+            "frequencies": frequencies, "initial_spectrum": initial_spectrum,
+            "spectrum": data["spectrum"], "full_spectrum": data["full_spectrum"]}

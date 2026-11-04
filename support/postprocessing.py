@@ -149,7 +149,7 @@ def plot_rer_b_frequency_sweep(results, source, output_dir=None):
     spectrum_amplitudes = numpy.array([
         source(0.0, 2.0 * numpy.pi * frequency) for frequency in spectrum_frequencies
     ])
-    fig, ax = matplotlib.pyplot.subplots()
+    fig, ax = matplotlib.pyplot.subplots(figsize=(10.8, 3.6))
     ax.plot(spectrum_frequencies, spectrum_amplitudes)
     ax.axvspan(frequencies[0], frequencies[-1], color="gray", alpha=0.15,
                label="Fréquences calculées")
@@ -163,7 +163,7 @@ def plot_rer_b_frequency_sweep(results, source, output_dir=None):
     fig.savefig(os.path.join(output_dir, "fig_rer_b_spectre.png"), dpi=150)
     matplotlib.pyplot.close(fig)
 
-    fig, ax = matplotlib.pyplot.subplots()
+    fig, ax = matplotlib.pyplot.subplots(figsize=(10.8, 3.6))
     ax.plot(frequencies, results["energies"], marker="o", markersize=3)
     ax.set_xlabel("Fréquence (Hz)")
     ax.set_ylabel("Énergie acoustique numérique")
@@ -215,6 +215,22 @@ def plot_sommerfeld_comparison(results, output_dir=None):
     fig.savefig(output_dir / "fig_sommerfeld_vs_reflexif.jpg", dpi=160)
     plt.close(fig)
     np.savetxt(output_dir / "comparaison_parois.csv", np.column_stack((frequencies, energies, theory)), delimiter=",", header="frequency_hz,J_reflecting,J_open,J_material,J_open_continuous,J_reflecting_continuous", comments="")
+
+
+def plot_boundary_depth_dependence(results, output_dir=None):
+    """On montre la dépendance du coût à la profondeur pour une aire fixée."""
+    output_dir = Path(__file__).resolve().parent/"resultats_materiaux_validation" if output_dir is None else Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    fig, ax = plt.subplots(figsize=(9, 4.2), constrained_layout=True)
+    ax.semilogy(results["depths"], results["open"], label="Sortie ouverte", linewidth=2)
+    ax.semilogy(results["depths"], results["reflecting"], label="Paroi réfléchissante", linewidth=2)
+    ax.set(xlabel="Profondeur du rectangle (m)", ylabel="Coût du modèle continu", title=f"Variation de la forme à aire unitaire, {results['frequency_hz']:g} Hz")
+    ax.tick_params(labelsize=11)
+    ax.grid(alpha=.3, which="both")
+    ax.legend(fontsize=12)
+    fig.savefig(output_dir/"fig_cout_profondeur_rectangle.jpg", dpi=160)
+    plt.close(fig)
+    np.savetxt(output_dir/"cout_profondeur_rectangle.csv", np.column_stack([results["depths"], results["widths"], results["open"], results["reflecting"]]), delimiter=",", header="depth_m,width_m,J_open,J_reflecting", comments="")
 
 
 def plot_gradient_validation(results, output_dir=None):
@@ -323,6 +339,8 @@ def plot_spectra_and_single_frequency_placement(study_results, output_dir=None):
     plt.close(fig)
 
     np.savez(os.path.join(OUTPUT_DIR, "data_monofrequence.npz"), **study_results["data"])
+    plot_single_frequency_details(study_results, OUTPUT_DIR)
+    plot_wall_geometries(study_results)
     return OUTPUT_DIR
 
 
@@ -402,6 +420,8 @@ def plot_multifrequency_placement_and_coverage(study_results, output_dir=None):
     plt.close(fig)
 
     np.savez(os.path.join(OUTPUT_DIR, "data_multifrequence.npz"), **study_results["data"])
+    plot_multifrequency_details(study_results, OUTPUT_DIR)
+    plot_coverage_details(study_results, OUTPUT_DIR)
     return OUTPUT_DIR
 
 
@@ -488,6 +508,7 @@ def plot_absorber_configuration_comparison(results, output_dir=None):
     fig.tight_layout()
     fig.savefig(output_dir / "fig_comparaison_dispositifs_resonics.jpg", dpi=160)
     plt.close(fig)
+    plot_source_profile_costs(results, output_dir)
     np.savez(output_dir / "data_comparaison_dispositifs.npz", frequencies=frequencies, domain=domain,
              chi_initial=results["initial"], chi_continuous=results["continuous"], chi_binary=binary,
              initial_costs=results["initial_costs"], continuous_costs=results["continuous_costs"],
@@ -496,3 +517,252 @@ def plot_absorber_configuration_comparison(results, output_dir=None):
              source_name=results["source_name"], material_parameters=results["material_parameters"],
              sound_speed_m_s=results["sound_speed_m_s"], iterations_requested=results["iterations_requested"],
              volume_fraction=results["volume_fraction"])
+
+
+def plot_single_frequency_details(study_results, output_dir=None):
+    """On présente les historiques, les champs et le placement à une fréquence."""
+    if study_results is None:
+        return None
+    output_dir = Path(__file__).resolve().parent / "resultats_monofrequence" if output_dir is None else Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    optimizations = study_results["optimizations"]
+
+    # On distingue les coûts continus et les coûts mesurés après le tri binaire.
+    fig, axes = plt.subplots(1, 3, figsize=(13.5, 4.5), constrained_layout=True)
+    for ax, level in zip(axes, (0, 1, 2)):
+        for result in optimizations[level]:
+            history = np.asarray(result["ene_hist"]).ravel()
+            iterations = np.arange(len(history))
+            frequency = result["f_target"]
+            line, = ax.plot(iterations, history, linewidth=2,
+                            label=f"Continu, {frequency:g} Hz")
+            ax.plot(iterations[-1], result["J_opt"], "x", markersize=9,
+                    markeredgewidth=2, color=line.get_color(),
+                    label=f"Binaire, {frequency:g} Hz")
+        ax.set_title(f"Niveau {level}", fontsize=13)
+        ax.set_xlabel("Itération acceptée", fontsize=12)
+        ax.set_ylabel("Coût acoustique", fontsize=12)
+        ax.tick_params(labelsize=11)
+        ax.grid(alpha=0.3)
+        ax.legend(fontsize=11)
+    fig.savefig(output_dir / "fig_historiques_monofrequence.jpg", dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+    # On utilise la même échelle de couleurs pour les deux champs.
+    result = optimizations[2][0]
+    domain = study_results["domains"][2]
+    M, N = domain.shape
+    h = study_results["spacestep"]
+    interior = domain == _env.NODE_INTERIOR
+    extent = (-h / 2, (N - 0.5) * h, (M - 0.5) * h, -h / 2)
+    ymax = (np.max(np.where(domain == _env.NODE_ROBIN)[0]) + 2) * h
+    maximum = max(np.max(np.abs(result["u0"][interior])),
+                  np.max(np.abs(result["u_opt"][interior])), 1e-14)
+    fig, axes = plt.subplots(1, 3, figsize=(13.5, 4.5), constrained_layout=True)
+    for ax, field, title in zip(axes[:2], (result["u0"], result["u_opt"]),
+                                ("Champ initial", "Champ après tri binaire")):
+        values = np.ma.masked_where(~interior, np.abs(field))
+        image = ax.imshow(values, extent=extent, origin="upper", cmap="magma",
+                          vmin=0, vmax=maximum, interpolation="nearest")
+        ax.set_title(title, fontsize=13)
+        colorbar = fig.colorbar(image, ax=ax, fraction=0.046, pad=0.025)
+        colorbar.set_label("Module du champ", fontsize=11)
+        colorbar.ax.tick_params(labelsize=11)
+
+    # On repère les points garnis sur le contour du domaine.
+    axes[2].imshow(np.ma.masked_where(~interior, np.full(domain.shape, 0.93)),
+                   extent=extent, origin="upper", cmap="gray", vmin=0, vmax=1,
+                   interpolation="nearest")
+    rows, cols = np.where(domain == _env.NODE_ROBIN)
+    scatter = axes[2].scatter(cols * h, rows * h, c=result["chi_opt"][rows, cols],
+                              cmap="viridis", vmin=0, vmax=1, s=15)
+    axes[2].set_title("Placement binaire", fontsize=13)
+    colorbar = fig.colorbar(scatter, ax=axes[2], fraction=0.046, pad=0.025, ticks=[0, 1])
+    colorbar.ax.set_yticklabels(["Nu", "Garni"], fontsize=11)
+    for ax in axes:
+        ax.set_xlabel("Position horizontale (m)", fontsize=12)
+        ax.set_ylabel("Distance à la source (m)", fontsize=12)
+        ax.set_xlim(-h / 2, (N - 0.5) * h)
+        ax.set_ylim(ymax, 0)
+        ax.tick_params(labelsize=11)
+        ax.set_aspect("equal")
+    fig.suptitle(f"Champs et placement à {result['f_target']:g} Hz — niveau 2", fontsize=14)
+    fig.savefig(output_dir / "fig_champs_placement_monofrequence.jpg", dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    return str(output_dir)
+
+
+def plot_multifrequency_details(study_results, output_dir=None):
+    """On présente la descente multifréquence et le spectre du placement obtenu."""
+    if study_results is None:
+        return None
+    output_dir = Path(__file__).resolve().parent / "resultats_multifrequence" if output_dir is None else Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    frequencies = np.asarray(study_results["frequencies"])
+    study = study_results["studies"][2]
+    targets = np.asarray(study["multi_targets"], dtype=int)
+    history = np.asarray(study["multi_history"]).ravel()
+    iterations = np.arange(len(history))
+
+    # On montre les coûts individuels et la moyenne utilisée pendant la descente.
+    fig, ax = plt.subplots(figsize=(8.5, 4.5), constrained_layout=True)
+    for column, index in enumerate(targets):
+        ax.plot(iterations, study["multi_history_frequencies"][:, column],
+                linewidth=1.9, alpha=0.85, label=f"{frequencies[index]:g} Hz")
+    ax.plot(iterations, history, "k--", linewidth=2.5, label="Moyenne continue")
+    ax.plot(iterations[-1], np.mean(study["multi_spectrum"][targets]), "kx",
+            markersize=10, markeredgewidth=2, label="Moyenne après tri binaire")
+    ax.set_title("Historique multifréquence — niveau 2", fontsize=14)
+    ax.set_xlabel("Itération acceptée", fontsize=12)
+    ax.set_ylabel("Coût acoustique", fontsize=12)
+    ax.tick_params(labelsize=11)
+    ax.grid(alpha=0.3)
+    ax.legend(fontsize=11)
+    fig.savefig(output_dir / "fig_historique_multifrequence.jpg", dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+    # On évalue les différents placements sur la même bande de fréquences.
+    fig, ax = plt.subplots(figsize=(8.5, 4.5), constrained_layout=True)
+    ax.semilogy(frequencies, study["initial"], "--", color="gray", linewidth=1.8,
+                label="Répartition initiale")
+    for index, spectrum in zip(study["mono_targets"], study["mono_spectra"]):
+        ax.semilogy(frequencies, spectrum, linewidth=1.8,
+                    label=f"Placement à {frequencies[index]:g} Hz")
+    ax.semilogy(frequencies, study["multi_spectrum"], linewidth=2.5,
+                label="Placement multifréquence")
+    ax.semilogy(frequencies, study["full"], color="black", linewidth=1.8,
+                label="Mur entièrement garni")
+    ax.set_title("Spectres des placements — niveau 2", fontsize=14)
+    ax.set_xlabel("Fréquence (Hz)", fontsize=12)
+    ax.set_ylabel("Coût acoustique", fontsize=12)
+    ax.tick_params(labelsize=11)
+    ax.grid(alpha=0.3, which="both")
+    ax.legend(fontsize=11, loc="lower left")
+    fig.savefig(output_dir / "fig_spectre_multifrequence.jpg", dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    return str(output_dir)
+
+
+
+def plot_wall_geometries(study_results, output_dir=None):
+    """On représente les domaines d'air et leurs frontières sur la même échelle."""
+    output_dir = Path(__file__).resolve().parent if output_dir is None else Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    levels = study_results["levels"]
+    h = study_results["spacestep"]
+    fig, axes = plt.subplots(1, len(levels), figsize=(12, 4.8), sharex=True, sharey=True, squeeze=False)
+    for ax, level in zip(axes.ravel(), levels):
+        domain = study_results["domains"][level]
+        M, N = domain.shape
+        air = np.ma.masked_where(domain != _env.NODE_INTERIOR, np.ones(domain.shape))
+        ax.imshow(air, extent=(-h/2, (N-.5)*h, (M-.5)*h, -h/2), cmap="Blues", vmin=0, vmax=3, interpolation="nearest")
+        rows, cols = np.where(domain == _env.NODE_ROBIN)
+        ax.scatter(cols*h, rows*h, color="tab:red", s=2, label="Paroi de Robin")
+        ax.plot([0, N*h], [0, 0], color="tab:blue", lw=2, label="Source imposée")
+        ax.set(title=f"Niveau {level}", xlabel="Position horizontale (m)", xlim=(-.03, 1.03), ylim=(1.4, -.05), aspect="equal")
+        ax.grid(alpha=.15)
+    axes[0, 0].set_ylabel("Distance à la source (m)")
+    handles, labels = axes[0, 0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="lower center", ncol=2, frameon=False)
+    fig.tight_layout(rect=(0, .15, 1, 1))
+    fig.savefig(output_dir/"fig_geometries.png", dpi=180)
+    plt.close(fig)
+
+
+def plot_fixed_budget_comparison(results, output_dir=None):
+    """On compare les configurations binaires obtenues avec le même nombre de points garnis."""
+    output_dir = Path(__file__).resolve().parent/"resultats_comparaison_dispositifs" if output_dir is None else Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    candidates = results["candidates"]
+    positions = np.arange(len(candidates))
+    labels = [f"Niveau {c['level']}\n{c['material'].replace('_', ' ').title()}" for c in candidates]
+    means = np.array([c["J_band_mean"] for c in candidates])
+    best = int(np.argmin(means))
+    colors = ["tab:orange" if i == best else "tab:blue" for i in positions]
+    fig, ax = plt.subplots(figsize=(11, 4.8), constrained_layout=True)
+    ax.bar(positions, means, color=colors, label="Placement binaire")
+    ax.plot(positions, [c["J_full_band_mean"] for c in candidates], "ko--", label="Paroi entièrement garnie")
+    ax.set_xticks(positions, labels, rotation=35, ha="right", fontsize=10)
+    ax.set_ylabel("Coût moyen sur la bande", fontsize=12)
+    ax.set_title(f"Comparaison avec {results['fixed_covered_nodes']} points garnis par configuration", fontsize=13)
+    ax.legend(fontsize=11)
+    ax.grid(axis="y", alpha=.3)
+    fig.savefig(output_dir/"fig_comparaison_budget_identique.jpg", dpi=160)
+    plt.close(fig)
+    with (output_dir/"comparaison_budget_identique.csv").open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(candidates[0]))
+        writer.writeheader()
+        writer.writerows(candidates)
+
+
+
+def plot_coverage_details(study_results, output_dir=None):
+    """On montre l'effet de la quantité de matériau sur les critères du niveau deux."""
+    output_dir = Path(__file__).resolve().parent/"resultats_multifrequence" if output_dir is None else Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    study = study_results["studies"][2]
+    frequencies = study_results["frequencies"]
+    quantity = 100*study["actual_volumes"]
+    full = study["full"]
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.3), constrained_layout=True)
+    cases = [(study["volume_mono_costs"], full[study["volume_mono_index"]], f"Une fréquence, {frequencies[study['volume_mono_index']]:g} Hz"),
+             (study["volume_multi_costs"], np.mean(full[study["multi_targets"]]), "Moyenne des trois cibles")]
+    for ax, (costs, reference, title) in zip(axes, cases):
+        ax.plot(quantity, costs, "o-", lw=2, label="Placements binaires")
+        ax.axhline(reference, color="black", linestyle="--", label="Mur entièrement garni")
+        best = int(np.argmin(costs))
+        ax.plot(quantity[best], costs[best], "r*", ms=13, label="Minimum testé")
+        ax.set_title(title, fontsize=13)
+        ax.set_xlabel("Points garnis (%)", fontsize=12)
+        ax.set_ylabel("Coût acoustique", fontsize=12)
+        ax.tick_params(labelsize=11)
+        ax.grid(alpha=.3)
+        ax.legend(fontsize=10)
+    fig.savefig(output_dir/"fig_quantite_niveau_deux.jpg", dpi=160)
+    plt.close(fig)
+
+
+def plot_source_profile_costs(results, output_dir=None):
+    """On compare les coûts des trois profils avant et après le placement binaire."""
+    output_dir = Path(__file__).resolve().parent/"resultats_comparaison_dispositifs" if output_dir is None else Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    costs = results["source_costs"]
+    positions = np.arange(len(costs))
+    fig, ax = plt.subplots(figsize=(9.5, 4.3), constrained_layout=True)
+    ax.bar(positions-.18, [row[1] for row in costs], width=.36, label="Placement initial")
+    ax.bar(positions+.18, [row[2] for row in costs], width=.36, label="Placement binaire")
+    ax.set_xticks(positions, [row[0] for row in costs], fontsize=12)
+    ax.set_ylabel("Coût acoustique", fontsize=12)
+    ax.set_title(f"Effet du profil d'entrée à {results['profile_frequency']:g} Hz", fontsize=13)
+    ax.tick_params(axis="y", labelsize=11)
+    ax.grid(axis="y", alpha=.3)
+    ax.legend(fontsize=11)
+    fig.savefig(output_dir/"fig_cout_profils_sources.jpg", dpi=160)
+    plt.close(fig)
+
+
+
+def plot_selected_configuration(results, output_dir=None):
+    """On présente le placement retenu et ses spectres à quantité comparable."""
+    output_dir = Path(__file__).resolve().parent/"resultats_comparaison_dispositifs" if output_dir is None else Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    domain = results["domain"]
+    h = results["spacestep"]
+    rows, cols = np.where(domain == _env.NODE_ROBIN)
+    chosen = results["density"][rows, cols] > .5
+    fig, axes = plt.subplots(2, 1, figsize=(10.8, 5.2), gridspec_kw={"height_ratios": [1, 3]}, constrained_layout=True)
+    axes[0].scatter(cols[~chosen]*h, rows[~chosen]*h, c="lightgray", marker="s", s=22, label="Paroi réfléchissante")
+    axes[0].scatter(cols[chosen]*h, rows[chosen]*h, c="tab:orange", marker="s", s=22, label="Absorbant")
+    axes[0].set(xlabel="Position le long du mur (m)", title="Placement binaire retenu", yticks=[])
+    axes[0].legend(fontsize=11, loc="upper left", ncol=2)
+    for field, label, style in [("initial_spectrum", "Placement initial binaire", "--"), ("spectrum", "Placement retenu", "-"), ("full_spectrum", "Paroi entièrement garnie", ":")]:
+        axes[1].plot(results["frequencies"], results[field], style, label=label, linewidth=1.8)
+    axes[1].set(xlabel="Fréquence (Hz)", ylabel="Coût acoustique", title="Spectres du dispositif et des références")
+    axes[1].grid(alpha=.3)
+    axes[1].legend(fontsize=11)
+    axes[1].tick_params(labelsize=11)
+    fig.savefig(output_dir/"fig_dispositif_retenu.jpg", dpi=160)
+    plt.close(fig)
+    np.savez(output_dir/"dispositif_retenu.npz", frequencies=results["frequencies"],
+             domain=domain, density=results["density"], initial_density=results["initial_density"],
+             initial_spectrum=results["initial_spectrum"], spectrum=results["spectrum"], full_spectrum=results["full_spectrum"])

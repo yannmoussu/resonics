@@ -89,3 +89,16 @@ La descente recherche une densité entre zéro et un à fraction moyenne fixée.
 Pour les profils uniforme, localisé et oblique de la comparaison des dispositifs, on impose la même somme d'amplitudes au carré sur le bord d'entrée. Le profil localisé correspond à une excitation sur un point du bord. On conserve le coefficient du matériau pour examiner l'effet du profil.
 
 Une même fraction de points garnis peut employer davantage de matériau lorsque le niveau géométrique augmente. Le tableau de comparaison des dispositifs donne donc les nombres de points garnis et disponibles. Les comparaisons restent celles du modèle calculé et ne présument pas du matériau ou de la forme donnant le coût minimal.
+
+
+## Résultats du rapport et de la présentation
+
+Le [rapport](../report/report.pdf) et la [présentation](../presentation/presentation.pdf) utilisent les calculs complets avec N=128, les 70 fréquences et 80 itérations maximales pour les comparaisons. Les sources LaTeX sont disponibles dans les mêmes dossiers. Les tableaux et les chiffres communs sont conservés dans `report/data/`, avec les résumés JSON des calculs.
+
+Le mode `materiaux_validation` ajoute une comparaison de rectangles de même aire. `study_boundary_depth_dependence` calcule les références continues à 200 Hz pour 201 profondeurs de 0,5 à 1,5 m. La largeur est ajustée pour conserver une aire d'un mètre carré.
+
+Le mode `comparaison_dispositifs` effectue d'abord la comparaison à fraction nodale commune, puis une comparaison avec `fixed_covered_nodes=round(FRACTION_GARNIE*N_POINTS)`. Par défaut, le budget commun vaut 38 points garnis. `combine_comparable_configurations` conserve aussi les placements du premier calcul dont la binarisation emploie déjà 38 points. Il retient le plus faible coût moyen disponible pour chaque couple forme–matériau. Les contraintes continues de 38 et 38,4 points peuvent donner deux placements binaires différents de 38 points, donc leurs coûts sont évalués séparément.
+
+`evaluate_selected_configuration` compare ensuite le candidat retenu à un placement initial binaire de même quantité. `plot_fixed_budget_comparison` et `plot_selected_configuration` enregistrent les figures et les données correspondantes. Les fichiers portant `budget_strict` conservent les neuf recherches à contrainte continue entière. Les fichiers `budget_consolide` rassemblent aussi les solutions binaires admissibles du premier calcul.
+
+Les fonctions `plot_single_frequency_details`, `plot_multifrequency_details`, `plot_coverage_details` et `plot_source_profile_costs` produisent des figures lisibles à l'oral, à partir des mêmes données que les graphiques détaillés du rapport. Les cartes masquent les points qui ne sont pas intérieurs à l'air.
