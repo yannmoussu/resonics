@@ -567,7 +567,7 @@ def run_rer_b_frequency_sweep(domain_omega, spacestep, frequencies_hz,
         energies[ind] = spacestep**2 * numpy.sum(numpy.abs(u_freq[interior])**2)
         solutions[float(frequency_hz)] = u_freq
 
-    # On intègre les coûts, qui contiennent déjà l'amplitude de la source.
+    # On intègre les énergies, qui contiennent déjà l'amplitude de la source.
     if frequencies.size > 1:
         band_energy = float(numpy.sum(
             (frequencies[1:] - frequencies[:-1])
@@ -778,7 +778,7 @@ class FastHelmholtzSolver:
         return float(self.h**2 * np.sum(np.abs(u[self.mask_int])**2))
 
     def compute_gradient(self, u, p, chi, Alpha):
-        """On calcule la dérivée du coût par rapport à chaque valeur du matériau."""
+        """On calcule la dérivée du énergie par rapport à chaque valeur du matériau."""
         gradient = np.zeros(self.domain.shape, dtype=np.float64)
         scale = self.h * Alpha / self.rob_beta_pde
         density = chi[self.rob_node_i, self.rob_node_j]
@@ -859,7 +859,7 @@ def optimize_multi_frequency(solver, wavenumbers, Alphas, chi_init, weights=None
         if not accepted:
             break
         if verbose:
-            print("Étape", iteration + 1, ": coût =", history[-1])
+            print("Étape", iteration + 1, ": énergie =", history[-1])
         if variation < 1e-7:
             break
     return chi, np.asarray(history), np.asarray(per_frequency)
@@ -898,7 +898,7 @@ def compute_material_coefficients(frequencies, source, car_mat, alpha0):
 
 
 def evaluate_spectrum(solver, domain, chi, k_vals, Alphas, source, sound_speed_m_s):
-    """On calcule les coûts avec la source choisie à chaque fréquence."""
+    """On calcule les énergies avec la source choisie à chaque fréquence."""
     energies = []
     chi_wall = np.where(domain == _env.NODE_ROBIN, chi, 0.0)
     for wavenumber, alpha in zip(k_vals, Alphas):
@@ -1008,7 +1008,7 @@ def validate_adjoint_gradient(N, samples, omega, source, car_mat, alpha0,
     finite_difference, adjoint_values = [], []
 
     for row, col in chosen:
-        # On compare le coût après une augmentation et après une diminution de densité.
+        # On compare le énergie après une augmentation et après une diminution de densité.
         plus, minus = density.copy(), density.copy()
         plus[row, col] += epsilon
         minus[row, col] -= epsilon
@@ -1180,7 +1180,7 @@ def study_multifrequency_placement_and_coverage(N, frequencies, iterations, V_ob
         study = studies[level]
         targets = select_peak_indices(freqs, k_vals, study["initial"], count=3)
         # Le champ contient déjà l'amplitude de la source à chaque fréquence.
-        # On donne donc le même poids aux coûts des fréquences retenues.
+        # On donne donc le même poids aux énergies des fréquences retenues.
         continuous, history, per_frequency = optimize_multi_frequency(
             study["solver"], k_vals[targets], Alphas[targets], study["chi0"],
             V_obj=V_obj, numb_iter=iterations, source=source, sound_speed_m_s=sound_speed_m_s,
@@ -1191,8 +1191,8 @@ def study_multifrequency_placement_and_coverage(N, frequencies, iterations, V_ob
                       "chi_multi": binary, "multi_history": history,
                       "multi_history_frequencies": per_frequency, "multi_spectrum": spectrum})
         print("Niveau", level, ": fréquences cibles en Hz =", freqs[targets],
-              "; coût moyen continu =", history[-1],
-              "; coût moyen binaire =", np.mean(spectrum[targets]))
+              "; énergie moyen continu =", history[-1],
+              "; énergie moyen binaire =", np.mean(spectrum[targets]))
 
 
     # On répète le calcul pour les quantités indiquées.
@@ -1263,7 +1263,7 @@ def study_multifrequency_placement_and_coverage(N, frequencies, iterations, V_ob
 
 
 def mean_cost(frequencies, costs):
-    """On calcule le coût moyen sur la bande de fréquences considérée."""
+    """On calcule le énergie moyen sur la bande de fréquences considérée."""
     if len(frequencies) == 1:
         return float(costs[0])
     return float(np.trapezoid(costs, frequencies) / (frequencies[-1] - frequencies[0]))
@@ -1340,7 +1340,7 @@ def compare_absorber_configurations(N, frequencies, iterations, V_obj, source, c
         source_costs.append((name, first_cost, second_cost))
         profile_fields.append({"name": name, "initial": first, "binary": second,
                                "initial_cost": first_cost, "binary_cost": second_cost})
-        print(name, ": coût initial =", first_cost, ", coût binaire =", second_cost)
+        print(name, ": énergie initial =", first_cost, ", énergie binaire =", second_cost)
 
     # On compare les matériaux et les niveaux avec le budget de matériau choisi.
     material_alphas = {name: compute_material_coefficients(frequencies, source, MATERIAUX[name], alpha0)
@@ -1380,7 +1380,7 @@ def compare_absorber_configurations(N, frequencies, iterations, V_obj, source, c
                                "robin_nodes": int(candidate_robin.sum()), "covered_nodes": int(binary_density.sum()),
                                "J_band_mean": mean_cost(frequencies, costs), "J_max": float(costs.max()),
                                "J_full_band_mean": mean_cost(frequencies, reference)})
-            print("Candidat", level, name, ": coût moyen =", candidates[-1]["J_band_mean"])
+            print("Candidat", level, name, ": énergie moyen =", candidates[-1]["J_band_mean"])
 
     if fixed_covered_nodes is None:
         print("La fraction nodale est commune et la quantité totale dépend du niveau.")
@@ -1437,3 +1437,37 @@ def evaluate_selected_configuration(results, source, sound_speed_m_s):
             "density": data["density"], "initial_density": initial_binary,
             "frequencies": frequencies, "initial_spectrum": initial_spectrum,
             "spectrum": data["spectrum"], "full_spectrum": data["full_spectrum"]}
+
+
+
+def study_fully_covered_materials(N, frequencies, source, alpha0, sound_speed_m_s,
+                                  material_names=None, levels=(0, 1, 2)):
+    """On compare les matériaux sur les mêmes murs entièrement garnis et avec la même source."""
+    frequencies = np.asarray(frequencies, dtype=float)
+    names = list(MATERIAUX) if material_names is None else list(material_names)
+    wavenumbers = 2.0 * np.pi * frequencies / sound_speed_m_s
+    h = 1.0 / N
+    energies, coefficients = {}, {}
+    solvers, domains = {}, {}
+    for level in levels:
+        domain, _, _, _, _ = preprocessing._set_geometry_of_domain(2 * N, N, level=level)
+        domains[level] = domain
+        solvers[level] = FastHelmholtzSolver(domain, h)
+    for name in names:
+        print("Comparaison des murs entièrement garnis :", name, flush=True)
+        alphas = compute_material_coefficients(frequencies, source, MATERIAUX[name], alpha0)
+        if alphas is None:
+            return None
+        coefficients[name] = alphas
+        energies[name] = {}
+        for level in levels:
+            # On garnit chaque point du mur puis on calcule le spectre.
+            full = (domains[level] == _env.NODE_ROBIN).astype(float)
+            energies[name][level] = evaluate_spectrum(
+                solvers[level], domains[level], full, wavenumbers, alphas,
+                source, sound_speed_m_s,
+            )
+    return {"frequencies": frequencies, "energies": energies, "alphas": coefficients,
+            "material_names": names, "levels": list(levels), "N": N,
+            "source_name": source.__name__, "sound_speed_m_s": sound_speed_m_s,
+            "alpha0": list(alpha0), "material_parameters": {name: list(MATERIAUX[name]) for name in names}}

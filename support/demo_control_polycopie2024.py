@@ -5,6 +5,7 @@
 import numpy
 import os
 import sys
+from pathlib import Path
 
 
 # MRG packages
@@ -20,7 +21,8 @@ from processing import compute_state, compute_adjoint, compute_gradient
 # On choisit la source commune au champ initial, à la descente et aux fréquences.
 SOURCE = preprocessing.source_rer_b
 # SOURCE = preprocessing.source_constant
-CAR_MAT = MATERIAUX["LAINE_ROCHE"]
+# On utilise la mélamine pour illustrer le calcul à une fréquence.
+CAR_MAT = MATERIAUX["MELAMINE"]
 ALPHA0 = [50.0, -50.0]  # On donne les parties réelle et imaginaire du point initial.
 OMEGA = 3430.0  # On exprime la pulsation en radians par seconde.
 C = 343.0  # On exprime la célérité en mètres par seconde.
@@ -34,7 +36,8 @@ FREQUENCES_HZ = numpy.arange(50.0, 3501.0, 50.0)
 N_ITERATIONS = 80
 FRACTION_GARNIE = 0.30
 QUANTITES = [0.10, 0.30, 0.50, 0.70, 1.0]
-MATERIAUX_A_COMPARER = ["LAINE_ROCHE", "MELAMINE", "LAINE_VERRE"]
+MATERIAUX_A_COMPARER = ["MELAMINE", "LAINE_VERRE", "OUATE_POLYESTER"]
+FREQUENCES_DETAILLEES_HZ = numpy.arange(50.0, 3501.0, 10.0)
 
 
 def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
@@ -124,7 +127,7 @@ def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu,
         domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
         beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, Alpha * chi,
     )
-    # On ajoute séparément le coût de la répartition binaire.
+    # On ajoute séparément l’énergie de la répartition binaire.
     ene = compute_objective_function(domain_omega, u, spacestep)
     energy = numpy.vstack((energy, [[ene]]))
     p = compute_adjoint(domain_omega, spacestep, matrix, state)
@@ -141,72 +144,84 @@ def your_compute_objective_function(domain_omega, u, spacestep):
     return float(spacestep**2 * numpy.sum(numpy.abs(interior_values)**2))
 
 
-# Les deux noms désignent le même calcul du coût.
+# Les deux noms désignent le même calcul de l’énergie.
 compute_objective_function = your_compute_objective_function
 
 
 def run_studies(selection):
-    """On lance les calculs choisis puis on transmet leurs résultats aux tracés."""
-    if selection not in ("materiaux_validation", "monofrequence", "multifrequence", "comparaison_dispositifs", "tous"):
+    """On compare les trois matériaux puis on enregistre les figures de chaque étude."""
+    choices = ("materiaux_validation", "monofrequence", "multifrequence", "comparaison_dispositifs", "tous")
+    if selection not in choices:
         print("On choisit demo, materiaux_validation, monofrequence, multifrequence, comparaison_dispositifs ou tous dans ETUDE.")
         return
+    output = Path(__file__).resolve().parent / "resultats_comparaison_materiaux"
+    validation = output / "MELAMINE" / "validation"
     if selection in ("materiaux_validation", "tous"):
+        # On confronte les trois coefficients retenus et les sept matériaux disponibles.
         result = processing.study_porous_materials(
             FREQUENCES_HZ, SOURCE, ALPHA0, MATERIAUX_A_COMPARER,
         )
         if result is None:
             return
-        postprocessing.plot_porous_materials(result)
+        postprocessing.plot_porous_materials(result, output)
+        result = processing.study_fully_covered_materials(
+            N_POINTS, FREQUENCES_DETAILLEES_HZ, SOURCE, ALPHA0, C,
+        )
+        if result is None:
+            return
+        postprocessing.plot_material_energy_comparison(result, MATERIAUX_A_COMPARER, output)
+        # On vérifie le modèle et le gradient avec la mélamine comme exemple.
         result = processing.study_sommerfeld_open_air_vs_reflexive(
             N_POINTS, FREQUENCES_HZ, SOURCE, CAR_MAT, ALPHA0, C,
         )
         if result is None:
             return
-        postprocessing.plot_sommerfeld_comparison(result)
-        depths = numpy.linspace(0.5, 1.5, 201)
-        result = processing.study_boundary_depth_dependence(depths, 200.0, SOURCE, C)
-        postprocessing.plot_boundary_depth_dependence(result)
-        result = processing.validate_adjoint_gradient(
-            N_POINTS, 12, OMEGA, SOURCE, CAR_MAT, ALPHA0, C,
-        )
+        postprocessing.plot_sommerfeld_comparison(result, validation)
+        result = processing.study_boundary_depth_dependence(numpy.linspace(0.5, 1.5, 201), 200.0, SOURCE, C)
+        postprocessing.plot_boundary_depth_dependence(result, validation)
+        result = processing.validate_adjoint_gradient(N_POINTS, 12, OMEGA, SOURCE, CAR_MAT, ALPHA0, C)
         if result is None:
             return
-        postprocessing.plot_gradient_validation(result)
-    if selection in ("monofrequence", "tous"):
-        result = processing.study_spectra_and_single_frequency_placement(
-            N_POINTS, FREQUENCES_HZ, N_ITERATIONS, FRACTION_GARNIE,
-            SOURCE, CAR_MAT, ALPHA0, C,
-        )
-        if result is None:
-            return
-        postprocessing.plot_spectra_and_single_frequency_placement(result)
+        postprocessing.plot_gradient_validation(result, validation)
+
+    # On répète les recherches pour les trois matériaux, sans en sélectionner un.
+    for name in MATERIAUX_A_COMPARER:
+        if selection in ("monofrequence", "tous"):
+            print("Étude à une fréquence :", name)
+            result = processing.study_spectra_and_single_frequency_placement(
+                N_POINTS, FREQUENCES_HZ, N_ITERATIONS, FRACTION_GARNIE,
+                SOURCE, MATERIAUX[name], ALPHA0, C,
+            )
+            if result is None:
+                return
+            directory = output / name / "monofrequence"
+            postprocessing.plot_spectra_and_single_frequency_placement(result, directory)
+        if selection in ("multifrequence", "tous"):
+            print("Étude à plusieurs fréquences et quantités :", name)
+            result = processing.study_multifrequency_placement_and_coverage(
+                N_POINTS, FREQUENCES_HZ, N_ITERATIONS, FRACTION_GARNIE,
+                QUANTITES, SOURCE, MATERIAUX[name], ALPHA0, C,
+            )
+            if result is None:
+                return
+            directory = output / name / "multifrequence"
+            postprocessing.plot_multifrequency_placement_and_coverage(result, directory)
+
     if selection in ("multifrequence", "tous"):
-        result = processing.study_multifrequency_placement_and_coverage(
-            N_POINTS, FREQUENCES_HZ, N_ITERATIONS, FRACTION_GARNIE,
-            QUANTITES, SOURCE, CAR_MAT, ALPHA0, C,
-        )
-        if result is None:
-            return
-        postprocessing.plot_multifrequency_placement_and_coverage(result)
+        # On rassemble les résultats enregistrés pour comparer les trois matériaux.
+        postprocessing.plot_retained_material_studies(output_dir=output)
+
     if selection in ("comparaison_dispositifs", "tous"):
-        reference = processing.compare_absorber_configurations(
-            N_POINTS, FREQUENCES_HZ, N_ITERATIONS, FRACTION_GARNIE,
-            SOURCE, CAR_MAT, ALPHA0, C, MATERIAUX_A_COMPARER,
-        )
-        if reference is None:
-            return
-        postprocessing.plot_absorber_configuration_comparison(reference)
-        fixed_budget = processing.compare_absorber_configurations(
+        # On impose la même quantité totale pour comparer les formes et les matériaux.
+        result = processing.compare_absorber_configurations(
             N_POINTS, FREQUENCES_HZ, N_ITERATIONS, FRACTION_GARNIE,
             SOURCE, CAR_MAT, ALPHA0, C, MATERIAUX_A_COMPARER,
             fixed_covered_nodes=int(round(FRACTION_GARNIE * N_POINTS)),
         )
-        if fixed_budget is None:
+        if result is None:
             return
-        combined = processing.combine_comparable_configurations(reference, fixed_budget)
-        postprocessing.plot_fixed_budget_comparison(combined)
-        selected = processing.evaluate_selected_configuration(combined, SOURCE, C)
-        postprocessing.plot_selected_configuration(selected)
+        postprocessing.plot_absorber_configuration_comparison(result, output / "budget_identique")
+        postprocessing.plot_fixed_budget_comparison(result, output / "budget_identique")
 
 
 if __name__ == '__main__' and ETUDE == 'demo':

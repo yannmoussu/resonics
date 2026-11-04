@@ -1,104 +1,75 @@
-# Études numériques ResoniCS pour le bruit du RER B
+# Études numériques ResoniCS pour le RER B
 
-Le programme utilise les différences finies pour comparer le matériau, la forme du mur et la répartition de l'absorbant. Les études sont réparties dans les quatre fichiers du support selon leur rôle.
+On compare les formes de murs et les répartitions d'absorbant avec trois matériaux : **MELAMINE, LAINE_VERRE et OUATE_POLYESTER**. Aucun matériau n'est désigné comme produit final.
 
-## Lancer une étude
+## Exécuter les calculs
 
-Depuis la racine du projet, on lance toujours la même commande :
+Avec Python, NumPy, SciPy et Matplotlib installés, depuis la racine du projet :
 
 ```sh
 python support/demo_control_polycopie2024.py
 ```
 
-On choisit au début de ce fichier la valeur de `ETUDE` :
+Les paramètres se règlent au début de ce fichier. `ETUDE` détermine les calculs :
 
-| Valeur | Calculs réalisés |
+| Valeur | Étude |
 | --- | --- |
-| `"demo"` | Champ initial, descente du support et courbe fréquentielle de référence |
-| `"materiaux_validation"` | Coefficients des matériaux, comparaison des parois et vérification du gradient |
-| `"monofrequence"` | Spectres des murs, niveaux géométriques et optimisations à une fréquence |
-| `"multifrequence"` | Évaluation sur la bande, optimisation à plusieurs fréquences et quantité garnie |
-| `"comparaison_dispositifs"` | Répartitions continue, binaire et mixte, profils incidents et comparaison des candidats |
-| `"tous"` | Exécution successive de toutes les études |
+| `"demo"` | Exemple à une fréquence, avec la mélamine |
+| `"materiaux_validation"` | Coefficients, énergies des sept matériaux disponibles, cas ouvert et contrôle du gradient |
+| `"monofrequence"` | Spectres et placements à une fréquence, pour chacun des trois matériaux retenus |
+| `"multifrequence"` | Placements communs à plusieurs fréquences et étude des quantités, pour les trois matériaux |
+| `"comparaison_dispositifs"` | Neuf couples forme–matériau à quantité totale identique |
+| `"tous"` | Toutes ces études, dans cet ordre |
 
-Les figures et les données sont enregistrées dans les dossiers thématiques suivants, sous `support/` :
+Les figures, CSV et NPZ actuels sont enregistrés dans `support/resultats_comparaison_materiaux/`. Les études de placement sont séparées par matériau, puis par étude (`monofrequence`, `multifrequence`). `budget_identique/` contient les comparaisons à quantité totale imposée. La démonstration conserve ses figures dans `support/`.
 
-- `resultats_materiaux_validation/` pour les matériaux et les vérifications
-- `resultats_monofrequence/`, avec `data_monofrequence.npz`, pour les spectres et les placements à une fréquence
-- `resultats_multifrequence/`, avec `data_multifrequence.npz`, pour les placements communs à plusieurs fréquences et l'étude de la quantité
-- `resultats_comparaison_dispositifs/`, avec `data_comparaison_dispositifs.npz`, pour les configurations candidates
+Les figures originales `fig_energy_frequency_level0.jpg`, `fig_energy_frequency_level1.jpg` et `fig_energy_frequency_level2.jpg` d'Antoine sont conservées. Les nouveaux tracés reprennent cette comparaison avec des données numériques enregistrées et des panneaux séparés pour améliorer la lecture. Les anciens dossiers `resultats_monofrequence/`, `resultats_multifrequence/`, `resultats_materiaux_validation/` et `resultats_comparaison_dispositifs/` conservent les calculs antérieurs avec la laine de roche. Ils ne décrivent pas la comparaison actuelle des trois candidats.
 
-La démonstration conserve ses figures dans `support/`. Chaque étude recalcule ses résultats à partir des paramètres choisis.
+## Paramètres
 
-## Paramètres communs
-
-Les choix sont regroupés en tête de `demo_control_polycopie2024.py`, puis transmis aux fonctions de calcul et de tracé :
-
-| Paramètre | Valeur initiale et rôle |
+| Paramètre | Valeur et rôle |
 | --- | --- |
-| `SOURCE` | `preprocessing.source_rer_b`, ou `preprocessing.source_constant` pour une amplitude unitaire |
-| `CAR_MAT` | `MATERIAUX["LAINE_ROCHE"]`, pour le matériau du cas principal |
-| `ALPHA0` | `[50.0, -50.0]`, pour le point de départ de l'identification du coefficient |
-| `C` | `343.0` m/s, pour la célérité du son |
-| `OMEGA` | `3430.0` rad/s, pour la pulsation du cas à une fréquence et de la vérification du gradient |
-| `N_POINTS` | `128`, pour la largeur de grille, avec `M = 2*N_POINTS` et un pas de `1/N_POINTS` m |
-| `FREQUENCES_HZ` | De 50 à 3 500 Hz par pas de 50 Hz |
-| `N_ITERATIONS` | `80`, pour le maximum d'itérations des optimisations de placement |
-| `FRACTION_GARNIE` | `0.30`, pour la fraction moyenne de points garnis dans les études de placement |
-| `QUANTITES` | `[0.10, 0.30, 0.50, 0.70, 1.0]`, pour les fractions testées dans l'étude multifréquence |
-| `MATERIAUX_A_COMPARER` | `LAINE_ROCHE`, `MELAMINE` et `LAINE_VERRE`, pour la validation des matériaux et la comparaison des dispositifs |
+| `SOURCE` | `preprocessing.source_rer_b`, remplaçable par `preprocessing.source_constant` |
+| `CAR_MAT` | `MATERIAUX["MELAMINE"]` pour la démonstration et les contrôles illustratifs |
+| `MATERIAUX_A_COMPARER` | `MELAMINE`, `LAINE_VERRE`, `OUATE_POLYESTER`, sans sélection finale |
+| `ALPHA0` | `[50.0, -50.0]`, point initial de l'identification du coefficient |
+| `C` | 343 m/s |
+| `OMEGA` | 3 430 rad/s pour la démonstration et le contrôle du gradient |
+| `N_POINTS` | 128, soit une grille de 256 × 128 points et un pas de 1/128 m |
+| `FREQUENCES_HZ` | 50 à 3 500 Hz, par pas de 50 Hz, pour les optimisations et leur évaluation |
+| `FREQUENCES_DETAILLEES_HZ` | 50 à 3 500 Hz, par pas de 10 Hz, pour les murs entièrement garnis |
+| `N_ITERATIONS` | 80 itérations au maximum pour les études de placement |
+| `FRACTION_GARNIE` | 0,30 sur une forme donnée |
+| `QUANTITES` | 0,10 ; 0,30 ; 0,50 ; 0,70 ; 1,00 |
 
-La démonstration conserve la descente imposée du support, limitée à 100 itérations, et la quantité de sa répartition initiale. Les paramètres `N_ITERATIONS` et `FRACTION_GARNIE` règlent les études de placement.
+La démonstration conserve les étapes et les affichages imposés du support, avec 100 itérations au maximum et la quantité de sa répartition initiale. La mélamine y illustre le fonctionnement du programme. Les modes d'étude répètent les recherches pour les trois candidats.
 
-À 3 500 Hz, la grille par défaut comporte environ 12,5 pas par longueur d'onde. Une grille réduite et quelques fréquences permettent de vérifier rapidement l'exécution. L'interprétation physique demande ensuite de vérifier la résolution des ondes, des reliefs et des pics fréquentiels.
+## Source et convention de Robin
 
-## Répartition du code
+Les fonctions de source prennent `(y, omega)` en arguments. La source RER B est uniforme le long de l'entrée. Son amplitude est une somme de trois gaussiennes en fréquence, centrées sur 200, 800 et 2 500 Hz, d'écarts-types 100, 350 et 150 Hz et de poids 1, 0,8 et 0,5. Il s'agit d'un spectre simplifié.
 
-| Fichier | Rôle |
-| --- | --- |
-| `demo_control_polycopie2024.py` | Choix des paramètres, fonctions étudiantes imposées et enchaînement des calculs et des tracés |
-| `preprocessing.py` | Domaine, sources, répartition initiale, projection de la densité et sélection d'une répartition binaire |
-| `processing.py` | Assemblage, résolutions, adjoint, gradient, optimisations et calculs des études |
-| `postprocessing.py` | Figures et enregistrement des tableaux CSV et NPZ |
-| `compute_alpha.py` | Dictionnaire `MATERIAUX` et identification du coefficient complexe à partir de la source et du matériau |
+`compute_alpha` reçoit la pulsation en radians par seconde. Le solveur reçoit le nombre d'onde, obtenu en divisant cette pulsation par la célérité. Le paramètre nommé `omega` dans les fonctions initiales du solveur désigne ce nombre d'onde.
 
-`compute_state`, `compute_adjoint` et `compute_gradient` sont définies dans `processing.py`. `project_density` et `binarize_chi` sont définies dans `preprocessing.py`. Le programme principal importe les fonctions nécessaires à la descente du support. Les fonctions d'étude renvoient leurs résultats, puis les fonctions de `postprocessing.py` les tracent et les enregistrent.
-
-Pour retrouver les calculs et leurs tracés :
-
-- `study_spectra_and_single_frequency_placement` transmet ses résultats à `plot_spectra_and_single_frequency_placement`
-- `study_multifrequency_placement_and_coverage` transmet ses résultats à `plot_multifrequency_placement_and_coverage`
-- `compare_absorber_configurations` transmet ses résultats à `plot_absorber_configuration_comparison`
-
-## Source et convention du matériau
-
-Les deux sources proposées prennent `(y, omega)` en arguments, où `y` est la position le long du bord d'entrée et `omega` la pulsation. Elles sont uniformes sur ce bord. La source RER B est la somme de trois gaussiennes centrées sur 200, 800 et 2 500 Hz, de largeurs 100, 350 et 150 Hz et de poids 1, 0,8 et 0,5. Ce spectre simplifié est un choix de modélisation.
-
-Pour chaque fréquence, on convertit les hertz en pulsation par `omega = 2*pi*frequency_hz`, puis en nombre d'onde par `k = omega/C`. `compute_alpha` reçoit la pulsation, alors que le solveur de Helmholtz reçoit le nombre d'onde. Le paramètre appelé `omega` dans plusieurs fonctions initiales du support conserve son nom mais désigne ce nombre d'onde.
-
-La condition du polycopié est `d_n u + alpha*chi*u = 0`, avec une partie réelle positive et une partie imaginaire négative pour le matériau dissipatif. `compute_alpha(omega, SOURCE, CAR_MAT, ALPHA0)` fournit directement ce coefficient, puis on forme `alpha_rob = Alpha*chi`. Le calcul s'arrête si l'identification échoue. Pour la sortie ouverte, on prend `alpha = -i*k`, ce qui donne la condition de Sommerfeld.
-
-Les matériaux sont définis par leur porosité, leur tortuosité et leur résistivité à l'air dans `MATERIAUX`. Le modèle actuel d'identification ne contient pas de paramètre d'épaisseur de couche. Le coefficient est fixé pendant une optimisation à une fréquence et recalculé pour chaque fréquence d'une étude spectrale.
+On utilise partout la convention du polycopié : dérivée normale plus coefficient de Robin multiplié par la densité et le champ. Le coefficient identifié a une partie réelle positive et une partie imaginaire négative. On l'applique directement par `alpha_rob = Alpha*chi`. La sortie ouverte utilise `Alpha = -1j*k`.
 
 ## Lecture des résultats
 
-Le coût est l'intégrale discrète du module au carré du champ sur les points intérieurs. Il permet de comparer les réponses du modèle à une excitation donnée. Les valeurs obtenues ne sont pas des mesures étalonnées en décibels. Le champ contient déjà l'amplitude de la source, donc on ne multiplie pas de nouveau son coût par le carré de cette amplitude.
+**Énergie J** désigne l'intégrale discrète du module au carré de la pression dans l'air. Les unités sont celles du modèle et ne constituent pas une mesure étalonnée en joules ou en décibels. L'amplitude de la source est déjà incluse dans le champ.
 
-La descente recherche une densité entre zéro et un à fraction moyenne fixée. Après la sélection des points les plus garnis pour former une répartition binaire, on résout à nouveau le problème et on mesure son coût. Le coût binaire peut être plus élevé que celui de la répartition continue. La répartition mixte est également évaluée séparément dans la comparaison des dispositifs.
+La descente optimise une densité comprise entre zéro et un, avec une quantité fixée. On projette chaque proposition pour respecter cette contrainte, puis on la conserve si son énergie diminue. Le tri final donne une répartition binaire, dont on recalcule l'énergie. Cette dernière peut être supérieure à celle de la densité continue.
 
-Pour les profils uniforme, localisé et oblique de la comparaison des dispositifs, on impose la même somme d'amplitudes au carré sur le bord d'entrée. Le profil localisé correspond à une excitation sur un point du bord. On conserve le coefficient du matériau pour examiner l'effet du profil.
+L'optimisation multifréquence minimise la moyenne de trois fréquences cibles. On évalue ensuite le placement sur toute la bande. La moyenne sur la bande est calculée par la méthode des trapèzes divisée par la largeur de bande. Les pics sont ceux de la grille fréquentielle utilisée.
 
-Une même fraction de points garnis peut employer davantage de matériau lorsque le niveau géométrique augmente. Le tableau de comparaison des dispositifs donne donc les nombres de points garnis et disponibles. Les comparaisons restent celles du modèle calculé et ne présument pas du matériau ou de la forme donnant le coût minimal.
+Une même fraction garnie ne représente pas la même quantité totale sur des murs de longueurs différentes. La comparaison supplémentaire impose donc 38 points garnis pour chaque forme et chaque matériau. Cette quantité nodale est une approximation de la longueur garnie.
 
+À 3 500 Hz, le maillage compte environ 12,5 pas par longueur d'onde. Les très petits reliefs et les portions garnies demandent aussi un contrôle de résolution. Les comparaisons concernent les cas effectivement calculés et servent à discuter les compromis, sans désigner de produit gagnant.
 
-## Résultats du rapport et de la présentation
+## Organisation du code
 
-Le [rapport](../report/report.pdf) et la [présentation](../presentation/presentation.pdf) utilisent les calculs complets avec N=128, les 70 fréquences et 80 itérations maximales pour les comparaisons. Les sources LaTeX sont disponibles dans les mêmes dossiers. Les tableaux et les chiffres communs sont conservés dans `report/data/`, avec les résumés JSON des calculs.
+- `demo_control_polycopie2024.py` contient les réglages, les fonctions étudiantes imposées et l'enchaînement des études.
+- `preprocessing.py` définit le domaine, les sources et les répartitions, puis effectue la projection et la sélection binaire.
+- `processing.py` assemble et résout les systèmes, calcule le gradient et réalise les études comparatives.
+- `postprocessing.py` produit les figures et enregistre les tableaux.
+- `compute_alpha.py` contient les caractéristiques des matériaux et l'identification du coefficient complexe.
 
-Le mode `materiaux_validation` ajoute une comparaison de rectangles de même aire. `study_boundary_depth_dependence` calcule les références continues à 200 Hz pour 201 profondeurs de 0,5 à 1,5 m. La largeur est ajustée pour conserver une aire d'un mètre carré.
-
-Le mode `comparaison_dispositifs` effectue d'abord la comparaison à fraction nodale commune, puis une comparaison avec `fixed_covered_nodes=round(FRACTION_GARNIE*N_POINTS)`. Par défaut, le budget commun vaut 38 points garnis. `combine_comparable_configurations` conserve aussi les placements du premier calcul dont la binarisation emploie déjà 38 points. Il retient le plus faible coût moyen disponible pour chaque couple forme–matériau. Les contraintes continues de 38 et 38,4 points peuvent donner deux placements binaires différents de 38 points, donc leurs coûts sont évalués séparément.
-
-`evaluate_selected_configuration` compare ensuite le candidat retenu à un placement initial binaire de même quantité. `plot_fixed_budget_comparison` et `plot_selected_configuration` enregistrent les figures et les données correspondantes. Les fichiers portant `budget_strict` conservent les neuf recherches à contrainte continue entière. Les fichiers `budget_consolide` rassemblent aussi les solutions binaires admissibles du premier calcul.
-
-Les fonctions `plot_single_frequency_details`, `plot_multifrequency_details`, `plot_coverage_details` et `plot_source_profile_costs` produisent des figures lisibles à l'oral, à partir des mêmes données que les graphiques détaillés du rapport. Les cartes masquent les points qui ne sont pas intérieurs à l'air.
+Le [rapport](../report/report.pdf) et la [présentation](../presentation/presentation.pdf) suivent les consignes de l'énoncé dans leur ordre. Les fonctions associées sont indiquées au fil de l'analyse.
