@@ -416,14 +416,18 @@ def surlignefractale(domain, color_domain, color_seed):
 
     return domain
 
-def source_rer_b(frequency_hz):
-    """Renvoie l'amplitude spectrale hypothétique de la source du RER B."""
-    frequency_hz = float(frequency_hz)
+def source_constant(y, omega):
+    """On renvoie une amplitude unitaire en tout point du bord."""
+    return 1.0
 
+
+def source_rer_b(y, omega):
+    """On renvoie l'amplitude du spectre RER B pour la pulsation donnée."""
+    frequency_hz = float(omega) / (2.0 * numpy.pi)
     composantes = (
-        (200.0, 100.0, 1.0),   # Basses fréquences (moteur, ventilation, etc.)
-        (800.0, 350.0, 0.8),   # Bruit de roulement
-        (2500.0, 150.0, 0.5),  # Bruit de crissement.
+        (200.0, 100.0, 1.0),   # On représente les basses fréquences.
+        (800.0, 350.0, 0.8),   # On représente le bruit de roulement.
+        (2500.0, 150.0, 0.5),  # On représente une contribution de crissement.
     )
     amplitude = 0.0
     for centre, largeur, poids in composantes:

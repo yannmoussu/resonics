@@ -2,7 +2,7 @@
 
 **Objectif du jour.** On compare les premières courbes puis on essaie la descente prévue par le sujet à une fréquence problématique.
 
-**Cas de départ.** Bruit de roulement du RER B. Premier essai proposé à 500 Hz avec c=343 m/s. Les comparaisons utilisent une pression imposée unitaire avec la même phase sur le bord supérieur. La plage 250–2 000 Hz de SOTA.md reste indicative. Avec la grille actuelle, on commence sur 250–1 500 Hz avant d’élargir si nécessaire.
+**Cas de départ.** Le choix `SOURCE` du programme principal est commun au champ initial, à la descente et à la courbe de fréquences. On utilise par défaut `source_rer_b(y, omega)` et la laine de roche `MATERIAUX["LAINE_ROCHE"]`, avec `ALPHA0=[-50, 50]`. Le coefficient suit la convention `d_n u - alpha(omega)*chi*u=0` et est calculé à chaque pulsation. Le cas initial utilise `OMEGA=3430 rad/s`, puis la bande va de 50 à 3 500 Hz, avec N=128, M=256 et c=343 m/s.
 
 ## Study the energy on the chosen plage of frequencies for a fully absorbent wall of the plane shape and to define the local maxima ;
 
@@ -34,7 +34,7 @@ Modifie seulement postprocessing.py pour les figures demandées. Conserve les no
 Réutilise les calculs présents. Ajoute seulement le calcul nécessaire à ces étapes. Les commentaires restent des phrases françaises. Aucun nouveau fichier Python.
 ```
 
-**Interprétation physique.** Un pic indique une forte réponse du domaine à une source unitaire à cette fréquence. Il donne une fréquence intéressante pour la première optimisation.
+**Interprétation physique.** Un pic indique une forte réponse à la source choisie à cette fréquence, avec le coefficient correspondant du matériau. Il donne une fréquence intéressante pour la première optimisation.
 
 **Résultat à transmettre.** Une courbe lisible et une liste courte de pics à confirmer.
 

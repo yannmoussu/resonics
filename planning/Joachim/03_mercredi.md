@@ -2,7 +2,7 @@
 
 **Objectif du jour 3.** Réutiliser la descente pour plusieurs fréquences et quelques quantités de matériau.
 
-**Cas de départ.** RER B, source uniforme unitaire en haut et c=343 m/s. Le premier essai est proposé à 500 Hz. La bande 250–2 000 Hz vient de SOTA.md. Avec le maillage actuel, on commence au plus à 1 500 Hz et on vérifie les dix points par longueur d’onde. Les trois gaussiennes restent un essai de sensibilité facultatif.
+**Cas de départ.** Le choix `SOURCE` du programme principal est commun au champ initial, à la descente et à la courbe de fréquences. On utilise par défaut `source_rer_b(y, omega)` et la laine de roche `MATERIAUX["LAINE_ROCHE"]`, avec `ALPHA0=[-50, 50]`. Le coefficient suit la convention `d_n u - alpha(omega)*chi*u=0` et est calculé à chaque pulsation. Le cas initial utilise `OMEGA=3430 rad/s`, puis la bande va de 50 à 3 500 Hz, avec N=128, M=256 et c=343 m/s.
 
 ## to optimize the energy at once at several different frequencies ;
 
@@ -29,7 +29,7 @@
 ```text
 Modifie seulement demo_control_polycopie2024.py. Conserve intégralement les deux blocs « Do not modify this cell, these are the values that you will be assessed against. », leurs commentaires et leur indentation. Garde l’appel de solve_helmholtz et les copies chi0 et u0 dans le second bloc. Complète les fonctions étudiantes et les blocs « Fell free to modify the function call in this cell. ». Les fonctions fournies restent inchangées et les ajouts restent dans ce seul fichier.
 
-1. Choisis avec le groupe une petite liste de fréquences, par exemple quelques pics observés mardi. Utilise une même chi et la source uniforme unitaire à chaque fréquence.
+1. Choisis avec le groupe une petite liste de fréquences, par exemple quelques pics observés mardi. Utilise une même chi et la source choisie, uniforme sur le bord supérieur à chaque fréquence.
 2. Pour chaque fréquence, reprends le coût et le gradient de mardi. Forme une somme pondérée des coûts et la somme des gradients avec exactement les mêmes poids. Pour une moyenne sur des fréquences régulièrement espacées, annonce des poids égaux. Pour approximer l’intégrale d’une bande, emploie les poids des trapèzes du §7.7.2. Fixe ces choix avant la descente.
 3. Ajoute seulement cette boucle au calcul existant et vérifie une petite perturbation comme mardi. Donne à Antoine le coût total et son gradient. Pour essayer ensuite le spectre hypothétique, multiplie les énergies unitaires déjà calculées par |G(f)|². Les énergies issues du calcul actuel run_rer_b_frequency_sweep contiennent déjà cette pondération, car G(f) est imposé à la source.
 

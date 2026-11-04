@@ -2,7 +2,7 @@
 
 **Objectif du jour.** On obtient un premier champ et son énergie avec le code fourni. Chacun apporte une explication ou un petit calcul nécessaire au résultat du groupe.
 
-**Cas de départ.** Bruit de roulement du RER B. Premier essai proposé à 500 Hz avec c=343 m/s. Les comparaisons utilisent une pression imposée unitaire avec la même phase sur le bord supérieur. La plage 250–2 000 Hz de SOTA.md reste indicative. Avec la grille actuelle, on commence sur 250–1 500 Hz avant d’élargir si nécessaire.
+**Cas de départ.** Le choix `SOURCE` du programme principal est commun au champ initial, à la descente et à la courbe de fréquences. On utilise par défaut `source_rer_b(y, omega)` et la laine de roche `MATERIAUX["LAINE_ROCHE"]`, avec `ALPHA0=[-50, 50]`. Le coefficient suit la convention `d_n u - alpha(omega)*chi*u=0` et est calculé à chaque pulsation. Le cas initial utilise `OMEGA=3430 rad/s`, puis la bande va de 50 à 3 500 Hz, avec N=128, M=256 et c=343 m/s.
 
 **À montrer lundi.** Les paramètres, un champ initial, sa valeur d’énergie et les explications du groupe. Les formules demandées sont étudiées lundi, puis utilisées quand la descente est programmée mardi.
 
@@ -31,7 +31,7 @@
 Modifie seulement demo_control_polycopie2024.py. Conserve intégralement les deux blocs « Do not modify this cell, these are the values that you will be assessed against. », avec leurs lignes, commentaires et indentation. Garde l’appel de solve_helmholtz et les copies chi0 et u0. Complète les fonctions étudiantes et les blocs « Fell free to modify the function call in this cell. ». Les essais supplémentaires utilisent leurs propres tableaux après les blocs protégés. Conserve les signatures et les retours du support.
 
 1. Garde la géométrie actuelle level=1. Repère le bord supérieur excité, les côtés réfléchissants et le mur inférieur Robin.
-2. Choisis 500 Hz pour ce premier essai avec c=343 m/s, puis calcule wavenumber=2*pi*500/343. Garde une pression imposée égale à un, avec la même phase, sur le bord supérieur Dirichlet.
+2. Reprends OMEGA=3430 rad/s et C=343 m/s pour le cas initial, puis calcule wavenumber=OMEGA/C. Garde une source choisie, avec la même phase, sur le bord supérieur Dirichlet.
 3. Lance solve_helmholtz par le programme existant. Affiche le module abs(u0) avec myimshow déjà fournie dans postprocessing.py, puis l’énergie donnée par la fonction complétée par Joachim. Présente cette carte comme le champ initial. Note les paramètres à côté de la figure.
 
 Réutilise les calculs présents. Ajoute seulement le calcul nécessaire à ces étapes. Les commentaires restent des phrases françaises. Aucun nouveau fichier Python.
@@ -62,8 +62,8 @@ Réutilise les calculs présents. Ajoute seulement le calcul nécessaire à ces 
 ```text
 Lis les fichiers concernés pour expliquer cette tâche et donne le résultat dans la réponse. Les programmes restent inchangés pour cette contribution.
 
-1. Calcule lambda=c/f pour 500 Hz et c=343 m/s. Compare cette longueur au pas h du support.
-2. Vérifie lambda/h>=10, comme demandé dans l’énoncé. Avec N=50 et h=0,02 m, la règle est respectée à 500 Hz.
+1. Calcule lambda=c/f pour f=OMEGA/(2*pi) et c=343 m/s. Compare cette longueur au pas h du support.
+2. Vérifie lambda/h>=10, comme demandé dans l’énoncé. Avec N=128 et h=0,0078125 m, la règle est respectée jusqu’à 3 500 Hz.
 3. Relève N, M, h, level et les dimensions effectivement obtenues dans les coordonnées. Transmets ce petit tableau à Mathis et Olympia.
 
 Explique les grandeurs utilisées et appuie la conclusion sur les documents ou les résultats fournis.
@@ -109,7 +109,7 @@ Explique les grandeurs utilisées et appuie la conclusion sur les documents ou l
 
 **Repère :** J1.8. **Rôle :** contributeur.
 
-**Ce qui est fait.** Relier le coefficient calculé par Mathis au coefficient attendu par le solveur.
+**Ce qui est fait.** Vérifier que le coefficient de compute_alpha est utilisé avec le signe du support.
 
 **Fichier à modifier :** aucun pour cette contribution.
 
@@ -126,9 +126,9 @@ Explique les grandeurs utilisées et appuie la conclusion sur les documents ou l
 ```text
 Lis les fichiers concernés pour expliquer cette tâche et donne le résultat dans la réponse. Les programmes restent inchangés pour cette contribution.
 
-1. Lis la définition du coefficient donnée par Mathis et repère son unité ainsi que la fréquence utilisée.
-2. Compare sa condition Robin à celle de compute_robin_condition. Avec les coefficients unitaires et f_rob nul, le support donne u_B=u_I/(1-h*Alpha), soit d_n u-Alpha*u=0. Une définition physique d_n u+alpha*u=0 conduit alors à Alpha=-alpha.
-3. Transmets la valeur à utiliser dans le bloc autorisé. Garde Alpha=10-10j identifié comme coefficient d’exemple jusqu’à ce que le calcul du matériau soit disponible.
+1. Lis compute_alpha.py et repère le matériau, les unités, la pulsation et le couple de départ choisis au début du programme principal.
+2. Utilise partout la condition du support d_n u-alpha*chi*u=0. compute_alpha fournit directement ce coefficient complexe, donc alpha_rob=Alpha*chi est construit avec la valeur renvoyée.
+3. Vérifie la réussite du calcul et la construction de alpha_rob dans le bloc autorisé. Pour la courbe fréquentielle, le coefficient est recalculé à chaque pulsation avec la même source choisie.
 
 Explique les grandeurs utilisées et appuie la conclusion sur les documents ou les résultats fournis.
 ```

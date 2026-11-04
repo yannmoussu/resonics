@@ -8,6 +8,9 @@ Ces documents tiennent compte du code et des choix les plus récents. Les fiches
 
 - [Reste à faire pour le jour 1 — PDF](reste_a_faire_jour1.pdf)
 - [Feuille de route du jour 2 — README](README_JOUR2.md)
+- [Guide des études numériques réunies dans support](../support/SYNTHESE_PROJET_RESONICS.md)
+
+Les études des quatre journées sont maintenant réunies dans `support/`. Elles utilisent les mêmes fonctions de source et les matériaux de `compute_alpha.MATERIAUX`. Le guide précise les commandes et les fichiers de résultats produits par chaque étude.
 
 ## Premier résultat lundi
 
@@ -28,12 +31,12 @@ Pour le fichier commun, Joachim complète le calcul d’énergie, puis Yann ajou
 - **Application :** bruit de roulement du RER B. La bande 250–2 000 Hz vient de [SOTA.md](../SOTA.md) et reste indicative.
 - **Premier essai actuel :** k=10, soit environ 545,90 Hz avec c=343 m/s. On passe au solveur le nombre d’onde k=2*pi*f/c.
 - **Grille affinée :** N=128, M=256 et h=0,0078125 m dans le support. On conserve le générateur, avec `level=2` pour le cas irrégulier actuel et `level=0` pour la référence plane.
-- **Source :** amplitude unitaire pour le cas initial, puis amplitude gaussienne pour les courbes fréquentielles. La source reste uniforme sur le bord supérieur, avec la même phase en tout point.
-- **Matériau :** un seul pour commencer. Le cas ISOREL du §3.2.4 du polycopié fournit des données pour calculer un coefficient. Joachim fournit les données du matériau et son coefficient.
+- **Source :** `SOURCE=preprocessing.source_rer_b` par défaut, ou `preprocessing.source_constant` pour une excitation unitaire. Les deux fonctions reçoivent `(y, omega)` et le choix est commun au champ initial, à la descente et au calcul fréquentiel.
+- **Matériau :** `CAR_MAT=MATERIAUX["LAINE_ROCHE"]`, avec porosité 0,97, tortuosité 1,1 et résistivité 30 000 Pa·s/m². `ALPHA0=[-50, 50]` fixe le point de départ de l’identification. Ces paramètres et `OMEGA=3430 rad/s`, `C=343 m/s` sont placés au début du programme.
 
 À chaque fréquence, la longueur d’onde doit contenir au moins dix points de grille. Avec h=0,0078125 m et c=343 m/s, on dispose de 12,544 points par longueur d’onde à 3 500 Hz. On calcule désormais 70 fréquences de 50 à 3 500 Hz par pas de 50 Hz, ce qui couvre les trois composantes de la source. La fréquence nulle correspond à un problème statique.
 
-`Alpha=10-10j` est encore le coefficient d’exemple du programme. Un résultat obtenu avec cette valeur montre le fonctionnement du calcul. Le choix physique du matériau demandera son coefficient documenté et une convention de signe cohérente avec le solveur.
+Le coefficient est calculé par `compute_alpha(omega, SOURCE, CAR_MAT, ALPHA0)` à chaque pulsation. L’ensemble du projet utilise la convention `d_n u - alpha(omega)*chi*u=0`. Le résultat complexe renvoyé est utilisé directement dans `alpha_rob=Alpha*chi`. Avec cette convention dissipative, la partie réelle est négative et la partie imaginaire positive.
 
 ## Quel rôle donner au spectre RER B ?
 
@@ -49,7 +52,7 @@ Le facteur est commun à tous les panneaux. Pour G non nul, il conserve donc leu
 
 Sur plusieurs fréquences, les facteurs diffèrent. Ils donnent davantage de poids à certaines fréquences et peuvent ainsi changer la géométrie ou la répartition retenue. Le calcul fréquentiel actuel applique directement la source gaussienne. Un calcul unitaire complémentaire peut aider à distinguer l’effet de la source de celui du mur.
 
-Le programme actuel trace déjà un cas pondéré entre **50 et 3 500 Hz, par pas de 50 Hz**, avec c=343 m/s. Comme G est déjà appliqué à la source de ce calcul, ses énergies contiennent déjà ce facteur. La note [sur la source](../context/ResoniCS_modelisation_source_RER_B.md) décrit les hypothèses, mais les références à une ancienne bande et à une autre convention de grille sont à distinguer des réglages actuels du support.
+Le programme trace la réponse sur **50 à 3 500 Hz par pas de 50 Hz**, avec c=343 m/s. La source et le coefficient sont évalués à chaque fréquence. Comme l’amplitude de la source est déjà appliquée au champ, les énergies contiennent déjà son carré. La note initiale sur la source conserve des hypothèses anciennes, tandis que les paramètres exécutés sont ceux du début du programme.
 
 ## Construction progressive du résultat
 

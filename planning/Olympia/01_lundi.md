@@ -2,7 +2,7 @@
 
 **Objectif du jour.** On obtient un premier champ et son énergie avec le code fourni. Chacun apporte une explication ou un petit calcul nécessaire au résultat du groupe.
 
-**Cas de départ.** Bruit de roulement du RER B. Premier essai proposé à 500 Hz avec c=343 m/s. Les comparaisons utilisent une pression imposée unitaire avec la même phase sur le bord supérieur. La plage 250–2 000 Hz de SOTA.md reste indicative. Avec la grille actuelle, on commence sur 250–1 500 Hz avant d’élargir si nécessaire.
+**Cas de départ.** Le choix `SOURCE` du programme principal est commun au champ initial, à la descente et à la courbe de fréquences. On utilise par défaut `source_rer_b(y, omega)` et la laine de roche `MATERIAUX["LAINE_ROCHE"]`, avec `ALPHA0=[-50, 50]`. Le coefficient suit la convention `d_n u - alpha(omega)*chi*u=0` et est calculé à chaque pulsation. Le cas initial utilise `OMEGA=3430 rad/s`, puis la bande va de 50 à 3 500 Hz, avec N=128, M=256 et c=343 m/s.
 
 **À montrer lundi.** Les paramètres, un champ initial, sa valeur d’énergie et les explications du groupe. Les formules demandées sont étudiées lundi, puis utilisées quand la descente est programmée mardi.
 
@@ -85,7 +85,7 @@ Explique les grandeurs utilisées et appuie la conclusion sur les documents ou l
 Lis les fichiers concernés pour expliquer cette tâche et donne le résultat dans la réponse. Les programmes restent inchangés pour cette contribution.
 
 1. Avec les paramètres de Mathis, liste les essais de mardi : mur plan entièrement recouvert, mur irrégulier entièrement recouvert et répartition initiale sur une même forme.
-2. Note la source unitaire uniforme et la bande retenue, identiques pour comparer les cas.
+2. Note la source choisie et la bande retenue, identiques pour comparer les cas.
 3. Demande à Yann les fréquences et les énergies de chaque essai, accompagnées du nom de la forme et de la quantité utilisée.
 
 Explique les grandeurs utilisées et appuie la conclusion sur les documents ou les résultats fournis.

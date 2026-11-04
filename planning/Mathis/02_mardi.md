@@ -2,7 +2,7 @@
 
 **Objectif du jour.** On compare les premières courbes puis on essaie la descente prévue par le sujet à une fréquence problématique.
 
-**Cas de départ.** Bruit de roulement du RER B. Premier essai proposé à 500 Hz avec c=343 m/s. Les comparaisons utilisent une pression imposée unitaire avec la même phase sur le bord supérieur. La plage 250–2 000 Hz de SOTA.md reste indicative. Avec la grille actuelle, on commence sur 250–1 500 Hz avant d’élargir si nécessaire.
+**Cas de départ.** Le choix `SOURCE` du programme principal est commun au champ initial, à la descente et à la courbe de fréquences. On utilise par défaut `source_rer_b(y, omega)` et la laine de roche `MATERIAUX["LAINE_ROCHE"]`, avec `ALPHA0=[-50, 50]`. Le coefficient suit la convention `d_n u - alpha(omega)*chi*u=0` et est calculé à chaque pulsation. Le cas initial utilise `OMEGA=3430 rad/s`, puis la bande va de 50 à 3 500 Hz, avec N=128, M=256 et c=343 m/s.
 
 ## Study the energy on the chosen plage of frequencies for a fully absorbent wall of the plane shape and to define the local maxima ;
 
@@ -27,7 +27,7 @@ Utiliser aussi les paramètres et résultats déjà obtenus pour cette tâche.
 ### Contexte
 
 ```text
-Modifie seulement preprocessing.py pour le calcul demandé. Garde inchangées les fonctions initialement fournies, notamment _set_coefficients_of_pde, _set_rhs_of_pde et _set_geometry_of_domain. Les autres fichiers et les blocs protégés du programme principal restent inchangés.
+Réutilise compute_alpha dans compute_alpha.py avec les paramètres du programme principal. Explique le coefficient obtenu et ses unités. Les fonctions de maillage et les blocs protégés du programme principal restent inchangés.
 
 1. Reprends le calcul de la veille pour les fréquences choisies avec Yann.
 2. Trace ou liste brièvement les parties réelle et imaginaire pour repérer une variation anormale. Vérifie les unités et la convention de signe déjà discutée.
@@ -63,7 +63,7 @@ Utiliser aussi les paramètres et résultats déjà obtenus pour cette tâche.
 ### Contexte
 
 ```text
-Modifie seulement preprocessing.py pour le calcul demandé. Garde inchangées les fonctions initialement fournies, notamment _set_coefficients_of_pde, _set_rhs_of_pde et _set_geometry_of_domain. Les autres fichiers et les blocs protégés du programme principal restent inchangés.
+Réutilise compute_alpha dans compute_alpha.py avec les paramètres du programme principal. Explique le coefficient obtenu et ses unités. Les fonctions de maillage et les blocs protégés du programme principal restent inchangés.
 
 1. Compare les paramètres des essais plan et irrégulier transmis par Yann.
 2. Vérifie qu’une même fréquence utilise les mêmes paramètres de matériau et le même coefficient.

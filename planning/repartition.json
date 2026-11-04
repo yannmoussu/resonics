@@ -112,7 +112,7 @@
     "document_de_cadrage": "SOTA.md",
     "declinaison": "Choisir une fréquence et une bande pour le RER B, puis vérifier le pas de grille.",
     "contraintes_code": "Un seul fichier du support par tâche ; les blocs protégés et les fonctions fournies sont conservés.",
-    "livrable_jour1": "500 Hz proposé pour le premier essai, c=343 m/s et bande calculée annoncée."
+    "livrable_jour1": "Pulsation initiale 3430 rad/s, soit 545,90 Hz, c=343 m/s, source choisie et bande 50–3500 Hz."
   },
   {
     "id": "J1.4",
@@ -248,7 +248,7 @@
       {
         "membre": "Mathis",
         "fiche": "Mathis/01_lundi.md",
-        "fichier_cible": "support/preprocessing.py",
+        "fichier_cible": "support/compute_alpha.py",
         "role": "responsable",
         "zone_modification": "Fonction de matériau ou de longueur utile à la question ; fonctions fournies inchangées."
       },
@@ -261,7 +261,7 @@
       }
     ],
     "fichiers_cibles": [
-      "support/preprocessing.py"
+      "support/compute_alpha.py"
     ],
     "application": "RER B",
     "document_de_cadrage": "SOTA.md",

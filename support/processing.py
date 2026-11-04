@@ -13,6 +13,7 @@ import scipy.sparse.linalg
 # MRG packages
 import _env
 import preprocessing
+from compute_alpha import compute_alpha
 
 
 def is_in_interior_domain(node):
@@ -531,42 +532,54 @@ def replace_old_by_new(u, oldvalue, newvalue):
                 u[i, j] = newvalue
     return u
 
-def run_rer_b_frequency_sweep(domain_omega, spacestep, frequencies_hz, f, f_dir, f_neu, f_rob, beta_pde,    alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob, sound_speed_m_s=343.0):
-    """Résout Helmholtz pour chaque fréquence et conserve le cas initial intact.
-
-    Le spectre est appliqué avec la convention de Dirichlet du support.
-    Le matériau et la géométrie sont fixés pendant tout le balayage.
-    """
+def run_rer_b_frequency_sweep(domain_omega, spacestep, frequencies_hz,
+                            f, f_dir, f_neu, f_rob, beta_pde, alpha_pde,
+                            alpha_dir, beta_neu, beta_rob, chi, g, car_mat,
+                            alpha0, sound_speed_m_s=343.0):
+    """On calcule le champ avec la source et le matériau choisis à chaque fréquence."""
     frequencies = numpy.asarray(frequencies_hz, dtype=numpy.float64)
     amplitudes = numpy.empty_like(frequencies)
     energies = numpy.empty_like(frequencies)
+    alphas = numpy.empty(frequencies.size, dtype=numpy.complex128)
     solutions = {}
+    y_source = (numpy.arange(domain_omega.shape[1]) - (domain_omega.shape[1] - 1) / 2) * spacestep
 
-    # On résout Helmoltz pour chaque fréquence et on stocke les solutions et les énergies.
     for ind, frequency_hz in enumerate(frequencies):
-        frequency_hz = float(frequency_hz)
-        k = 2.0 * numpy.pi * frequency_hz / sound_speed_m_s
-        amplitudes[ind] = preprocessing.source_rer_b(frequency_hz)
-        f_dir_freq = numpy.zeros_like(f_dir)
-        f_dir_freq[0, :] = amplitudes[ind]
-        u_freq = solve_helmholtz(domain_omega, spacestep, k, f, f_dir_freq, f_neu, f_rob, beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob)
-        interior_mask = domain_omega == _env.NODE_INTERIOR 
-        u_interior = u_freq[interior_mask] # Champ acoustique sur les points intérieurs du domaine
-        squared_amplitude = numpy.abs(u_interior)**2
-        total_amplitude = numpy.sum(squared_amplitude)
-        energy = spacestep**2 * total_amplitude # Énergie totale dans le domaine intérieur
-        energies[ind] = energy
-        solutions[frequency_hz] = u_freq
+        omega = 2.0 * numpy.pi * float(frequency_hz)
+        k = omega / sound_speed_m_s
+        # On détermine le coefficient du matériau dans la convention du support.
+        coefficients, success, message = compute_alpha(omega, g, car_mat, alpha0)
+        if not success:
+            print("Échec du calcul du coefficient à", frequency_hz, "Hz :", message)
+            return None
+        Alpha = coefficients[0] + 1j * coefficients[1]
+        alphas[ind] = Alpha
+        alpha_rob_freq = Alpha * chi
 
-    # Les énergies contiennent déjà la pondération imposée par la source.
+        # On applique le même profil de source au bord supérieur.
+        amplitudes[ind] = g(0.0, omega)
+        f_dir_freq = numpy.zeros_like(f_dir)
+        f_dir_freq[0, :] = g(y_source, omega)
+        u_freq = solve_helmholtz(
+            domain_omega, spacestep, k, f, f_dir_freq, f_neu, f_rob,
+            beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob_freq,
+        )
+        interior = domain_omega == _env.NODE_INTERIOR
+        energies[ind] = spacestep**2 * numpy.sum(numpy.abs(u_freq[interior])**2)
+        solutions[float(frequency_hz)] = u_freq
+
+    # On intègre les coûts, qui contiennent déjà l'amplitude de la source.
     if frequencies.size > 1:
-        band_energy = float(numpy.sum((frequencies[1:] - frequencies[:-1]) * (energies[1:] + energies[:-1]) / 2.0)) # Méthode du trapèze pour l'intégration sur la bande de fréquences
+        band_energy = float(numpy.sum(
+            (frequencies[1:] - frequencies[:-1])
+            * (energies[1:] + energies[:-1]) / 2.0
+        ))
     else:
         band_energy = float(energies[0])
-
     return {
         "frequencies_hz": frequencies,
         "amplitudes": amplitudes,
+        "alphas": alphas,
         "energies": energies,
         "solutions": solutions,
         "band_energy": band_energy,

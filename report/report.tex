@@ -25,9 +25,9 @@
 \newcommand{\ii}{\mathrm{i}}
 \newcommand{\code}[1]{\texttt{\detokenize{#1}}}
 % Valeurs du calcul fréquentiel effectivement exécuté.
-\newcommand{\frequencePic}{1250}
-\newcommand{\energiePic}{14,9376}
-\newcommand{\energieBande}{4624,538}
+\newcommand{\frequencePic}{400}
+\newcommand{\energiePic}{10,8487}
+\newcommand{\energieBande}{4416,120}
 \hypersetup{pdftitle={ResoniCS -- Optimisation acoustique d'un mur antibruit pour le RER B},pdfauthor={Auteurs à compléter}}
 
 \begin{document}
@@ -57,7 +57,7 @@ Le trafic ferroviaire produit des nuisances sonores dont les mécanismes varient
 
 On cherche à associer une géométrie de paroi et une répartition de matériau poreux pour diminuer un indicateur d'énergie du champ sonore. La comparaison doit tenir compte de la quantité de matériau utilisée. L'objectif est donc de comprendre où le matériau est utile, puis de rechercher une répartition adaptée à plusieurs fréquences.
 
-Ce premier travail met en place le modèle et présente des calculs sur une géométrie fournie. L'équation de Helmholtz est résolue en deux dimensions par différences finies. Une source uniforme est imposée en haut du domaine et son amplitude varie avec la fréquence selon un spectre hypothétique. Les premiers résultats décrivent la réponse du modèle et une première descente permet de vérifier le calcul de répartition. La comparaison physique des matériaux et des géométries demandera ensuite un coefficient de matériau documenté.
+Ce premier travail met en place le modèle et présente des calculs sur une géométrie fournie. L'équation de Helmholtz est résolue en deux dimensions par différences finies. Le choix de la source et du matériau est regroupé au début du programme. Les calculs présentés utilisent la somme de gaussiennes et la laine de roche du dictionnaire de matériaux. Le coefficient complexe de la paroi est déterminé à la pulsation étudiée avant le calcul du champ, puis recalculé à chaque fréquence pour construire la courbe de réponse.
 
 \section{État de l'art et cas d'usage}
 \subsection{Origines du bruit ferroviaire}
@@ -89,7 +89,7 @@ Magoulès, Nguyen, Omnes et Rozanova-Pierrat proposent un modèle de Helmholtz a
 Magoulès, Menoux et Rozanova-Pierrat étudient ensuite le placement d'une quantité fixée d'absorbant sur une frontière donnée \cite{magoules2025}. Ils établissent un cadre d'optimisation et emploient une descente de gradient pour diminuer l'énergie sur plusieurs fréquences. Dans leurs exemples numériques, une répartition optimisée utilisant 50\,\% d'absorbant peut donner un indicateur d'énergie plus faible qu'une frontière entièrement absorbante. Ce résultat concerne les géométries, les coefficients et la bande de leur étude. Il fournit une hypothèse à tester pour notre cas d'usage, plutôt qu'une performance déjà obtenue pour le RER B.
 
 \subsection{Positionnement de l'étude ResoniCS}
-Ces réalisations distinguent trois choix complémentaires : le matériau, la forme du mur et la position des portions absorbantes. ResoniCS reprend cette démarche à l'échelle d'un modèle étudiant. On cherche d'abord un coefficient documenté pour le matériau, puis on compare les répartitions pour une quantité imposée. Les formes planes et préfractales sont évaluées avec une même source et une même bande. Les références entièrement recouvertes servent de points de comparaison, avec leur quantité propre annoncée. L'objectif est d'identifier les choix utiles au modèle et de justifier leur effet par les courbes, avant de conclure sur une solution destinée à une installation réelle.
+Ces réalisations distinguent trois choix complémentaires : le matériau, la forme du mur et la position des portions absorbantes. ResoniCS reprend cette démarche à l'échelle d'un modèle étudiant. On utilise d'abord les caractéristiques de la laine de roche pour calculer un coefficient de paroi, puis on recherche une répartition à quantité imposée. Les formes planes et préfractales seront comparées avec une même source et une même bande. Les références entièrement recouvertes serviront de points de comparaison, avec leur quantité propre annoncée. L'objectif est d'identifier les choix utiles au modèle et de justifier leur effet par les courbes.
 
 \section{Modélisation mathématique}
 \subsection{Domaine et champ acoustique}
@@ -99,32 +99,77 @@ On note $\Omega\subset\mathbb R^2$ le domaine occupé par l'air. Sa frontière e
 \begin{equation*}
 p(x,t)=\operatorname{Re}\!\left(u_f(x)e^{-\ii 2\pi ft}\right)
 \end{equation*}
-La célérité est fixée à $c=343\,\mathrm{m\,s^{-1}}$. Le nombre d'onde $k_f$, en $\mathrm{m^{-1}}$ lorsque les longueurs sont en mètres, vaut $2\pi f/c$. En l'absence de source volumique, le modèle de propagation est \cite{cours}
+La célérité est fixée à $c=343\,\mathrm{m\,s^{-1}}$. À la fréquence $f$, la pulsation vaut $\omega=2\pi f$ en radians par seconde, puis le nombre d'onde vaut $k_f=\omega/c$ en $\mathrm{m^{-1}}$ lorsque les longueurs sont en mètres. En l'absence de source volumique, le modèle de propagation est \cite{cours}
 \begin{equation*}
 \Delta u_f+k_f^2u_f=0\quad\text{dans }\Omega
 \qquad k_f=\frac{2\pi f}{c}
 \end{equation*}
 
 \subsection{Conditions aux limites et matériau}
-La fonction $\chi$ décrit la présence de matériau sur $\Gamma_R$. Une valeur nulle correspond à une portion réfléchissante, une valeur égale à un à une portion garnie. Des valeurs intermédiaires seront admises lors de la recherche d'une répartition. Le modèle s'écrit
+La fonction $\chi$ décrit la présence de matériau sur $\Gamma_R$. Une valeur nulle correspond à une portion réfléchissante, une valeur égale à un à une portion garnie. Des valeurs intermédiaires sont admises lors de la recherche d'une répartition. On utilise dans tout le projet la convention du programme fourni :
 \begin{equation*}
 \begin{cases}
-u_f=G(f) & \text{sur }\Gamma_D\\[2pt]
+u_f=g(y,\omega) & \text{sur }\Gamma_D\\[2pt]
 \partial_nu_f=0 & \text{sur }\Gamma_N\\[2pt]
-\partial_nu_f+\alpha(f)\chi u_f=0 & \text{sur }\Gamma_R
+\partial_nu_f-\alpha(\omega)\chi u_f=0 & \text{sur }\Gamma_R
 \end{cases}
 \end{equation*}
-La condition de \textbf{Dirichlet} impose la pression en haut du domaine. La condition de \textbf{Neumann} annule la dérivée normale sur les côtés et représente des parois rigides réfléchissantes. La condition de \textbf{Robin} relie la pression à sa dérivée normale sur le mur. Le coefficient complexe $\alpha$ décrit l'effet de la paroi dans cette convention. Avec les coefficients normalisés du support, il est exprimé en $\mathrm{m^{-1}}$ lorsque les longueurs sont en mètres.
+La condition de \textbf{Dirichlet} impose la pression en haut du domaine. La condition de \textbf{Neumann} annule la dérivée normale sur les côtés et représente des parois rigides réfléchissantes. La condition de \textbf{Robin} relie la pression à sa dérivée normale sur le mur. Le coefficient complexe $\alpha$ décrit l'effet du matériau dans cette convention et il est exprimé en $\mathrm{m^{-1}}$ lorsque les longueurs sont en mètres. Dans le programme, \code{Alpha} désigne ce nombre et \code{alpha_rob} est le tableau obtenu en le multipliant par la répartition $\chi$.
 
-La convention du programme doit être distinguée de l'écriture précédente. Avec les coefficients unitaires fournis et un second membre Robin nul, l'assemblage de \code{compute_robin_condition} utilise
+Avec les coefficients unitaires du support et un second membre Robin nul, \code{compute_robin_condition} utilise
 \begin{equation*}
-u_B=\frac{u_I}{1-h\,\mathrm{Alpha}\,\chi_B}
+u_B=\frac{u_I}{1-h\alpha(\omega)\chi_B}
 \end{equation*}
-Ici $u_B$ est la valeur au bord, $u_I$ celle du point intérieur voisin et $h$ le pas. Cette écriture correspond à $\partial_nu-\mathrm{Alpha}\chi u=0$, d'où
-\begin{equation*}
-\alpha=-\mathrm{Alpha}
-\end{equation*}
-Dans les premiers calculs, \code{Alpha} vaut $10-10\ii$, soit $\alpha=-10+10\ii$ dans l'écriture avec le signe plus, et reste constant en fréquence. Il s'agit du coefficient d'exemple du programme. Dans la convention précédente, cette valeur ne vérifie pas les hypothèses de signe du coefficient dissipatif données au §7.3 du polycopié \cite{cours}. On la conserve comme paramètre d'essai pour vérifier la chaîne de calcul. Les résultats ne valident donc pas encore l'absorption d'un matériau réel. Le signe, les unités et la dépendance fréquentielle devront être fixés avec la loi physique retenue.
+Ici $u_B$ est la valeur au bord, $u_I$ celle du point intérieur voisin et $h$ le pas. Cette expression reprend le même signe que la condition précédente. Avec ce choix, les hypothèses dissipatives du cours se traduisent par $\operatorname{Re}\alpha<0$ et $\operatorname{Im}\alpha>0$ pour la convention temporelle retenue \cite{cours}. La fonction \code{compute_alpha} fournit directement le coefficient dans cette écriture.
+
+\subsection{Identification du coefficient de la laine de roche}
+La fonction \code{compute_alpha}, dans \code{compute_alpha.py}, met en œuvre l'identification présentée au §3.2.4 du polycopié \cite{cours}. Elle compare un modèle où l'onde pénètre dans le matériau poreux et un modèle équivalent avec une condition de Robin. L'erreur donne un poids $A$ à la différence des champs au carré et un poids $B$ à celle de leurs gradients. La routine \code{scipy.optimize.minimize} ajuste les parties réelle et imaginaire du coefficient par la méthode de Nelder--Mead, qui déplace des couples d'essai pour réduire cette erreur.
+
+La laine de roche constitue le premier matériau étudié. Les valeurs ci-dessous sont celles du dictionnaire \code{MATERIAUX} et des paramètres du calcul d'identification. La porosité est la fraction de volume occupée par les pores, la tortuosité décrit l'allongement des trajets dans les pores et la résistivité caractérise la résistance au passage de l'air.
+\begin{table}[htbp]
+\centering
+\begin{tabular}{p{9cm}l}
+\toprule
+Grandeur & Valeur\\
+\midrule
+Porosité $\phi$ & $0,97$\\
+Tortuosité $\alpha_h$ & $1,1$\\
+Résistivité $\sigma$ & $30\,000\,\mathrm{Pa\,s\,m^{-2}}$\\
+Masse volumique de l'air $\rho_0$ & $1,2\,\mathrm{kg\,m^{-3}}$\\
+Célérité de l'air $c_0$ & $343\,\mathrm{m\,s^{-1}}$\\
+Rapport des capacités calorifiques $\gamma_p$ & $1,4$\\
+Coefficient normalisé $\eta_0$ & $1$\\
+Demi-largeur $l$ et longueur $L$ du domaine auxiliaire & $2,5$ m et $10$ m\\
+Paramètre $\Delta x_\alpha$ et troncature $N_\alpha=L/\Delta x_\alpha$ & $0,5$ m et $20$\\
+Indices de Fourier conservés & $-20$ à $20$, soit 41 modes\\
+Poids de l'erreur $A$ et $B$ & $1$ et $1$\\
+Couple initial \code{ALPHA0} & $(-50;50)$\\
+Tolérances \code{xatol} et \code{fatol} & $10^{-6}$ et $10^{-10}$\\
+\bottomrule
+\end{tabular}
+\caption{Paramètres de l'identification du coefficient de la laine de roche}
+\label{tab:identification}
+\end{table}
+
+Les longueurs $l$ et $L$ définissent le domaine auxiliaire de l'identification. La troncature $N_\alpha$ fixe les modes de Fourier utilisés dans ce calcul, indépendamment de la grille du champ acoustique. La fonction \code{materiau} convertit les trois caractéristiques du matériau en coefficients du modèle poreux, puis \code{compute_alpha} cherche le coefficient de Robin à la pulsation fournie. Son indicateur \code{success} est vérifié avant d'utiliser le résultat.
+
+À la pulsation initiale $\omega_0=3\,430\,\mathrm{rad\,s^{-1}}$, le calcul donne $\alpha(\omega_0)=-18,154584+21,197637\ii\,\mathrm{m^{-1}}$. Le coefficient reste fixé à cette valeur pendant la descente à fréquence unique. Le calcul fréquentiel le redétermine pour chaque nouvelle pulsation, avec la même source et les mêmes caractéristiques de matériau.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{rl}
+\toprule
+Fréquence (Hz) & Coefficient $\alpha(\omega)$ en $\mathrm{m^{-1}}$\\
+\midrule
+50 & $-5,894818+5,979421\ii$\\
+2500 & $-30,137224+58,478507\ii$\\
+3500 & $-31,996643+77,112209\ii$\\
+\bottomrule
+\end{tabular}
+\caption{Valeurs du coefficient de la laine de roche à trois fréquences}
+\label{tab:alpha}
+\end{table}
+Le tableau~\ref{tab:alpha} présente trois valeurs du coefficient identifié. Il permet de constater sa variation avec la fréquence et les signes adoptés dans le support.
 
 \subsection{Mur plan et contours préfractals}
 La comparaison prévue porte sur le mur plan de niveau 0 et sur les contours préfractals de niveaux 1 et 2. Le générateur \code{create_motif_koch} remplace un segment par huit segments orthogonaux, chacun quatre fois plus court. Le motif fourni utilise donc des angles droits. Le niveau 1 applique une fois ce motif et le niveau 2 le répète sur les segments obtenus.
@@ -133,16 +178,16 @@ Les résultats présentés ici concernent uniquement le niveau 2. Le tableau~\re
 
 \section{Modélisation de la source acoustique du RER B}
 \subsection{Une excitation uniforme sur le bord supérieur}
-À une fréquence donnée, on impose la même valeur complexe en tout point de $\Gamma_D$. La source possède ainsi une amplitude \emph{et une phase} uniformes sur ce bord. Ce choix fournit une excitation cohérente simple pour comparer les réponses des panneaux. Le passage d'une rame est représenté par une excitation équivalente stationnaire, sans calcul explicite de sa position ou de son déplacement.
+Les fonctions \code{source_constant(y, omega)} et \code{source_rer_b(y, omega)} définissent l'excitation. L'argument $y$ désigne la position le long du bord supérieur et $\omega$ la pulsation. Les deux sources proposées sont indépendantes de $y$, donc elles imposent une amplitude et une phase uniformes sur ce bord. La première renvoie un, alors que la seconde suit le spectre défini ci-dessous. Le paramètre \code{SOURCE}, placé au début de \code{demo_control_polycopie2024.py}, choisit la fonction utilisée pour l'identification du coefficient, le champ initial, la descente et la courbe fréquentielle.
 
 Cette hypothèse est une simplification du cas d'usage. Le mouvement d'un train ne suffit pas à rendre sa pression uniforme. Les différences de position et de phase entre les sources réelles pourront être examinées après les premières comparaisons, en gardant les mêmes données d'entrée pour tous les panneaux.
 
 \subsection{Somme de trois composantes gaussiennes}
-La fonction \code{source_rer_b}, dans \code{preprocessing.py}, fournit l'amplitude relative
+La fonction \code{source_rer_b}, dans \code{preprocessing.py}, convertit la pulsation en fréquence par $f=\omega/(2\pi)$, puis fournit l'amplitude relative
 \begin{equation}\label{eq:source}
 G(f)=\sum_{m=1}^{3}A_m\exp\!\left(-\frac{(f-f_m)^2}{2\sigma_m^2}\right)
 \end{equation}
-Le centre $f_m$ et l'écart-type $\sigma_m$ sont exprimés en hertz. L'écart-type règle la largeur de la composante et $A_m$ son amplitude maximale lorsqu'elle est considérée seule. Les neuf paramètres retenus dans \eqref{eq:source} figurent dans le tableau~\ref{tab:source}.
+Le centre $f_m$ et l'écart-type $\sigma_m$ sont exprimés en hertz. L'écart-type règle la largeur de la composante et $A_m$ son amplitude maximale lorsqu'elle est considérée seule. L'argument $y$ est conservé dans la signature pour que les deux sources aient la même forme d'appel. Les neuf paramètres retenus dans \eqref{eq:source} figurent dans le tableau~\ref{tab:source}.
 
 \begin{table}[htbp]
 \centering
@@ -193,10 +238,11 @@ Grille de stockage $M\times N$ & $256\times128$\\
 Pas $h$, interprété en mètres & $0,0078125$\\
 Niveau du contour calculé & 2\\
 Célérité $c$ & $343\,\mathrm{m\,s^{-1}}$\\
-Source du cas initial & Uniforme, amplitude 1\\
+Source du cas initial & \code{source_rer_b}, amplitude $0,617187$\\
+Pulsation initiale $\omega_0$ & $3\,430\,\mathrm{rad\,s^{-1}}$\\
 Nombre d'onde initial $k_0$ & $10\,\mathrm{m^{-1}}$\\
 Fréquence initiale déduite $ck_0/(2\pi)$ & $545,90\,\mathrm{Hz}$\\
-Coefficient \code{Alpha} & $(10-10\ii)\,\mathrm{m^{-1}}$\\
+Coefficient initial \code{Alpha} & $(-18,154584+21,197637\ii)\,\mathrm{m^{-1}}$\\
 Points Robin garnis / points Robin & $204/512$\\
 Fraction nodale initiale \code{V_obj} & $0,398438$\\
 Fréquences du calcul spectral & 50 à 3\,500 Hz\\
@@ -210,7 +256,7 @@ Pas fréquentiel et nombre de fréquences & 50 Hz, 70 valeurs\\
 La fraction nodale \code{V_obj} indique la proportion de points Robin garnis. Elle ne suffit pas à définir un volume physique. Pour comparer des géométries différentes, on devra mesurer la longueur absorbante et annoncer l'épaisseur ainsi que la profondeur si un volume est utilisé.
 
 \subsection{Fréquences calculées et résolution de l'onde}
-Le calcul fréquentiel résout un problème indépendant pour chaque valeur de $f$. Dans le programme, l'argument nommé \code{omega} de \code{solve_helmholtz} reçoit le \emph{nombre d'onde} $k_f=2\pi f/c$. La pulsation temporelle, exprimée en radians par seconde, serait $2\pi f$.
+Le calcul fréquentiel résout un problème indépendant pour chaque valeur de $f$. La fonction \code{compute_alpha} reçoit la pulsation $\omega=2\pi f$, tandis que l'argument nommé \code{omega} de \code{solve_helmholtz} reçoit le nombre d'onde $k_f=\omega/c$. Les paramètres \code{SOURCE}, \code{CAR_MAT}, \code{ALPHA0}, \code{OMEGA} et \code{C} sont regroupés au début du programme principal.
 
 La longueur d'onde est $\lambda_f=c/f$. La règle d'au moins dix points de grille par longueur d'onde impose
 \begin{equation*}
@@ -218,7 +264,7 @@ La longueur d'onde est $\lambda_f=c/f$. La règle d'au moins dix points de grill
 \end{equation*}
 Pour atteindre 3\,500 Hz avec au moins dix points par longueur d'onde, il faut $h\leq343/(10\times3\,500)=0,0098$ m. On retient $N=128$, donc $h=1/128=0,0078125$ m. À 3\,500 Hz, on dispose alors de 12,544 points par longueur d'onde et la limite correspondant à dix points vaut 4\,390,4 Hz. La bande calculée s'étend de 50 à 3\,500 Hz par pas de 50 Hz et couvre les trois composantes de la source. La fréquence nulle correspond à une excitation statique, donc le calcul acoustique commence à la première fréquence positive de cette grille. Cette règle spatiale est distincte du pas fréquentiel de 50 Hz, qui pourra être réduit autour des pics pour préciser leur position.
 
-La fonction \code{run_rer_b_frequency_sweep} construit un tableau Dirichlet indépendant pour chaque fréquence. Les coefficients de paroi et la géométrie sont conservés pendant ce calcul. La dépendance réelle du coefficient poreux en fréquence reste ainsi à introduire.
+La fonction \code{run_rer_b_frequency_sweep} construit un tableau Dirichlet indépendant pour chaque fréquence avec la source choisie. Elle calcule la pulsation, identifie le coefficient du matériau, puis forme le tableau \code{alpha_rob} en multipliant ce coefficient par la même répartition $\chi$. La géométrie et la répartition sont conservées, alors que la source et le coefficient sont évalués à la fréquence courante.
 
 \subsection{Énergie du champ et intégration sur la bande}
 Pour comparer les champs, on utilise le critère du cours \cite{cours}
@@ -272,7 +318,7 @@ La figure~\ref{fig:spectre} présente le modèle spectral sur 0 à 3\,500 Hz, é
 Le calcul acoustique s'étend désormais jusqu'à 3\,500 Hz. Il couvre la composante basse fréquence, celle de roulement et celle centrée à 2\,500 Hz. La zone grisée correspond aux fréquences positives comprises entre 50 et 3\,500 Hz, pour lesquelles le champ est effectivement calculé à intervalles de 50 Hz.
 
 \subsection{Énergie calculée sur la bande}
-La figure~\ref{fig:energie} montre les 70 fréquences effectivement simulées. Chaque point utilise la même géométrie, la même répartition initiale et le même coefficient de paroi. Seuls le nombre d'onde et l'amplitude de la source varient.
+La figure~\ref{fig:energie} montre les 70 fréquences effectivement simulées. Chaque point utilise la même géométrie, la même répartition initiale et le même matériau. Le nombre d'onde, l'amplitude de la source et le coefficient complexe du matériau sont recalculés à chaque fréquence.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.78\textwidth]{fig_rer_b_energie.png}
@@ -280,14 +326,14 @@ La figure~\ref{fig:energie} montre les 70 fréquences effectivement simulées. C
 \label{fig:energie}
 \end{figure}
 
-Le maximum échantillonné vaut \energiePic{} et est obtenu à \frequencePic{} Hz. L'intégration des valeurs calculées donne \energieBande{} dans la normalisation du modèle. Deux autres pics marqués sont observés à 400 Hz et 600 Hz, avec des valeurs respectives de 10,0653 et 8,7428. Ces nombres décrivent les fréquences testées avec la grille affinée. Un pas fréquentiel plus petit autour des pics permettrait de mieux préciser leur position.
+Le maximum échantillonné vaut \energiePic{} et est obtenu à \frequencePic{} Hz. L'intégration des valeurs calculées donne \energieBande{} dans la normalisation du modèle. Deux autres maxima locaux sont observés à 250 et 800 Hz, avec des valeurs respectives de 9,9130 et 7,7147. Ces nombres décrivent les fréquences testées avec la loi de matériau calculée. Un pas fréquentiel plus petit autour des pics permettrait de mieux préciser leur position.
 
-À 1250 Hz, l'amplitude imposée vaut environ 0,3501, contre 1,1841 à 200 Hz. Le champ a pourtant une énergie plus grande à 1250 Hz, soit 14,9376 contre 1,4024. Les variations de la courbe résultent ainsi de la réponse du domaine et du spectre imposé. Les fréquences où la source est forte ne sont pas nécessairement celles où le domaine répond le plus fortement à une excitation unitaire. Une comparaison de murs demandera de conserver la même source pour tous les cas. Le coefficient constant utilisé ici devra également être remplacé par une loi documentée avant d'interpréter cette courbe comme la performance d'un matériau réel.
+À 400 Hz, l'amplitude imposée vaut 0,5517, contre 0,7148 à 100 Hz. Le coût est pourtant plus élevé, soit 10,8487 contre 2,3944. Les variations de la courbe résultent du spectre imposé et de la réponse du domaine avec un coefficient de matériau dépendant de la fréquence. On conserve donc la même source et les mêmes données de matériau pour comparer les panneaux. Les amplitudes de source étant relatives, ces énergies servent à comparer les cas du modèle.
 
 \subsection{Champ initial et répartition de matériau}
-Le cas initial reste celui du programme fourni : $k_0=10\,\mathrm{m^{-1}}$ et une source uniforme unitaire. Sa fréquence équivalente est $545,90\,\mathrm{Hz}$ avec la célérité retenue. Il est distinct des calculs du spectre, qui utilisent l'amplitude $G(f)$.
+Le cas initial utilise $\omega_0=3\,430\,\mathrm{rad\,s^{-1}}$, soit $k_0=10\,\mathrm{m^{-1}}$ et $f_0=545,90$ Hz. Il emploie la même fonction source que la courbe fréquentielle. Avec la somme de gaussiennes, son amplitude vaut 0,617187. Le coefficient de la laine de roche est calculé à cette pulsation avant la résolution, puis gardé fixe pendant la recherche du placement.
 
-La figure~\ref{fig:champinitial} montre le module du champ initial sur les points intérieurs du domaine. Les axes des cartes sont les indices de la grille, avec un pas $h=0,0078125$ m entre deux indices. Les zones de valeur élevée correspondent à des oscillations plus fortes. L'énergie de ce cas initial vaut 2,944346 et le maximum du module vaut environ 8,277 dans l'unité relative de pression. La carte sert à repérer la répartition spatiale de la réponse. Une concentration dans certaines zones ne démontre pas à elle seule une meilleure absorption.
+La figure~\ref{fig:champinitial} montre le module du champ initial sur les points intérieurs du domaine. Les axes des cartes sont les indices de la grille, avec un pas $h=0,0078125$ m entre deux indices. L'énergie initiale vaut 1,126340 et le maximum du module vaut 5,018 dans l'unité relative de pression. Les zones de valeur élevée correspondent aux oscillations les plus fortes dans ce cas.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.62\textwidth]{fig_u0_module_plot.png}
@@ -305,8 +351,8 @@ La figure~\ref{fig:repartition} présente la répartition initiale $\chi$. Les p
 \label{fig:repartition}
 \end{figure}
 
-\subsection{Essai de la descente avec le coefficient provisoire}
-La figure~\ref{fig:descente} présente le cas initial à $k_0=10\,\mathrm{m^{-1}}$, avec la source unitaire et le coefficient d'exemple. La courbe suit la phase continue, dont le critère passe de 2,944346 à 0,572995 en 100 étapes acceptées. Le marqueur de la répartition binaire indique le coût 0,589684 obtenu après le tri final. La somme des valeurs de matériau reste égale à 204 sur les 512 points Robin.
+\subsection{Descente avec le coefficient de la laine de roche}
+La figure~\ref{fig:descente} présente la descente à $\omega_0=3\,430\,\mathrm{rad\,s^{-1}}$ avec la source choisie et le coefficient de la laine de roche. Le critère passe de 1,126340 à 0,223515 en 100 étapes continues acceptées. Le marqueur binaire indique le coût 0,223519 après le tri final. La quantité reste égale à 204 points garnis sur 512 points Robin.
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.78\textwidth]{fig_energy_real.jpg}
@@ -314,7 +360,7 @@ La figure~\ref{fig:descente} présente le cas initial à $k_0=10\,\mathrm{m^{-1}
 \label{fig:descente}
 \end{figure}
 
-Le tri final fait ici remonter le coût de 0,572995 à 0,589684. Le coût de la répartition binaire reste inférieur à celui du placement initial. L'arrêt correspond au nombre maximal d'étapes, donc il ne démontre pas qu'un minimum a été atteint. Ces résultats vérifient la méthode avec le coefficient provisoire. Le choix d'un matériau documenté permettra ensuite d'interpréter sa performance acoustique.
+Le tri final fait ici remonter le coût de 0,223515 à 0,223519. Le coût binaire reste inférieur à celui du placement initial. L'arrêt correspond au nombre maximal d'étapes, donc il ne démontre pas qu'un minimum a été atteint. Ces valeurs décrivent le matériau et la source retenus dans le modèle.
 
 La figure~\ref{fig:repartitionfinale} montre le placement final des 204 points garnis. Toutes les valeurs de $\chi$ sur le mur sont alors égales à zéro ou à un, donc chaque point représente une portion réfléchissante ou une portion garnie.
 \begin{figure}[H]
@@ -324,12 +370,12 @@ La figure~\ref{fig:repartitionfinale} montre le placement final des 204 points g
 \label{fig:repartitionfinale}
 \end{figure}
 
-Les courbes fréquentielles des figures~\ref{fig:spectre} et~\ref{fig:energie} restent celles de la répartition initiale. Le remplacement du coefficient par celui du matériau retenu permettra de refaire la descente et de comparer les champs dans des conditions physiques documentées.
+Les courbes fréquentielles des figures~\ref{fig:spectre} et~\ref{fig:energie} concernent la répartition initiale, avec le coefficient identifié à chaque fréquence. La descente présentée ici agit sur le placement du matériau à une seule pulsation.
 
 \section{Perspectives}
-La première étape consiste à déterminer un coefficient complexe documenté pour le matériau retenu. Le §3.2.4 du polycopié donne une démarche pour ce calcul. Sa mise en œuvre devra préciser les paramètres physiques, les conventions et la fréquence, puis permettre de refaire les courbes avec un coefficient adapté.
+La loi complexe de la laine de roche est maintenant calculée avec \code{compute_alpha}. La suite consiste à comparer les placements et les formes avec cette même loi et la même source, puis à examiner d'autres matériaux du dictionnaire si leurs données sont retenues pour la comparaison.
 
-La première descente sera ensuite relancée avec le coefficient du matériau retenu. Pour comparer des formes différentes, la contrainte nodale sera remplacée par une longueur absorbante imposée. Cette longueur sera mesurée par
+Pour comparer des formes différentes, la contrainte nodale sera remplacée par une longueur absorbante imposée. Cette longueur sera mesurée par
 \begin{equation*}
 L_{\mathrm{abs}}=\int_{\Gamma_R}\chi\dd s
 \end{equation*}

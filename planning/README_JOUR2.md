@@ -20,25 +20,25 @@ Chaque contribution concerne un seul fichier Python existant. On partage la dern
 
 Le [programme principal](../support/demo_control_polycopie2024.py) contient déjà `your_compute_objective_function`, `your_optimization_procedure`, `project_density`, `compute_state`, `compute_adjoint` et `compute_gradient`. On les appelle directement. Le coût, le gradient et la conservation de la quantité ont été vérifiés.
 
-Les [calculs fréquentiels](../support/processing.py) et les [tracés](../support/postprocessing.py) existent aussi. On conserve une source uniforme sur le bord supérieur, dont l’amplitude suit les trois gaussiennes de `source_rer_b`.
+Les [calculs fréquentiels](../support/processing.py) et les [tracés](../support/postprocessing.py) utilisent la source choisie dans le programme principal. `source_constant(y, omega)` renvoie un, et `source_rer_b(y, omega)` renvoie la somme de gaussiennes après conversion de la pulsation en hertz. Le champ initial, la descente et la courbe fréquentielle partagent le même choix.
 
 ### Paramètres à confirmer ensemble
 
 - Première bande : **50–3 500 Hz par pas de 50 Hz**, soit 70 fréquences, avec **c=343 m/s**.
 - Grille actuelle : **N=128, M=256, h=0,0078125 m**. À 3 500 Hz, elle donne **12,544 points par longueur d’onde**.
 - La donnée appelée `omega` par le solveur reçoit **k=2*pi*f/c**, et non la fréquence en hertz.
-- `Alpha=10-10j` reste un exemple. Joachim transmet le coefficient physique et Yann vérifie sa conversion vers la convention du code. Dans l’écriture du rapport avec un signe plus devant `alpha`, les coefficients unitaires du support conduisent à **Alpha=-alpha**.
-- Le calcul initial à source unitaire correspond à **545,90 Hz**. Le spectre gaussien est appliqué au calcul fréquentiel. Le cas actuel utilise le contour de niveau 2. Son maximum échantillonné se situe à 1250 Hz avec le coefficient d’exemple et devra être recalculé avec le matériau retenu.
+- Le matériau courant est `MATERIAUX["LAINE_ROCHE"]`. `compute_alpha` calcule directement le coefficient dans la convention du support `d_n u - alpha(omega)*chi*u=0`, avec le couple de départ `ALPHA0=[-50, 50]`. On utilise sa valeur complexe directement dans `alpha_rob=Alpha*chi`.
+- Le cas initial utilise `OMEGA=3430 rad/s`, soit **545,90 Hz**, et la source choisie par `SOURCE`. Le cas actuel est le contour de niveau 2. Le maximum échantillonné de la réponse à la source choisie se situe à **400 Hz** avec la loi de la laine de roche recalculée à chaque fréquence.
 
-Si le matériau attend encore une donnée, on peut préparer les figures avec le coefficient d’exemple en les identifiant comme essais numériques.
+Le coefficient de matériau est désormais calculé avant chaque résolution. Les comparaisons de murs conservent les mêmes caractéristiques de matériau et la même fonction source.
 
 ## Study the energy on the chosen plage of frequencies for a fully absorbent wall of the plane shape and to define the local maxima ;
 
 **Repère : J2.1.** On construit la première référence.
 
-1. **Joachim et Mathis — données du matériau.** Joachim fournit le coefficient aux fréquences étudiées. Mathis rassemble ces données. Si une intégration est nécessaire, cette contribution concerne seulement `support/preprocessing.py`.
+1. **Joachim et Mathis — données du matériau.** On réutilise `support/compute_alpha.py` et les caractéristiques choisies dans `MATERIAUX`. Mathis rassemble les paramètres et les coefficients calculés aux fréquences étudiées.
 2. **Yann — `support/demo_control_polycopie2024.py`.** On prépare le niveau 0 et une répartition égale à un sur tous les points Robin. « Entièrement absorbant » signifie ici entièrement garni du matériau, sans garantir une réflexion nulle.
-3. **Yann — même fichier.** On parcourt les fréquences avec la source gaussienne et le coefficient correspondant, puis on conserve les énergies dans un tableau. `run_rer_b_frequency_sweep` suppose actuellement un coefficient constant. Si Joachim fournit une loi variable, une boucle simple appelle le solveur avec sa valeur à chaque fréquence.
+3. **Yann — même fichier.** On conserve le choix `SOURCE`, `CAR_MAT` et `ALPHA0`. `run_rer_b_frequency_sweep` calcule la pulsation, le coefficient et la source avant chaque résolution, puis conserve les énergies dans un tableau.
 4. **Olympia — `support/postprocessing.py`.** On trace la courbe et on repère les valeurs supérieures à leurs deux voisines. On précise un pic important avec quelques fréquences supplémentaires.
 
 **Résultat attendu :** courbe du mur plan garni, paramètres et liste courte de pics. Un pic combine la réponse du domaine et l’amplitude de la source choisie. L’énergie contient déjà cette amplitude au carré.
@@ -77,7 +77,7 @@ Si le matériau attend encore une donnée, on peut préparer les figures avec le
 
 ### MVP attendu en fin de journée
 
-- [ ] Données du matériau documentées, ou coefficient d’essai explicitement annoncé.
+- [ ] Données de la laine de roche et paramètres de son identification documentés.
 - [ ] Courbe plane, comparaison des formes et comparaison initial/plein.
 - [ ] Une descente sur un pic confirmé, avec quantité conservée, placement final binaire et historique distinguant les deux phases.
 - [ ] Figures nommées, échelles cohérentes et interprétation courte pour chaque comparaison.
@@ -85,4 +85,4 @@ Si le matériau attend encore une donnée, on peut préparer les figures avec le
 
 La grille affinée permet maintenant de calculer le champ de 50 à 3 500 Hz en respectant les dix points par longueur d’onde demandés. La fréquence nulle correspond à un problème statique. Les pics les plus marqués pourront être précisés avec un pas fréquentiel inférieur à 50 Hz. Les courbes déjà pondérées par les gaussiennes se lisent directement, sans nouvelle multiplication par leur amplitude au carré.
 
-Pour valider les comparaisons physiques, les résultats doivent être recalculés avec les données du matériau retenu.
+Pour comparer les matériaux, on modifie `CAR_MAT` puis on recalcule les coefficients et les champs avec la même source et les mêmes fréquences.
