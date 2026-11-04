@@ -421,16 +421,18 @@ def source_constant(y, omega):
     return 1.0
 
 
+RER_B_GAUSSIANS = (
+    (200.0, 100.0, 1.0),   # (fréquence centrale en Hz, largeur en Hz, amplitude)
+    (800.0, 350.0, 0.8),
+    (2500.0, 150.0, 0.5),
+)
+
+
 def source_rer_b(y, omega):
     """On renvoie l'amplitude du spectre RER B pour la pulsation donnée."""
     frequency_hz = float(omega) / (2.0 * numpy.pi)
-    composantes = (
-        (200.0, 100.0, 1.0),   # On représente les basses fréquences.
-        (800.0, 350.0, 0.8),   # On représente le bruit de roulement.
-        (2500.0, 150.0, 0.5),  # On représente une contribution de crissement.
-    )
     amplitude = 0.0
-    for centre, largeur, poids in composantes:
+    for centre, largeur, poids in RER_B_GAUSSIANS:
         amplitude += poids * numpy.exp(
             -0.5 * ((frequency_hz - centre) / largeur) ** 2
         )

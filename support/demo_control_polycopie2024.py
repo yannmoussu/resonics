@@ -26,7 +26,7 @@ OMEGA = 3430.0  # On exprime la pulsation en radians par seconde.
 C = 343.0  # On exprime la célérité en mètres par seconde.
 
 # On choisit une étude ou l’ensemble des comparaisons.
-# Les choix sont demo, materiaux_validation, monofrequence,
+# Les choix sont demo, trois_pics, materiaux_validation, monofrequence,
 # multifrequence, comparaison_dispositifs et tous.
 ETUDE = "demo"
 N_POINTS = 128
@@ -135,6 +135,126 @@ def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu,
     return chi, energy, u, grad
 
 
+
+def your_optimization_procedure_three_peaks(
+    domain_omega, spacestep, chi, V_obj,
+    f=None, f_neu=None, f_rob=None,
+    beta_pde=None, alpha_pde=None, alpha_dir=None, beta_neu=None, beta_rob=None,
+    source=preprocessing.source_rer_b, car_mat=CAR_MAT, alpha0=ALPHA0,
+    sound_speed_m_s=C, mu=5.0, numb_iter=N_ITERATIONS, alphas=None,
+):
+    """Minimise J_200(chi) + J_800(chi) + J_2500(chi) avec un seul mur chi.
+
+    Les trois fréquences viennent des centres de preprocessing.RER_B_GAUSSIANS.
+    La source est évaluée à chaque pulsation. Si alphas est omis, Alpha est
+    identifié une fois par fréquence et conservé pendant la descente.
+
+    Renvoie un dictionnaire avec chi binaire, chi relaxé, les historiques des
+    trois coûts et de leur somme, les trois champs finaux et le gradient total.
+    La dernière ligne des historiques est le coût APRES le tri binaire.
+    """
+    frequencies_hz = numpy.array(
+        [centre for centre, largeur, poids in preprocessing.RER_B_GAUSSIANS],
+        dtype=numpy.float64,
+    )
+    wavenumbers = 2.0 * numpy.pi * frequencies_hz / sound_speed_m_s
+    if sound_speed_m_s / (frequencies_hz.max() * spacestep) < 10.0:
+        print("Attention : moins de 10 points de maillage par longueur d'onde à 2500 Hz.")
+
+    if len(frequencies_hz) != 3:
+        raise ValueError("La source RER B doit comporter exactement trois gaussiennes.")
+    if not (0.0 <= V_obj <= 1.0):
+        raise ValueError("V_obj doit être compris entre 0 et 1.")
+
+    if alphas is None:
+        alphas = processing.compute_material_coefficients(
+            frequencies_hz, source, car_mat, alpha0,
+        )
+        if alphas is None:
+            raise ValueError("Impossible d'identifier Alpha aux trois fréquences.")
+    alphas = numpy.asarray(alphas, dtype=numpy.complex128)
+    if alphas.shape != (3,) or not numpy.all(numpy.isfinite(alphas)):
+        raise ValueError("Il faut trois coefficients Alpha complexes finis.")
+
+    solver = processing.FastHelmholtzSolver(
+        domain_omega, spacestep, f=f, f_neu=f_neu, f_rob=f_rob,
+        beta_pde=beta_pde, alpha_pde=alpha_pde, alpha_dir=alpha_dir,
+        beta_neu=beta_neu, beta_rob=beta_rob,
+    )
+    chi = project_density(chi, domain_omega, V_obj)
+    mu = float(mu)
+
+    def evaluate(distribution, with_gradient=False):
+        """Calcule les trois J, leur gradient total éventuel, et les trois champs."""
+        energies = numpy.zeros(3, dtype=numpy.float64)
+        total_gradient = numpy.zeros(domain_omega.shape, dtype=numpy.float64)
+        fields = {}
+        for index, (frequency, wavenumber, Alpha) in enumerate(
+            zip(frequencies_hz, wavenumbers, alphas)
+        ):
+            omega = 2.0 * numpy.pi * frequency
+            solver.set_source(source, omega)
+            if with_gradient:
+                u, p = solver.solve_state_and_adjoint(wavenumber, Alpha * distribution)
+                total_gradient += solver.compute_gradient(u, p, distribution, Alpha)
+            else:
+                u = solver.solve(wavenumber, Alpha * distribution)
+            energies[index] = solver.compute_energy(u)
+            fields[float(frequency)] = u
+        return energies, total_gradient, fields
+
+    initial_energies, _, _ = evaluate(chi)
+    history_by_frequency = [initial_energies]
+    history_total = [float(numpy.sum(initial_energies))]
+
+    for iteration in range(numb_iter):
+        if mu <= 1e-5:
+            break
+        current_energies, gradient_total, _ = evaluate(chi, with_gradient=True)
+        current_total = float(numpy.sum(current_energies))
+        accepted = False
+
+        while mu > 1e-5:
+            descent = chi - mu * gradient_total
+            candidate = project_density(descent, domain_omega, V_obj)
+            candidate_energies, _, _ = evaluate(candidate)
+            candidate_total = float(numpy.sum(candidate_energies))
+
+            if numpy.isfinite(candidate_total) and candidate_total < current_total:
+                variation = numpy.max(numpy.abs(candidate - chi))
+                chi = candidate
+                history_by_frequency.append(candidate_energies)
+                history_total.append(candidate_total)
+                mu = mu * 1.1
+                accepted = True
+                break
+            mu = mu / 2.0
+
+        if not accepted:
+            break
+        print(f"3 pics - étape {iteration + 1} : J_total = {history_total[-1]:.6g}")
+        if variation < 1e-7:
+            break
+
+    chi_relaxed = chi.copy()
+    chi_binary = preprocessing.binarize_chi(chi_relaxed, domain_omega, V_obj)
+
+    # Après le passage en binaire, on recalcule les trois champs et gradients.
+    final_energies, final_gradient, final_fields = evaluate(chi_binary, with_gradient=True)
+    history_by_frequency.append(final_energies)
+    history_total.append(float(numpy.sum(final_energies)))
+
+    return {
+        "frequencies_hz": frequencies_hz,
+        "alphas": alphas,
+        "chi": chi_binary,
+        "chi_relaxed": chi_relaxed,
+        "energy_history": numpy.asarray(history_total, dtype=numpy.float64).reshape(-1, 1),
+        "energy_by_frequency": numpy.asarray(history_by_frequency, dtype=numpy.float64),
+        "fields_by_frequency": final_fields,
+        "gradient": final_gradient,
+    }
+
 def your_compute_objective_function(domain_omega, u, spacestep):
     """On calcule le critère à partir du module de pression sur les points intérieurs."""
     interior_values = numpy.asarray(u)[domain_omega == _env.NODE_INTERIOR]
@@ -144,6 +264,51 @@ def your_compute_objective_function(domain_omega, u, spacestep):
 # Les deux noms désignent le même calcul du coût.
 compute_objective_function = your_compute_objective_function
 
+
+
+def run_three_peaks_optimization():
+    """Mode autonome : une descente unique sur la somme des trois pics du RER B."""
+    N = N_POINTS
+    M = 2 * N
+    spacestep = 1.0 / N
+    level = 2
+
+    beta_pde, alpha_pde, alpha_dir, beta_neu, _, beta_rob = (
+        preprocessing._set_coefficients_of_pde(M, N)
+    )
+    f, _, f_neu, f_rob = preprocessing._set_rhs_of_pde(M, N)
+    domain_omega, x, y, _, _ = preprocessing._set_geometry_of_domain(M, N, level)
+    chi_initial = preprocessing._set_chi(M, N, x, y)
+    chi_initial = preprocessing.set2zero(chi_initial, domain_omega)
+    robin_count = numpy.count_nonzero(domain_omega == _env.NODE_ROBIN)
+    V_obj = float(numpy.sum(chi_initial) / robin_count)
+
+    result = your_optimization_procedure_three_peaks(
+        domain_omega, spacestep, chi_initial, V_obj,
+        f=f, f_neu=f_neu, f_rob=f_rob,
+        beta_pde=beta_pde, alpha_pde=alpha_pde, alpha_dir=alpha_dir,
+        beta_neu=beta_neu, beta_rob=beta_rob,
+        source=SOURCE, car_mat=CAR_MAT, alpha0=ALPHA0, sound_speed_m_s=C,
+        mu=5.0, numb_iter=N_ITERATIONS,
+    )
+
+    energies = result["energy_history"][:, 0]
+    components = result["energy_by_frequency"]
+    print("Fréquences étudiées (Hz) :", result["frequencies_hz"])
+    print("Coût initial :", energies[0])
+    print("Coût relaxé final :", energies[-2])
+    print("Coût binaire final :", energies[-1])
+    print("Énergies binaires par fréquence :", components[-1])
+    print("Points garnis :", int(numpy.count_nonzero(result["chi"])))
+
+    postprocessing._plot_energy_history(result["energy_history"])
+    csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "historique_3_pics.csv")
+    steps = numpy.arange(len(energies))
+    numpy.savetxt(
+        csv_path, numpy.column_stack((steps, components, energies)), delimiter=",",
+        header="step,J_200Hz,J_800Hz,J_2500Hz,J_total", comments="",
+    )
+    return result
 
 def run_studies(selection):
     """On lance les calculs choisis puis on transmet leurs résultats aux tracés."""
@@ -324,5 +489,8 @@ if __name__ == '__main__' and ETUDE == 'demo':
     print('End.')
 
 
-if __name__ == "__main__" and ETUDE != "demo":
+if __name__ == "__main__" and ETUDE == "trois_pics":
+    run_three_peaks_optimization()
+
+if __name__ == "__main__" and ETUDE not in ("demo", "trois_pics"):
     run_studies(ETUDE)
