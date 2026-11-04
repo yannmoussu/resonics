@@ -32,11 +32,11 @@ Pour le fichier commun, Joachim complète le calcul d’énergie, puis Yann ajou
 - **Premier essai actuel :** k=10, soit environ 545,90 Hz avec c=343 m/s. On passe au solveur le nombre d’onde k=2*pi*f/c.
 - **Grille affinée :** N=128, M=256 et h=0,0078125 m dans le support. On conserve le générateur, avec `level=2` pour le cas irrégulier actuel et `level=0` pour la référence plane.
 - **Source :** `SOURCE=preprocessing.source_rer_b` par défaut, ou `preprocessing.source_constant` pour une excitation unitaire. Les deux fonctions reçoivent `(y, omega)` et le choix est commun au champ initial, à la descente et au calcul fréquentiel.
-- **Matériau :** `CAR_MAT=MATERIAUX["LAINE_ROCHE"]`, avec porosité 0,97, tortuosité 1,1 et résistivité 30 000 Pa·s/m². `ALPHA0=[-50, 50]` fixe le point de départ de l’identification. Ces paramètres et `OMEGA=3430 rad/s`, `C=343 m/s` sont placés au début du programme.
+- **Matériau :** `CAR_MAT=MATERIAUX["LAINE_ROCHE"]`, avec porosité 0,97, tortuosité 1,1 et résistivité 30 000 Pa·s/m². `ALPHA0=[50, -50]` fixe le point de départ de l’identification. Ces paramètres et `OMEGA=3430 rad/s`, `C=343 m/s` sont placés au début du programme.
 
 À chaque fréquence, la longueur d’onde doit contenir au moins dix points de grille. Avec h=0,0078125 m et c=343 m/s, on dispose de 12,544 points par longueur d’onde à 3 500 Hz. On calcule désormais 70 fréquences de 50 à 3 500 Hz par pas de 50 Hz, ce qui couvre les trois composantes de la source. La fréquence nulle correspond à un problème statique.
 
-Le coefficient est calculé par `compute_alpha(omega, SOURCE, CAR_MAT, ALPHA0)` à chaque pulsation. L’ensemble du projet utilise la convention `d_n u - alpha(omega)*chi*u=0`. Le résultat complexe renvoyé est utilisé directement dans `alpha_rob=Alpha*chi`. Avec cette convention dissipative, la partie réelle est négative et la partie imaginaire positive.
+Le coefficient est calculé par `compute_alpha(omega, SOURCE, CAR_MAT, ALPHA0)` à chaque pulsation. L’ensemble du projet utilise la convention `d_n u + alpha(omega)*chi*u=0`. Le résultat complexe renvoyé est utilisé directement dans `alpha_rob=Alpha*chi`. Avec cette convention dissipative, la partie réelle est positive et la partie imaginaire négative.
 
 ## Quel rôle donner au spectre RER B ?
 

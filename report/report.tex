@@ -10,7 +10,8 @@
 \usepackage{float,microtype,needspace}
 \usepackage[section]{placeins}
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue]{hyperref}
-\graphicspath{{../support/}}
+\graphicspath{{../support/}{figures/}}
+\input{data/results.tex}
 \setcounter{tocdepth}{2}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{5pt plus 1pt minus 1pt}
@@ -23,12 +24,12 @@
 \AddToHook{cmd/subsection/before}{\Needspace{5\baselineskip}}
 \newcommand{\dd}{\,\mathrm{d}}
 \newcommand{\ii}{\mathrm{i}}
-\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\code}[1]{\begingroup\def\UrlBreaks{\do\_\do\/\do\.}\nolinkurl{#1}\endgroup}
 % Valeurs du calcul fréquentiel effectivement exécuté.
 \newcommand{\frequencePic}{400}
 \newcommand{\energiePic}{10,8487}
 \newcommand{\energieBande}{4416,120}
-\hypersetup{pdftitle={ResoniCS -- Optimisation acoustique d'un mur antibruit pour le RER B},pdfauthor={Auteurs à compléter}}
+\hypersetup{pdftitle={ResoniCS -- Optimisation acoustique d'un mur antibruit pour le RER B},pdfauthor={Antoine MARCHE (VT), Joachim BRET   (VT), Olympia MIQUEL, Mathis MORET-BAILLY, Yann MOUSSU}}
 
 \begin{document}
 \hypersetup{pageanchor=false}
@@ -44,21 +45,26 @@
 \vspace{0.6cm}
 {\large Année universitaire 2026--2027\par}
 \vfill
-{\large Auteurs : \textit{à compléter}\par}
+{\large Auteurs : Antoine MARCHE (VT), Joachim BRET (VT), Olympia MIQUEL, Mathis MORET-BAILLY, Yann MOUSSU\par}
 \vspace{1cm}
 \end{titlepage}
 \hypersetup{pageanchor=true}
 
+\begingroup
+\small
+\setlength{\parskip}{0pt}
 \tableofcontents
+\endgroup
 \newpage
 
 \section{Introduction}
 Le trafic ferroviaire produit des nuisances sonores dont les mécanismes varient avec le fonctionnement du train et son interaction avec la voie. Dans un tunnel ou une tranchée couverte, les réflexions sur les parois peuvent renforcer certaines oscillations. Le projet ResoniCS étudie un panneau destiné à agir sur ce champ acoustique, en prenant le RER B comme cas d'usage.
 
-On cherche à associer une géométrie de paroi et une répartition de matériau poreux pour diminuer un indicateur d'énergie du champ sonore. La comparaison doit tenir compte de la quantité de matériau utilisée. L'objectif est donc de comprendre où le matériau est utile, puis de rechercher une répartition adaptée à plusieurs fréquences.
+On cherche à associer une géométrie de paroi et une répartition de matériau poreux pour diminuer un indicateur d'énergie du champ sonore. La comparaison tient compte de la quantité de matériau utilisée. L'objectif est de comprendre où le matériau est utile, puis de rechercher une répartition adaptée à plusieurs fréquences.
 
-Ce premier travail met en place le modèle et présente des calculs sur une géométrie fournie. L'équation de Helmholtz est résolue en deux dimensions par différences finies. Le choix de la source et du matériau est regroupé au début du programme. Les calculs présentés utilisent la somme de gaussiennes et la laine de roche du dictionnaire de matériaux. Le coefficient complexe de la paroi est déterminé à la pulsation étudiée avant le calcul du champ, puis recalculé à chaque fréquence pour construire la courbe de réponse.
+Le travail rassemble la formulation du problème, l'identification de coefficients de matériaux, la résolution de Helmholtz par différences finies et l'analyse des placements obtenus par descente de gradient. Les membres de voie théorique ont travaillé sur les propriétés du modèle et la dérivée du critère, en lien avec les membres de voie numérique pour leur mise en œuvre et les tracés. Le programme de référence est organisé en préparation des données, calculs et présentation des résultats.
 
+On commence par un essai à une fréquence, puis on compare les spectres de plusieurs formes, des placements monofréquences et multifréquences, et plusieurs quantités d'absorbant. Les mélanges de matériaux et les profils d'entrée sont ensuite examinés. Le choix final repose sur une comparaison complémentaire avec un même budget de points garnis pour les différentes formes. Tous les résultats annoncés ci-dessous correspondent aux calculs exécutés avec les paramètres indiqués.
 \section{État de l'art et cas d'usage}
 \subsection{Origines du bruit ferroviaire}
 La synthèse initiale de l'équipe distingue trois contributions utiles pour organiser l'étude \cite{sota}. Le \textbf{bruit de traction et des équipements} rassemble notamment les moteurs, la ventilation et les auxiliaires. Le \textbf{bruit de roulement} provient de l'interaction roue--rail. Le \textbf{crissement en courbe} correspond à des oscillations souvent tonales, c'est-à-dire concentrées autour de certaines fréquences, dont l'apparition dépend du contact roue--rail.
@@ -72,7 +78,7 @@ Un écran acoustique traditionnel modifie la propagation en faisant obstacle à 
 
 Un matériau poreux comporte des pores dans lesquels le mouvement de l'air s'accompagne de pertes. Son effet peut être représenté par une condition aux limites complexe, dont les paramètres dépendent du matériau et de la fréquence \cite{cours}. On peut ainsi comparer une paroi entièrement recouverte et une paroi partiellement garnie, puis rechercher les zones où une quantité fixée de matériau est la plus utile.
 
-Le cours et la présentation de Filoche décrivent l'intérêt de frontières irrégulières pour la localisation des ondes \cite{cours,filoche}. La \textbf{localisation} désigne une concentration spatiale du champ dans certaines régions. Une géométrie préfractale, obtenue après un nombre fini de répétitions d'un motif, peut modifier les zones de forte oscillation et leur interaction avec le matériau. L'augmentation du contour constitue une motivation pour tester ces formes ; leur efficacité pour notre cas devra être mesurée par les comparaisons numériques.
+Le cours et la présentation de Filoche décrivent l'intérêt de frontières irrégulières pour la localisation des ondes \cite{cours,filoche}. La \textbf{localisation} désigne une concentration spatiale du champ dans certaines régions. Une géométrie préfractale, obtenue après un nombre fini de répétitions d'un motif, peut modifier les zones de forte oscillation et leur interaction avec le matériau. L'augmentation du contour constitue une motivation pour tester ces formes ; leur efficacité pour notre cas est évaluée par les comparaisons numériques.
 
 \subsection{Solutions développées par les acteurs ferroviaires}
 Les écrans installés le long des voies associent plusieurs fonctions. Ils font obstacle à la propagation directe et leur parement peut absorber une partie du son. SNCF Réseau décrit notamment l'emploi de béton-bois, de béton bas carbone et de panneaux métalliques intégrant de la laine minérale \cite{sncfbruit}. Le choix tient aussi compte de la durabilité et de l'intégration dans le site. L'isolation des façades et les interventions sur la voie constituent des actions complémentaires, ce qui montre qu'un panneau répond à une partie du problème ferroviaire.
@@ -89,98 +95,78 @@ Magoulès, Nguyen, Omnes et Rozanova-Pierrat proposent un modèle de Helmholtz a
 Magoulès, Menoux et Rozanova-Pierrat étudient ensuite le placement d'une quantité fixée d'absorbant sur une frontière donnée \cite{magoules2025}. Ils établissent un cadre d'optimisation et emploient une descente de gradient pour diminuer l'énergie sur plusieurs fréquences. Dans leurs exemples numériques, une répartition optimisée utilisant 50\,\% d'absorbant peut donner un indicateur d'énergie plus faible qu'une frontière entièrement absorbante. Ce résultat concerne les géométries, les coefficients et la bande de leur étude. Il fournit une hypothèse à tester pour notre cas d'usage, plutôt qu'une performance déjà obtenue pour le RER B.
 
 \subsection{Positionnement de l'étude ResoniCS}
-Ces réalisations distinguent trois choix complémentaires : le matériau, la forme du mur et la position des portions absorbantes. ResoniCS reprend cette démarche à l'échelle d'un modèle étudiant. On utilise d'abord les caractéristiques de la laine de roche pour calculer un coefficient de paroi, puis on recherche une répartition à quantité imposée. Les formes planes et préfractales seront comparées avec une même source et une même bande. Les références entièrement recouvertes serviront de points de comparaison, avec leur quantité propre annoncée. L'objectif est d'identifier les choix utiles au modèle et de justifier leur effet par les courbes.
+Ces réalisations distinguent trois choix complémentaires : le matériau, la forme du mur et la position des portions absorbantes. ResoniCS reprend cette démarche à l'échelle d'un modèle étudiant. On utilise d'abord les caractéristiques de la laine de roche pour calculer un coefficient de paroi, puis on recherche une répartition à quantité imposée. Les formes planes et préfractales sont comparées avec une même source et une même bande. Les références entièrement recouvertes servent de points de comparaison, avec leur quantité propre annoncée. L'objectif est d'identifier les choix utiles au modèle et de justifier leur effet par les courbes.
 
-\section{Modélisation mathématique}
-\subsection{Domaine et champ acoustique}
-On note $\Omega\subset\mathbb R^2$ le domaine occupé par l'air. Sa frontière est décomposée en un bord supérieur $\Gamma_D$, deux côtés réfléchissants $\Gamma_N$ et une paroi inférieure $\Gamma_R$. Le vecteur $n$ est la normale extérieure au domaine et $\partial_n u=\nabla u\cdot n$ désigne la dérivée normale.
+\section{Modèle acoustique et géométries}
+\subsection{Domaine, pression et conditions aux limites}
+On note $\Omega\subset\mathbb R^2$ le domaine occupé par l'air. Sa frontière est décomposée en un bord supérieur $\Gamma_D$, deux côtés réfléchissants $\Gamma_N$ et une paroi inférieure $\Gamma_R$. Le vecteur $n$ est la normale extérieure au domaine et $\partial_nu=\nabla u\cdot n$ désigne la dérivée dans cette direction.
 
-À une fréquence $f$, en hertz, $u_f$ représente l'amplitude complexe de la pression. Les valeurs de source sont relatives tant qu'une calibration en pascals n'est pas disponible. La dépendance temporelle peut s'écrire
+À la fréquence $f$, en hertz, $u_f$ représente l'amplitude complexe de pression. Avec $t$ en secondes et $x$ la position dans le domaine, on écrit
 \begin{equation*}
-p(x,t)=\operatorname{Re}\!\left(u_f(x)e^{-\ii 2\pi ft}\right)
+p(x,t)=\operatorname{Re}\!\left(u_f(x)e^{-\ii\omega t}\right)
+\qquad \omega=2\pi f
+\qquad k_f=\frac{\omega}{c}
 \end{equation*}
-La célérité est fixée à $c=343\,\mathrm{m\,s^{-1}}$. À la fréquence $f$, la pulsation vaut $\omega=2\pi f$ en radians par seconde, puis le nombre d'onde vaut $k_f=\omega/c$ en $\mathrm{m^{-1}}$ lorsque les longueurs sont en mètres. En l'absence de source volumique, le modèle de propagation est \cite{cours}
-\begin{equation*}
-\Delta u_f+k_f^2u_f=0\quad\text{dans }\Omega
-\qquad k_f=\frac{2\pi f}{c}
-\end{equation*}
-
-\subsection{Conditions aux limites et matériau}
-La fonction $\chi$ décrit la présence de matériau sur $\Gamma_R$. Une valeur nulle correspond à une portion réfléchissante, une valeur égale à un à une portion garnie. Des valeurs intermédiaires sont admises lors de la recherche d'une répartition. On utilise dans tout le projet la convention du programme fourni :
+La pulsation $\omega$ est en radians par seconde et le nombre d'onde $k_f$ en $\mathrm{m^{-1}}$. La célérité vaut $c=343\,\mathrm{m\,s^{-1}}$. La densité $\chi$ décrit la présence d'absorbant sur le mur, avec zéro pour une portion réfléchissante et un pour une portion garnie. Des valeurs intermédiaires sont admises pendant la recherche numérique. La fonction $g$ impose l'excitation à l'entrée et le coefficient complexe $\alpha$ représente le matériau. Le modèle utilise la convention du polycopié \cite{cours}
 \begin{equation*}
 \begin{cases}
-u_f=g(y,\omega) & \text{sur }\Gamma_D\\[2pt]
-\partial_nu_f=0 & \text{sur }\Gamma_N\\[2pt]
-\partial_nu_f-\alpha(\omega)\chi u_f=0 & \text{sur }\Gamma_R
+\Delta u_f+k_f^2u_f=0 & \text{dans }\Omega\\
+u_f=g(y,\omega) & \text{sur }\Gamma_D\\
+\partial_nu_f=0 & \text{sur }\Gamma_N\\
+\partial_nu_f+\alpha(\omega)\chi u_f=0 & \text{sur }\Gamma_R
 \end{cases}
 \end{equation*}
-La condition de \textbf{Dirichlet} impose la pression en haut du domaine. La condition de \textbf{Neumann} annule la dérivée normale sur les côtés et représente des parois rigides réfléchissantes. La condition de \textbf{Robin} relie la pression à sa dérivée normale sur le mur. Le coefficient complexe $\alpha$ décrit l'effet du matériau dans cette convention et il est exprimé en $\mathrm{m^{-1}}$ lorsque les longueurs sont en mètres. Dans le programme, \code{Alpha} désigne ce nombre et \code{alpha_rob} est le tableau obtenu en le multipliant par la répartition $\chi$.
+Les tableaux Python \code{f}, \code{f_neu} et \code{f_rob} sont nuls dans ces études. Le tableau \code{f_dir} impose la source $g$. Le symbole $f$ du rapport désigne la fréquence en hertz, que les fonctions de calcul notent \code{frequency_hz}.
 
-Avec les coefficients unitaires du support et un second membre Robin nul, \code{compute_robin_condition} utilise
+Les conditions de Dirichlet, Neumann et Robin désignent respectivement une valeur imposée du champ, de sa dérivée normale, et une relation entre ces deux grandeurs. Ici les parois de Neumann sont rigides et réfléchissantes. Dans le code, \code{Alpha} est le coefficient complexe et \code{alpha_rob} le tableau \code{Alpha*chi}. Le coefficient est exprimé en $\mathrm{m^{-1}}$ pour les coefficients unitaires et les longueurs en mètres.
+
+\subsection{Propriétés de la solution}
+Un problème est bien posé lorsque sa solution existe, est unique et dépend continûment des données. Cette dernière propriété signifie qu'une petite modification de l'excitation produit une petite modification du champ, avec une constante qui dépend du domaine et de la fréquence. Les contours préfractals de niveau fini sont polygonaux. Ils relèvent des domaines à frontière Lipschitz du théorème 7.4.3 du polycopié, c'est-à-dire de frontières décrites localement par une fonction à pente bornée \cite{cours}.
+
+Le théorème suppose des données suffisamment régulières, une portion de Dirichlet de longueur positive et les signes
 \begin{equation*}
-u_B=\frac{u_I}{1-h\alpha(\omega)\chi_B}
+\operatorname{Re}\alpha>0
+\qquad \operatorname{Im}\alpha<0
+\qquad 0\leq\chi\leq1
 \end{equation*}
-Ici $u_B$ est la valeur au bord, $u_I$ celle du point intérieur voisin et $h$ le pas. Cette expression reprend le même signe que la condition précédente. Avec ce choix, les hypothèses dissipatives du cours se traduisent par $\operatorname{Re}\alpha<0$ et $\operatorname{Im}\alpha>0$ pour la convention temporelle retenue \cite{cours}. La fonction \code{compute_alpha} fournit directement le coefficient dans cette écriture.
+On suppose aussi que $\chi$ reste supérieure à un nombre strictement positif sur une portion de mur de longueur positive. Une répartition binaire avec une portion garnie satisfait cette condition. La remarque du même paragraphe traite une pression imposée non nulle en écrivant $u_f=\widehat u_f+\widehat g$, où $\widehat g$ prolonge $g$ dans le domaine et $\widehat u_f$ est nul sur $\Gamma_D$. Les seconds membres sont alors modifiés. Le programme impose directement $g$ sur le bord.
 
-\subsection{Identification du coefficient de la laine de roche}
-La fonction \code{compute_alpha}, dans \code{compute_alpha.py}, met en œuvre l'identification présentée au §3.2.4 du polycopié \cite{cours}. Elle compare un modèle où l'onde pénètre dans le matériau poreux et un modèle équivalent avec une condition de Robin. L'erreur donne un poids $A$ à la différence des champs au carré et un poids $B$ à celle de leurs gradients. La routine \code{scipy.optimize.minimize} ajuste les parties réelle et imaginaire du coefficient par la méthode de Nelder--Mead, qui déplace des couples d'essai pour réduire cette erreur.
-
-La laine de roche constitue le premier matériau étudié. Les valeurs ci-dessous sont celles du dictionnaire \code{MATERIAUX} et des paramètres du calcul d'identification. La porosité est la fraction de volume occupée par les pores, la tortuosité décrit l'allongement des trajets dans les pores et la résistivité caractérise la résistance au passage de l'air.
-\begin{table}[htbp]
-\centering
-\begin{tabular}{p{9cm}l}
-\toprule
-Grandeur & Valeur\\
-\midrule
-Porosité $\phi$ & $0,97$\\
-Tortuosité $\alpha_h$ & $1,1$\\
-Résistivité $\sigma$ & $30\,000\,\mathrm{Pa\,s\,m^{-2}}$\\
-Masse volumique de l'air $\rho_0$ & $1,2\,\mathrm{kg\,m^{-3}}$\\
-Célérité de l'air $c_0$ & $343\,\mathrm{m\,s^{-1}}$\\
-Rapport des capacités calorifiques $\gamma_p$ & $1,4$\\
-Coefficient normalisé $\eta_0$ & $1$\\
-Demi-largeur $l$ et longueur $L$ du domaine auxiliaire & $2,5$ m et $10$ m\\
-Paramètre $\Delta x_\alpha$ et troncature $N_\alpha=L/\Delta x_\alpha$ & $0,5$ m et $20$\\
-Indices de Fourier conservés & $-20$ à $20$, soit 41 modes\\
-Poids de l'erreur $A$ et $B$ & $1$ et $1$\\
-Couple initial \code{ALPHA0} & $(-50;50)$\\
-Tolérances \code{xatol} et \code{fatol} & $10^{-6}$ et $10^{-10}$\\
-\bottomrule
-\end{tabular}
-\caption{Paramètres de l'identification du coefficient de la laine de roche}
-\label{tab:identification}
-\end{table}
-
-Les longueurs $l$ et $L$ définissent le domaine auxiliaire de l'identification. La troncature $N_\alpha$ fixe les modes de Fourier utilisés dans ce calcul, indépendamment de la grille du champ acoustique. La fonction \code{materiau} convertit les trois caractéristiques du matériau en coefficients du modèle poreux, puis \code{compute_alpha} cherche le coefficient de Robin à la pulsation fournie. Son indicateur \code{success} est vérifié avant d'utiliser le résultat.
-
-À la pulsation initiale $\omega_0=3\,430\,\mathrm{rad\,s^{-1}}$, le calcul donne $\alpha(\omega_0)=-18,154584+21,197637\ii\,\mathrm{m^{-1}}$. Le coefficient reste fixé à cette valeur pendant la descente à fréquence unique. Le calcul fréquentiel le redétermine pour chaque nouvelle pulsation, avec la même source et les mêmes caractéristiques de matériau.
-
-\begin{table}[htbp]
-\centering
-\begin{tabular}{rl}
-\toprule
-Fréquence (Hz) & Coefficient $\alpha(\omega)$ en $\mathrm{m^{-1}}$\\
-\midrule
-50 & $-5,894818+5,979421\ii$\\
-2500 & $-30,137224+58,478507\ii$\\
-3500 & $-31,996643+77,112209\ii$\\
-\bottomrule
-\end{tabular}
-\caption{Valeurs du coefficient de la laine de roche à trois fréquences}
-\label{tab:alpha}
-\end{table}
-Le tableau~\ref{tab:alpha} présente trois valeurs du coefficient identifié. Il permet de constater sa variation avec la fréquence et les signes adoptés dans le support.
+Le bilan temporel du §3.2.3 explique le signe dissipatif du coefficient. La variation de l'énergie du problème homogène associé contient un terme proportionnel à $\int_{\Gamma_R}\operatorname{Im}\alpha\,\chi\,|\partial_tp|^2\dd s$, qui est négatif ou nul. Dans nos calculs fréquentiels, on mesure plutôt l'intégrale du module de pression au carré, définie plus loin comme critère de comparaison. L'existence de la solution continue et la précision du calcul sur une grille constituent deux questions distinctes.
 
 \subsection{Mur plan et contours préfractals}
-La comparaison prévue porte sur le mur plan de niveau 0 et sur les contours préfractals de niveaux 1 et 2. Le générateur \code{create_motif_koch} remplace un segment par huit segments orthogonaux, chacun quatre fois plus court. Le motif fourni utilise donc des angles droits. Le niveau 1 applique une fois ce motif et le niveau 2 le répète sur les segments obtenus.
+Le générateur \code{create_motif_koch} remplace un segment par huit segments orthogonaux quatre fois plus courts. \code{create_fractal_nodes} répète ce motif, puis \code{_set_geometry_of_domain} marque l'air, les bords et les points extérieurs. On compare le mur plan de niveau zéro et les contours de niveaux un, deux et trois. La figure~\ref{fig:geometries} montre les domaines réellement utilisés.
 
-Les résultats présentés ici concernent uniquement le niveau 2. Le tableau~\ref{tab:parametres} indique les paramètres effectivement utilisés. La grille de stockage comporte aussi des points extérieurs au fluide, donc ses dimensions ne doivent pas être assimilées à celles du domaine d'air. Pour $N=128$ et $h=0,0078125$, les abscisses des points stockés vont de 0 à 0,9921875 m. Le mur irrégulier se situe entre les ordonnées 0,6875 et 1,3125 m. Le maillage est affiné pour représenter les fréquences jusqu'à 3\,500 Hz. Ces dimensions décrivent le cas numérique et leur correspondance avec un panneau à installer reste à définir.
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\textwidth,height=.30\textheight,keepaspectratio]{fig_geometries.png}
+\caption{Domaines d’air et contours aux quatre niveaux}
+\label{fig:geometries}
+\end{figure}
 
+La construction nominale conserve une aire de $1\,\mathrm{m^2}$. La longueur du mur double à chaque niveau, tandis que le plus petit segment est divisé par quatre. Le tableau~\ref{tab:geometries} distingue ces valeurs géométriques des points utilisés par la quadrature du code.
+\begin{table}[!htbp]
+\centering\small
+\begin{tabular}{crrrr}
+\toprule
+Niveau & Longueur nominale (m) & Points Robin & Pas par petit segment & $h^2\#\Omega_h$ ($\mathrm{m^2}$)\\
+\midrule
+0 & 1 & 128 & 128 & 0,976685\\
+1 & 2 & 256 & 32 & 0,972778\\
+2 & 4 & 512 & 8 & 0,964966\\
+3 & 8 & 1\,024 & 2 & 0,949341\\
+\bottomrule
+\end{tabular}
+\caption{Géométrie nominale et représentation sur la grille}
+\label{tab:geometries}
+\end{table}
+La longueur d'onde $\lambda=c/f$ fournit aussi un repère pour la taille des irrégularités. Une longueur de $0,25$ m est égale à $\lambda/2$ vers 686 Hz, et une longueur de $0,0625$ m vers 2\,744 Hz. Ces ordres de grandeur relient les niveaux un et deux à la bande choisie. Ils servent de repères d'échelle, puis l'effet réel des motifs est mesuré sur les spectres.
+
+La grille de stockage comporte $256\times128$ points et son pas vaut $h=1/128$ m. Les points de bord et les points extérieurs sont exclus de la somme dans l'air, d'où une aire de quadrature légèrement différente de l'aire nominale du polygone. Les coordonnées horizontales stockées vont de zéro à $0,9921875$ m. Le contour de niveau deux s'étend entre les ordonnées $0,6875$ et $1,3125$ m. Ces dimensions définissent notre modèle réduit.
 \section{Modélisation de la source acoustique du RER B}
 \subsection{Une excitation uniforme sur le bord supérieur}
 Les fonctions \code{source_constant(y, omega)} et \code{source_rer_b(y, omega)} définissent l'excitation. L'argument $y$ désigne la position le long du bord supérieur et $\omega$ la pulsation. Les deux sources proposées sont indépendantes de $y$, donc elles imposent une amplitude et une phase uniformes sur ce bord. La première renvoie un, alors que la seconde suit le spectre défini ci-dessous. Le paramètre \code{SOURCE}, placé au début de \code{demo_control_polycopie2024.py}, choisit la fonction utilisée pour l'identification du coefficient, le champ initial, la descente et la courbe fréquentielle.
 
-Cette hypothèse est une simplification du cas d'usage. Le mouvement d'un train ne suffit pas à rendre sa pression uniforme. Les différences de position et de phase entre les sources réelles pourront être examinées après les premières comparaisons, en gardant les mêmes données d'entrée pour tous les panneaux.
+Cette hypothèse est une simplification du cas d'usage. Le mouvement d'un train ne suffit pas à rendre sa pression uniforme. Des profils uniforme, localisé et oblique sont ensuite comparés en conservant la même somme des amplitudes au carré sur le bord d'entrée.
 
 \subsection{Somme de trois composantes gaussiennes}
 La fonction \code{source_rer_b}, dans \code{preprocessing.py}, convertit la pulsation en fréquence par $f=\omega/(2\pi)$, puis fournit l'amplitude relative
@@ -210,179 +196,425 @@ La composante à 2\,500 Hz sert à représenter une contribution haute fréquenc
 
 Les écarts-types et les amplitudes relatives sont également choisis pour cette première représentation. Le modèle n'a pas été ajusté à un enregistrement extérieur du RER B. La gaussienne de roulement est large et la troisième plus resserrée, afin de distinguer une contribution étendue d'une contribution davantage tonale. La somme décrit une enveloppe d'amplitude, et sa valeur totale peut dépasser l'amplitude de chacune des composantes.
 
+La figure~\ref{fig:source} montre cette enveloppe d'amplitude. La zone grisée repère la bande de 50 à 3\,500 Hz résolue par le programme. Les deux premières composantes se recouvrent et la contribution haute fréquence est plus resserrée.
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\textwidth,height=.25\textheight,keepaspectratio]{fig_rer_b_spectre.png}
+\caption{Amplitude de la source en fonction de la fréquence}
+\label{fig:source}
+\end{figure}
+
 \subsection{Portée de la pondération fréquentielle}
 Pour une géométrie et une répartition fixées, la linéarité de Helmholtz donne, lorsque les autres sources sont nulles,
 \begin{equation*}
-u_f=G(f)u_f^{(1)},\qquad J(f)=|G(f)|^2J^{(1)}(f)
+u_f=G(f)u_f^{(1)}\qquad J(f)=|G(f)|^2J^{(1)}(f)
 \end{equation*}
 L'exposant $(1)$ désigne le calcul avec une source unitaire. À une fréquence fixée et pour $G(f)\ne0$, ce facteur conserve le classement des panneaux. Sur une bande, il donne davantage d'importance à certaines fréquences et peut modifier le meilleur compromis. Une baisse de l'énergie due seulement à une source moins forte ne démontre donc pas une amélioration du mur.
 
 Les amplitudes restent relatives. Elles ne permettent pas de déduire directement un niveau absolu en dB(A), qui demanderait une référence de pression, une calibration et une pondération acoustique adaptées.
 
-\section{Méthode numérique}
-\subsection{Différences finies sur une grille régulière}
-On note $u_{i,j}$ l'approximation du champ au point de la ligne $i$ et de la colonne $j$. Le \textbf{stencil à cinq points} utilise ce point et ses quatre voisins pour approcher le Laplacien. À l'intérieur du domaine,
-\begin{equation*}
-\Delta u_{i,j}\simeq
-\frac{u_{i+1,j}+u_{i-1,j}+u_{i,j+1}+u_{i,j-1}-4u_{i,j}}{h^2}
-\end{equation*}
-On ajoute ensuite le terme $k_f^2u_{i,j}$ et les contributions des conditions aux limites pour construire le système linéaire. La fonction \code{solve_helmholtz} résout ce système avec le solveur fourni. Cette méthode reprend la discrétisation du programme et le principe présenté dans le polycopié \cite{cours}.
-
-\begin{table}[htbp]
+\section{Matériaux poreux et coefficient de paroi}
+\subsection{Matériaux comparés}
+Les caractéristiques du dictionnaire \code{MATERIAUX} sont la porosité $\phi$, la tortuosité $\alpha_h$ et la résistivité au passage de l'air $\sigma$. La porosité mesure la fraction du volume occupée par les pores, la tortuosité décrit l'allongement des trajets dans les pores et la résistivité traduit la résistance à l'écoulement. Le tableau~\ref{tab:materiaux} contient les trois matériaux effectivement comparés.
+\begin{table}[!htbp]
 \centering
-\begin{tabular}{p{8cm}l}
+\begin{tabular}{lrrr}
 \toprule
-Paramètre & Valeur utilisée\\
+Matériau & $\phi$ & $\alpha_h$ & $\sigma$ ($\mathrm{Pa\,s\,m^{-2}}$)\\
 \midrule
-Grille de stockage $M\times N$ & $256\times128$\\
-Pas $h$, interprété en mètres & $0,0078125$\\
-Niveau du contour calculé & 2\\
-Célérité $c$ & $343\,\mathrm{m\,s^{-1}}$\\
-Source du cas initial & \code{source_rer_b}, amplitude $0,617187$\\
-Pulsation initiale $\omega_0$ & $3\,430\,\mathrm{rad\,s^{-1}}$\\
-Nombre d'onde initial $k_0$ & $10\,\mathrm{m^{-1}}$\\
-Fréquence initiale déduite $ck_0/(2\pi)$ & $545,90\,\mathrm{Hz}$\\
-Coefficient initial \code{Alpha} & $(-18,154584+21,197637\ii)\,\mathrm{m^{-1}}$\\
-Points Robin garnis / points Robin & $204/512$\\
-Fraction nodale initiale \code{V_obj} & $0,398438$\\
-Fréquences du calcul spectral & 50 à 3\,500 Hz\\
-Pas fréquentiel et nombre de fréquences & 50 Hz, 70 valeurs\\
+Laine de roche & 0,97 & 1,10 & 30\,000\\
+Mélamine & 0,99 & 1,02 & 14\,000\\
+Laine de verre & 0,99 & 1,10 & 20\,000\\
 \bottomrule
 \end{tabular}
-\caption{Paramètres des premiers calculs}
-\label{tab:parametres}
+\caption{Caractéristiques des matériaux comparés}
+\label{tab:materiaux}
 \end{table}
+La laine de roche sert de matériau de référence pour les études de placement. La comparaison finale utilise les trois matériaux avec la même source, les mêmes fréquences et le budget de matériau annoncé.
 
-La fraction nodale \code{V_obj} indique la proportion de points Robin garnis. Elle ne suffit pas à définir un volume physique. Pour comparer des géométries différentes, on devra mesurer la longueur absorbante et annoncer l'épaisseur ainsi que la profondeur si un volume est utilisé.
+\subsection{Identification du coefficient complexe}
+La fonction \code{materiau} transforme les caractéristiques précédentes en coefficients du modèle poreux. \code{compute_alpha} applique ensuite l'identification du §3.2.4 du polycopié \cite{cours}. Elle compare le champ d'un modèle avec pertes dans le volume du matériau et celui d'un modèle équivalent avec une condition de Robin. Les poids $A=B=1$ portent sur les différences des champs et de leurs gradients. La fonction \code{scipy.optimize.minimize} ajuste les parties réelle et imaginaire d'alpha par la méthode de Nelder--Mead, qui déplace des couples d'essai pour réduire cette erreur.
 
-\subsection{Fréquences calculées et résolution de l'onde}
-Le calcul fréquentiel résout un problème indépendant pour chaque valeur de $f$. La fonction \code{compute_alpha} reçoit la pulsation $\omega=2\pi f$, tandis que l'argument nommé \code{omega} de \code{solve_helmholtz} reçoit le nombre d'onde $k_f=\omega/c$. Les paramètres \code{SOURCE}, \code{CAR_MAT}, \code{ALPHA0}, \code{OMEGA} et \code{C} sont regroupés au début du programme principal.
-
-La longueur d'onde est $\lambda_f=c/f$. La règle d'au moins dix points de grille par longueur d'onde impose
+Avec les notations du modèle poreux, les coefficients sont
 \begin{equation*}
-\frac{\lambda_f}{h}=\frac{c}{fh}\geq10
+\eta_1=\frac{\phi}{\alpha_h}
+\qquad
+ a=\frac{\sigma\phi^2\gamma_p}{c_0^2\rho_0\alpha_h}
+\qquad
+\xi_1=\frac{\phi\gamma_p}{c_0^2}
 \end{equation*}
-Pour atteindre 3\,500 Hz avec au moins dix points par longueur d'onde, il faut $h\leq343/(10\times3\,500)=0,0098$ m. On retient $N=128$, donc $h=1/128=0,0078125$ m. À 3\,500 Hz, on dispose alors de 12,544 points par longueur d'onde et la limite correspondant à dix points vaut 4\,390,4 Hz. La bande calculée s'étend de 50 à 3\,500 Hz par pas de 50 Hz et couvre les trois composantes de la source. La fréquence nulle correspond à une excitation statique, donc le calcul acoustique commence à la première fréquence positive de cette grille. Cette règle spatiale est distincte du pas fréquentiel de 50 Hz, qui pourra être réduit autour des pics pour préciser leur position.
+Le coefficient $a$ décrit les pertes dans le matériau. \code{g_k} calcule les coefficients de Fourier de la source sur le bord auxiliaire. Pour l'indice entier $n$, le nombre d'onde transversal est $k_n=n\pi/l$, et
+\begin{equation*}
+g_n(\omega)=\frac{1}{2l}\int_{-l}^{l}g(y,\omega)e^{-\ii k_ny}\dd y
+\end{equation*}
+Les fonctions \code{lambda0} et \code{lambda1} décrivent ensuite la propagation de ces composantes dans l'air et le matériau. \code{erreur} additionne les erreurs modales pour évaluer la différence des deux champs et de leurs gradients. L'identification minimise ainsi une erreur du type
+\begin{equation*}
+E(\alpha)=A\|u_{\mathrm{volume}}-u_{\mathrm{Robin}}(\alpha)\|_{L^2}^2
++B\|\nabla u_{\mathrm{volume}}-\nabla u_{\mathrm{Robin}}(\alpha)\|_{L^2}^2
+\end{equation*}
+Les normes sont prises dans la partie air du domaine auxiliaire. La comparaison concerne le même matériau et la même excitation, avec deux représentations différentes de ses pertes.
 
-La fonction \code{run_rer_b_frequency_sweep} construit un tableau Dirichlet indépendant pour chaque fréquence avec la source choisie. Elle calcule la pulsation, identifie le coefficient du matériau, puis forme le tableau \code{alpha_rob} en multipliant ce coefficient par la même répartition $\chi$. La géométrie et la répartition sont conservées, alors que la source et le coefficient sont évalués à la fréquence courante.
+Le domaine auxiliaire a pour demi-largeur $l=2,5$ m et pour longueur $L=10$ m. Le paramètre $\Delta x_\alpha=0,5$ m fixe $N_\alpha=L/\Delta x_\alpha=20$, donc 41 modes de Fourier d'indices $-20$ à 20. On utilise $\rho_0=1,2\,\mathrm{kg\,m^{-3}}$, $c_0=343\,\mathrm{m\,s^{-1}}$, $\gamma_p=1,4$, $\eta_0=1$ et $\xi_0=c_0^{-2}$. Ces longueurs et ces modes appartiennent au problème d'identification, indépendamment de la grille de propagation.
 
-\subsection{Énergie du champ et intégration sur la bande}
-Pour comparer les champs, on utilise le critère du cours \cite{cours}
+Le point initial est \code{ALPHA0=[50, -50]}, et les tolérances \code{xatol} et \code{fatol} valent $10^{-6}$ et $10^{-10}$. L'indicateur \code{success} est vérifié avant d'utiliser le coefficient. \code{compute_material_coefficients} répète ce calcul aux 70 fréquences. Le coefficient est gardé fixe pendant une descente à une fréquence et recalculé lorsque la fréquence change.
+
+La figure~\ref{fig:materiaux} présente les parties réelle et imaginaire obtenues par \code{study_porous_materials}. Les signes respectent la convention du modèle. Pour la laine de roche à $\omega_0=3\,430\,\mathrm{rad\,s^{-1}}$, on obtient $\alpha=18,154584-21,197637\ii\,\mathrm{m^{-1}}$. À 50, 2\,500 et 3\,500 Hz, on trouve respectivement $5,894818-5,979421\ii$, $30,137224-58,478507\ii$ et $31,996643-77,112209\ii$, en $\mathrm{m^{-1}}$.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\textwidth,height=.29\textheight,keepaspectratio]{resultats_materiaux_validation/fig_comparaison_materiaux.jpg}
+\caption{Parties réelle et imaginaire du coefficient des trois matériaux}
+\label{fig:materiaux}
+\end{figure}
+
+Les trois matériaux donnent des coefficients différents, mais la seule taille d'alpha ne suffit pas à les classer. Le critère dépend aussi de la forme, du placement et de la fréquence. Leur classement est donc établi en résolvant le problème acoustique pour chacun d'eux.
+\section{Discrétisation et problème d’optimisation}
+\subsection{Assemblage et résolution}
+Le stencil à cinq points utilise un point et ses quatre voisins pour approcher le Laplacien
+\begin{equation*}
+\Delta u_{i,j}\simeq\frac{u_{i+1,j}+u_{i-1,j}+u_{i,j+1}+u_{i,j-1}-4u_{i,j}}{h^2}
+\end{equation*}
+Les fonctions \code{compute_stiffness_matrix} et \code{compute_mass_matrix} construisent les contributions spatiales et celles du terme $k_f^2u_f$. Les fonctions \code{compute_dirichlet_condition}, \code{compute_neumann_condition} et \code{compute_robin_condition} ajoutent les données de bord. \code{solve_helmholtz} résout le système linéaire obtenu. Pour les coefficients unitaires et une donnée de Robin nulle, la valeur du point de bord $u_B$ est reliée à celle du voisin intérieur $u_I$ par
+\begin{equation*}
+u_B=\frac{u_I}{1+h\alpha\chi_B}
+\end{equation*}
+Le paramètre nommé \code{omega} par le solveur historique reçoit le nombre d'onde $k_f=\omega/c$. L'identification \code{compute_alpha} et les fonctions de source reçoivent la pulsation temporelle $\omega=2\pi f$.
+
+La classe \code{FastHelmholtzSolver} conserve les contributions fixes de la grille pour les résolutions répétées et travaille sur les inconnues intérieures. Cette classe réutilise la même factorisation pour le champ et pour l'adjoint, dont le système fait intervenir la transposée conjuguée de la matrice. Les champs enregistrés valent zéro sur les points non intérieurs car ces valeurs ne sont pas reconstruites par le solveur. Les cartes les masquent pour représenter uniquement l'air calculé.
+
+\subsection{Critères à une fréquence et sur une bande}
+Pour une forme et une source fixées, le critère du §7.4.2 du cours \cite{cours} est
 \begin{equation*}
 J(f,\chi)=\int_\Omega|u_f(x;\chi)|^2\dd x
-\end{equation*}
-Le module au carré mesure l'amplitude de pression au carré. Une valeur plus petite traduit donc un champ globalement moins intense dans le domaine observé, lorsque la source et le domaine de comparaison sont fixés. Le programme approche l'intégrale sur l'ensemble $\Omega_h$ des points intérieurs de la grille :
-\begin{equation*}
+\qquad
 J_h(f,\chi)=h^2\sum_{(i,j)\in\Omega_h}|u_{i,j}|^2
 \end{equation*}
-Chaque point intérieur représente ici une petite aire de taille $h^2$. Le calcul fréquentiel évalue cette somme. La fonction \code{your_compute_objective_function} effectue le même calcul et renvoie le nombre réel utilisé par la descente.
+$\Omega_h$ est l'ensemble des points intérieurs. Le module au carré mesure l'amplitude de pression au carré, donc un coût plus faible correspond à un champ globalement moins intense pour les mêmes données. \code{your_compute_objective_function} et \code{FastHelmholtzSolver.compute_energy} calculent cette somme. Sa valeur est une amplitude relative au carré multipliée par une aire.
 
-L'indicateur intégré sur la bande $[f_1,f_q]$ est obtenu par la règle des trapèzes, comme au §7.7.2 du polycopié :
+Le coût intégré sur la bande et sa moyenne sont calculés par la règle des trapèzes, avec $F=70$ fréquences \cite{cours}
 \begin{equation*}
-\mathcal J_h(\chi)=\sum_{r=1}^{q-1}
-\frac{f_{r+1}-f_r}{2}\left[J_h(f_r,\chi)+J_h(f_{r+1},\chi)\right]
-\end{equation*}
-Ici, $q=70$ est le nombre de fréquences calculées. Dans la convention où $h$ est en mètres, $J_h$ représente une amplitude relative au carré multipliée par une aire, et l'intégration fréquentielle ajoute un facteur en hertz. Le facteur spectral $|G(f)|^2$ est déjà contenu dans le champ calculé. On intègre donc directement les énergies obtenues, sans leur appliquer une seconde pondération par la source. Cet indicateur rassemble des amplitudes relatives sur la bande et n'est ni une énergie calibrée en joules ni un niveau en décibels.
-
-\subsection{Première descente à quantité fixée}
-La fonction \code{your_optimization_procedure} reprend la descente projetée du §7.6 du polycopié \cite{cours}. On fixe la géométrie, la fréquence et le coefficient du matériau, puis on modifie seulement $\chi$. Ses valeurs restent entre zéro et un sur les points Robin, avec une somme imposée $V_{\mathrm{obj}}S$, où $S$ est leur nombre. Cette contrainte nodale convient au premier essai sur une forme fixée.
-
-À chaque étape, on calcule le champ, son coût et le gradient, c'est-à-dire la variation du coût produite par une petite modification de chaque valeur de matériau. Pour obtenir la dérivée du système effectivement résolu, on réutilise les fonctions d'assemblage fournies. En notant $AU=b$ le système discret, on calcule le vecteur adjoint $P$ par
-\begin{equation*}
-A^*P=2WU
-\end{equation*}
-Ici $U$ contient les valeurs complexes du champ, $A^*$ est la transposée conjuguée de $A$ et $W$ est diagonale, de valeur $h^2$ aux points intérieurs et zéro ailleurs. La dérivée prend en compte les termes de la condition Robin dans la matrice et, si nécessaire, dans le second membre. Une vérification par petites perturbations du matériau a confirmé le gradient calculé.
-
-On fait ensuite un pas dans la direction opposée au gradient, puis on ramène les valeurs dans l'intervalle autorisé en conservant leur somme. Avec $j$ un point Robin, cette projection s'écrit
-\begin{equation*}
-\chi_j^{n+1}=\max\!\left(0,\min\!\left(\chi_j^n-\zeta_n g_j^n+\ell_n,1\right)\right)
+\mathcal J_h=\sum_{r=1}^{F-1}\frac{f_{r+1}-f_r}{2}
+\left[J_h(f_r,\chi)+J_h(f_{r+1},\chi)\right]
 \qquad
-\sum_{j\in\Gamma_{R,h}}\chi_j^{n+1}=V_{\mathrm{obj}}S
+\overline J_h=\frac{\mathcal J_h}{f_F-f_1}
 \end{equation*}
-Le nombre $\zeta_n>0$ est le pas, $g^n$ le gradient et $\ell_n$ un décalage commun. On détermine ce décalage par 60 étapes de dichotomie. Pendant la descente, les valeurs intermédiaires de $\chi$ permettent de rechercher une répartition continue. À la fin, on classe les valeurs obtenues sur les points Robin, puis on attribue la valeur un aux 204 points ayant les plus grandes valeurs et zéro aux autres, comme proposé au §7.6 du polycopié \cite{cours}. On obtient ainsi une répartition binaire à quantité fixée, avec des portions garnies et des portions réfléchissantes.
+La fonction \code{mean_cost} fournit cette moyenne. Le facteur spectral de la source est déjà appliqué au champ, donc les coûts sont intégrés directement. Ces indicateurs permettent une comparaison relative du modèle.
 
-Dans l'essai, le pas initial vaut 5. On accepte une proposition lorsque son coût est strictement inférieur au coût précédent, puis on multiplie le pas par 1,1 conformément au programme fourni. Si le coût ne diminue pas, on divise le pas par deux et on essaie une nouvelle proposition. Le calcul s'arrête après 100 étapes au maximum, si le pas devient inférieur ou égal à $10^{-5}$ ou si la plus grande variation entre deux répartitions successives acceptées est inférieure à $\delta=10^{-7}$.
+\subsection{Quantité imposée et valeurs intermédiaires}
+Dans le problème continu, une fraction $\beta$ de mur garnie impose $\int_{\Gamma_R}\chi\dd s=\beta|\Gamma_R|$, avec $|\Gamma_R|$ la longueur du mur. Le cours recherche d'abord un minimum avec $0\leq\chi\leq1$, puis construit une répartition binaire \cite{cours}. Autoriser les valeurs intermédiaires rend possible une recherche progressive. Le résultat d'existence du §7.4.3 concerne ce problème continu avec valeurs intermédiaires.
 
-Après le tri final, on recalcule le champ, le coût et le gradient pour la répartition binaire. L'historique conserve le coût initial et ceux des étapes continues acceptées, puis ajoute le coût binaire comme une dernière valeur distincte. Le tri modifie la répartition et peut donc faire remonter le coût, ce qui sera examiné séparément dans les résultats.
-
-\section{Premiers résultats numériques}
-\subsection{Spectre de l'excitation}
-La figure~\ref{fig:spectre} présente le modèle spectral sur 0 à 3\,500 Hz, évalué tous les 5 Hz sans résolution de Helmholtz. La zone grisée indique la bande du calcul acoustique. Les trois contributions sont visibles sur cet intervalle. La première et la deuxième se recouvrent, alors que la composante haute fréquence est plus étroite. La courbe est une donnée d'entrée du calcul ; elle ne représente pas une mesure expérimentale du RER B.
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.78\textwidth]{fig_rer_b_spectre.png}
-\caption{Amplitude relative de la source en fonction de la fréquence}
-\label{fig:spectre}
-\end{figure}
-
-Le calcul acoustique s'étend désormais jusqu'à 3\,500 Hz. Il couvre la composante basse fréquence, celle de roulement et celle centrée à 2\,500 Hz. La zone grisée correspond aux fréquences positives comprises entre 50 et 3\,500 Hz, pour lesquelles le champ est effectivement calculé à intervalles de 50 Hz.
-
-\subsection{Énergie calculée sur la bande}
-La figure~\ref{fig:energie} montre les 70 fréquences effectivement simulées. Chaque point utilise la même géométrie, la même répartition initiale et le même matériau. Le nombre d'onde, l'amplitude de la source et le coefficient complexe du matériau sont recalculés à chaque fréquence.
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.78\textwidth]{fig_rer_b_energie.png}
-\caption{Indicateur d'énergie du champ en fonction de la fréquence}
-\label{fig:energie}
-\end{figure}
-
-Le maximum échantillonné vaut \energiePic{} et est obtenu à \frequencePic{} Hz. L'intégration des valeurs calculées donne \energieBande{} dans la normalisation du modèle. Deux autres maxima locaux sont observés à 250 et 800 Hz, avec des valeurs respectives de 9,9130 et 7,7147. Ces nombres décrivent les fréquences testées avec la loi de matériau calculée. Un pas fréquentiel plus petit autour des pics permettrait de mieux préciser leur position.
-
-À 400 Hz, l'amplitude imposée vaut 0,5517, contre 0,7148 à 100 Hz. Le coût est pourtant plus élevé, soit 10,8487 contre 2,3944. Les variations de la courbe résultent du spectre imposé et de la réponse du domaine avec un coefficient de matériau dépendant de la fréquence. On conserve donc la même source et les mêmes données de matériau pour comparer les panneaux. Les amplitudes de source étant relatives, ces énergies servent à comparer les cas du modèle.
-
-\subsection{Champ initial et répartition de matériau}
-Le cas initial utilise $\omega_0=3\,430\,\mathrm{rad\,s^{-1}}$, soit $k_0=10\,\mathrm{m^{-1}}$ et $f_0=545,90$ Hz. Il emploie la même fonction source que la courbe fréquentielle. Avec la somme de gaussiennes, son amplitude vaut 0,617187. Le coefficient de la laine de roche est calculé à cette pulsation avant la résolution, puis gardé fixe pendant la recherche du placement.
-
-La figure~\ref{fig:champinitial} montre le module du champ initial sur les points intérieurs du domaine. Les axes des cartes sont les indices de la grille, avec un pas $h=0,0078125$ m entre deux indices. L'énergie initiale vaut 1,126340 et le maximum du module vaut 5,018 dans l'unité relative de pression. Les zones de valeur élevée correspondent aux oscillations les plus fortes dans ce cas.
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.62\textwidth]{fig_u0_module_plot.png}
-\caption{Module du champ initial à la fréquence équivalente de 545,90 Hz}
-\label{fig:champinitial}
-\end{figure}
-
-La carte représente les points intérieurs du domaine ; les frontières et l'extérieur sont masqués.
-
-La figure~\ref{fig:repartition} présente la répartition initiale $\chi$. Les points rouges représentent les 204 points garnis parmi les 512 points Robin, soit la fraction nodale indiquée au tableau~\ref{tab:parametres}. Le reste du tableau contient la valeur zéro. Cette carte représente l'état de départ de la descente présentée ci-dessous.
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.62\textwidth]{fig_chi0_re_plot.jpg}
-\caption{Répartition initiale du matériau sur le mur}
-\label{fig:repartition}
-\end{figure}
-
-\subsection{Descente avec le coefficient de la laine de roche}
-La figure~\ref{fig:descente} présente la descente à $\omega_0=3\,430\,\mathrm{rad\,s^{-1}}$ avec la source choisie et le coefficient de la laine de roche. Le critère passe de 1,126340 à 0,223515 en 100 étapes continues acceptées. Le marqueur binaire indique le coût 0,223519 après le tri final. La quantité reste égale à 204 points garnis sur 512 points Robin.
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.78\textwidth]{fig_energy_real.jpg}
-\caption{Évolution du critère pendant la descente et après projection binaire}
-\label{fig:descente}
-\end{figure}
-
-Le tri final fait ici remonter le coût de 0,223515 à 0,223519. Le coût binaire reste inférieur à celui du placement initial. L'arrêt correspond au nombre maximal d'étapes, donc il ne démontre pas qu'un minimum a été atteint. Ces valeurs décrivent le matériau et la source retenus dans le modèle.
-
-La figure~\ref{fig:repartitionfinale} montre le placement final des 204 points garnis. Toutes les valeurs de $\chi$ sur le mur sont alors égales à zéro ou à un, donc chaque point représente une portion réfléchissante ou une portion garnie.
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.60\textwidth]{fig_chin_re_plot.jpg}
-\caption{Répartition finale binaire du matériau sur le mur}
-\label{fig:repartitionfinale}
-\end{figure}
-
-Les courbes fréquentielles des figures~\ref{fig:spectre} et~\ref{fig:energie} concernent la répartition initiale, avec le coefficient identifié à chaque fréquence. La descente présentée ici agit sur le placement du matériau à une seule pulsation.
-
-\section{Perspectives}
-La loi complexe de la laine de roche est maintenant calculée avec \code{compute_alpha}. La suite consiste à comparer les placements et les formes avec cette même loi et la même source, puis à examiner d'autres matériaux du dictionnaire si leurs données sont retenues pour la comparaison.
-
-Pour comparer des formes différentes, la contrainte nodale sera remplacée par une longueur absorbante imposée. Cette longueur sera mesurée par
+L'ensemble des densités autorisées à fraction $\beta$ s'écrit
 \begin{equation*}
-L_{\mathrm{abs}}=\int_{\Gamma_R}\chi\dd s
+\mathcal U(\beta)=\left\{\chi:\Gamma_R\longrightarrow[0,1]\,\middle|\,
+\int_{\Gamma_R}\chi\dd s=\beta|\Gamma_R|\right\}
+\qquad
+\min_{\chi\in\mathcal U(\beta)}J(f,\chi)
 \end{equation*}
-La comparaison des placements initiaux et optimisés sera faite à quantité égale. Les références entièrement recouvertes resteront utiles, avec leur quantité propre clairement indiquée.
+Pour la recherche de forme, on compare les minima numériques trouvés pour un catalogue de contours. Le programme conserve la forme pendant chaque descente et modifie la répartition $\chi$.
 
-La recherche sera étendue à une même répartition agissant sur plusieurs fréquences. Les murs plans et les niveaux préfractals 1 et 2 pourront alors être comparés sur une bande commune, avec une grille représentant leurs reliefs et leurs longueurs d'onde. Enfin, une variation des hypothèses de source permettra de savoir si le choix retenu dépend fortement du spectre illustratif ou de l'excitation spatiale uniforme. Ces étapes restent à réaliser.
+Le code utilise une contrainte sur les $S$ points de Robin. La fonction \code{project_density} impose
+\begin{equation*}
+0\leq\chi_j\leq1
+\qquad \sum_{j=1}^{S}\chi_j=V_{\mathrm{obj}}S
+\end{equation*}
+Les historiques et les spectres complets sont conservés dans les fichiers CSV, NPZ et JSON associés.
 
+Le paramètre \code{V_obj} est une fraction nodale. À la fin, \code{binarize_chi} conserve les $q=\operatorname{round}(V_{\mathrm{obj}}S)$ valeurs les plus grandes et les met à un, puis met les autres à zéro. L'arrondi peut modifier la quantité continue d'un demi-point au plus.
+
+Sur un même mur, cette contrainte compare des placements à quantité fixée. Entre formes différentes, on ajoute un budget commun de $q=38$ points garnis, obtenu à partir de $\operatorname{round}(0,30\times128)$. La fraction est alors $q/S$ pour chaque forme. On définit le budget discret pondéré par le pas
+\begin{equation}\label{eq:budget}
+Q_h=h\sum_{j=1}^{S}\chi_j=\frac{38}{128}=0,296875\,\mathrm{m}
+\end{equation}
+Ce budget nodal est une approximation pour comparer les calculs sur une même grille. Il doit être distingué de la longueur exacte d'une portion garnie du polygone, notamment aux coins et aux points du bord qui ne sont pas adjacents à un point intérieur. L'argument \code{fixed_covered_nodes} de \code{compare_absorber_configurations} rend ce choix explicite.
+
+\subsection{Adjoint et gradient}
+Le gradient mesure l'effet d'une petite modification de chaque densité sur le coût. Le §7.5.2 introduit un problème adjoint pour le calculer sans résoudre un problème différent pour chaque point du mur \cite{cours}. On applique ce principe au système assemblé
+\begin{equation*}
+A(\chi)U=b(\chi)
+\qquad J_h=U^*WU
+\qquad A^*P=2WU
+\end{equation*}
+$U$ est le vecteur du champ complexe, $b$ le second membre et $P$ l'adjoint. L'étoile désigne la transposée conjuguée. La matrice diagonale $W$ vaut $h^2$ aux points intérieurs et zéro ailleurs. Pour une variation réelle de $\chi_j$, la composante du gradient est
+\begin{equation*}
+g_j=\operatorname{Re}\!\left[P^*\left(\frac{\partial b}{\partial\chi_j}
+-\frac{\partial A}{\partial\chi_j}U\right)\right]
+\end{equation*}
+Les fonctions \code{compute_state}, \code{compute_adjoint} et \code{compute_gradient} réalisent ces étapes. Dans les études, la source reste fixe et le second membre Robin est nul. Le terme $\partial b/\partial\chi_j$ est alors nul. La classe \code{FastHelmholtzSolver} calcule le même gradient pour le système réduit aux points intérieurs.
+
+\subsection{Descente projetée et passage binaire}
+La descente du §7.6 fait un pas dans la direction opposée au gradient, puis ramène la proposition dans l'ensemble des densités autorisées \cite{cours}. La projection s'écrit
+\begin{equation*}
+\chi_j^{n+1}=\max\!\left(0,\min\!\left(\chi_j^n-\mu_ng_j^n+\ell_n,1\right)\right)
+\end{equation*}
+Le pas est $\mu_n$ et $\ell_n$ est un décalage commun qui conserve la somme des densités. \code{project_density} le cherche par 60 étapes de dichotomie, c'est-à-dire en divisant successivement un intervalle de recherche en deux. Le pas initial vaut 5. Une proposition est acceptée si le coût diminue strictement, puis le pas est multiplié par $1,1$. Sinon, il est divisé par deux.
+
+Les études comparatives utilisent au plus 80 itérations. L'arrêt se fait aussi si le pas devient inférieur ou égal à $10^{-5}$ ou si la plus grande variation acceptée de densité devient inférieure à $10^{-7}$. La démonstration initiale conserve les 100 itérations du programme fourni, dans \code{your_optimization_procedure}.
+
+\code{optimize_single_frequency} renvoie une répartition continue et son historique. Le passage binaire est ensuite mesuré séparément en recalculant le champ et son coût. Cette opération peut augmenter ou diminuer le coût, donc la décroissance observée pendant la descente concerne les étapes continues acceptées.
+
+\subsection{Critère multifréquence et choix des cibles}
+La fonction \code{optimize_multi_frequency} recherche une seule répartition pour plusieurs fréquences. Si $m$ fréquences $f_r$ sont retenues, avec des poids $w_r$ positifs de somme un, le coût est
+\begin{equation}\label{eq:multi}
+J_{\mathrm{cibles}}(\chi)=\sum_{r=1}^{m}w_rJ_h(f_r,\chi)
+\end{equation}
+Les études utilisent les mêmes poids $w_r=1/m$, avec au plus trois cibles. Les gradients sont additionnés avec ces poids. Ce critère est une moyenne sur les cibles, distincte de $\overline J_h$ calculé sur toute la bande. L'évaluation des 70 fréquences après optimisation vérifie donc aussi les effets entre les cibles.
+
+La fonction \code{find_local_maxima} repère les valeurs plus grandes que leurs voisines. Un pic est retenu si sa hauteur par rapport aux minima voisins atteint au moins $1\,\%$ de l'étendue du spectre. Le voisinage couvre jusqu'à six échantillons de chaque côté, soit 300 Hz. \code{select_peak_indices} classe ces pics par coût et complète avec les plus grandes valeurs échantillonnées si nécessaire. Deux cibles sont retenues par forme pour le placement monofréquence et trois pour le placement multifréquence.
+
+\subsection{Paramètres des études et résolution spatiale}
+Les calculs principaux sont faits avec $N=128$, $M=256$ et $h=1/128$ m. La bande va de 50 à 3\,500 Hz par pas de 50 Hz, soit 70 fréquences. On utilise la source RER et la laine de roche pour le placement. La fraction principale vaut $0,30$, donc les placements binaires comptent 38, 77 et 154 points garnis aux niveaux zéro, un et deux. Les fractions testées pour la quantité sont $0,10$, $0,30$, $0,50$, $0,70$ et un. Le cas initial séparé utilise $\omega_0=3\,430\,\mathrm{rad\,s^{-1}}$, donc $k_0=10\,\mathrm{m^{-1}}$ et $f_0\simeq545,90$ Hz, avec 204 points garnis sur 512.
+
+À 3\,500 Hz, la longueur d'onde $\lambda=c/f$ comporte $\lambda/h=12,544$ pas de grille, ce qui satisfait la règle des dix points par longueur d'onde. Le §7.7 demande aussi dix points dans les portions garnies et nues \cite{cours}. Le tri point par point peut créer des portions d'un point et n'impose donc pas cette dernière condition. De même, le niveau trois ne contient que deux pas par petit segment. Il est présenté comme une exploration sur cette grille. Le pas fréquentiel de 50 Hz repère des maxima échantillonnés et peut manquer des pics plus étroits.
+\section{Vérifications du modèle et du calcul}
+\subsection{Paroi ouverte et paroi réfléchissante}
+La fonction \code{study_sommerfeld_open_air_vs_reflexive} compare une paroi réfléchissante, une sortie ouverte et une paroi entièrement garnie de laine de roche. Pour la sortie ouverte, la condition de Sommerfeld est $\partial_nu_f-\ii k_fu_f=0$. Dans notre convention, son coefficient vaut donc $\alpha=-\ii k_f$.
+
+On considère un rectangle de largeur $w$ et de profondeur $d$, avec une source uniforme $G(f)$ à l'entrée. Si $s$ est la distance à cette entrée, la solution de Helmholtz est
+\begin{equation*}
+u_{\mathrm{ouv}}(s)=G(f)e^{\ii k_fs}
+\qquad
+u_{\mathrm{refl}}(s)=G(f)\frac{\cos(k_f(d-s))}{\cos(k_fd)}
+\end{equation*}
+La deuxième expression est définie pour $\cos(k_fd)\ne0$. En intégrant le module au carré, on obtient la dépendance à la profondeur de cette famille de formes
+\begin{equation*}
+J_{\mathrm{ouv}}(d)=w|G(f)|^2d
+\qquad
+J_{\mathrm{refl}}(d)=w|G(f)|^2\frac{d/2+\sin(2k_fd)/(4k_f)}{\cos^2(k_fd)}
+\end{equation*}
+À fréquence fixée, la première quantité croît linéairement avec la profondeur. La seconde varie fortement lorsque $\cos(k_fd)$ se rapproche de zéro, car les réflexions produisent une onde stationnaire. Ces expressions résultent de l'application de Helmholtz au rectangle uniforme. La fonction Python les évalue pour $w=d=1$.
+
+La figure~\ref{fig:parois} confronte ces références continues aux coûts discrets. Les coûts moyens de bande valent \BoundaryReflectingCost{} pour la paroi réfléchissante, \BoundaryOpenCost{} pour la sortie ouverte et \BoundaryMaterialCost{} pour la laine de roche. L'écart relatif entre les courbes ouverte discrète et continue vaut \BoundaryOpenError\,\%. La sortie ouverte supprime le retour idéal de l'onde, alors que la paroi poreuse laisse subsister une réponse dépendante de la fréquence. L'écart annoncé est la norme euclidienne de la différence des 70 coûts, divisée par la norme des 70 coûts de la référence continue.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\textwidth,height=.36\textheight,keepaspectratio]{resultats_materiaux_validation/fig_sommerfeld_vs_reflexif.jpg}
+\caption{Coût du champ selon la fréquence et la condition de paroi}
+\label{fig:parois}
+\end{figure}
+
+Pour comparer des formes de même aire $A_\Omega=1\,\mathrm{m^2}$, on pose $w=A_\Omega/d$. Le coût ouvert vaut alors $A_\Omega|G(f)|^2$ et le coût réfléchi conserve sa dépendance à la profondeur. En dérivant les expressions précédentes à fréquence fixée, on obtient
+\begin{equation*}
+\frac{\partial J_{\mathrm{ouv}}}{\partial d}=0
+\qquad
+\frac{\partial J_{\mathrm{refl}}}{\partial d}
+=\frac{A_\Omega|G(f)|^2-J_{\mathrm{refl}}(d)}{d}
++2k_fJ_{\mathrm{refl}}(d)\tan(k_fd)
+\end{equation*}
+La figure~\ref{fig:profondeur} représente ce calcul à 200 Hz pour 201 profondeurs entre $0,5$ et $1,5$ m, avec une largeur $w=A_\Omega/d$. \code{study_boundary_depth_dependence} évalue les solutions continues sur cette famille de rectangles. La réponse réfléchissante dépend fortement de la forme près des résonances, là où le coût ouvert conserve ici la valeur $A_\Omega|G(f)|^2$ à aire fixée.
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.90\textwidth,height=.30\textheight,keepaspectratio]{resultats_materiaux_validation/fig_cout_profondeur_rectangle.jpg}
+\caption{Coût continu en fonction de la profondeur à aire constante}
+\label{fig:profondeur}
+\end{figure}
+
+\subsection{Vérification du gradient}
+\code{validate_adjoint_gradient} compare la dérivée adjointe à la variation du coût après une petite perturbation positive puis négative d'une densité. Le contrôle porte sur 12 points répartis le long du mur, avec un pas de perturbation de $10^{-6}$, au niveau un et à $\omega_0=3\,430\,\mathrm{rad\,s^{-1}}$. La figure~\ref{fig:gradient} montre la superposition des dérivées. L'erreur relative, calculée par la norme des différences divisée par la norme des dérivées obtenues par perturbation, vaut $\GradientRelativeError$.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\textwidth,height=.28\textheight,keepaspectratio]{resultats_materiaux_validation/fig_validation_gradient_adjoint.jpg}
+\caption{Dérivée adjointe et différences centrées du coût}
+\label{fig:gradient}
+\end{figure}
+
+Une seconde courbe fait varier la perturbation entre $10^{-8}$ et $10^{-2}$ sur 13 valeurs. Aux plus petites perturbations, la soustraction de deux coûts proches amplifie l'effet des erreurs d'arrondi. Aux plus grandes, la variation n'est plus suffisamment petite pour approcher la dérivée locale avec la même précision. La zone intermédiaire confirme l'accord entre les deux calculs.
+
+\subsection{Premier essai à une fréquence}
+Le cas de démonstration utilise le niveau deux et 204 points garnis sur 512, soit $V_{\mathrm{obj}}=0,398438$. À $\omega_0=3\,430\,\mathrm{rad\,s^{-1}}$, l'amplitude de source vaut $0,617187$. La figure~\ref{fig:demo} reprend ce premier calcul de \code{your_optimization_procedure} avec la même loi de laine de roche.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.80\textwidth,height=.29\textheight,keepaspectratio]{fig_energy_real.jpg}
+\caption{Coût de la démonstration pendant la descente et après tri binaire}
+\label{fig:demo}
+\end{figure}
+
+Le coût initial passe de $1,126340$ à $0,223515$ après 100 étapes continues acceptées. Le coût recalculé pour le placement binaire vaut $0,223519$, avec 204 points garnis. Ce cas vérifie la chaîne source--champ--adjoint--gradient--projection. Les comparaisons suivantes utilisent une fraction de $0,30$ et au plus 80 itérations, donc leurs chiffres ne doivent pas être confondus avec cet essai initial.
+La figure~\ref{fig:premierebande} donne également le coût sur la bande pour cette répartition initiale de 204 points garnis. \code{run_rer_b_frequency_sweep} réévalue la source et le coefficient à chaque fréquence. Le maximum échantillonné vaut $10,8487$ à 400 Hz et le coût intégré vaut $4\,416,119652$. Cette courbe de référence utilise une quantité différente de celle des études comparatives à fraction $0,30$.
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\textwidth,height=.25\textheight,keepaspectratio]{fig_rer_b_energie.png}
+\caption{Coût fréquentiel de la répartition initiale à 204 points garnis}
+\label{fig:premierebande}
+\end{figure}
+
+\section{Spectres des murs et placement monofréquence}
+\subsection{Mur plan entièrement garni et maxima}
+La fonction \code{study_spectra_and_single_frequency_placement} calcule d'abord le coût sur les 70 fréquences pour un mur entièrement garni. La figure~\ref{fig:murplan} montre le mur plan. Son maximum échantillonné est atteint à \PlanPeakFrequency{} Hz, avec un coût de \PlanPeakCost. Les marqueurs désignent les maxima retenus par \code{find_local_maxima}.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\textwidth,height=.36\textheight,keepaspectratio]{resultats_monofrequence/fig_mur_plan_absorbant_maxima.jpg}
+\caption{Coût du mur plan entièrement garni en fonction de la fréquence}
+\label{fig:murplan}
+\end{figure}
+
+Ces pics correspondent aux réponses fortes du domaine avec la paroi poreuse et la source choisies. Leurs positions sont données sur la grille de 50 Hz. La source varie aussi avec la fréquence, donc les courbes regroupent l'effet de l'excitation et celui du dispositif.
+
+\subsection{Effet du niveau géométrique}
+La figure~\ref{fig:formes} compare les murs entièrement garnis aux quatre niveaux. L'échelle linéaire met en évidence les pics les plus élevés et l'échelle logarithmique permet de lire les petites valeurs. Les coûts moyens de bande valent \FullCostLevelZero, \FullCostLevelOne, \FullCostLevelTwo{} et \FullCostLevelThree{} pour les niveaux zéro à trois.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\textwidth,height=.30\textheight,keepaspectratio]{resultats_monofrequence/fig_comparaison_formes_fractales.jpg}
+\caption{Spectres des murs entièrement garnis aux quatre niveaux}
+\label{fig:formes}
+\end{figure}
+
+Pour cette source et cette grille, l'allongement du contour n'abaisse donc pas systématiquement le coût. Il modifie les résonances et leur couplage à la source. Les murs entièrement garnis emploient aussi davantage de matériau lorsque le contour s'allonge. Le niveau trois comporte des reliefs de deux pas, ce qui limite l'interprétation de sa courbe.
+
+\subsection{Répartition initiale et recouvrement complet}
+La figure~\ref{fig:partiel} compare, pour une même forme, la densité initiale de fraction $0,30$ et la paroi entièrement garnie. \code{project_density} ajuste la quantité de la répartition initiale avant le calcul. Les deux courbes gardent la même source et le même matériau.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\textwidth,height=.28\textheight,keepaspectratio]{resultats_monofrequence/fig_repartition_partielle_et_complete.jpg}
+\caption{Spectres du placement initial et du recouvrement complet}
+\label{fig:partiel}
+\end{figure}
+
+Les courbes montrent les fréquences qui deviennent problématiques avec la quantité réduite. La référence complète utilise 128, 256 ou 512 points garnis selon le niveau, alors que le passage binaire à fraction $0,30$ en emploie 38, 77 ou 154. Elle donne un repère de performance avec une quantité différente.
+
+\subsection{Placement aux fréquences les plus problématiques}
+Deux fréquences sont retenues sur le spectre initial de chaque forme. Le tableau~\ref{tab:mono} donne le coût initial, le coût après descente continue, le coût après passage binaire et celui de la paroi entièrement garnie à la même fréquence.
+\begin{table}[!htbp]
+\centering\small
+\input{data/mono_summary.tex}
+\caption{Coûts aux deux cibles monofréquences de chaque forme}
+\label{tab:mono}
+\end{table}
+La figure~\ref{fig:monohist} montre les historiques de \code{optimize_single_frequency}. Les courbes décroissent pendant les étapes continues acceptées, puis la croix donne le coût binaire recalculé. Le tri final n'a pas le même effet dans tous les cas. Par exemple, au niveau zéro à 1\,300 Hz, le coût passe de $2,197132$ en continu à $2,180986$ en binaire. Pour d'autres cibles il augmente.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\textwidth,height=.28\textheight,keepaspectratio]{resultats_monofrequence/fig_historiques_monofrequence.jpg}
+\caption{Coûts continus et binaires des placements monofréquences}
+\label{fig:monohist}
+\end{figure}
+
+La figure~\ref{fig:monochamps} illustre la première cible du niveau deux, à \MonoExampleFrequency{} Hz. Les cartes initiale et binaire utilisent une même échelle de couleur pour comparer les amplitudes. Le placement final comporte les 154 points garnis prévus après arrondi de la quantité continue $0,30\times512=153,6$. La réduction du coût se lit dans le champ et dans sa somme au carré, et pas seulement dans une renormalisation de la couleur.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\textwidth,height=.30\textheight,keepaspectratio]{resultats_monofrequence/fig_champs_placement_monofrequence.jpg}
+\caption{Champs initial et binaire et placement du matériau au niveau deux}
+\label{fig:monochamps}
+\end{figure}
+\section{Placement multifréquence et quantité d’absorbant}
+\subsection{Évaluation des placements monofréquences sur la bande}
+La fonction \code{evaluate_spectrum} résout le problème sur les 70 fréquences en gardant chaque placement fixe. La figure~\ref{fig:monobande} compare les deux placements monofréquences, le placement initial et la paroi entièrement garnie. Les marqueurs indiquent les fréquences auxquelles chaque placement a été optimisé.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\textwidth,height=.29\textheight,keepaspectratio]{resultats_multifrequence/fig_spectres_placements_monofrequence.jpg}
+\caption{Spectres des placements optimisés à une seule fréquence}
+\label{fig:monobande}
+\end{figure}
+
+Une baisse du coût à la cible peut s'accompagner d'une hausse ailleurs. Le tableau de données conserve donc, en plus des coûts aux cibles, la moyenne sur toute la bande. Cette vérification motive la recherche d'une même répartition pour plusieurs fréquences.
+
+\subsection{Optimisation simultanée de trois fréquences}
+\code{study_multifrequency_placement_and_coverage} organise cette étude.
+
+On sélectionne trois cibles par forme, puis \code{optimize_multi_frequency} minimise le critère \eqref{eq:multi}. Le tableau~\ref{tab:multi} indique les cibles et les coûts moyens continu et binaire sur ces cibles.
+\begin{table}[!htbp]
+\centering\small
+\input{data/multi_summary.tex}
+\caption{Fréquences cibles et coûts de l’optimisation multifréquence}
+\label{tab:multi}
+\end{table}
+La figure~\ref{fig:multihist} détaille le niveau deux. Chaque courbe fine donne le coût d'une fréquence, tandis que la courbe pointillée représente leur moyenne. La descente impose la baisse de cette moyenne, donc une composante peut augmenter à une étape si les autres diminuent davantage.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\textwidth,height=.36\textheight,keepaspectratio]{resultats_multifrequence/fig_historique_multifrequence.jpg}
+\caption{Coûts des trois cibles et de leur moyenne au niveau deux}
+\label{fig:multihist}
+\end{figure}
+
+Le passage binaire doit de nouveau être mesuré. Au niveau zéro, le coût moyen sur les cibles passe de $1,158950$ pour la densité continue à $4,963280$ pour la densité binaire. Le tri des densités ne conserve donc pas nécessairement le compromis obtenu par l'optimisation continue.
+
+La figure~\ref{fig:multibande} présente les spectres du niveau deux avec les différents placements. La moyenne de bande du placement multifréquence binaire vaut \MultiBandLevelTwo, contre \InitialBandLevelTwo{} pour le placement initial et \FullCostLevelTwo{} pour la paroi entièrement garnie. Les résultats aux trois niveaux figurent dans les données numériques associées.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\textwidth,height=.36\textheight,keepaspectratio]{resultats_multifrequence/fig_spectre_multifrequence.jpg}
+\caption{Spectres initial, monofréquences, multifréquence et entièrement garni au niveau deux}
+\label{fig:multibande}
+\end{figure}
+
+\subsection{Influence de la quantité de matériau}
+Pour chaque forme, on répète les optimisations avec les fractions $0,10$, $0,30$, $0,50$, $0,70$ et un. La figure~\ref{fig:quantite} présente les coûts binaires obtenus à une fréquence, puis sur les trois fréquences. Les cibles d'une même forme restent fixes quand la quantité change. La fraction un donne directement le mur entièrement garni.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\textwidth,height=.37\textheight,keepaspectratio]{resultats_multifrequence/fig_cout_quantite_absorbant.jpg}
+\caption{Coût binaire en fonction de la fraction de points garnis}
+\label{fig:quantite}
+\end{figure}
+
+\input{data/quantity_analysis.tex}
+Le minimum indiqué correspond aux quantités testées et aux placements trouvés par la descente. Les fréquences utilisées dans les deux lignes de la figure sont différentes selon le critère, donc les ordonnées ne se comparent pas directement d'une ligne à l'autre. À quantité fixée, des points de départ ou des répartitions binaires différents peuvent aussi donner d'autres valeurs.
+\section{Comparaison des dispositifs et choix retenu}
+\subsection{Densité continue, placement binaire et mélange de matériaux}
+La fonction \code{compare_absorber_configurations} reprend le niveau deux avec le matériau de référence. Les trois fréquences sont choisies dans le spectre initial de ce niveau et servent aux comparaisons finales. Une seconde matière est placée sur la partie basse des points déjà sélectionnés, pour tester un mélange prescrit de laine de roche et de mélamine. Cette répartition à deux matériaux est évaluée séparément.
+
+La figure~\ref{fig:mixte} montre les spectres initial, continu, binaire, mixte et entièrement garni. Les moyennes de bande sont respectivement \ConfigInitialBand, \ConfigContinuousBand, \ConfigBinaryBand, \ConfigMixedBand{} et \ConfigFullBand. Le résultat du mélange se juge sur la courbe calculée, sans supposer que deux matériaux soient toujours plus efficaces qu'un seul.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\textwidth,height=.31\textheight,keepaspectratio]{resultats_comparaison_dispositifs/fig_repartitions_binaire_et_mixte.jpg}
+\caption{Spectres des répartitions et emplacement des deux matériaux}
+\label{fig:mixte}
+\end{figure}
+
+\subsection{Effet du profil de l’excitation}
+À \ProfileFrequency{} Hz, on garde la même paroi et les mêmes coefficients pour comparer trois profils d'entrée. Le profil uniforme impose la même valeur sur tous les points. Le profil localisé excite un seul point au centre du bord. Le profil oblique impose une phase variant avec la position, avec un angle de $35^\circ$.
+
+Chaque profil est normalisé pour conserver la même somme des modules au carré sur le bord de Dirichlet. La figure~\ref{fig:profils} compare le champ initial et le champ obtenu avec le placement binaire. Les deux cartes d'un même profil ont une échelle de couleur commune. Le test examine l'effet de la répartition spatiale de la source avec un coefficient de matériau conservé.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\textwidth,height=.37\textheight,keepaspectratio]{resultats_comparaison_dispositifs/fig_comparaison_profils_sources.jpg}
+\caption{Champs initial et binaire pour trois profils d’entrée}
+\label{fig:profils}
+\end{figure}
+
+\input{data/profile_analysis.tex}
+La normalisation choisie permet une comparaison des données de bord du modèle. Les trois profils ne représentent pas des flux acoustiques réels étalonnés. Les différences de champ montrent néanmoins pourquoi un placement construit pour une excitation uniforme doit être réévalué lorsque cette excitation change.
+
+\subsection{Comparaison à budget nodal commun}
+Une fraction de $0,30$ représente 38, 77 ou 154 points garnis après arrondi selon la forme. Pour choisir entre les formes, on complète ce premier calcul par un budget identique de 38 points. Les fractions des niveaux zéro, un et deux sont alors $0,296875$, $0,1484375$ et $0,07421875$. Le budget $Q_h$ de \eqref{eq:budget}, la source, les trois cibles et les 70 fréquences d'évaluation sont communs.
+
+Les trois placements du mur plan calculés précédemment à fraction $0,30$ ont déjà 38 points garnis après le tri. On conserve aussi ces solutions admissibles. Leur contrainte continue vaut $38,4$ points au lieu de 38, ce qui peut modifier la trajectoire de descente et le résultat du tri. La fonction \code{combine_comparable_configurations} retient, pour chaque couple forme--matériau, le coût moyen binaire le plus faible parmi les répartitions disponibles à 38 points. Au total, 12 répartitions admissibles alimentent les neuf couples du classement. Cette comparaison met en évidence la sensibilité du résultat à la recherche continue et à son passage binaire.
+
+La figure~\ref{fig:budget} compare les neuf couples forme--matériau. On utilise les placements binaires recalculés et la moyenne sur toute la bande, après une optimisation visant les trois fréquences communes. Chaque référence entièrement garnie emploie sa quantité propre. Le tableau~\ref{tab:candidats} conserve aussi le coût maximal échantillonné, qui peut conduire à un autre choix que la moyenne.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.94\textwidth,height=.31\textheight,keepaspectratio]{resultats_comparaison_dispositifs/fig_comparaison_budget_identique.jpg}
+\caption{Coûts moyens des neuf configurations à budget identique}
+\label{fig:budget}
+\end{figure}
+
+\begin{table}[!htbp]
+\centering\small
+\input{data/candidate_summary.tex}
+\caption{Coûts des configurations binaires avec 38 points garnis}
+\label{tab:candidats}
+\end{table}
+\input{data/recommendation.tex}
+Ce choix concerne les formes et matériaux testés, la source retenue et ce budget discret. Il fournit un candidat de développement à partir des résultats du modèle. La fabrication demande de traduire les points garnis en portions physiques suffisamment résolues, puis d'évaluer la géométrie et les matériaux avec des données adaptées au site ferroviaire.
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
+Le projet a relié le choix de la source, le calcul du coefficient de paroi et l'optimisation du placement d'absorbant. Les références ouverte et réfléchissante ont permis de vérifier le comportement du modèle, puis le contrôle par différences centrées a confirmé le gradient utilisé. Les spectres montrent que l'effet de la forme dépend de la fréquence et que l'augmentation du contour ne suffit pas à prévoir le coût obtenu.
+
+L'optimisation monofréquence améliore la réponse à sa cible, d'où l'intérêt d'examiner ensuite toute la bande. L'optimisation multifréquence recherche un compromis commun à quelques fréquences, mais le passage binaire peut modifier ce compromis. Les coûts sont donc recalculés pour la répartition effectivement retenue. Le balayage des quantités complète cette analyse en distinguant le meilleur résultat parmi les fractions testées d'un optimum sur toutes les quantités possibles.
+
+À budget de 38 points garnis, le candidat de plus faible moyenne de bande est le niveau \RecommendedLevel{} avec \RecommendedMaterial. Sa moyenne vaut \RecommendedBandCost{} dans les unités relatives du modèle. Ce résultat guide le choix de ResoniCS pour les conditions calculées. Les petits reliefs, les portions garnies et le pas fréquentiel restent à examiner plus finement pour passer du candidat numérique à un dimensionnement physique.
+
+\clearpage
 \begin{thebibliography}{99}
 \bibitem{lee2022}
 H.~P. Lee, S.~Kumar, S.~Garg et K.~M. Lim.
