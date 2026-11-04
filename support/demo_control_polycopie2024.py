@@ -406,21 +406,21 @@ if __name__ == '__main__':
 
     # On trace l'énergie selon la fréquence pour un mur totalement poreux (chi = 1), pour chaque niveau de fractale.
     # On affine le pas sous 1000 Hz, où les pics ont une largeur à mi-hauteur d'environ 13 à 26 Hz.
-    frequencies_chi_1 = numpy.concatenate((numpy.arange(50.0, 1000.0, 2.0),
-                                           numpy.arange(1000.0, 3500.1, 5.0)))
-    levels = [0, 1, 2]
-    for level_k in levels:
-        print('Level %d' % level_k)
-        domain_omega_k, _, _, _, _ = preprocessing._set_geometry_of_domain(M, N, level_k)
-        chi_1 = numpy.ones((M, N), dtype=numpy.float64)
-        chi_1 = preprocessing.set2zero(chi_1, domain_omega_k)
-        # pour un seul matériau :
-        plot_energy_frequency_one_material(domain_omega_k, spacestep, frequencies_chi_1, c, f, f_dir, f_neu, f_rob,
-                                           beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
-                                           chi_1, SOURCE, "OUATE_POLYESTER", CAR_MAT, level_k)
-        # pour tous les matériaux :
-        #plot_energy_frequency_all_materials(domain_omega_k, spacestep, frequencies_chi_1, c, f, f_dir, f_neu, f_rob,
-        #                                    beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
-        #                                   chi_1, SOURCE, level_k)
+    #frequencies_chi_1 = numpy.concatenate((numpy.arange(50.0, 1000.0, 2.0),
+    #                                       numpy.arange(1000.0, 3500.1, 5.0)))
+    #levels = [0, 1, 2]
+    #for level_k in levels:
+    #    print('Level %d' % level_k)
+    #    domain_omega_k, _, _, _, _ = preprocessing._set_geometry_of_domain(M, N, level_k)
+    #    chi_1 = numpy.ones((M, N), dtype=numpy.float64)
+    #    chi_1 = preprocessing.set2zero(chi_1, domain_omega_k)
+    #    # pour un seul matériau :
+    #    plot_energy_frequency_one_material(domain_omega_k, spacestep, frequencies_chi_1, c, f, f_dir, f_neu, f_rob,
+    #                                       beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
+    #                                       chi_1, SOURCE, "LAINE_ROCHE", CAR_MAT, level_k)
+    #    # pour tous les matériaux :
+    #    plot_energy_frequency_all_materials(domain_omega_k, spacestep, frequencies_chi_1, c, f, f_dir, f_neu, f_rob,
+    #                                        beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
+    #                                       chi_1, SOURCE, level_k)
 
     print('End.')
