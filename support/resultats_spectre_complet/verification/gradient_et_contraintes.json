@@ -1,0 +1,34 @@
+{
+  "original_student_optimiser_and_protected_cells": true,
+  "rer_source_constant_definition_preserved": true,
+  "nonuniform_trapezoidal_weights": [
+    25.0,
+    80.0,
+    250.0,
+    195.0
+  ],
+  "gradient_fd_source_constant": 3.966727710493659e-09,
+  "gradient_fd_source_constant_wall_load": 4.42033533172111e-09,
+  "gradient_fd_source_rer_b": 4.974244031162743e-09,
+  "optimisation_continuous_history": [
+    1.2239356075683308,
+    1.052975546180949,
+    1.0199268779030928,
+    0.9804351959128144,
+    0.9523030705854809,
+    0.9416551142835567,
+    0.9312701647905033,
+    0.9246674387780848,
+    0.917662578966149
+  ],
+  "binary_energy_distinct": 3.1132789054609735,
+  "volume_continuous_and_binary": {
+    "continuous": 11.84,
+    "binary": 12
+  },
+  "legacy_multi_and_single_interfaces": true,
+  "cached_fields_and_adaptive_descent_step": true,
+  "endpoint_volume_fractions": true,
+  "elapsed_seconds": 0.5757531249983003,
+  "limitations": "Small N16 computer checks with synthetic positive-real negative-imaginary coefficients. Not physical high-frequency validation."
+}

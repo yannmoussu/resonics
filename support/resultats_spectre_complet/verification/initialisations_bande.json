@@ -1,0 +1,25 @@
+{
+  "warm": {
+    "starting_objective": 2.038533943430348,
+    "independent_reference": 2.0385339434303478,
+    "starting_density_differs_from_original": true,
+    "volume": 26.00000000000002,
+    "binary_count": 26,
+    "initialization_band": "three_peaks_continuous",
+    "accepted_iterations_three": 1,
+    "accepted_iterations_band": 1,
+    "accepted_iterations_total": 2
+  },
+  "direct": {
+    "starting_objective": 4.885002061085181,
+    "independent_reference": 4.885002061085229,
+    "starting_density_differs_from_original": false,
+    "volume": 26.0,
+    "binary_count": 26,
+    "initialization_band": "original_wall",
+    "accepted_iterations_three": 1,
+    "accepted_iterations_band": 1,
+    "accepted_iterations_total": 2
+  },
+  "limitations": "N16 execution checks with only one refinement pass. No physical-convergence claim."
+}

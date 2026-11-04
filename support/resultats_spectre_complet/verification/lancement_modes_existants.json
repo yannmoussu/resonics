@@ -1,0 +1,11 @@
+{
+  "demo": {
+    "initial": 0.7812588092572847,
+    "binary": 0.19128440282282266,
+    "binary_count": 26
+  },
+  "trois_pics": {
+    "csv_rows": 4,
+    "sum_correct": true
+  }
+}

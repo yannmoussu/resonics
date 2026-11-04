@@ -1,0 +1,34 @@
+{
+  "test_type": "Computer execution checks, N16, synthetic coefficients for wrappers. No claim of physical convergence.",
+  "three_peak_wrapper": {
+    "continuous_steps": 2,
+    "initial": 3.2868110266036132,
+    "continuous": 2.528950507716556,
+    "binary": 4.499618237576293,
+    "sum_not_average": true
+  },
+  "spectrum_wrapper": {
+    "continuous_steps": 2,
+    "initial": 1.35944536502818,
+    "continuous": 0.6907000242939506,
+    "binary": 1.0580658804998382,
+    "weights": [
+      0.16666666666666666,
+      0.5,
+      0.3333333333333333
+    ]
+  },
+  "source_amplitude_applied_once": true,
+  "old_modes": [
+    "materiaux_validation",
+    "monofrequence",
+    "multifrequence",
+    "comparaison_dispositifs"
+  ],
+  "full_workflow": {
+    "accepted_iterations": 2,
+    "optimization_frequencies": 9,
+    "validation_frequencies": 89,
+    "spatial_warning_recorded": true
+  }
+}

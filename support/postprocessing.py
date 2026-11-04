@@ -1006,6 +1006,50 @@ def plot_full_spectrum_study(result, output_dir=None):
     plt.close(fig)
     return output_dir
 
+def plot_frequency_sampling_analysis(data, output_dir):
+    """On compare uniquement des fréquences déjà évaluées pour montrer les pics manqués."""
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    order = np.argsort(data["frequencies_hz"])
+    frequencies = np.asarray(data["frequencies_hz"])[order]
+    energies = np.asarray(data["initial_energies"])[order]
+    summary = data.get("summary", {})
+    peak = int(np.argmax(energies))
+    peak_frequency = float(frequencies[peak])
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.8), constrained_layout=True)
+    window = (frequencies >= 350) & (frequencies <= 450)
+    axes[0].semilogy(frequencies[window], energies[window], color="#555555", lw=1.5,
+                     label="Évaluations locales fines")
+    # On extrait les points réels des grilles régulières sans interpoler leurs valeurs.
+    for step, color, marker in ((50., "#0072B2", "o"), (25., "#D55E00", "s"), (12.5, "#009E73", "^")):
+        positions = (frequencies - 50.) / step
+        chosen = window & np.isclose(positions, np.rint(positions), atol=1e-8, rtol=0)
+        axes[0].semilogy(frequencies[chosen], energies[chosen], color=color,
+                         marker=marker, ls="--", ms=5, label=f"Pas {step:g} Hz")
+    axes[0].set(title="Influence du pas fréquentiel", xlim=(350, 450),
+                xlabel="Fréquence (Hz)", ylabel="Énergie J — échelle logarithmique")
+    narrow = (frequencies >= peak_frequency - .7) & (frequencies <= peak_frequency + .7)
+    axes[1].plot(frequencies[narrow], energies[narrow], color="#555555", lw=1.6,
+                 label="Évaluations locales fines")
+    positions = (frequencies - 50.) / .390625
+    chosen = narrow & np.isclose(positions, np.rint(positions), atol=1e-8, rtol=0)
+    axes[1].plot(frequencies[chosen], energies[chosen], color="#D55E00", marker="o",
+                 ls="--", ms=5, label="Points calculés, pas 0,390625 Hz")
+    axes[1].set(title=f"Détail du pic vers {peak_frequency:.2f} Hz", xlabel="Fréquence (Hz)",
+                ylabel="Énergie J", xlim=(peak_frequency - .7, peak_frequency + .7), ylim=(0, 1.08 * energies[peak]))
+    peaks = summary.get("peaks_refined", {}).get("initial", [])
+    if peaks:
+        width = float(peaks[0]["half_height_width_hz"])
+        axes[1].text(.03, .95, f"Largeur observée\nà mi-hauteur : {width:.3f} Hz",
+                     transform=axes[1].transAxes, va="top", fontsize=10)
+    for ax in axes:
+        ax.grid(alpha=.25, which="both")
+        ax.legend(fontsize=9, loc="upper right")
+    filename = output_dir / "fig_sensibilite_pas_frequence.png"
+    fig.savefig(filename, dpi=180)
+    plt.close(fig)
+    return filename
+
 
 def plot_material_energy_comparison(results, retained_materials, output_dir=None):
     """On sépare les courbes par matériau pour comparer leurs pics sans les superposer."""
