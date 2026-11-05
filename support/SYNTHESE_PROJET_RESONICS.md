@@ -2,7 +2,7 @@
 
 On utilise les matrices et les conditions aux limites du support fourni. Le système conserve tous les points de la grille. Les matrices qui restent fixes sont préparées une fois, puis les conditions de Dirichlet et de Robin sont appliquées à chaque fréquence et à chaque placement.
 
-Depuis la racine du projet :
+On utilise Python 3 avec NumPy, SciPy et Matplotlib. Depuis la racine du projet :
 
 ```sh
 python support/demo_control_polycopie2024.py
@@ -29,7 +29,7 @@ La recherche sur tous les pics et celle sur la bande peuvent partir du placement
 - `your_optimization_procedure` conserve les lignes et affichages imposés pour une fréquence.
 - `your_multifrequency_optimization` contient l'unique descente pour plusieurs fréquences. Les trois autres fonctions choisissent les cibles et les poids.
 - `your_compute_objective_function` contient l'unique calcul de l'énergie.
-- `project_density` et `binarize_chi`, dans `preprocessing.py`, sont partagées par toutes les descentes.
+- `project_density` et `binarize_chi`, dans `preprocessing.py`, sont partagées par toutes les descentes. La projection bornée, la dichotomie et le tri final suivent la section 7.6 du polycopié, pages imprimées 116–117.
 - L'assemblage, l'état, l'adjoint et le gradient sont dans `processing.py`. Il n'y a aucune classe de résolution.
 - Les figures et les exports sont dans `postprocessing.py`.
 
@@ -47,6 +47,6 @@ Le pas fréquentiel et le pas de descente sont indépendants. Les seuils de cont
 
 ## Résultats
 
-Les nouvelles sorties se trouvent dans `support/resultats_antoine/`. Chaque mode conserve son historique continu et son énergie après binarisation séparément. Les courbes de performance comparent uniquement des murs binaires. Le mode complet ajoute les comparaisons de matériaux et de formes, ainsi qu'une étude de quantité sur les trois centres de la source.
+Les nouvelles sorties se trouvent dans un sous-dossier de `support/resultats_antoine/` dont le nom précise le matériau, le maillage, l’étude et le nombre d’itérations. Cela évite de remplacer les sorties d’une autre étude. Les résultats retenus pour la présentation sont conservés directement dans `support/resultats_antoine/`. Chaque mode conserve son historique continu et son énergie après binarisation séparément. Les courbes de performance comparent uniquement des murs binaires. Le mode complet ajoute les comparaisons de matériaux et de formes, ainsi qu'une étude de quantité sur les trois centres de la source.
 
 Les anciennes données brutes sont regroupées dans `support/archives_numeriques/`. Les figures des anciennes études retirées ne servent plus à la nouvelle présentation. Le rapport n'est pas réécrit pendant ce nettoyage ; ses anciennes références de figures devront être adaptées lors de sa reprise.

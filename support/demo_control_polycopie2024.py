@@ -484,7 +484,9 @@ def run_project(N=None, modes=None, output_dir=None, studies=True):
     if problem is None:
         return None
     modes = ["mono", "trois_pics", "pics_resonance", "bande"] if modes is None else list(modes)
-    output_dir = Path(__file__).resolve().parent / "resultats_antoine" if output_dir is None else Path(output_dir)
+    study_name = modes[0] if len(modes) == 1 else "comparaison"
+    default_folder = Path(__file__).resolve().parent / "resultats_antoine" / f"{problem['material_name']}_N{problem['N']}_{study_name}_{N_ITERATIONS}iterations"
+    output_dir = default_folder if output_dir is None else Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     highest_frequency = max(float(numpy.max(FREQUENCIES_HZ)), max(part[0] for part in preprocessing.RER_B_GAUSSIANS))
     ratio = C / (highest_frequency * problem["h"])
@@ -558,7 +560,7 @@ def run_project(N=None, modes=None, output_dir=None, studies=True):
                   "V_obj": problem["V_obj"], "iterations": N_ITERATIONS,
                   "robin_points": int(numpy.count_nonzero(problem["domain"] == _env.NODE_ROBIN)),
                   "covered_points": int(results[next(iter(results))]["chi"].sum()),
-                  "points_per_shortest_wavelength": ratio, "spatial_resolution_ok": bool(ratio >= 10),
+                  "points_per_shortest_wavelength": ratio, "wavelength_resolution_ok": bool(ratio >= 10), "spatial_convergence_tested": False,
                   "frequency_control_converged": bool(validation_records[-1]["converged"]),
                   "frequency_tolerance": FREQUENCY_TOLERANCE, "peak_tolerance": PEAK_TOLERANCE,
                   "source_gaussians": list(preprocessing.RER_B_GAUSSIANS), "alpha0": list(ALPHA0),

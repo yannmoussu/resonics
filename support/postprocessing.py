@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap, BoundaryNorm
+from matplotlib.patches import Patch
 import _env
 import preprocessing
 
@@ -230,7 +232,7 @@ def _plot_materials(results, folder):
         alphas = np.asarray(material["alphas"])
         ax.plot(f, alphas.real, label="Partie réelle", color="#0072B2")
         ax.plot(f, alphas.imag, "--", label="Partie imaginaire", color="#D55E00")
-        ax.set(title=MATERIAL_LABELS.get(name, name), xlabel="Fréquence (Hz)", ylabel="Coefficient de Robin")
+        ax.set(title=MATERIAL_LABELS.get(name, name), xlabel="Fréquence (Hz)", ylabel=r"Coefficient de Robin (m$^{-1}$)")
         ax.grid(alpha=.25)
         ax.legend(fontsize=9)
     _save(fig, folder, "fig_coefficients_materiaux.png")
@@ -299,9 +301,12 @@ def _plot_spectra(results, folder):
     fig, ax = plt.subplots(figsize=(10.5, 4.3), constrained_layout=True)
     curves = [(mode["energies"], MODE_LABELS[name], MODE_COLORS[name], style)
               for (name, mode), style in zip(((name, mode) for name, mode in results["modes"].items() if name != "mono"), ("-.", "--", "-"))]
-    _spectrum_axis(ax, f, curves)
-    ax.set_title("Spectres des répartitions binaires optimisées")
-    _save(fig, folder, "fig_comparaison_optimisations.png")
+    if curves:
+        _spectrum_axis(ax, f, curves)
+        ax.set_title("Spectres des répartitions binaires optimisées")
+        _save(fig, folder, "fig_comparaison_optimisations.png")
+    else:
+        plt.close(fig)
 
 
 def _history_axis(ax, name, mode, normalise):
@@ -312,6 +317,10 @@ def _history_axis(ax, name, mode, normalise):
     ax.plot(len(history)-1, mode["binary_energy"]/scale, "kx", ms=8, label="Après binarisation")
     ax.set(xlabel="Étape acceptée", ylabel="Critère rapporté au départ" if normalise else "Énergie J",
            title=MODE_LABELS[name]+" — "+_criterion_label(name, mode))
+    plotted = np.r_[history, mode["binary_energy"]] / scale
+    if np.all(plotted > 0) and plotted.max() / plotted.min() > 100:
+        ax.set_yscale("log")
+        ax.set_ylabel(ax.get_ylabel() + " (échelle log)")
     ax.grid(alpha=.25)
     ax.legend(fontsize=9)
 
@@ -324,6 +333,11 @@ def _plot_histories_and_densities(results, folder):
     for ax in list(axes.flat)[len(results["modes"]):]:
         ax.axis("off")
     _save(fig, folder, "fig_historiques_modes.png")
+    band = results["modes"].get("bande")
+    if band is not None:
+        fig, ax = plt.subplots(figsize=(9, 4), constrained_layout=True)
+        _history_axis(ax, "bande", band, normalise=False)
+        _save(fig, folder, "fig_descente_bande.png")
     mono = results["modes"].get("mono")
     if mono is not None:
         fig, ax = plt.subplots(figsize=(9, 4), constrained_layout=True)
@@ -335,14 +349,19 @@ def _plot_histories_and_densities(results, folder):
     h = float(params.get("h", params.get("h_m", 1/int(params["N"]))))
     densities = [(results["chi_initial"], "Mur initial")]+[(mode["chi"], MODE_LABELS[name]) for name, mode in results["modes"].items()]
     fig, axes = plt.subplots(2, 3, figsize=(11, 6), sharex=True, sharey=True, constrained_layout=True)
+    colors = ["#3d1255", "#F0E442"]
+    palette = ListedColormap(colors)
+    norm = BoundaryNorm([-.5, .5, 1.5], 2)
     for ax, (chi, label) in zip(axes.flat, densities):
-        image = ax.scatter(cols*h, rows*h, c=np.asarray(chi)[rows, cols], vmin=0, vmax=1, marker="s", s=17, cmap="viridis")
+        image = ax.scatter(cols*h, rows*h, c=np.asarray(chi)[rows, cols], norm=norm, marker="s", s=17, cmap=palette)
         ax.set(title=label, xlabel="Position horizontale (m)", ylabel="Position verticale (m)",
                ylim=(rows.max()*h+2*h, rows.min()*h-2*h))
         ax.set_aspect("equal")
     for ax in list(axes.flat)[len(densities):]:
         ax.axis("off")
-    fig.colorbar(image, ax=list(axes.flat), label="Matériau présent", ticks=[0, 1], shrink=.75)
+    axes.flat[-1].legend(handles=[Patch(facecolor=colors[0], label="Réfléchissant"),
+                                 Patch(facecolor=colors[1], label="Matériau poreux")],
+                         loc="center", frameon=False)
     _save(fig, folder, "fig_repartitions_modes.png")
 
 
@@ -366,7 +385,9 @@ def _plot_controls(results, folder):
             points = [row["n_points"] for row in records]
             axes[0].semilogy(points, [max(row["integral_error"], 1e-16) for row in records], "o-", label=phase)
             axes[1].plot(points, [row["peak_error"] for row in records], "o-", label=phase)
-        for ax, title in zip(axes, ("Variation relative de l'intégrale", "Variation relative du maximum")):
+        limits = (results["parameters"].get("frequency_tolerance", .01), results["parameters"].get("peak_tolerance", .05))
+        for ax, title, limit in zip(axes, ("Variation relative de l'intégrale", "Variation relative du maximum"), limits):
+            ax.axhline(limit, color="black", ls=":", label=f"Seuil {100*limit:g} %")
             ax.set(xlabel="Nombre de fréquences", ylabel="Écart relatif", title=title)
             ax.grid(alpha=.25)
             ax.legend(fontsize=9)
