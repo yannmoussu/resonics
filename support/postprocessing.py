@@ -235,3 +235,49 @@ def plot_material_comparisons(folder, materials, levels, with_optimization=True)
         writer=csv.writer(stream)
         writer.writerow(("materiau","iterations_acceptees","J_binaire_moyenne","J_binaire_integrale","J_max","frequence_max_hz","points_garnis"))
         writer.writerows(records)
+    if all((folder/name/"validation_pas2_5.npz").exists() for name in materials):
+        plot_frequency_validation(folder, materials)
+
+
+def plot_frequency_validation(folder, materials):
+    """On compare les spectres initiaux et binaires sur la grille de contrôle."""
+    folder = Path(folder)
+    records = []
+    fine_spectra = {}
+    for name in materials:
+        fine = dict(np.load(folder/name/"validation_pas2_5.npz"))
+        mode = dict(np.load(folder/name/"descente_niveau3_pas5.npz"))
+        reference = dict(np.load(folder/name/"niveau3.npz"))
+        f, initial, binary = fine["frequencies_hz"], fine["initial"], fine["binary"]
+        fine_spectra[name] = fine
+        weights = preprocessing.trapezoidal_weights(f)
+        mean_initial, mean_binary = float(weights @ initial), float(weights @ binary)
+        records.append((name, mean_initial, mean_binary, 100*(1-mean_binary/mean_initial),
+                        binary.max(), f[binary.argmax()],
+                        100*(mean_binary/float(mode["binary_energy"])-1),
+                        100*(binary.max()/mode["binary_energies"].max()-1),
+                        100*(initial.max()/reference["initial"].max()-1)))
+        limit = int(mode.get("max_iterations", 100))
+        title = f"Niveau 3 — {MATERIAL_LABELS[name]} — 50–3500 Hz\nDescente : pas 5 Hz, {limit} itérations max. — Contrôle : pas 2,5 Hz"
+        fig, ax = curve_axes(title)
+        ax.plot(f, initial, color=".55", lw=1.2, label="Initial")
+        ax.plot(f, binary, color="tab:blue", lw=1.4, label="Après descente et binarisation")
+        ax.legend()
+        save_figure(fig, folder, f"validation_spectre_{name}_niveau3_pas5.png")
+        np.savetxt(folder/name/"validation_pas2_5.csv", np.column_stack((f, initial, binary)),
+                   delimiter=",", header="frequence_hz,J_initial,J_optimise_binaire", comments="")
+    title = f"Niveau 3 — Mélamine, laine de roche, laine de verre, ouate polyester\n50–3500 Hz — Descente : pas 5 Hz, {limit} itérations max. — Contrôle : pas 2,5 Hz"
+    fig, ax = curve_axes(title)
+    for name, color, style in zip(materials, COLORS, STYLES):
+        fine = fine_spectra[name]
+        ax.plot(fine["frequencies_hz"], fine["binary"], color=color, ls=style, lw=1.4,
+                label=MATERIAL_LABELS[name])
+    ax.legend()
+    save_figure(fig, folder, "validation_spectres_niveau3_pas5.png")
+    with (folder/"verification_pas_frequentiel.csv").open("w", newline="") as stream:
+        writer = csv.writer(stream)
+        writer.writerow(("materiau", "J_initial_moyenne_pas2_5", "J_binaire_moyenne_pas2_5",
+                         "gain_binaire_pourcent", "J_max_binaire_pas2_5", "frequence_max_hz",
+                         "ecart_moyenne_binaire_pourcent", "hausse_max_binaire_pourcent",
+                         "hausse_max_initial_pourcent"))
+        writer.writerows(records)

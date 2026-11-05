@@ -342,6 +342,28 @@ def quantity_comparison(problem, data):
     return numpy.asarray(fractions), numpy.asarray(energies)
 
 
+def validate_frequency_sampling(problem, reference, mode):
+    """On recalcule les énergies initiales et binaires entre les fréquences de la descente."""
+    frequencies = reference["frequencies_hz"]
+    midpoints = (frequencies[:-1] + frequencies[1:]) / 2
+    data = prepare_frequencies(problem, midpoints)
+    if data is None:
+        return None
+    initial, _ = evaluate_distribution(problem, reference["chi_initial"], data)
+    binary, _ = evaluate_distribution(problem, mode["chi"], data)
+    if initial is None or binary is None:
+        return None
+    # On intercale les nouvelles valeurs entre les valeurs déjà calculées.
+    fine = {key: numpy.empty(2 * len(frequencies) - 1)
+            for key in ("frequencies_hz", "initial", "binary")}
+    fine["frequencies_hz"][::2] = frequencies
+    fine["frequencies_hz"][1::2] = midpoints
+    fine["initial"][::2], fine["initial"][1::2] = reference["initial"], initial
+    fine["binary"][::2], fine["binary"][1::2] = mode["binary_energies"], binary
+    fine["midpoint_alphas"] = data["alphas"]
+    return fine
+
+
 def study_material(material_name, output_dir=None):
     """On compare les quatre géométries puis on optimise le niveau choisi."""
     output_dir = Path(__file__).resolve().parent / "resultats" if output_dir is None else Path(output_dir)
@@ -405,6 +427,12 @@ def study_material(material_name, output_dir=None):
                     return None
                 numpy.savez_compressed(mode_file, **mode)
             postprocessing.plot_optimization(reference, mode, material_name, level, output_dir)
+            validation_file = folder / "validation_pas2_5.npz"
+            if not validation_file.exists():
+                fine = validate_frequency_sampling(problem, reference, mode)
+                if fine is None:
+                    return None
+                numpy.savez_compressed(validation_file, **fine)
     return str(folder)
 
 

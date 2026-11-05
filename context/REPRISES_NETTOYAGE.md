@@ -39,3 +39,11 @@ Le brouillon de l’équipe contient une référence eole absente de la bibliogr
 - La présentation rassemble les quatre géométries dans une seule figure Matplotlib. Les autres nouvelles figures sont des courbes sur un seul graphique.
 - Les compilations de vérification excluent les deux figures de descente encore en calcul. Ces PDF partiels ne doivent pas être livrés comme PDF final.
 - Les débordements repérés pendant ces vérifications appartiennent aux blocs de slides conservés. Les nouvelles slides de murs et de quantité passent la vérification de mise en page.
+
+## Point de contrôle fréquentiel
+
+- Les coefficients et les spectres initiaux sont maintenant calculés aux milieux des intervalles de cinq hertz, dans chaque dossier matériau sous validation_points_intermediaires.npz.
+- Le mur initial a un pic important à 397,5 Hz. Sa valeur dépasse le maximum de la grille de cinq hertz d'un facteur allant d'environ 1,71 à 2,47 selon le matériau. Le pas de cinq hertz ne suffit donc pas à garantir que tous les maxima sont correctement mesurés.
+- Conserver le pas demandé pour les quatre descentes, puis évaluer les quatre murs binaires aux mêmes points intermédiaires. Programme prêt : /tmp/validate_sobre_midpoints.py, à lancer sans argument après la fin des descentes. Le mode initial a déjà terminé, session 73414 close.
+- Le programme /tmp/validate_sobre_results.py vérifie les contraintes et les historiques à la fin. L'installation finale est préparée dans /tmp/install_sobre_results.py.
+- Les sources et les références terminées ont été commitées dans 74615c6 et poussées sur refactor. Main attend la présentation complète avec les vraies descentes.
