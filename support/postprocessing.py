@@ -4,7 +4,6 @@ import shutil
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
 import _env
 import preprocessing
 
@@ -96,6 +95,8 @@ def curve_axes(title, xlabel="Fréquence (Hz)", ylabel="Énergie J"):
     fig, ax = plt.subplots(figsize=(9, 4.7), constrained_layout=True)
     ax.set(title=title, xlabel=xlabel, ylabel=ylabel)
     ax.grid(alpha=.2)
+    if xlabel == "Fréquence (Hz)":
+        ax.set_xlim(50, 3500)
     return fig, ax
 
 
@@ -119,10 +120,12 @@ def plot_reference(reference, material, level, folder):
 def plot_optimization(reference, mode, material, level, folder):
     """On trace la descente puis le spectre et la répartition du mur binaire."""
     name = MATERIAL_LABELS[material]
-    title = f"Niveau {level} — {name} — 50–3500 Hz\nDescente de gradient — pas 5 Hz — 100 itérations maximum"
+    limit = int(mode.get("max_iterations", 100))
+    title = f"Niveau {level} — {name} — 50–3500 Hz\nDescente de gradient — pas 5 Hz — {limit} itérations maximum"
     fig, ax = curve_axes(title, "Itération acceptée", "Énergie J moyenne sur la bande")
-    ax.plot(np.arange(len(mode["history"])), mode["history"], lw=1.5)
-    ax.plot(len(mode["history"])-1, mode["binary_energy"], "x", color="black", ms=7)
+    ax.plot(np.arange(len(mode["history"])), mode["history"], lw=1.5, label="Descente")
+    ax.plot(len(mode["history"])-1, mode["binary_energy"], "x", color="black", ms=7, label="Mur binaire")
+    ax.legend()
     save_figure(fig, folder, f"descente_{material}_niveau{level}_pas5.png")
     fig, ax = curve_axes(title)
     f = reference["frequencies_hz"]
@@ -148,7 +151,7 @@ def plot_optimization(reference, mode, material, level, folder):
                header="frequence_hz,J_initial,J_entierement_garni,J_optimise_binaire", comments="")
 
 
-def plot_material_comparisons(folder, materials, levels):
+def plot_material_comparisons(folder, materials, levels, with_optimization=True):
     """On rassemble les quatre matériaux avec quatre courbes au maximum par figure."""
     folder = Path(folder)
     materials_title = "Mélamine, laine de roche, laine de verre, ouate polyester"
@@ -172,11 +175,46 @@ def plot_material_comparisons(folder, materials, levels):
                              "Part du mur garnie (%)", "Énergie J moyenne sur la bande")
         for level, color, style in zip(levels, COLORS, STYLES):
             q = np.load(folder/name/f"quantite_niveau{level}.npz")
+            np.savetxt(folder/name/f"quantite_niveau{level}.csv", np.column_stack((q["fractions"], q["energies"])),
+                       delimiter=",", header="fraction_garnie,J_moyenne", comments="")
             ax.plot(100*q["fractions"], q["energies"], "o", color=color, ls=style, lw=1.3, ms=3, label=f"Niveau {level}")
         ax.legend()
         save_figure(fig, folder, f"quantite_{name}.png")
+    for level in levels:
+        reference=references[materials[0]][level]
+        fig, ax = curve_axes(f"Géométrie du mur — niveau {level}", "Position horizontale (m)", "Position verticale (m)")
+        r,c=np.where(reference["domain"]==_env.NODE_ROBIN)
+        h = float(reference["h"])
+        rows, cols = reference["domain"].shape
+        ax.imshow(reference["domain"] == _env.NODE_INTERIOR, cmap="Greys", alpha=.15,
+                  extent=(-h/2, (cols-.5)*h, (rows-.5)*h, -h/2))
+        n = reference["domain"].shape[1]
+        nodes = preprocessing.create_fractal_nodes([np.array([[0], [n]]), np.array([[n], [n]])], level)
+        x, y = preprocessing.create_fractal_coordinates(nodes, reference["domain"])
+        ax.plot(np.asarray(x)*h, np.asarray(y)*h, lw=1, color="tab:blue")
+        ax.set_ylim(r.max()*h+2*h, -h)
+        ax.set_aspect("equal")
+        save_figure(fig,folder,f"geometrie_niveau{level}.png")
+    fig, axes = plt.subplots(1, len(levels), figsize=(10, 3.8), sharey=True, constrained_layout=True)
+    for ax, level in zip(axes, levels):
+        reference = references[materials[0]][level]
+        h = float(reference["h"])
+        n = reference["domain"].shape[1]
+        nodes = preprocessing.create_fractal_nodes([np.array([[0], [n]]), np.array([[n], [n]])], level)
+        x, y = preprocessing.create_fractal_coordinates(nodes, reference["domain"])
+        ax.imshow(reference["domain"] == _env.NODE_INTERIOR, cmap="Greys", alpha=.15,
+                  extent=(-h/2, (n-.5)*h, (2*n-.5)*h, -h/2))
+        ax.plot(np.asarray(x)*h, np.asarray(y)*h, lw=1, color="tab:blue")
+        ax.set(title=f"Niveau {level}", xlabel="Position (m)", ylim=(1.35, -.02))
+        ax.set_aspect("equal")
+    axes[0].set_ylabel("Position verticale (m)")
+    fig.suptitle("Contours des murs — niveaux 0, 1, 2 et 3")
+    save_figure(fig, folder, "comparaison_geometries.png")
+    if not with_optimization:
+        return
     modes = {name:dict(np.load(folder/name/"descente_niveau3_pas5.npz")) for name in materials}
-    title = "Niveau 3 — "+materials_title+"\nDescente de gradient — 50–3500 Hz — pas 5 Hz — 100 itérations maximum"
+    limit = int(modes[materials[0]].get("max_iterations", 100))
+    title = "Niveau 3 — "+materials_title+f"\nDescente de gradient — 50–3500 Hz — pas 5 Hz — {limit} itérations maximum"
     fig, ax = curve_axes(title, "Itération acceptée", "Énergie J moyenne sur la bande")
     for name, color, style in zip(materials, COLORS, STYLES):
         history = modes[name]["history"]
@@ -190,18 +228,10 @@ def plot_material_comparisons(folder, materials, levels):
         energy = modes[name]["binary_energies"]
         ax.plot(f, energy, color=color, ls=style, lw=1.4, label=MATERIAL_LABELS[name])
         records.append((name, modes[name]["accepted_steps"], modes[name]["binary_energy"],
-                        np.trapezoid(energy, f), energy.max(), f[np.argmax(energy)], modes[name]["chi"].sum()))
+                        preprocessing.trapezoidal_weights(f, normalise=False) @ energy, energy.max(), f[np.argmax(energy)], modes[name]["chi"].sum()))
     ax.legend()
     save_figure(fig, folder, "comparaison_spectres_niveau3_pas5.png")
     with (folder/"bilan_descentes.csv").open("w",newline="") as stream:
         writer=csv.writer(stream)
         writer.writerow(("materiau","iterations_acceptees","J_binaire_moyenne","J_binaire_integrale","J_max","frequence_max_hz","points_garnis"))
         writer.writerows(records)
-    for level in levels:
-        reference=references[materials[0]][level]
-        fig, ax = curve_axes(f"Géométrie du mur — niveau {level}", "Position horizontale (m)", "Position verticale (m)")
-        r,c=np.where(reference["domain"]==_env.NODE_ROBIN)
-        ax.scatter(c*reference["h"],r*reference["h"],s=8,color="tab:blue")
-        ax.set_aspect("equal")
-        ax.invert_yaxis()
-        save_figure(fig,folder,f"geometrie_niveau{level}.png")

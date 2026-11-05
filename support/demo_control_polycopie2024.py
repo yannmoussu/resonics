@@ -304,7 +304,7 @@ def your_multifrequency_optimization(problem, frequencies_hz, chi=None, weights=
     return {"frequencies_hz": frequencies, "alphas": data["alphas"], "weights": weights,
             "history": numpy.asarray(history), "chi_relaxed": chi_relaxed, "chi": chi,
             "binary_energy": float(weights @ binary_energies), "binary_energies": binary_energies,
-            "accepted_steps": len(history) - 1, "mu_final": float(mu)}
+            "accepted_steps": len(history) - 1, "max_iterations": iterations, "mu_final": float(mu)}
 
 
 def resonance_peaks(frequencies_hz, energies):
