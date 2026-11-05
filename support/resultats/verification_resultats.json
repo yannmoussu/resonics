@@ -1,0 +1,109 @@
+{
+  "passed": true,
+  "optimization_frequency_step_hz": 5.0,
+  "N_points": 128,
+  "level": 3,
+  "materials": [
+    {
+      "material": "MELAMINE",
+      "accepted_iterations": 100,
+      "initial_mean_energy": 3.2905199757021766,
+      "continuous_mean_energy": 0.26576175279778635,
+      "binary_mean_energy": 0.6741215785176535,
+      "binary_gain_percent": 79.513220296625,
+      "binary_max_energy": 14.772865243768745,
+      "binary_max_frequency_hz": 735.0,
+      "covered_points": 410,
+      "continuous_volume_error": 5.684341886080802e-14
+    },
+    {
+      "material": "LAINE_ROCHE",
+      "accepted_iterations": 100,
+      "initial_mean_energy": 3.66738480677795,
+      "continuous_mean_energy": 0.28698809904214667,
+      "binary_mean_energy": 0.9409850356168655,
+      "binary_gain_percent": 74.34179707900395,
+      "binary_max_energy": 30.083297703411894,
+      "binary_max_frequency_hz": 735.0,
+      "covered_points": 410,
+      "continuous_volume_error": 1.1368683772161603e-13
+    },
+    {
+      "material": "LAINE_VERRE",
+      "accepted_iterations": 100,
+      "initial_mean_energy": 3.4150837295174323,
+      "continuous_mean_energy": 0.27753057567639383,
+      "binary_mean_energy": 0.7940097566123587,
+      "binary_gain_percent": 76.74991831826753,
+      "binary_max_energy": 26.58453659571731,
+      "binary_max_frequency_hz": 735.0,
+      "covered_points": 410,
+      "continuous_volume_error": 0.0
+    },
+    {
+      "material": "OUATE_POLYESTER",
+      "accepted_iterations": 100,
+      "initial_mean_energy": 3.200295207420519,
+      "continuous_mean_energy": 0.2633639825423598,
+      "binary_mean_energy": 0.479754305125041,
+      "binary_gain_percent": 85.00906091373585,
+      "binary_max_energy": 17.09861087387171,
+      "binary_max_frequency_hz": 735.0,
+      "covered_points": 410,
+      "continuous_volume_error": 0.0
+    }
+  ],
+  "points_per_minimum_wavelength": 12.544,
+  "spatial_convergence_tested": false,
+  "system_checks": [
+    {
+      "N": 16,
+      "level": 1,
+      "matrix_error": 0.0,
+      "solve_seconds": 0.0029825829988112673,
+      "robin_points": 32
+    },
+    {
+      "N": 128,
+      "level": 0,
+      "matrix_error": 0.0,
+      "solve_seconds": 0.04999979199783411,
+      "robin_points": 128
+    },
+    {
+      "N": 128,
+      "level": 1,
+      "matrix_error": 0.0,
+      "solve_seconds": 0.041896166003425606,
+      "robin_points": 256
+    },
+    {
+      "N": 128,
+      "level": 2,
+      "matrix_error": 0.0,
+      "solve_seconds": 0.03692629199940711,
+      "robin_points": 512
+    },
+    {
+      "N": 128,
+      "level": 3,
+      "matrix_error": 0.0,
+      "solve_seconds": 0.03628062499046791,
+      "robin_points": 1024
+    }
+  ],
+  "gradient_small_grid": {
+    "passed": true,
+    "N": 16,
+    "weighted_gradient_relative_error": 2.495519184498262e-09
+  },
+  "gradient_N128": {
+    "N_points": 128,
+    "level": 3,
+    "material": "OUATE_POLYESTER",
+    "finite_difference": 0.002816186958752515,
+    "adjoint": 0.0028161796818000837,
+    "relative_error": 2.583973485369321e-06,
+    "epsilon": 1e-06
+  }
+}

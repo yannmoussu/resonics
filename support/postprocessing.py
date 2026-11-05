@@ -215,7 +215,9 @@ def plot_material_comparisons(folder, materials, levels, with_optimization=True)
     modes = {name:dict(np.load(folder/name/"descente_niveau3_pas5.npz")) for name in materials}
     limit = int(modes[materials[0]].get("max_iterations", 100))
     title = "Niveau 3 — "+materials_title+f"\nDescente de gradient — 50–3500 Hz — pas 5 Hz — {limit} itérations maximum"
-    fig, ax = curve_axes(title, "Itération acceptée", "Énergie J moyenne sur la bande")
+    fig, ax = curve_axes(title, "Itération acceptée", "Énergie J moyenne (échelle log)")
+    ax.set_yscale("log")
+    ax.set_yticks([.25, .3, .5, 1, 2, 4], labels=["0,25", "0,3", "0,5", "1", "2", "4"])
     for name, color, style in zip(materials, COLORS, STYLES):
         history = modes[name]["history"]
         ax.plot(np.arange(len(history)), history, color=color, ls=style, lw=1.5, label=MATERIAL_LABELS[name])

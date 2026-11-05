@@ -1,0 +1,55 @@
+{
+  "elapsed_seconds": 35.42013945800136,
+  "materials": [
+    {
+      "material": "MELAMINE",
+      "optimization_step_hz": 5.0,
+      "validation_step_hz": 2.5,
+      "initial_integral": 14573.571665962976,
+      "binary_integral": 2334.2769037297676,
+      "binary_gain_percent": 83.98280835176773,
+      "integral_difference_percent": 0.36794884520578997,
+      "maximum_increase_percent": 33.873173115112884,
+      "binary_max_energy": 19.776903461852875,
+      "binary_max_frequency_hz": 732.5
+    },
+    {
+      "material": "LAINE_ROCHE",
+      "optimization_step_hz": 5.0,
+      "validation_step_hz": 2.5,
+      "initial_integral": 16782.007433862644,
+      "binary_integral": 3188.3189081502883,
+      "binary_gain_percent": 81.00156420073492,
+      "integral_difference_percent": -1.7890430580891903,
+      "maximum_increase_percent": 0.0,
+      "binary_max_energy": 30.083297703411894,
+      "binary_max_frequency_hz": 735.0
+    },
+    {
+      "material": "LAINE_VERRE",
+      "optimization_step_hz": 5.0,
+      "validation_step_hz": 2.5,
+      "initial_integral": 15386.287391777556,
+      "binary_integral": 2733.185108427682,
+      "binary_gain_percent": 82.23622737029923,
+      "integral_difference_percent": -0.22445428879421803,
+      "maximum_increase_percent": 0.0,
+      "binary_max_energy": 26.58453659571731,
+      "binary_max_frequency_hz": 735.0
+    },
+    {
+      "material": "OUATE_POLYESTER",
+      "optimization_step_hz": 5.0,
+      "validation_step_hz": 2.5,
+      "initial_integral": 13861.833696298687,
+      "binary_integral": 1653.1006541463262,
+      "binary_gain_percent": 88.07444461992263,
+      "integral_difference_percent": -0.12395828889962823,
+      "maximum_increase_percent": 0.0,
+      "binary_max_energy": 17.09861087387171,
+      "binary_max_frequency_hz": 735.0
+    }
+  ],
+  "method": "Contrôle initial et binaire aux milieux de tous les intervalles de 5 Hz, avec recalcul de chaque coefficient de matériau.",
+  "limit": "Le contrôle compare deux grilles. Il ne prouve pas l'absence de toute résonance plus étroite ni la convergence en espace."
+}

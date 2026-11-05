@@ -1,9 +1,10 @@
 \documentclass[12pt,aspectratio=169,t]{beamer}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+
 \usepackage[french]{babel}
-\usepackage{lmodern,amsmath,amssymb,booktabs,graphicx,tikz,xurl}
-\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage{lmodern,amsmath,amssymb,booktabs,graphicx,xurl}
+\usepackage{mathrsfs}
 \usetheme{CambridgeUS}
 \setbeamertemplate{navigation symbols}{}
 \setbeamertemplate{itemize items}[circle]
@@ -25,424 +26,495 @@
 \addtobeamertemplate{itemize/enumerate body begin}{%
   \setlength{\itemsep}{4pt}\setlength{\parsep}{0pt}}{}
 \setlength{\jot}{3pt}
-\setbeamerfont{framesubtitle}{size=\scriptsize,shape=\upshape}
-\newcommand{\question}[1]{\framesubtitle{#1}}
 \newcommand{\code}[1]{\texttt{\detokenize{#1}}}
 \newcommand{\python}[1]{\par\smallskip{\scriptsize\textbf{Python :} #1\par}}
 \newcommand{\ii}{\mathrm{i}}
 \newcommand{\dd}{\,\mathrm{d}}
-\graphicspath{{../support/resultats_antoine/}{figures/}}
-\title[ResoniCS -- Bruit du RER B]{ResoniCS\\Optimisation acoustique d'un mur antibruit}
+\graphicspath{{./}}
+\title[ResoniCS]{ResoniCS\\Optimisation acoustique d'un mur antibruit}
 \subtitle{Bruit du RER B : matériau, géométrie et placement}
 \setbeamerfont{subtitle}{size=\footnotesize}
 \setbeamerfont{itemize/enumerate body}{size=\small}
-\author[Équipe ResoniCS]{\texorpdfstring{\footnotesize Antoine MARCHE (VT) \quad Joachim BRET (VT)\\
+\author[Groupe 6]{\texorpdfstring{\footnotesize Antoine MARCHE (VT) \quad Joachim BRET (VT)\\
 \footnotesize Olympia MIQUEL \quad Mathis MORET-BAILLY \quad Yann MOUSSU}{Antoine MARCHE, Joachim BRET, Olympia MIQUEL, Mathis MORET-BAILLY, Yann MOUSSU}}
 \institute{CentraleSupélec}
 \date{}
 \hypersetup{pdfauthor={Antoine MARCHE, Joachim BRET, Olympia MIQUEL, Mathis MORET-BAILLY, Yann MOUSSU}}
 
-
-\newcommand{\etatArt}{Établir l'état de l'art.}
-\newcommand{\modele}{Définir le modèle à considérer.}
-\newcommand{\sourceDimensions}{Définir la plage de fréquences d'intérêt, les dimensions et les sources de bruit.}
-\newcommand{\proprietes}{Formuler les propriétés du modèle choisi et ce que l'on sait de sa solution.}
-\newcommand{\problemeOptimisation}{Formuler le problème d'optimisation.}
-\newcommand{\frontiereOuverte}{Étude théorique : considérer une frontière ouverte, établir l'énergie selon la forme et comparer au cas réfléchissant.}
-\newcommand{\materiauxQuantite}{Choisir les matériaux poreux et leur quantité.}
-\newcommand{\coefficientsMateriaux}{Déterminer numériquement les coefficients complexes $\alpha(\omega)$ des matériaux poreux et comparer leurs performances.}
-\newcommand{\deriveeEnergie}{Déterminer la dérivée de l'énergie par rapport à la répartition des inclusions poreuses.}
-\newcommand{\descenteGradient}{Formuler et étudier la méthode numérique de descente de gradient.}
-\newcommand{\murPlan}{Étudier l'énergie du mur plan entièrement garni sur la plage de fréquences choisie et déterminer les maxima locaux.}
-\newcommand{\formesMurs}{Étudier la même question pour différentes formes de murs entièrement garnis.}
-\newcommand{\repartitionInitiale}{Comparer l'énergie de la répartition initiale, absorbante et réfléchissante, à celle du mur entièrement garni.}
-\newcommand{\optimiserPics}{Optimiser numériquement une ou plusieurs des fréquences les plus problématiques, où l'énergie est maximale.}
-\newcommand{\analyserBande}{Analyser les résultats sur la plage de fréquences fixée et comparer les performances à celles d'un mur entièrement garni.}
-\newcommand{\plusieursFrequences}{Optimiser l'énergie simultanément à plusieurs fréquences.}
-\newcommand{\quantiteMateriau}{Étudier la quantité de matériau poreux donnant le meilleur résultat.}
-\newcommand{\poursuivreAnalyse}{Poursuivre l'analyse des performances.}
-\newcommand{\conclureProduit}{Conclure sur le produit à produire ou à développer.}
-\newcommand{\preparerSoutenance}{Préparer la soutenance.}
+% Rappel automatique du plan au debut de chaque sous-section.
+% Seules la section et la sous-section courantes restent mises en evidence.
+\AtBeginSubsection[]{%
+  \begin{frame}{Rappel du plan}
+    \footnotesize
+    \tableofcontents[
+      currentsection,
+      currentsubsection,
+      sectionstyle=show/shaded,
+      subsectionstyle=show/shaded/shaded
+    ]
+  \end{frame}
+}
 
 \begin{document}
+\begin{frame}[plain,noframenumbering]
+    \centering
+    \includegraphics[
+        width=\paperwidth,
+        height=\paperheight,
+        keepaspectratio
+    ]{logo_resonics_16_9.png}
+\end{frame}
 
-\begin{frame}[plain]{Présentation du projet}
-\question{Définir le nom de la start-up, les objectifs, les applications, la stratégie et l'organisation.}
+\begin{frame}{Présentation du projet}
 \titlepage
 \end{frame}
 
+
+
 \begin{frame}{Plan}
-\question{\preparerSoutenance}
 \footnotesize
-\tableofcontents[hideallsubsections]
+\tableofcontents
 \end{frame}
 
-\begin{frame}[c]{Objectifs et stratégie}
-\question{Définir les objectifs, les applications, la stratégie et l'organisation.}
-\begin{figure}
-\centering
-\includegraphics[width=.48\textwidth,height=.37\textheight,keepaspectratio]{train.jpeg}
-\caption{Environnement ferroviaire couvert}
-\end{figure}
-\begin{itemize}
-\item Étudier le bruit du RER B dans un environnement réfléchissant.
-\item Comparer matériau, forme du mur et position des portions garnies.
-\item Travail conjoint des voies théorique et numérique.
-\end{itemize}
-\end{frame}
-
+% ==================================================
+% JOUR 1 — CADRAGE ET MÉTHODES
+% ==================================================
 \section{Cadrage et méthodes}
-\begin{frame}{Rappel du plan}
-\question{\preparerSoutenance}
-\footnotesize
-\tableofcontents[currentsection,sectionstyle=show/shaded,subsectionstyle=show/shaded]
+
+\subsection{État de l'art et modèle choisi}
+
+% Diapositive d'origine conservée : cas d'usage.
+\begin{frame}[c]{Objectifs et stratégie}
+\begin{columns}[c]
+  \begin{column}{0.55\textwidth}
+    \centering
+    \includegraphics[width=\textwidth,height=0.65\textheight,keepaspectratio]{RER_B.jpg}\\[3pt]
+    {\scriptsize RER B et usagers}
+  \end{column}
+
+  \begin{column}{0.4\textwidth}
+    \raggedright
+    \begin{itemize}
+      \item Relie le nord et le sud de la région en passant par Paris
+      \item \textbf{80 km}, \textbf{47 gares}
+      \item \textbf{900\,000} voyageurs par jour
+    \end{itemize}
+  \end{column}
+\end{columns}
 \end{frame}
 
-\subsection{État de l'art, modèle et source}
-\begin{frame}[c]{État de l'art des murs antibruit}
-\question{\etatArt}
+
+\begin{frame}{État de l'art des murs antibruit}
+Les écrans acoustiques le long des voies se classent en deux grands types :
 \begin{itemize}
-\item \textbf{Écrans réfléchissants :} béton, bois ou panneaux transparents, avec renvoi du son vers l'environnement.
-\item \textbf{Écrans absorbants :} parements poreux, laines minérales, béton de bois ou mousses.
-\item \textbf{Recherche :} interfaces irrégulières pour coupler le champ au milieu dissipatif. \cite{felix}
-\item \textbf{Notre étude :} choisir où placer une quantité fixée de matériau sur un mur plan ou irrégulier.
+  \item \textbf{Écrans réfléchissants} : béton, bois, panneaux transparents
+  \item \textbf{Écrans absorbants} : matériaux poreux (laine minérale, béton de bois, mousses)
 \end{itemize}
-\medskip
-{\small Exemples ferroviaires : écrans le long des voies et dispositifs bas proches du train. \cite{sncf,quierail}}
+
+\vspace{0.3cm}
+\textbf{Exemples en Île-de-France :}
+\vspace{0.2cm}
+
+\centering
+\begin{minipage}[t]{0.46\textwidth}
+  \centering
+  \includegraphics[height=0.36\textheight,width=\textwidth,keepaspectratio]{rera.jpg}\\[2pt]
+  {\scriptsize \textbf{RER A}, Fontenay-sous-Bois : écran de 500 m en béton armé}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.46\textwidth}
+  \centering
+  \includegraphics[height=0.36\textheight,width=\textwidth,keepaspectratio]{rere.png}\\[2pt]
+  {\scriptsize \textbf{RER E}, Houilles : écran en béton de bois}
+\end{minipage}
+
+{\scriptsize \textbf{RER E}, Houilles : écran acoustique \cite{eole}}
+
 \end{frame}
 
+% Diapositive d'origine conservée : modèle acoustique et conditions aux limites.
 \begin{frame}[c]{Propagation dans un tunnel réfléchissant}
-\question{\modele}
-\begin{figure}
-\centering
-\begin{tikzpicture}[>=Stealth,every node/.style={font=\small}]
-\fill[blue!5] (0,0) rectangle (9,2.35);
-\draw[very thick,blue!70!black] (0,2.35)--(9,2.35) node[midway,above] {Source acoustique imposée sur le bord supérieur};
-\draw[very thick] (0,0)--(0,2.35) (9,0)--(9,2.35);
-\draw[very thick] (0,0)--(2.2,0)--(2.2,.35)--(3.4,.35)--(3.4,0)--(5.6,0)--(5.6,.35)--(6.8,.35)--(6.8,0)--(9,0);
-\draw[very thick,orange!90!black] (.4,0)--(1.7,0) (3.8,0)--(5,0) (6.8,0)--(7.9,0);
-\node[align=center] at (4.5,1.35) {Propagation dans l'air\\[3pt]Modèle de Helmholtz du polycopié};
-\node[left,align=center] at (0,1.2) {Paroi\\rigide};
-\node[right,align=center] at (9,1.2) {Paroi\\rigide};
-\node[below,align=center] at (4.5,-.2) {Mur partiellement garni : portions absorbantes en orange};
-\end{tikzpicture}
-\caption{Source, parois latérales et mur étudié}
-\end{figure}
-{\small Les conditions de Dirichlet, Neumann et Robin sont celles du modèle fourni. \cite{cours}}
+Soit $\Omega = ]-l,l[ x ]-L,L[$ et $u_f$ la pression complexe à la fréquence $f$.
+\begin{equation*}
+\begin{cases}
+\Delta u_f+k_f^2u_f=0 & \text{dans }\Omega \quad ; \quad k_f=\frac{\omega}{c}=\frac{2\pi f}{c}\\
+u_f=g(y,\omega) & \text{sur }\Gamma_D \quad ; \quad g \in L^2(\Gamma_D)\\
+\partial_nu_f=0 & \text{sur }\Gamma_N\\
+\partial_nu_f+\alpha(\omega)\chi u_f=0 & \text{sur }\Gamma_R
+\end{cases}
+\end{equation*}
+\begin{itemize}
+\item $\chi$ : distribution du milieu poreux ; $\alpha$ : coefficient de paroi. \cite{cours}
+\end{itemize}
+\python{\code{compute_robin_condition}, \code{solve_helmholtz}}
+\end{frame}
+
+\begin{frame}{Propriétés du modèle et de sa solution}
+\begin{itemize}
+\item bien posé au sens de Hadamard : solution unique, dépendant continûment de la source
+\item pour avoir un problème bien posé : $\operatorname{Re}\alpha>0$, $\operatorname{Im}\alpha<0$.
+\item $u_f \in H^2(\Omega) \cap V(\Omega)$
+\item $\exists C > 0, \quad ||u||_{V\Omega} \leq ||g||_{L^{2}(\Gamma_D)}$
+\end{itemize}
 \end{frame}
 
 \begin{frame}[c]{Une source spectrale simplifiée du RER B}
-\question{\sourceDimensions}
 \begin{figure}
 \centering
-\includegraphics[width=.97\textwidth,height=.52\textheight,keepaspectratio]{../support/resultats_antoine/fig_source_rer_b.png}
+\includegraphics[width=.95\textwidth,height=.48\textheight,keepaspectratio]{fig_rer_b_spectre.png}
 \caption{Amplitude de la source en fonction de la fréquence}
 \end{figure}
-{\small Entrée uniforme, avec trois composantes à 200, 800 et 2\,500 Hz.}
-\python{\code{source_rer_b}, \code{RER_B_GAUSSIANS}}
+{\small Source uniforme ; composantes à 200, 800 et 2\,500 Hz choisies pour le modèle.}
+\python{\code{source_rer_b}}
 \end{frame}
 
-\begin{frame}[c]{Dimensions et discrétisation}
-\question{\sourceDimensions}
+\begin{frame}[c]{Des pics de résonance dans le tunnel}
+\begin{figure}
+\centering
+\includegraphics[width=.95\textwidth,height=.58\textheight,keepaspectratio]{fig_rer_b_energie.png}
+\caption{Energie du domaine en fonction de la fréquence}
+\end{figure}
+\python{\code{source_rer_b}}
+\end{frame}
+
+\begin{frame}{Formulation du problème d'optimisation}
+
+\textbf{Objectif :} minimiser l'énergie acoustique en optimisant
+la répartition du matériau poreux sur le mur.
+
 \begin{itemize}
-\item Domaine d'air plan nominal : $1\times1\,\mathrm{m}$, dans une boîte de grille de $1\times2\,\mathrm{m}$.
-\item Grille de $128\times256$ points ; pas spatial $h=1/128\,\mathrm{m}$.
-\item À 3\,500 Hz : environ 12,5 points par longueur d'onde, pour les dix points par longueur d'onde demandés.
+    \item Ensemble admissible :
+    $U_{ad}(V_0) = \{\chi \in L^\infty(\Gamma_R) \mid \forall x \in \Gamma_R \quad \chi(x) \in \{0,1\}, \quad 0< V_0 = \int_{\Gamma_R} \chi \, d\mu < 1\}$.
+    \item problème : A $V_0$ fixé et pour la source $g$ la distribution $\chi_{opt}$ minimisant l'énergie accoustique est solution de
 \end{itemize}
+\begin{equation*}
+J(\chi_{opt},u(\chi_{opt})) = \min_{\chi \in U_{ad}(V_O)} J(\chi,u(\chi))
+\end{equation*}
+\begin{itemize}
+    \item\quad $J(\chi,u(\chi)) = \int_{\Omega} |u(\chi)|^2 d\mu$
+    \item passage par $U_{ad}^*(V_0) = \{\chi \in L^\infty(\Gamma_R) \mid \forall x \in \Gamma_R \quad \chi(x) \in [0,1], \quad 0< V_0 = \int_{\Gamma_R} \chi \, d\mu < 1\}$
+\end{itemize}
+\end{frame}
+
+\subsection{Méthode de descente de gradient}
+\begin{frame}{Méthode de descente de gradient projetée}
+\textbf{Algorithme de descente de gradient projetée :}
+
+\begin{enumerate}
+    \item Calcul du champ acoustique $u$ et du champ adjoint $p$.
+    \item Calcul du gradient de l'énergie par rapport à $\chi$.
+    \item Descente de gradient puis projection :
+    \[
+        \chi_{n+1} = P\left(\chi_n-\mu_n\nabla J(\chi_n)\right)
+    \]
+    \item Ajustement du pas $\mu_n$ selon la diminution de l'énergie.
+    \item \textbf{Passage au binaire :} les points de plus forte densité
+    sont garnis ($\chi=1$), les autres laissés réfléchissants
+    ($\chi=0$), à quantité de matériau fixée.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Premier résultat obtenu}
+    \begin{figure}
+\centering
+\includegraphics[width=.95\textwidth,height=.68\textheight,keepaspectratio]{fig_energy_real.jpg}
+\caption{Descente de gradient sur 100 itérations}
+\end{figure}
+\end{frame}
+
+\subsection{Comparaison frontière ouverte vs réfléchissante}
+\begin{frame}{Frontière ouverte ou réfléchissante : comparaison théorique}
+\end{frame}
+
+\subsection{Choix du matériau et calcul de $\alpha$}
+\begin{frame}{Calcul du coefficient d'absorption $\alpha(\omega)$}
+
+\textbf{Objectif :} déterminer le coefficient complexe de Robin
+équivalent à un matériau poreux donné.
+
 \medskip
-\centering
-{\small Le pas spatial et le pas d'échantillonnage en fréquence règlent deux précisions différentes.}
-\end{frame}
-
-\begin{frame}[c]{Propriétés du modèle et de sa solution}
-\question{\proprietes}
 \begin{itemize}
-\item Dans le cadre du polycopié, le problème dissipatif admet une solution unique, dépendant continûment de la source. \cite{cours}
-\item La convention de Robin utilise le signe plus devant le coefficient du matériau.
-\item Les coefficients identifiés ont une partie réelle positive et une partie imaginaire négative.
+    \item Entrées : pulsation $\omega$, source acoustique
+    et propriétés du matériau.
+
+    \item Décomposition de la source en série de Fourier
+    pour étudier les différents modes de propagation.
+
+    \item Calcul de l'écart énergétique entre le modèle
+    poreux et le modèle équivalent avec condition de Robin.
+
+    \item Minimisation de cet écart
+    par l'algorithme de Nelder-Mead.
 \end{itemize}
+
 \medskip
-{\small Chaque calcul conserve la même source, le même matériau et les mêmes conditions aux limites pour comparer les placements.}
-\end{frame}
+\begin{equation*}
+\boxed{
+\alpha_{\mathrm{opt}}(\omega)
+= \underset{\alpha\in\mathbb{C}}{\operatorname{argmin}}
+\sum_k e_k(\alpha,\omega)
+}
+\end{equation*}
 
-\subsection{Énergie, frontière ouverte et matériaux}
-\begin{frame}[c]{Formulation du problème d'optimisation}
-\question{\problemeOptimisation}
-\begin{figure}
-\centering
-\begin{tikzpicture}[>=Stealth,every node/.style={font=\small},node distance=.45cm]
-\node[draw,rounded corners,fill=blue!5,text width=10.7cm,align=center,minimum height=.7cm] (quantite) {Une quantité fixée de matériau poreux sur le mur};
-\node[draw,rounded corners,fill=blue!5,text width=10.7cm,align=center,minimum height=.7cm,below=of quantite] (placement) {On fait varier la position des portions garnies};
-\node[draw,rounded corners,fill=blue!12,text width=10.7cm,align=center,minimum height=.7cm,below=of placement] (energie) {On cherche à diminuer l'Énergie J dans le domaine d'air};
-\draw[->,thick] (quantite)--(placement);\draw[->,thick] (placement)--(energie);
-\end{tikzpicture}
-\caption{Quantité imposée et recherche du placement}
-\end{figure}
-{\small La recherche utilise des densités continues, puis les performances du mur sont recalculées après le passage à des portions garnies ou réfléchissantes.}
-\end{frame}
+\medskip
+\textbf{Résultat :} un coefficient
+$\alpha(\omega)=\alpha_R(\omega)+\mathrm{i}\alpha_I(\omega)$
+pour chaque fréquence étudiée.
 
-\begin{frame}[c]{Frontière ouverte ou réfléchissante}
-\question{\frontiereOuverte}
-\begin{figure}
-\centering
-\includegraphics[width=.97\textwidth,height=.52\textheight,keepaspectratio]{../support/resultats_antoine/fig_sommerfeld_forme.png}
-\caption{Énergie J selon la profondeur du rectangle et la condition de sortie}
-\end{figure}
-{\small Rectangle d'aire 1 m$^2$, à 200 Hz : la paroi fermée peut produire des résonances. \cite{cours}}
-\end{frame}
-
-\begin{frame}[c]{Trois matériaux pour les comparaisons}
-\question{\materiauxQuantite}
-\begin{table}
-\centering
-\begin{tabular}{lrrr}
-\toprule
-Matériau & Porosité & Tortuosité & Résistivité\\
- & & & (Pa\,s\,m$^{-2}$)\\
-\midrule
-Mélamine & 0,99 & 1,02 & 14\,000\\
-Laine de verre & 0,99 & 1,10 & 20\,000\\
-Ouate polyester & 0,90 & 1,05 & 15\,000\\
-\bottomrule
-\end{tabular}
-\caption{Caractéristiques des matériaux étudiés}
-\end{table}
-\begin{itemize}
-\item Ces trois familles sont conservées pour les études.
-\item La quantité de matériau est annoncée dans chaque comparaison.
-\end{itemize}
-\python{\code{MATERIAUX}}
-\end{frame}
-
-\begin{frame}[c]{Calcul du coefficient du matériau}
-\question{\coefficientsMateriaux}
-\begin{figure}
-\centering
-\includegraphics[width=.97\textwidth,height=.52\textheight,keepaspectratio]{../support/resultats_antoine/fig_coefficients_materiaux.png}
-\caption{Coefficients complexes des matériaux selon la fréquence}
-\end{figure}
-{\small Nelder--Mead ajuste le coefficient de Robin à partir du modèle poreux et de la source.}
 \python{\code{compute_alpha}}
+
 \end{frame}
 
-\subsection{Dérivée et descente de gradient}
-\begin{frame}[c]{Dérivée de l'énergie et contrôle du gradient}
-\question{\deriveeEnergie}
+\begin{frame}{Comparaison des matériaux}
 \begin{figure}
 \centering
-\includegraphics[width=.97\textwidth,height=.52\textheight,keepaspectratio]{../support/resultats_antoine/fig_validation_gradient.png}
-\caption{Gradient adjoint et calcul par différences finies}
+\includegraphics[width=.95\textwidth,height=.78\textheight,keepaspectratio]{rapport_ei.png}
+\caption{Comparaison des matériaux}
 \end{figure}
-{\small Les perturbations des densités confirment le gradient obtenu avec le champ adjoint.}
-\python{\code{compute_adjoint}, \code{compute_gradient}}
 \end{frame}
 
-\begin{frame}[c]{Méthode de descente de gradient projetée}
-\question{\descenteGradient}
-\begin{figure}
-\centering
-\begin{tikzpicture}[>=Stealth,every node/.style={font=\small},node distance=.31cm]
-\node[draw,rounded corners,text width=10.6cm,align=center,minimum height=.54cm,fill=blue!5] (a) {Champ acoustique, adjoint et gradient};
-\node[draw,rounded corners,text width=10.6cm,align=center,minimum height=.54cm,fill=blue!5,below=of a] (b) {Descente puis projection à quantité de matériau fixée};
-\node[draw,rounded corners,text width=10.6cm,align=center,minimum height=.54cm,fill=blue!5,below=of b] (c) {Nouveau champ et nouvelle Énergie J};
-\node[draw,rounded corners,text width=10.6cm,align=center,minimum height=.7cm,fill=blue!12,below=of c] (d) {Si l'énergie baisse : acceptation et pas multiplié par 1,1\\Sinon : pas divisé par deux et nouvelle proposition};
-\draw[->,thick](a)--(b);\draw[->,thick](b)--(c);\draw[->,thick](c)--(d);
-\end{tikzpicture}
-\caption{Étapes de la descente projetée et adaptation du pas}
-\end{figure}
-{\small Après la recherche, le passage binaire conserve le nombre de points garnis et donne lieu à un nouveau calcul d'énergie.}
-\python{\code{your_optimization_procedure}, \code{your_multifrequency_optimization}}
+
+\begin{frame}{Dérivée de l'énergie par rapport à la répartition du matériau}
+On introduit le Lagrangien :
+\[
+\mathcal{L}(\chi, \omega, q) = FV(\chi, \omega, q) + J(\omega)
+\quad \forall \omega, q \in H
+\]
+Soient $\omega = u(\chi)$ la solution du problème variationnel et $p(\chi)$ la solution du problème adjoint, on obtient :
+\[\langle J'(\chi), \chi_0 \rangle = \langle \frac{\partial \mathcal{L}}{\partial \chi}(\chi, u(\chi), p(\chi)), \chi_0 \rangle\]
+D'où après calcul,
+\[\boxed{J'(\chi) = -Re(\alpha u(\chi) p(\chi))}\]
 \end{frame}
 
+% ==================================================
+% JOUR 2 — ÉTUDE DES MURS ET PREMIÈRES OPTIMISATIONS
+% ==================================================
 \section{Étude des murs et premières optimisations}
 \begin{frame}{Rappel du plan}
-\question{\preparerSoutenance}
 \footnotesize
-\tableofcontents[currentsection,sectionstyle=show/shaded,subsectionstyle=show/shaded]
+\tableofcontents[currentsection]
 \end{frame}
+\subsection{Mur plan entièrement absorbant}
 
-\subsection{Murs entièrement garnis}
-\begin{frame}[c]{Mur plan : énergie et maxima locaux}
-\question{\murPlan}
+
+\begin{frame}{Mur plan entièrement absorbant : énergie et maxima locaux}
 \begin{figure}
 \centering
-\includegraphics[width=.97\textwidth,height=.52\textheight,keepaspectratio]{../support/resultats_antoine/fig_spectres_materiaux_niveau0.png}
-\caption{Énergie J des trois matériaux sur le mur plan entièrement garni}
+\includegraphics[width=.98\textwidth,height=.67\textheight,keepaspectratio]{comparaison_mur_plan.png}
+\caption{Énergie J et maxima locaux du mur plan entièrement garni}
 \end{figure}
-{\small Les pics indiquent les fréquences où la réponse du domaine est la plus forte. Ils dépendent aussi du matériau et de la source.}
+
 \end{frame}
 
-\begin{frame}[c]{Différentes formes de murs}
-\question{\formesMurs}
+\subsection{Influence de la géométrie}
+\begin{frame}{Influence de la géométrie du mur sur l'énergie}
 \begin{figure}
 \centering
-\includegraphics[width=.97\textwidth,height=.52\textheight,keepaspectratio]{../support/resultats_antoine/fig_geometries.png}
-\caption{Mur plan et murs préfractals étudiés}
+\includegraphics[width=.98\textwidth,height=.67\textheight,keepaspectratio]{comparaison_geometries.png}
+\caption{Contours des murs aux quatre niveaux}
 \end{figure}
-{\small Même source et même pas spatial, avec une longueur de mur croissante.}
 \end{frame}
 
-\begin{frame}[c]{Influence de la géométrie sur l'énergie}
-\question{\formesMurs}
+\begin{frame}{Influence de la géométrie du mur sur l'énergie}
 \begin{figure}
 \centering
-\includegraphics[width=.97\textwidth,height=.52\textheight,keepaspectratio]{../support/resultats_antoine/fig_spectres_formes.png}
-\caption{Énergie J des murs entièrement garnis selon leur forme}
+\includegraphics[width=.98\textwidth,height=.67\textheight,keepaspectratio]{geometrie_energie_MELAMINE.png}
+\caption{Énergie J des quatre géométries -- Mélamine}
 \end{figure}
-{\small Le contour modifie les résonances, avec une quantité de revêtement propre à chaque forme.}
+
 \end{frame}
 
-\subsection{Placement initial et optimisation ciblée}
-\begin{frame}[c]{Répartition initiale et mur entièrement garni}
-\question{\repartitionInitiale}
+\begin{frame}{Influence de la géométrie du mur sur l'énergie}
 \begin{figure}
 \centering
-\includegraphics[width=.97\textwidth,height=.52\textheight,keepaspectratio]{../support/resultats_antoine/fig_repartition_initiale_complete.png}
-\caption{Énergie J avec la répartition initiale et le garnissage complet}
+\includegraphics[width=.98\textwidth,height=.67\textheight,keepaspectratio]{geometrie_energie_LAINE_ROCHE.png}
+\caption{Énergie J des quatre géométries -- Laine de roche}
 \end{figure}
-{\small Ouate polyester, niveau 2 : 204 points garnis sur 512 au départ, contre 512 pour le mur entièrement garni.}
+
 \end{frame}
 
-\begin{frame}[c]{Optimisation à une fréquence critique}
-\question{\optimiserPics}
+\begin{frame}{Influence de la géométrie du mur sur l'énergie}
 \begin{figure}
 \centering
-\includegraphics[width=.97\textwidth,height=.52\textheight,keepaspectratio]{../support/resultats_antoine/fig_descente_mono.png}
-\caption{Énergie J au cours de la descente monofréquence}
+\includegraphics[width=.98\textwidth,height=.67\textheight,keepaspectratio]{geometrie_energie_LAINE_VERRE.png}
+\caption{Énergie J des quatre géométries -- Laine de verre}
 \end{figure}
-{\small Dix étapes à 403,61~Hz. Le point noir correspond au mur binaire.}
-\python{\code{your_optimization_procedure}}
+
 \end{frame}
 
+\begin{frame}{Influence de la géométrie du mur sur l'énergie}
+\begin{figure}
+\centering
+\includegraphics[width=.98\textwidth,height=.67\textheight,keepaspectratio]{geometrie_energie_OUATE_POLYESTER.png}
+\caption{Énergie J des quatre géométries -- Ouate polyester}
+\end{figure}
+
+\end{frame}
+
+\subsection{Influence de la répartition de matériau poreux}
+\begin{frame}{Répartition initiale et mur entièrement absorbant}
+\end{frame}
+
+\subsection{Optimisation ciblée}
+\begin{frame}{Descente de gradient : comparaison des matériaux}
+\begin{figure}
+\centering
+\includegraphics[width=.98\textwidth,height=.67\textheight,keepaspectratio]{comparaison_descentes_niveau3_pas5.png}
+\caption{Évolution de l’énergie moyenne pendant la descente}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{Spectres après optimisation}
+\begin{figure}
+\centering
+\includegraphics[width=.98\textwidth,height=.67\textheight,keepaspectratio]{validation_spectres_niveau3_pas5.png}
+\caption{Énergie J des quatre murs binaires optimisés}
+\end{figure}
+
+\end{frame}
+
+% ==================================================
+% JOUR 3 — OPTIMISATION MULTIFRÉQUENTIELLE
+% ==================================================
 \section{Optimisation multifréquentielle}
 \begin{frame}{Rappel du plan}
-\question{\preparerSoutenance}
 \footnotesize
-\tableofcontents[currentsection,sectionstyle=show/shaded,subsectionstyle=show/shaded]
+\tableofcontents[currentsection]
 \end{frame}
 
-\subsection{Analyse sur la bande et choix des fréquences}
-\begin{frame}[c]{Évaluer le placement monofréquence sur la bande}
-\question{\analyserBande}
+\subsection{Analyse des résultats}
+\begin{frame}{Analyse des performances sur la bande fréquentielle}
 \begin{figure}
 \centering
-\includegraphics[width=.97\textwidth,height=.52\textheight,keepaspectratio]{../support/resultats_antoine/fig_spectre_mono.png}
-\caption{Spectre du placement monofréquence et des références}
+\includegraphics[width=.95\textwidth,height=.78\textheight,keepaspectratio]{1.jpeg}
+\caption{}
 \end{figure}
-{\small Le maximum se situe désormais vers 965~Hz. L'intégrale baisse de 56,3\,\%.}
 \end{frame}
 
-\begin{frame}[c]{Une répartition pour les trois composantes de la source}
-\question{\plusieursFrequences}
+\begin{frame}{Mur plat complètement absorbant}
 \begin{figure}
 \centering
-\includegraphics[width=.97\textwidth,height=.52\textheight,keepaspectratio]{../support/resultats_antoine/fig_spectre_trois_pics.png}
-\caption{Spectre du placement optimisé à 200, 800 et 2\,500 Hz}
+\includegraphics[width=.95\textwidth,height=.78\textheight,keepaspectratio]{2.jpeg}
+\caption{}
 \end{figure}
-{\small Un même placement est optimisé aux trois centres de la source.}
-\python{\code{your_three_peaks_optimization}}
 \end{frame}
 
-\begin{frame}[c]{Optimiser tous les pics repérés}
-\question{\plusieursFrequences}
+\begin{frame}{Mur avec fractales de niveau 1}
 \begin{figure}
 \centering
-\includegraphics[width=.97\textwidth,height=.52\textheight,keepaspectratio]{../support/resultats_antoine/fig_spectre_pics.png}
-\caption{Spectre du placement optimisé aux pics de résonance repérés}
+\includegraphics[width=.95\textwidth,height=.78\textheight,keepaspectratio]{3.jpeg}
+\caption{}
 \end{figure}
-{\small Cibles : 107 maxima du spectre initial. Départ : densité obtenue aux trois centres.}
-\python{\code{your_peak_optimization}}
 \end{frame}
 
-\begin{frame}[c]{Optimisation sur l'ensemble de la bande}
-\question{\plusieursFrequences}
+\begin{frame}{Mur avec fractales de niveau 2}
 \begin{figure}
 \centering
-\includegraphics[width=.97\textwidth,height=.52\textheight,keepaspectratio]{../support/resultats_antoine/fig_comparaison_optimisations.png}
-\caption{Énergie J des placements optimisés selon le choix des fréquences}
+\includegraphics[width=.95\textwidth,height=.78\textheight,keepaspectratio]{4.jpeg}
+\caption{}
 \end{figure}
-{\small Intégration par trapèzes sur 813 fréquences. Un pic subsiste vers 452~Hz.}
-\python{\code{your_band_optimization}}
 \end{frame}
 
-\begin{frame}[c]{Descente sur l'ensemble de la bande}
-\question{\plusieursFrequences}
+\subsection{Optimisation sur l'ensemble du spectre}
+\begin{frame}{Optimisation sur chaque pic (pas $=50$ Hz)}
 \begin{figure}
 \centering
-\includegraphics[width=.97\textwidth,height=.52\textheight,keepaspectratio]{../support/resultats_antoine/fig_descente_bande.png}
-\caption{Énergie moyenne de bande pendant la descente et après binarisation}
+\includegraphics[width=.95\textwidth,height=.78\textheight,keepaspectratio]{5.jpeg}
+\caption{}
 \end{figure}
-{\small La courbe suit la recherche continue. Le point noir donne l'énergie recalculée du mur binaire.}
-\python{\code{your_multifrequency_optimization}}
 \end{frame}
 
-\begin{frame}[c]{Contrôler le pas fréquentiel}
-\question{\plusieursFrequences}
-\begin{figure}
-\centering
-\includegraphics[width=.97\textwidth,height=.52\textheight,keepaspectratio]{../support/resultats_antoine/fig_convergence_frequence.png}
-\caption{Contrôle de l'énergie intégrée et des maxima par raffinement fréquentiel}
-\end{figure}
-{\small Validation commune sur 7\,145 fréquences : dernier écart d'intégrale de 0,38\,\%.}
+
+\begin{frame}{Optimisation sur l'ensemble du spectre (pas $=5$ Hz)}
 \end{frame}
 
 \subsection{Quantité de matériau}
-\begin{frame}[c]{Influence de la quantité de matériau poreux}
-\question{\quantiteMateriau}
+\begin{frame}{Influence de la quantité de matériau poreux}
 \begin{figure}
 \centering
-\includegraphics[width=.97\textwidth,height=.52\textheight,keepaspectratio]{../support/resultats_antoine/fig_quantites.png}
-\caption{Énergie J aux trois centres de la source selon la fraction garnie}
+\includegraphics[width=.98\textwidth,height=.60\textheight,keepaspectratio]{quantite_MELAMINE.png}
+\caption{Énergie moyenne selon la fraction garnie -- Mélamine}
 \end{figure}
-{\small Minimum observé : environ 10\,\% de revêtement, pour la somme aux trois centres.}
-\python{\code{quantity_comparison}}
+{\small On augmente la longueur d’une portion centrale garnie.}
 \end{frame}
 
-\section{Bilan et suite du projet}
+\begin{frame}{Influence de la quantité de matériau poreux}
+\begin{figure}
+\centering
+\includegraphics[width=.98\textwidth,height=.60\textheight,keepaspectratio]{quantite_LAINE_ROCHE.png}
+\caption{Énergie moyenne selon la fraction garnie -- Laine de roche}
+\end{figure}
+{\small On augmente la longueur d’une portion centrale garnie.}
+\end{frame}
+
+\begin{frame}{Influence de la quantité de matériau poreux}
+\begin{figure}
+\centering
+\includegraphics[width=.98\textwidth,height=.60\textheight,keepaspectratio]{quantite_LAINE_VERRE.png}
+\caption{Énergie moyenne selon la fraction garnie -- Laine de verre}
+\end{figure}
+{\small On augmente la longueur d’une portion centrale garnie.}
+\end{frame}
+
+\begin{frame}{Influence de la quantité de matériau poreux}
+\begin{figure}
+\centering
+\includegraphics[width=.98\textwidth,height=.60\textheight,keepaspectratio]{quantite_OUATE_POLYESTER.png}
+\caption{Énergie moyenne selon la fraction garnie -- Ouate polyester}
+\end{figure}
+{\small On augmente la longueur d’une portion centrale garnie.}
+\end{frame}
+
+
+
+% ==================================================
+% JOUR 4 — BILAN ET CHOIX DU PRODUIT
+% ==================================================
+\section{Bilan et choix du produit}
+
 \begin{frame}{Rappel du plan}
-\question{\preparerSoutenance}
 \footnotesize
-\tableofcontents[currentsection,sectionstyle=show/shaded,subsectionstyle=show/shaded]
+\tableofcontents[currentsection]
 \end{frame}
 
-\subsection{Performances et placements}
-\begin{frame}[c]{Comparer les énergies et les maxima}
-\question{\poursuivreAnalyse}
-\begin{figure}
-\centering
-\includegraphics[width=.97\textwidth,height=.52\textheight,keepaspectratio]{../support/resultats_antoine/fig_bilan_performances.png}
-\caption{Énergie J intégrée et maximale des placements comparés}
-\end{figure}
-{\small Dans cet essai, le placement aux pics donne la plus faible intégrale et le plus faible maximum.}
+\begin{frame}{Analyse complémentaire des performances}
 \end{frame}
 
-\begin{frame}[c]{Comparer les portions garnies}
-\question{\poursuivreAnalyse}
-\begin{figure}
-\centering
-\includegraphics[width=.97\textwidth,height=.67\textheight,keepaspectratio]{../support/resultats_antoine/fig_repartitions_modes.png}
-\caption{Répartitions des portions réfléchissantes et garnies}
-\end{figure}
+\begin{frame}{Choix du mur antibruit à développer}
+
 \end{frame}
 
-\subsection{Critères de décision}
-\begin{frame}[c]{Bilan avant le choix du produit}
-\question{\conclureProduit}
+\begin{frame}{Conclusion}
+
+\end{frame}
+
+
+
+\begin{frame}[noframenumbering]{Annexe: Plage de fréquences et dimensions}
+
 \begin{itemize}
-\item Le produit visé associe un support rigide et des inclusions poreuses placées par optimisation.
-\item Le choix se fonde sur l'énergie intégrée, le pic maximal, la quantité et la forme du mur.
-\item Mélamine, laine de verre et ouate polyester restent les trois matériaux de comparaison.
+    \item \textbf{Plage fréquentielle :} 50 à 3\,500 Hz.
+    \item \textbf{Fréquences caractéristiques du RER B :}
+    200, 800 et 2\,500 Hz.
+    \item \textbf{Dimensions du domaine :}
+    $1 \times 5\ \mathrm{m^2}$.
+    \item \textbf{Discrétisation :}
+    $128 \times 256$ points, avec $h \approx 7{,}8$ mm.
+    \item \textbf{Longueur d'onde minimale :}
+    $\lambda_{\min} \approx 9{,}8$ cm à 3\,500 Hz,
+    soit environ 12,5 points par longueur d'onde.
 \end{itemize}
-\medskip
-{\small Les résultats numériques éclairent la décision collective, sans arrêter ici un matériau final.}
+
 \end{frame}
 
-\begin{frame}{Références}
-\question{Finaliser le rapport en équipe.}
+% Diapositive d'origine conservée : références.
+\begin{frame}[noframenumbering]{Références}
 \footnotesize
 \begin{thebibliography}{9}
 \bibitem{cours} A. Rozanova-Pierrat. \emph{Contrôle des Ondes}. Polycopié de cours, CentraleSupélec, 2026.
-\bibitem{sncf} SNCF Réseau. \emph{Nos engagements pour la réduction du bruit ferroviaire}, documentation institutionnelle.
+\bibitem{sncf} SNCF Réseau. \emph{Nos engagements pour la réduction du bruit ferroviaire}, 2026.
+
 \bibitem{quierail} DELTABLOC. \emph{PHONOBLOC -- Série Special Rail}, documentation du fabricant.
 \bibitem{felix} S. Félix et al. \emph{Enhanced wave absorption through irregular interfaces}. EPL, 85, 14003, 2009.
 \bibitem{placement} F. Magoulès et al. \emph{Frequency Range of a Non-Lipschitz Parametric Optimization of a Noise Absorption}. SIAM J. Control Optim., 63, 1267--1285, 2025.

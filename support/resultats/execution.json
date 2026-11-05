@@ -1,0 +1,14 @@
+{
+  "completed": true,
+  "N_points": 128,
+  "max_iterations": 100,
+  "step_hz": 5,
+  "optimization_level": 3,
+  "materials": [
+    "MELAMINE",
+    "LAINE_ROCHE",
+    "LAINE_VERRE",
+    "OUATE_POLYESTER"
+  ],
+  "elapsed_seconds": 5773.100678375005
+}
