@@ -1,63 +1,22 @@
-# Exécuter les études ResoniCS
+# Comparer les matériaux et les géométries
 
-On utilise les matrices et les conditions aux limites du support fourni. Le système conserve tous les points de la grille. Les matrices qui restent fixes sont préparées une fois, puis les conditions de Dirichlet et de Robin sont appliquées à chaque fréquence et à chaque placement.
-
-On utilise Python 3 avec NumPy, SciPy et Matplotlib. Depuis la racine du projet :
+On utilise Python 3, NumPy, SciPy et Matplotlib. Depuis la racine du projet :
 
 ```sh
 python support/demo_control_polycopie2024.py
 ```
 
-Les réglages sont au début du programme : `SOURCE`, `MATERIAL_NAME`, `N_POINTS`, `LEVEL`, `N_ITERATIONS` et `ETUDE`. Les trois matériaux conservés pour les comparaisons sont `MELAMINE`, `LAINE_VERRE` et `OUATE_POLYESTER`. L'ouate polyester est un exemple de calcul, sans choix de produit final.
+Les paramètres sont au début de ce fichier. La comparaison demandée utilise les quatre matériaux `MELAMINE`, `LAINE_ROCHE`, `LAINE_VERRE` et `OUATE_POLYESTER`, la source RER B, une bande de 50 à 3 500 Hz avec un pas de 5 Hz et un maximum de 100 itérations de descente. Le maillage comporte 128 points sur sa largeur.
 
-## Les quatre modes
+La descente compare les quatre matériaux au niveau de fractale 3, avec la même répartition initiale. Les géométries et les quantités sont également étudiées aux niveaux 0, 1 et 2. Les étapes acceptées diminuent le critère, et les contraintes de quantité sont conservées. Les spectres finaux sont recalculés avec le matériau présent ou absent à chaque point du mur.
 
-| Valeur de `ETUDE` | Critère |
-| --- | --- |
-| `mono` | Une fréquence critique repérée sur le spectre initial |
-| `trois_pics` | Somme des énergies à 200, 800 et 2 500 Hz |
-| `pics_resonance` | Somme des énergies à tous les maxima locaux repérés sur le spectre initial |
-| `bande` | Moyenne de l'énergie sur la bande, approchée par les trapèzes |
-| `complet` | Les quatre modes, les matériaux, les quantités et les contrôles |
+Pour l’étude de quantité, on augmente la longueur d’une portion centrale garnie, avec cinq fractions de chaque contour. On mesure donc l’influence de cette quantité à position fixée. Les longueurs totales des contours diffèrent selon le niveau.
 
-Les pics repérés sont des maxima de la réponse à la source, pas le résultat d'un calcul de valeurs propres.
+Les données et les figures se trouvent dans `support/resultats/`. Les PNG sont aussi copiés directement dans `presentation/`. Les calculs déjà enregistrés sont réutilisés quand leurs paramètres sont identiques. Le programme peut ainsi reprendre un calcul interrompu à la fin d’une étude déjà enregistrée.
 
-La recherche sur tous les pics et celle sur la bande peuvent partir du placement continu déjà obtenu aux trois centres. Les résultats indiquent cette succession. Les critères restent distincts et le gain ne mesure donc pas le seul effet du critère à budget identique.
+Le système conserve tous les points de la grille et les conditions aux limites du support. Les voisinages fixes sont préparés une fois. La même factorisation est utilisée pour le champ et son adjoint à une fréquence donnée. Les matrices ont été comparées à celles du support et le gradient a été contrôlé par différences finies.
 
-## Algorithmes et code
-
-- `your_optimization_procedure` conserve les lignes et affichages imposés pour une fréquence.
-- `your_multifrequency_optimization` contient l'unique descente pour plusieurs fréquences. Les trois autres fonctions choisissent les cibles et les poids.
-- `your_compute_objective_function` contient l'unique calcul de l'énergie.
-- `project_density` et `binarize_chi`, dans `preprocessing.py`, sont partagées par toutes les descentes. La projection bornée, la dichotomie et le tri final suivent la section 7.6 du polycopié, pages imprimées 116–117.
-- L'assemblage, l'état, l'adjoint et le gradient sont dans `processing.py`. Il n'y a aucune classe de résolution.
-- Les figures et les exports sont dans `postprocessing.py`.
-
-La source prend la position et la pulsation en arguments. Elle est évaluée à chaque fréquence, de même que le coefficient du matériau. Son amplitude est déjà incluse dans le champ et n'est pas appliquée une deuxième fois à l'énergie.
-
-On conserve la convention avec le signe plus devant le coefficient de Robin. Le gradient est calculé à partir de l'adjoint du système complet et ses contributions sont additionnées aux coins du mur.
-
-## Fréquences et vérification
-
-La grille de départ couvre 50 à 3 500 Hz avec un pas de 25 Hz. Pour la descente de bande, les poids des trapèzes sont divisés par la largeur de la bande. On minimise ainsi l'énergie moyenne, qui a les mêmes minimiseurs que l'intégrale. Les indicateurs finaux donnent aussi cette intégrale sans normalisation. Des points sont ajoutés dans les intervalles où les trapèzes ou les maxima varient encore. La grille est fixée pendant chaque descente, donc la répartition courante et la proposition sont toujours comparées avec les mêmes fréquences et les mêmes poids.
-
-Le pas fréquentiel et le pas de descente sont indépendants. Les seuils de contrôle sont 1 % pour l'indicateur d'intégrale et 5 % pour la variation du maximum entre grilles testées. Ce sont des contrôles numériques observés, sans garantie mathématique sur une résonance qui n'aurait pas été échantillonnée.
-
-À N=128, la grille comporte environ 12,54 points par longueur d'onde à 3 500 Hz. Les petits essais servent à vérifier les calculs du programme, pas à valider la physique à haute fréquence.
-
-## Résultats
-
-Les nouvelles sorties se trouvent dans un sous-dossier de `support/resultats_antoine/` dont le nom précise le matériau, le maillage, l’étude et le nombre d’itérations. Cela évite de remplacer les sorties d’une autre étude. Les résultats retenus pour la présentation sont conservés directement dans `support/resultats_antoine/`. Chaque mode conserve son historique continu et son énergie après binarisation séparément. Les courbes de performance comparent uniquement des murs binaires. Le mode complet ajoute les comparaisons de matériaux et de formes, ainsi qu'une étude de quantité sur les trois centres de la source.
-
-Les anciennes données brutes sont regroupées dans `support/archives_numeriques/`. Les figures des anciennes études retirées ne servent plus à la nouvelle présentation. Le rapport n'est pas réécrit pendant ce nettoyage ; ses anciennes références de figures devront être adaptées lors de sa reprise.
-
-## Calculs enregistrés et présentation
-
-Les calculs présentés utilisent N=128 et dix itérations par procédure. Les quatre placements binaires sont évalués sur une grille commune de 7 145 fréquences. Le [bilan numérique](resultats_antoine/BILAN_NUMERIQUE.md) rassemble les indicateurs, les paramètres et les limites des essais.
-
-Dans cet exemple, l'optimisation sur tous les pics repérés donne le plus faible critère intégré après binarisation. La minimisation de bande améliore le résultat aux trois centres, avec un pic restant vers 452 Hz. Le choix du critère doit donc tenir compte des spectres et des maxima observés.
-
-La présentation complétée se trouve dans `presentation/presentation.pdf`. Sa source reprend le document de travail de l'équipe. Pour la compiler depuis la racine du projet :
+Pour compiler les slides depuis la racine :
 
 ```sh
 latexmk -cd -pdf presentation/presentation.tex

@@ -1,13 +1,31 @@
-# Nettoyage et vérifications terminés
+# Présentation sobre et nouvelle comparaison
 
-- Les quatre fichiers du support utilisent les systèmes complets fournis. La classe de résolution supplémentaire et les études redondantes ont été retirées.
-- Les quatre modes sont disponibles : mono, trois_pics, pics_resonance et bande. Le mode complet rassemble les comparaisons et les contrôles.
-- Les anciennes données sont dans support/archives_numeriques. Les 39 figures des études retirées ont été supprimées.
-- Les nouveaux calculs N128 et dix itérations par procédure sont dans support/resultats_antoine. Le bilan numérique et les paramètres y indiquent exactement les calculs effectués.
-- Les gradients pondérés concordent avec les différences finies. Les étapes acceptées décroissent, les volumes continus sont conservés et les murs binaires comportent 204 points garnis sur 512.
-- La validation commune porte sur 7145 fréquences. Le contrôle final d'intégrale vaut environ 0,38 %. L'écart entre les moyennes binaires de bande sur les grilles d'optimisation et de validation vaut environ 0,83 %.
-- Dans cet essai, le mode aux pics repérés est meilleur après binarisation que le mode de bande. Un pic de ce dernier reste vers 452 Hz. Le bilan le précise sans généraliser cette observation.
-- La présentation canonique comporte 34 diapositives dans presentation/presentation.tex et presentation/presentation.pdf. Une copie est conservée dans context/Slides_EI, avec les chemins adaptés.
-- Le PDF a été compilé sans débordement ni référence indéfinie et inspecté visuellement.
-- Les modifications locales du rapport et les autres documents du groupe ont été conservés. Le rapport reste à reprendre séparément, conformément à la priorité donnée aux calculs.
-- La règle des dix points par longueur d'onde est satisfaite à N128. La convergence spatiale et la résolution des plus petites portions de revêtement restent distinctes de ce contrôle.
+## Consignes en vigueur
+
+- La nouvelle base est context/Slides_EI/presentation.tex fournie par l’équipe.
+- Ne modifier que les blocs mur plan, influence de la géométrie, optimisation et quantité. Retirer les sous-titres des frames. Aucun schéma TikZ.
+- Figures simples, une figure par slide. Paramètres indiqués dans le titre de chaque nouvelle figure.
+- Après clarification, seules les quatre descentes des matériaux MELAMINE, LAINE_ROCHE, LAINE_VERRE et OUATE_POLYESTER au niveau 3 sont à calculer, sur 50–3500 Hz au pas 5 Hz et avec 100 itérations maximum. Ne pas lancer 64 optimisations.
+- Géométries et quantité : niveaux 0, 1, 2 et 3. L’étude de quantité agrandit une portion centrale garnie à position fixée.
+
+## Calcul en cours
+
+- Code préparé dans /tmp/resonics_sobre/support, présentation dans /tmp/resonics_sobre/presentation.
+- Programme /tmp/run_sobre_studies.py, session exec 23165, journal /tmp/sobre_studies.log.
+- Quatre processus indépendants, un par matériau. Les matrices complètes du support sont utilisées, avec voisinages fixes préparés et factorisation commune au champ et à l’adjoint. Aucune classe ajoutée.
+- Tests /tmp/sobre_system_checks.json : matrices identiques à celles de la version validée aux quatre niveaux à N128. Test /tmp/sobre_gradient_checks.json : gradient pondéré validé par différences finies, erreur relative environ 2,5e-9 sur petit cas.
+- Données dans /tmp/resonics_sobre/support/resultats, copies des PNG dans /tmp/resonics_sobre/presentation.
+- Le fichier /tmp/sobre_preservation.json vérifie que les 31 autres blocs de slides sont conservés, hormis le retrait demandé du sous-titre.
+
+## Suite
+
+1. Attendre SOBRE_STUDIES_DONE, puis vérifier les données, les volumes et les étapes acceptées.
+2. Compiler et inspecter la nouvelle présentation avec ses vraies figures. Ne pas fabriquer de figure de remplacement.
+3. Installer code et données. Toutes les nouvelles figures sont dans support/resultats et copiées directement dans presentation.
+4. Supprimer les anciennes figures et les dossiers obsolètes, sans restaurer les archives déjà supprimées par l’utilisateur. Conserver les images requises par les slides inchangées.
+5. Mettre à jour le guide, consigner le bilan, commits et push sur main/refactor.
+6. Le rapport et les autres modifications locales sont préservés.
+
+## Points hors périmètre des slides conservées
+
+Le brouillon de l’équipe contient une référence eole absente de la bibliographie, une affirmation de régularité H2 sur le domaine irrégulier et des dimensions d’annexe différentes de la grille utilisée. Ces passages ne sont pas modifiés, conformément au périmètre demandé. Ils restent à relire avec l’équipe.

@@ -413,86 +413,99 @@ def compute_robin_condition_up(domain, u, space_step, beta_rob, alpha_rob):
 
 
 
+def boundary_neighbours(domain, boundary):
+    """On repère chaque voisinage entre un point intérieur et le bord demandé."""
+    ncols = domain.shape[1]
+    i, j = numpy.nonzero(domain == _env.NODE_INTERIOR)
+    rows, nodes = [], []
+    for di, dj in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+        selected = domain[i + di, j + dj] == boundary
+        rows.append(i[selected] * ncols + j[selected])
+        nodes.append((i[selected] + di) * ncols + j[selected] + dj)
+    return numpy.concatenate(rows), numpy.concatenate(nodes)
+
+
 def prepare_helmholtz_system(domain_omega, spacestep, f, f_neu,
                              beta_pde, alpha_pde, beta_neu):
-    """On conserve les matrices fournies et les données de Neumann qui restent fixes."""
+    """On prépare les matrices fournies et les voisinages qui restent fixes."""
     stiffness, rhs = compute_stiffness_matrix(domain_omega, spacestep, f, beta_pde)
     mass, _ = compute_mass_matrix(domain_omega, spacestep, alpha_pde)
     stiffness, rhs = compute_neumann_condition(
         domain_omega, spacestep, f_neu, beta_neu, beta_pde, stiffness, rhs,
     )
-    return stiffness, mass, rhs
-
+    dr, dn = boundary_neighbours(domain_omega, _env.NODE_DIRICHLET)
+    rr, rn = boundary_neighbours(domain_omega, _env.NODE_ROBIN)
+    # On supprime une seule fois les coefficients reliant le fluide aux points de bord.
+    for rows, nodes in ((dr, dn), (rr, rn)):
+        stiffness[rows, nodes] = 0.0
+    diagonal = stiffness.diagonal()
+    numpy.add.at(diagonal, rr, beta_pde.ravel()[rr])
+    stiffness.setdiag(diagonal)
+    return {"stiffness": stiffness.tocsr(), "mass": mass.tocsr(), "rhs": rhs.ravel(),
+            "dir_rows": dr, "dir_nodes": dn, "rob_rows": rr, "rob_nodes": rn}
 
 
 def assemble_helmholtz_system(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
                               beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
                               prepared=None):
-    """On complète les matrices fournies avec la source et le coefficient du mur."""
+    """On applique les mêmes conditions de bord à tous les voisinages repérés."""
     if prepared is None:
         prepared = prepare_helmholtz_system(
             domain_omega, spacestep, f, f_neu, beta_pde, alpha_pde, beta_neu,
         )
-    stiffness, mass, fixed_rhs = prepared
-    # On conserve les matrices préparées pour les prochains calculs.
-    matrix = (stiffness + omega**2 * mass).tolil()
-    rhs = fixed_rhs.copy()
-    # On applique les conditions de Dirichlet et de Robin fournies.
-    matrix, rhs = compute_dirichlet_condition(
-        domain_omega, f_dir, alpha_dir, beta_pde, matrix, rhs,
-    )
-    matrix, rhs = compute_robin_condition(
-        domain_omega, spacestep, f_rob, alpha_rob, beta_rob, beta_pde, matrix, rhs,
-    )
-    return matrix.tocsr(), rhs.ravel()
+    matrix = prepared["stiffness"] + omega**2 * prepared["mass"]
+    rhs = prepared["rhs"].copy()
+    dr, dn = prepared["dir_rows"], prepared["dir_nodes"]
+    rr, rn = prepared["rob_rows"], prepared["rob_nodes"]
+    numpy.add.at(rhs, dr, -f_dir.ravel()[dn] / alpha_dir.ravel()[dn])
+    scale = spacestep * alpha_rob.ravel()[rn] / beta_pde.ravel()[rr]
+    denominator = beta_rob.ravel()[rn] + scale
+    diagonal = matrix.diagonal()
+    # On additionne les effets des différentes faces d'un même point intérieur.
+    numpy.add.at(diagonal, rr, -scale / denominator)
+    numpy.add.at(rhs, rr, spacestep * f_rob.ravel()[rn] / denominator)
+    matrix.setdiag(diagonal)
+    return matrix.tocsr(), rhs
 
 
 def compute_state(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
                   beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
-                  prepared=None):
+                  prepared=None, return_factor=False):
     """On résout le système complet puis on remet le champ sur la grille."""
     matrix, rhs = assemble_helmholtz_system(
         domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
         beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
         prepared=prepared,
     )
-    state = scipy.sparse.linalg.spsolve(matrix, rhs)
+    factor = scipy.sparse.linalg.splu(matrix.tocsc())
+    state = factor.solve(rhs)
     interior = domain_omega == _env.NODE_INTERIOR
     field = numpy.zeros(domain_omega.shape, dtype=numpy.complex128)
     field[interior] = state.reshape(domain_omega.shape)[interior]
+    if return_factor:
+        return matrix, state, field, factor
     return matrix, state, field
 
 
-
-def compute_adjoint(domain_omega, spacestep, matrix, state):
+def compute_adjoint(domain_omega, spacestep, matrix, state, factor=None):
     """On résout le système adjoint à partir du champ dans le fluide."""
     interior = domain_omega == _env.NODE_INTERIOR
     adjoint_rhs = numpy.zeros_like(state)
     adjoint_rhs[interior.ravel()] = 2.0 * spacestep**2 * state[interior.ravel()]
+    if factor is not None:
+        return factor.solve(adjoint_rhs, trans="H")
     return scipy.sparse.linalg.spsolve(matrix.conjugate().transpose(), adjoint_rhs)
-
 
 
 def compute_gradient(domain_omega, spacestep, Alpha, density,
                      beta_pde, beta_rob, f_rob, adjoint, state):
-    """On calcule l'effet de chaque point du mur à l'aide du champ adjoint."""
-    interior = domain_omega == _env.NODE_INTERIOR
-    robin = domain_omega == _env.NODE_ROBIN
-    ncols = domain_omega.shape[1]
-
-    # On additionne les contributions des voisins intérieurs de chaque point Robin.
-    gradient = numpy.zeros(domain_omega.shape, dtype=numpy.float64)
-    for i, j in zip(*numpy.nonzero(interior)):
-        row = i * ncols + j
-        for bi, bj in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):
-            if robin[bi, bj]:
-                scale = spacestep * Alpha / beta_pde[i, j]
-                denominator = beta_rob[bi, bj] + scale * density[bi, bj]
-                diagonal_derivative = -scale * beta_rob[bi, bj] / denominator**2
-                rhs_derivative = -spacestep * f_rob[bi, bj] * scale / denominator**2
-                gradient[bi, bj] += numpy.real(
-                    numpy.conjugate(adjoint[row])
-                    * (rhs_derivative - diagonal_derivative * state[row])
-                )
-    return gradient
-
+    """On additionne les effets des faces du mur, y compris aux coins."""
+    rows, nodes = boundary_neighbours(domain_omega, _env.NODE_ROBIN)
+    scale = spacestep * Alpha / beta_pde.ravel()[rows]
+    denominator = beta_rob.ravel()[nodes] + scale * density.ravel()[nodes]
+    diagonal_derivative = -scale * beta_rob.ravel()[nodes] / denominator**2
+    rhs_derivative = -spacestep * f_rob.ravel()[nodes] * scale / denominator**2
+    gradient = numpy.zeros(domain_omega.size)
+    numpy.add.at(gradient, nodes, numpy.real(numpy.conjugate(adjoint[rows])
+                 * (rhs_derivative - diagonal_derivative * state[rows])))
+    return gradient.reshape(domain_omega.shape)
