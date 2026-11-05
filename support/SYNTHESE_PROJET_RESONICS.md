@@ -1,60 +1,52 @@
-# Calculs ResoniCS
+# Exécuter les études ResoniCS
 
-## Lancer l'étude principale
+On utilise les matrices et les conditions aux limites du support fourni. Le système conserve tous les points de la grille. Les matrices qui restent fixes sont préparées une fois, puis les conditions de Dirichlet et de Robin sont appliquées à chaque fréquence et à chaque placement.
 
-Avec Python, NumPy, SciPy et Matplotlib, depuis la racine du projet :
+Depuis la racine du projet :
 
 ```sh
 python support/demo_control_polycopie2024.py
 ```
 
-Le mode par défaut est `ETUDE = "spectre_complet"`. Les paramètres se règlent au début du fichier. `MATERIAL_NAME` choisit le matériau du calcul et `SOURCE` la source. L'ouate polyester sert d'exemple initial. Mélamine, laine de verre et ouate polyester restent les trois matériaux d'étude, sans sélection de produit final.
+Les réglages sont au début du programme : `SOURCE`, `MATERIAL_NAME`, `N_POINTS`, `LEVEL`, `N_ITERATIONS` et `ETUDE`. Les trois matériaux conservés pour les comparaisons sont `MELAMINE`, `LAINE_VERRE` et `OUATE_POLYESTER`. L'ouate polyester est un exemple de calcul, sans choix de produit final.
 
-Les résultats sont enregistrés dans `support/resultats_spectre_complet/`, séparément des études antérieures. Le calcul à N=128 est sensiblement plus long qu'un essai réduit. `N_ITERATIONS` fixe le budget maximal d'itérations, distinct du nombre d'itérations effectivement acceptées.
+## Les quatre modes
 
-## Optimisation sur la bande
-
-On calcule une seule répartition pour la bande 50–3 500 Hz. Le coefficient du matériau et la source sont évalués à chaque fréquence. Les coefficients et les seconds membres indépendants du placement sont préparés une fois. Les champs d'une proposition acceptée sont réutilisés pour le calcul de l'adjoint suivant.
-
-Par défaut, le placement continu obtenu aux trois pics sert de point de départ à la descente sur la bande. Cette réutilisation évite de consacrer toutes les itérations à la grille très dense requise par les résonances du mur binaire initial. Les deux budgets d'itérations sont enregistrés séparément. L'argument `warm_start=False` de `run_full_spectrum_optimization` permet aussi de repartir directement du mur initial. La fonction `your_optimization_procedure_spectrum` accepte directement la répartition initiale souhaitée.
-
-Le critère utilise les poids de la méthode des trapèzes. On les normalise par la largeur de bande pour conserver une échelle pratique du gradient et du pas de descente. La moyenne ainsi minimisée a les mêmes minimiseurs que l'intégrale. Les fichiers enregistrent aussi l'intégrale, obtenue en multipliant par la largeur de bande. L'amplitude de la source est déjà incluse dans le champ et n'est pas appliquée une deuxième fois.
-
-La projection respecte les bornes de densité et la quantité initiale de matériau. Une étape n'est acceptée que si l'énergie pondérée diminue sur la même grille, avec les mêmes poids. Le pas est multiplié par 1,1 après acceptation et divisé par deux après refus. Les arrêts conservent le seuil de pas et le contrôle de variation des densités. Le tri binaire garde le nombre arrondi de points garnis, puis son énergie est recalculée séparément.
-
-## Choix des fréquences
-
-`FREQUENCES_HZ` fournit une grille de départ, espacée de 50 Hz. Elle n'est pas supposée résoudre tous les pics. On compare les trapèzes de chaque intervalle aux deux trapèzes obtenus en ajoutant son milieu. On raffine en priorité les intervalles contribuant le plus à l'écart, tout en limitant l'espacement sur toute la bande.
-
-Les seuils par défaut sont 1 % pour l'indicateur d'intégrale et 5 % pour la variation du maximum entre les grilles testées. Ce sont des contrôles observés, et non des bornes mathématiques sur l'erreur réelle. `FREQUENCY_REFINEMENTS` limite le nombre de raffinements. Les fréquences finales et les contrôles sont enregistrés.
-
-La grille de descente est ensuite fixe. Après optimisation, une autre grille, comportant des points régulièrement répartis et de nouveaux milieux, est raffinée pour comparer le mur initial, le placement à trois fréquences et les placements de bande continu et binaire. Un arrêt par limite de raffinement est signalé dans les paramètres. Le bilan donne aussi l'écart entre l'intégrale estimée pendant la descente et celle du contrôle plus fin.
-
-Une résonance initiale d'environ 0,27 Hz de largeur à mi-hauteur a été observée à N=128 dans le cas ouate polyester étudié. Cela justifie un raffinement local plutôt qu'un pas universel de 10 ou 20 Hz. La procédure ne certifie pas la détection de toute résonance arbitrairement étroite.
-
-## Résultats enregistrés
-
-- Spectres superposés et détaillés, avec les mêmes conditions pour chaque configuration.
-- Historique continu de l'énergie de bande et valeur binaire distincte.
-- Répartitions initiale, à trois fréquences, continue et binaire sur la bande.
-- Intégrale de l'énergie, réduction relative, maximum et fréquence du maximum.
-- Grilles, poids, coefficients complexes, paramètres et contrôles de raffinement.
-- CSV, JSON et NPZ contenant les données numériques, ainsi qu'un bilan des observations.
-
-Le pas spatial doit aussi représenter les ondes. À N=128 et 3 500 Hz, on dispose d'environ 12,54 pas par longueur d'onde. Les petits essais servent à vérifier le programme et ne suffisent pas à valider les résultats physiques.
-
-## Autres modes conservés
-
-| `ETUDE` | Calcul |
+| Valeur de `ETUDE` | Critère |
 | --- | --- |
-| `"demo"` | Descente monofréquence du support, dont les lignes imposées sont conservées |
-| `"trois_pics"` | Somme aux centres des trois gaussiennes, utilisée comme comparaison |
-| `"materiaux_validation"` | Coefficients, parois de référence et contrôle du gradient |
-| `"monofrequence"` | Comparaisons et placements à une fréquence |
-| `"multifrequence"` | Anciennes comparaisons à quelques fréquences cibles et étude des quantités |
-| `"comparaison_dispositifs"` | Comparaisons de formes et de matériaux à quantité annoncée |
-| `"tous"` | Ensemble des anciennes études comparatives |
+| `mono` | Une fréquence critique repérée sur le spectre initial |
+| `trois_pics` | Somme des énergies à 200, 800 et 2 500 Hz |
+| `pics_resonance` | Somme des énergies à tous les maxima locaux repérés sur le spectre initial |
+| `bande` | Intégrale de l'énergie sur la bande, approchée par les trapèzes |
+| `complet` | Les quatre modes, les matériaux, les quantités et les contrôles |
 
-Les fonctions à trois pics, de bande et multifréquences partagent désormais le même moteur `optimize_frequency_distribution` dans `processing.py`. L'évaluation du spectre et la définition de l'énergie sont également communes. Le support imposé du professeur conserve sa procédure propre. Les figures et leurs fichiers sont produits dans `postprocessing.py`.
+Les pics repérés sont des maxima de la réponse à la source, pas le résultat d'un calcul de valeurs propres.
 
-La convention active est celle du polycopié, avec le signe plus devant le coefficient de Robin. Le coefficient identifié est appliqué directement. Les copies de `context/EI_Antoine/` et de `context/fichiers_support/` servent de références et ne sont pas importées par le programme.
+La recherche sur tous les pics et celle sur la bande peuvent partir du placement continu déjà obtenu aux trois centres. Les résultats indiquent cette succession. Les critères restent distincts et le gain ne mesure donc pas le seul effet du critère à budget identique.
+
+## Algorithmes et code
+
+- `your_optimization_procedure` conserve les lignes et affichages imposés pour une fréquence.
+- `your_multifrequency_optimization` contient l'unique descente pour plusieurs fréquences. Les trois autres fonctions choisissent les cibles et les poids.
+- `your_compute_objective_function` contient l'unique calcul de l'énergie.
+- `project_density` et `binarize_chi`, dans `preprocessing.py`, sont partagées par toutes les descentes.
+- L'assemblage, l'état, l'adjoint et le gradient sont dans `processing.py`. Il n'y a aucune classe de résolution.
+- Les figures et les exports sont dans `postprocessing.py`.
+
+La source prend la position et la pulsation en arguments. Elle est évaluée à chaque fréquence, de même que le coefficient du matériau. Son amplitude est déjà incluse dans le champ et n'est pas appliquée une deuxième fois à l'énergie.
+
+On conserve la convention avec le signe plus devant le coefficient de Robin. Le gradient est calculé à partir de l'adjoint du système complet et ses contributions sont additionnées aux coins du mur.
+
+## Fréquences et vérification
+
+La grille de départ couvre 50 à 3 500 Hz. Des points sont ajoutés dans les intervalles où les trapèzes ou les maxima varient encore. La grille est fixée pendant chaque descente, donc la répartition courante et la proposition sont toujours comparées avec les mêmes fréquences et les mêmes poids.
+
+Le pas fréquentiel et le pas de descente sont indépendants. Les seuils de contrôle sont 1 % pour l'indicateur d'intégrale et 5 % pour la variation du maximum entre grilles testées. Ce sont des contrôles numériques observés, sans garantie mathématique sur une résonance qui n'aurait pas été échantillonnée.
+
+À N=128, la grille comporte environ 12,54 points par longueur d'onde à 3 500 Hz. Les petits essais servent à vérifier les calculs du programme, pas à valider la physique à haute fréquence.
+
+## Résultats
+
+Les nouvelles sorties se trouvent dans `support/resultats_antoine/`. Chaque mode conserve son historique continu et son énergie après binarisation séparément. Les courbes de performance comparent uniquement des murs binaires. Le mode complet ajoute les comparaisons de matériaux et de formes, ainsi qu'une étude de quantité sur les trois centres de la source.
+
+Les anciennes données brutes restent des archives. Les figures des anciennes études retirées ne servent plus à la nouvelle présentation. Le rapport n'est pas réécrit pendant ce nettoyage ; ses anciennes références de figures devront être adaptées lors de sa reprise.

@@ -1,751 +1,87 @@
 # -*- coding: utf-8 -*-
-
-
-# Python packages
-import matplotlib.pyplot
-import matplotlib.pyplot as plt
-import numpy
-import numpy as np
-import os
 import csv
+import json
 from pathlib import Path
-
-
-# MRG packages
+import numpy as np
+import matplotlib.pyplot as plt
 import _env
-import processing
 import preprocessing
 
 
+MODE_LABELS = {"mono": "Une fréquence", "trois_pics": "Trois centres",
+               "pics_resonance": "Pics de résonance", "bande": "Bande entière"}
+MODE_COLORS = {"mono": "#9467BD", "trois_pics": "#D55E00",
+               "pics_resonance": "#009E73", "bande": "#0072B2"}
+MATERIAL_LABELS = {"MELAMINE": "Mélamine", "LAINE_VERRE": "Laine de verre",
+                   "OUATE_POLYESTER": "Ouate polyester"}
+
+
 def myimshow(tab, **kwargs):
-    """Customized plot."""
-
-    if 'dpi' in kwargs and kwargs['dpi']:
-        dpi = kwargs['dpi']
+    """On affiche un tableau et on enregistre la figure à l'emplacement demandé."""
+    fig, ax = plt.subplots(dpi=kwargs.get("dpi", 100))
+    image = ax.imshow(tab, cmap=kwargs.get("cmap", "jet"),
+                      vmin=kwargs.get("vmin"), vmax=kwargs.get("vmax"))
+    ax.set_title(kwargs.get("title", ""))
+    if kwargs.get("colorbar"):
+        fig.colorbar(image, ax=ax)
+    filename = kwargs.get("filename")
+    if filename:
+        path = Path(filename)
+        if not path.is_absolute():
+            path = Path(__file__).resolve().parent / path
+        path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(path.with_name(path.stem + "_plot" + path.suffix))
     else:
-        dpi = 100
+        plt.show()
+    plt.close(fig)
 
-    # -- create figure
-    fig = matplotlib.pyplot.figure(dpi=dpi)
-    ax = matplotlib.pyplot.axes()
 
-    if 'title' in kwargs and kwargs['title']:
-        title = kwargs['title']
-    if 'cmap' in kwargs and kwargs['cmap']:
-        cmap = kwargs['cmap']
-    else:
-        cmap = 'jet'
-    #if 'clim' in kwargs and kwargs['clim']:
-    #    clim = kwargs['clim']
-    if 'vmin' in kwargs and kwargs['vmin']:
-        vmin = kwargs['vmin']
-    if 'vmax' in kwargs and kwargs['vmax']:
-        vmax = kwargs['vmax']
-
-    # -- plot curves
-    if 'cmap' in kwargs and kwargs['cmap']:
-        matplotlib.pyplot.imshow(tab, cmap=cmap)
-    else:
-        matplotlib.pyplot.imshow(tab, cmap=cmap)
-    if 'title' in kwargs and kwargs['title']:
-        matplotlib.pyplot.title(title)
-    else:
-        matplotlib.pyplot.imshow(tab, cmap=cmap)
-    if 'colorbar' in kwargs and kwargs['colorbar']:
-        matplotlib.pyplot.colorbar()
-
-#    if 'clim' in kwargs and kwargs['clim']:
-#        matplotlib.pyplot.clim(clim)
-    if 'vmin' in kwargs and kwargs['vmin']:
-        matplotlib.pyplot.clim(vmin, vmax)
-
-    if 'filename' in kwargs and kwargs['filename']:
-        output_file = kwargs['filename']
-        if not os.path.isabs(output_file):
-            output_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), output_file)
-        (root, ext) = os.path.splitext(output_file)
-        matplotlib.pyplot.savefig(root + '_plot' + ext, format=ext[1:])
-        matplotlib.pyplot.close()
-    else:
-        matplotlib.pyplot.show()
-        matplotlib.pyplot.close()
-
-    matplotlib.pyplot.close(fig)
-
-    return
+def _plot_solution(u, chi, suffix):
+    """On représente le champ et la répartition avec les noms de fichiers du support."""
+    state = "initial" if suffix == "0" else "final"
+    for values, title, filename in ((np.real(u), "Partie réelle du champ "+state, f"fig_u{suffix}_re.jpg"),
+                                    (np.imag(u), "Partie imaginaire du champ "+state, f"fig_u{suffix}_im.jpg"),
+                                    (chi, "Répartition initiale" if suffix == "0" else "Répartition finale", f"fig_chi{suffix}_re.jpg")):
+        myimshow(values, title=title, colorbar=True, vmin=-1, vmax=1, filename=filename)
 
 
 def _plot_uncontroled_solution(u, chi):
-#def _plot_uncontroled_solution(x_plot, y_plot, x, y, u, chi):
-
-    myimshow(numpy.real(u), title=r'$\operatorname{Re}(u_{0})$ in $\Omega$', colorbar='colorbar', cmap='jet', vmin=-1, vmax=1, filename='fig_u0_re.jpg')
-    myimshow(numpy.imag(u), title=r'$\operatorname{Im}(u_{0})$ in $\Omega$', colorbar='colorbar', cmap='jet', vmin=-1, vmax=1, filename='fig_u0_im.jpg')
-    myimshow(chi, title=r'$\chi_{0}$ in $\Omega$', colorbar='colorbar', cmap='jet', vmin=-1, vmax=1, filename='fig_chi0_re.jpg')
-    # k_begin = 0
-    # k_end = len(x) - 1
-    # for k in range(k_begin, k_end):
-    #     x_plot[k] = k
-    #     y_plot[k] = chi[int(y[k]), int(x[k])]
-    # matplotlib.pyplot.plot(x_plot, y_plot)
-    # matplotlib.pyplot.title('$\chi_{0}$ in $\Omega$')
-    # matplotlib.pyplot.show()
-
-    return
+    """On représente le champ initial et le matériau."""
+    _plot_solution(u, chi, "0")
 
 
 def _plot_controled_solution(u, chi):
-#def _plot_controled_solution(x_plot, y_plot, x, y, u, chi):
-
-    myimshow(numpy.real(u), title=r'$\operatorname{Re}(u_{n})$ in $\Omega$', colorbar='colorbar', cmap='jet', vmin=-1, vmax=1, filename='fig_un_re.jpg')
-    myimshow(numpy.imag(u), title=r'$\operatorname{Im}(u_{n})$ in $\Omega$', colorbar='colorbar', cmap='jet', vmin=-1, vmax=1, filename='fig_un_im.jpg')
-    myimshow(chi, title=r'$\chi_{n}$ in $\Omega$', colorbar='colorbar', cmap='jet', vmin=-1, vmax=1, filename='fig_chin_re.jpg')
-    # k_begin = 0
-    # k_end = len(x) - 1
-    # for k in range(k_begin, k_end):
-    #     x_plot[k] = k
-    #     y_plot[k] = chi[int(y[k]), int(x[k])]
-    # matplotlib.pyplot.plot(x_plot, y_plot)
-    # matplotlib.pyplot.title('$\chi_{n}$ in $\Omega$')
-    # matplotlib.pyplot.show()
-
-    return
+    """On représente le champ final et le matériau."""
+    _plot_solution(u, chi, "n")
 
 
 def _plot_error(err):
-
-    myimshow(numpy.real(err), title=r'$\operatorname{Re}(u_{n}-u_{0})$ in $\Omega$', colorbar='colorbar', cmap='jet', vmin = -1, vmax = 1, filename='fig_err_real.jpg')
-    myimshow(numpy.imag(err), title=r'$\operatorname{Im}(u_{n}-u_{0})$ in $\Omega$', colorbar='colorbar', cmap='jet', vmin = -1, vmax = 1, filename='fig_err.jpg')
-
-    return
-
-def _plot_energy_history(energy):
-    """On trace le énergie J pendant la descente puis après le passage en binaire."""
-    values = numpy.asarray(energy).ravel()
-    matplotlib.pyplot.plot(values[:-1], label="Descente continue")
-    last = len(values) - 2
-    matplotlib.pyplot.plot([last, last], [values[-2], values[-1]], ":", color="tab:orange")
-    matplotlib.pyplot.scatter(last, values[-1], marker="s", color="tab:orange",
-                              label="Répartition finale binaire", zorder=3)
-    matplotlib.pyplot.title("Descente et répartition finale du matériau")
-    matplotlib.pyplot.xlabel("Étape acceptée de la descente")
-    matplotlib.pyplot.ylabel("Critère d'énergie")
-    matplotlib.pyplot.legend()
-    filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fig_energy_real.jpg')
-    matplotlib.pyplot.savefig(filename)
-    matplotlib.pyplot.close()
-    return
+    """On représente les différences entre les deux champs."""
+    myimshow(np.real(err), title="Différence des parties réelles", colorbar=True, filename="fig_err_real.jpg")
+    myimshow(np.imag(err), title="Différence des parties imaginaires", colorbar=True, filename="fig_err.jpg")
 
 
-def plot_rer_b_frequency_sweep(results, source, output_dir=None):
-    """On trace la source choisie et le énergie J en fonction de la fréquence."""
-    if output_dir is None:
-        output_dir = os.path.dirname(os.path.abspath(__file__))
-
-    # On crée le dossier demandé avant d’enregistrer les figures.
-    os.makedirs(output_dir, exist_ok=True)
-    frequencies = results["frequencies_hz"]
-
-    # On trace le spectre au-delà des fréquences simulées sans résoudre Helmholtz.
-    spectrum_frequencies = numpy.linspace(0.0, 3500.0, 701)
-    spectrum_amplitudes = numpy.array([
-        source(0.0, 2.0 * numpy.pi * frequency) for frequency in spectrum_frequencies
-    ])
-    fig, ax = matplotlib.pyplot.subplots(figsize=(10.8, 3.6))
-    ax.plot(spectrum_frequencies, spectrum_amplitudes)
-    ax.axvspan(frequencies[0], frequencies[-1], color="gray", alpha=0.15,
-               label="Fréquences calculées")
-    ax.set_xlim(0.0, 3500.0)
-    ax.set_xlabel("Fréquence (Hz)")
-    ax.set_ylabel("Amplitude relative")
-    ax.set_title("Amplitude de la source choisie")
+def _plot_energy_history(energy, binary_energy=None):
+    """On représente l'énergie calculée et le résultat binaire lorsqu'il est fourni."""
+    values = np.asarray(energy).ravel()
+    fig, ax = plt.subplots(figsize=(8, 4), constrained_layout=True)
+    ax.plot(np.arange(len(values)), values, label="Critère de descente")
+    if binary_energy is not None:
+        ax.plot(len(values)-1, binary_energy, "kx", ms=9, label="Après binarisation")
+    ax.set(xlabel="Étape", ylabel="Énergie J", title="Évolution du critère")
     ax.legend()
-    ax.grid(True)
-    fig.tight_layout()
-    fig.savefig(os.path.join(output_dir, "fig_rer_b_spectre.png"), dpi=150)
-    matplotlib.pyplot.close(fig)
-
-    fig, ax = matplotlib.pyplot.subplots(figsize=(10.8, 3.6))
-    ax.plot(frequencies, results["energies"], marker="o", markersize=3)
-    ax.set_xlabel("Fréquence (Hz)")
-    ax.set_ylabel("Énergie acoustique numérique")
-    ax.set_title("Énergie du domaine selon la fréquence")
-    ax.grid(True)
-    fig.tight_layout()
-    fig.savefig(os.path.join(output_dir, "fig_rer_b_energie.png"), dpi=150)
-    matplotlib.pyplot.close(fig)
-    return
+    ax.grid(alpha=.25)
+    _save(fig, Path(__file__).resolve().parent, "fig_energy_real.jpg")
 
 
-def plot_porous_materials(results, output_dir=None):
-    """On trace et on enregistre les coefficients des matériaux comparés."""
-    output_dir = Path(__file__).resolve().parent / "resultats_materiaux_validation" if output_dir is None else Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    frequencies = results["frequencies"]
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
-    columns, names = [frequencies], ["frequency_hz"]
-    for name in results["material_names"]:
-        alphas = results["alphas"][name]
-        axes[0].plot(frequencies, alphas.real, label=name.replace("_", " ").title())
-        axes[1].plot(frequencies, alphas.imag, label=name.replace("_", " ").title())
-        columns.extend((alphas.real, alphas.imag))
-        names.extend((name + "_alpha_real", name + "_alpha_imag"))
-    for ax, title in zip(axes, ("Partie réelle du coefficient de Robin", "Partie imaginaire du coefficient de Robin")):
-        ax.set(xlabel="Fréquence (Hz)", ylabel="Coefficient de Robin", title=title)
-        ax.grid(alpha=0.3)
-        ax.legend(fontsize=8)
-    fig.tight_layout()
-    fig.savefig(output_dir / "fig_comparaison_materiaux.jpg", dpi=160)
-    plt.close(fig)
-    np.savetxt(output_dir / "comparaison_materiaux.csv", np.column_stack(columns), delimiter=",", header=",".join(names), comments="")
-
-
-def plot_sommerfeld_comparison(results, output_dir=None):
-    """On trace les réponses des trois parois et les références continues."""
-    output_dir = Path(__file__).resolve().parent / "resultats_materiaux_validation" if output_dir is None else Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    frequencies, energies, theory = results["frequencies"], results["energies"], results["theory"]
-    fig, ax = plt.subplots(figsize=(9, 4.8))
-    for j, label in enumerate(("Paroi réfléchissante", "Sortie ouverte discrète", "Matériau sélectionné")):
-        ax.semilogy(frequencies, energies[:, j], label=label)
-    ax.semilogy(frequencies, theory[:, 0], "k--", label="Sortie ouverte continue")
-    ax.semilogy(frequencies, theory[:, 1], color="gray", linestyle=":", label="Paroi réfléchissante continue")
-    ax.set(xlabel="Fréquence (Hz)", ylabel="Énergie J", title="Réponse du domaine rectangulaire selon sa paroi")
-    ax.grid(alpha=0.3)
-    ax.legend(fontsize=8)
-    fig.tight_layout()
-    fig.savefig(output_dir / "fig_sommerfeld_vs_reflexif.jpg", dpi=160)
-    plt.close(fig)
-    np.savetxt(output_dir / "comparaison_parois.csv", np.column_stack((frequencies, energies, theory)), delimiter=",", header="frequency_hz,J_reflecting,J_open,J_material,J_open_continuous,J_reflecting_continuous", comments="")
-
-
-def plot_boundary_depth_dependence(results, output_dir=None):
-    """On montre la dépendance du énergie J à la profondeur pour une aire fixée."""
-    output_dir = Path(__file__).resolve().parent/"resultats_materiaux_validation" if output_dir is None else Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    fig, ax = plt.subplots(figsize=(9, 4.2), constrained_layout=True)
-    ax.semilogy(results["depths"], results["open"], label="Sortie ouverte", linewidth=2)
-    ax.semilogy(results["depths"], results["reflecting"], label="Paroi réfléchissante", linewidth=2)
-    ax.set(xlabel="Profondeur du rectangle (m)", ylabel="Énergie J du modèle continu", title=f"Variation de la forme à aire unitaire, {results['frequency_hz']:g} Hz")
-    ax.tick_params(labelsize=11)
-    ax.grid(alpha=.3, which="both")
-    ax.legend(fontsize=12)
-    fig.savefig(output_dir/"fig_cout_profondeur_rectangle.jpg", dpi=160)
-    plt.close(fig)
-    np.savetxt(output_dir/"cout_profondeur_rectangle.csv", np.column_stack([results["depths"], results["widths"], results["open"], results["reflecting"]]), delimiter=",", header="depth_m,width_m,J_open,J_reflecting", comments="")
-
-
-def plot_gradient_validation(results, output_dir=None):
-    """On trace la comparaison des gradients et l'effet de la perturbation."""
-    output_dir = Path(__file__).resolve().parent / "resultats_materiaux_validation" if output_dir is None else Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
-    axes[0].plot(results["adjoint"], "o-", label="Adjoint")
-    axes[0].plot(results["finite_difference"], "x--", label="Différences finies")
-    axes[0].set(xlabel="Point du bord testé", ylabel="Dérivée de l’énergie J", title="Comparaison des dérivées")
-    axes[0].legend()
-    axes[1].loglog(results["steps"], np.maximum(results["errors"], 1e-16), "o-")
-    axes[1].set(xlabel="Perturbation de la densité", ylabel="Erreur relative", title="Influence de la perturbation")
-    for ax in axes:
-        ax.grid(alpha=0.3)
-    fig.tight_layout()
-    fig.savefig(output_dir / "fig_validation_gradient_adjoint.jpg", dpi=160)
-    plt.close(fig)
-    np.savetxt(output_dir / "validation_gradient.csv", np.column_stack((results["chosen_nodes"], results["adjoint"], results["finite_difference"])), delimiter=",", header="row,col,adjoint_derivative,finite_difference_derivative", comments="")
-
-
-def plot_spectra_and_single_frequency_placement(study_results, output_dir=None):
-    """On trace les spectres et les placements à une fréquence puis on conserve leurs données."""
-    if study_results is None:
-        return None
-    OUTPUT_DIR = str(Path(__file__).resolve().parent / "resultats_monofrequence" if output_dir is None else output_dir)
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    freqs = study_results["frequencies"]
-    full, initial = study_results["full"], study_results["initial"]
-    results = study_results["optimizations"]
-    levels, domains = study_results["levels"], study_results["domains"]
-    maxima = study_results["maxima"]
-    N = study_results["N"]
-    M = 2 * N
-    spacestep, V_obj = study_results["spacestep"], study_results["volume_fraction"]
-
-    fig, ax = plt.subplots(figsize=(9, 4.5))
-    ax.plot(freqs, full[0], label="Mur plan entièrement garni")
-    ax.plot(maxima[0][1], maxima[0][3], "ro", label="Maxima locaux échantillonnés")
-    ax.set(xlabel="Fréquence (Hz)", ylabel="Énergie J", title="Spectre du mur plan")
-    ax.grid(alpha=0.3)
-    ax.legend()
-    fig.tight_layout()
-    fig.savefig(os.path.join(OUTPUT_DIR, "fig_mur_plan_absorbant_maxima.jpg"), dpi=160)
-    plt.close(fig)
-
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
-    for level in levels:
-        axes[0].plot(freqs, full[level], label=f"Niveau {level}")
-        axes[1].semilogy(freqs, full[level], label=f"Niveau {level}")
-        for ax in axes:
-            ax.plot(maxima[level][1], maxima[level][3], ".")
-    for ax in axes:
-        ax.set(xlabel="Fréquence (Hz)", ylabel="Énergie J")
-        ax.grid(alpha=0.3, which="both")
-        ax.legend()
-    axes[0].set_title("Échelle linéaire")
-    axes[1].set_title("Échelle logarithmique")
-    fig.suptitle("Spectres des différentes formes de murs entièrement garnis")
-    fig.tight_layout()
-    fig.savefig(os.path.join(OUTPUT_DIR, "fig_comparaison_formes_fractales.jpg"), dpi=160)
-    plt.close(fig)
-
-    fig, axes = plt.subplots(1, 3, figsize=(13, 4))
-    for ax, level in zip(axes, (0, 1, 2)):
-        ax.semilogy(freqs, initial[level], "--", label=f"Densité initiale, {V_obj:.0%}")
-        ax.semilogy(freqs, full[level], label="Mur entièrement garni")
-        ax.set(title=f"Niveau {level}", xlabel="Fréquence (Hz)", ylabel="Énergie J")
-        ax.grid(alpha=0.3, which="both")
-        ax.legend(fontsize=8)
-    fig.tight_layout()
-    fig.savefig(os.path.join(OUTPUT_DIR, "fig_repartition_partielle_et_complete.jpg"), dpi=160)
-    plt.close(fig)
-
-    fig, axes = plt.subplots(2, 3, figsize=(13, 8))
-    for level in (0, 1, 2):
-        ax = axes[0, level]
-        for result in results[level]:
-            line, = ax.plot(result["ene_hist"], label=f'{result["f_target"]:.0f} Hz, continu')
-            ax.plot(len(result["ene_hist"]) - 1, result["J_opt"], "x", color=line.get_color(),
-                    label=f'{result["f_target"]:.0f} Hz, binaire')
-        ax.set(title=f"Niveau {level}", xlabel="Itération acceptée", ylabel="Énergie J")
-        ax.grid(alpha=0.3)
-        ax.legend(fontsize=8)
-    # On compare les deux champs avec la même échelle de couleurs.
-    result, domain = results[2][0], domains[2]
-    extent = [-spacestep / 2, (N - .5) * spacestep, (M - .5) * spacestep, -spacestep / 2]
-    vmax = max(np.max(np.abs(result["u0"])), np.max(np.abs(result["u_opt"])))
-    ymax = (np.max(np.where(domain == _env.NODE_ROBIN)[0]) + 2) * spacestep
-    for ax, field, title in zip(axes[1, :2], (result["u0"], result["u_opt"]), ("Champ initial", "Champ après placement binaire")):
-        image = ax.imshow(np.ma.masked_where(domain != _env.NODE_INTERIOR, np.abs(field)),
-                          extent=extent, origin="upper", vmin=0, vmax=vmax, cmap="magma")
-        ax.set(title=title, xlabel="Position horizontale (m)", ylabel="Distance à la source (m)", ylim=(ymax, 0))
-        fig.colorbar(image, ax=ax, label="Module du champ")
-    rows, cols = np.where(domain == _env.NODE_ROBIN)
-    scatter = axes[1, 2].scatter(cols * spacestep, rows * spacestep,
-                                 c=result["chi_opt"][rows, cols], cmap="viridis", vmin=0, vmax=1, s=12)
-    axes[1, 2].set(title=f'Placement, niveau 2, {result["f_target"]:.0f} Hz',
-                   xlabel="Position horizontale (m)", ylabel="Distance à la source (m)")
-    axes[1, 2].invert_yaxis()
-    axes[1, 2].set_aspect("equal")
-    fig.colorbar(scatter, ax=axes[1, 2], label="Point garni ou nu")
-    fig.suptitle("Optimisations à une fréquence et énergie J après passage au placement binaire")
-    fig.tight_layout()
-    fig.savefig(os.path.join(OUTPUT_DIR, "fig_optimisation_monofrequence.jpg"), dpi=160)
-    plt.close(fig)
-
-    np.savez(os.path.join(OUTPUT_DIR, "data_monofrequence.npz"), **study_results["data"])
-    plot_single_frequency_details(study_results, OUTPUT_DIR)
-    plot_wall_geometries(study_results)
-    return OUTPUT_DIR
-
-
-def plot_multifrequency_placement_and_coverage(study_results, output_dir=None):
-    """On trace les placements multifréquences et l’effet de la quantité de matériau."""
-    if study_results is None:
-        return None
-    OUTPUT_DIR = str(Path(__file__).resolve().parent / "resultats_multifrequence" if output_dir is None else output_dir)
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    freqs, studies = study_results["frequencies"], study_results["studies"]
-    V_obj = study_results["data"]["volume_fraction"]
-
-    fig, axes = plt.subplots(1, 3, figsize=(13, 4.5))
-    for ax, level in zip(axes, (0, 1, 2)):
-        study = studies[level]
-        ax.semilogy(freqs, study["initial"], "--", label=f"Densité initiale, {V_obj:.0%}")
-        ax.semilogy(freqs, study["full"], color="black", label="Mur entièrement garni")
-        for index, spectrum in zip(study["mono_targets"], study["mono_spectra"]):
-            line, = ax.semilogy(freqs, spectrum, label=f"Placement à {freqs[index]:.0f} Hz")
-            ax.plot(freqs[index], spectrum[index], "o", color=line.get_color())
-        ax.set(title=f"Niveau {level}", xlabel="Fréquence (Hz)", ylabel="Énergie J")
-        ax.grid(alpha=0.3, which="both")
-        ax.legend(fontsize=7)
-    fig.suptitle("Spectres des placements binaires optimisés à une seule fréquence")
-    fig.tight_layout()
-    fig.savefig(os.path.join(OUTPUT_DIR, "fig_spectres_placements_monofrequence.jpg"), dpi=160)
-    plt.close(fig)
-
-    fig, axes = plt.subplots(2, 3, figsize=(13, 8))
-    for level in (0, 1, 2):
-        study = studies[level]
-        ax = axes[0, level]
-        for column, index in enumerate(study["multi_targets"]):
-            ax.plot(study["multi_history_frequencies"][:, column], alpha=.65,
-                    label=f"{freqs[index]:.0f} Hz")
-        ax.plot(study["multi_history"], "k--", label="Moyenne continue")
-        ax.plot(len(study["multi_history"]) - 1,
-                np.mean(study["multi_spectrum"][study["multi_targets"]]), "kx", label="Placement binaire")
-        ax.set(title=f"Niveau {level}", xlabel="Itération acceptée", ylabel="Énergie J")
-        ax.grid(alpha=0.3)
-        ax.legend(fontsize=7)
-        ax = axes[1, level]
-        ax.semilogy(freqs, study["initial"], "--", label="Densité initiale")
-        for index, spectrum in zip(study["mono_targets"], study["mono_spectra"]):
-            ax.semilogy(freqs, spectrum, alpha=.65, label=f"Une fréquence, {freqs[index]:.0f} Hz")
-        ax.semilogy(freqs, study["multi_spectrum"], lw=2, label="Plusieurs fréquences")
-        ax.semilogy(freqs, study["full"], color="black", label="Mur entièrement garni")
-        ax.set(xlabel="Fréquence (Hz)", ylabel="Énergie J")
-        ax.grid(alpha=0.3, which="both")
-        ax.legend(fontsize=7)
-    fig.suptitle("Optimisation commune à plusieurs fréquences et spectres des placements binaires")
-    fig.tight_layout()
-    fig.savefig(os.path.join(OUTPUT_DIR, "fig_optimisation_multifrequence.jpg"), dpi=160)
-    plt.close(fig)
-
-    fig, axes = plt.subplots(2, 3, figsize=(13, 7))
-    for level in (0, 1, 2):
-        study = studies[level]
-        percentages = 100 * study["actual_volumes"]
-        for ax, costs, full_cost, title in (
-            (axes[0, level], study["volume_mono_costs"], study["full"][study["volume_mono_index"]],
-             f'Une fréquence, {freqs[study["volume_mono_index"]]:.0f} Hz'),
-            (axes[1, level], study["volume_multi_costs"], np.mean(study["full"][study["multi_targets"]]),
-             "Plusieurs fréquences"),
-        ):
-            ax.plot(percentages, costs, "o-", label="Placements binaires")
-            ax.axhline(full_cost, color="black", ls="--", label="Mur entièrement garni")
-            best = np.argmin(costs)
-            ax.plot(percentages[best], costs[best], "r*", ms=10, label="Minimum testé")
-            ax.set(xlabel="Part du mur garnie (%)", ylabel="Énergie J")
-            ax.set_title(f"Niveau {level} — {title}", fontsize=10)
-            ax.grid(alpha=.3)
-            ax.legend(fontsize=7)
-    fig.suptitle("Énergies J des placements binaires en fonction de la quantité de matériau")
-    fig.tight_layout()
-    fig.savefig(os.path.join(OUTPUT_DIR, "fig_cout_quantite_absorbant.jpg"), dpi=160)
-    plt.close(fig)
-
-    np.savez(os.path.join(OUTPUT_DIR, "data_multifrequence.npz"), **study_results["data"])
-    plot_multifrequency_details(study_results, OUTPUT_DIR)
-    plot_coverage_details(study_results, OUTPUT_DIR)
-    return OUTPUT_DIR
-
-
-def plot_absorber_configuration_comparison(results, output_dir=None):
-    """On présente les répartitions, les profils incidents et les candidats comparés."""
-    output_dir = Path(__file__).resolve().parent / "resultats_comparaison_dispositifs" if output_dir is None else Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    frequencies, domain = results["frequencies"], results["domain"]
-    N, h = results["N"], results["spacestep"]
-    M = 2 * N
-    binary = results["binary"]
-    robin = domain == _env.NODE_ROBIN
-    rows, cols = np.where(robin)
-    deep = rows >= N
-
-    # On présente les énergies J avant et après le passage à une répartition binaire.
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4.7))
-    for key, label in (
-        ("initial_costs", "Répartition initiale"),
-        ("continuous_costs", "Répartition continue optimisée"),
-        ("binary_costs", "Répartition binaire"),
-        ("mixed_costs", "Répartition binaire mixte testée"),
-        ("full_costs", "Paroi entièrement garnie"),
-    ):
-        axes[0].semilogy(frequencies, results[key], label=label)
-    axes[0].set(xlabel="Fréquence (Hz)", ylabel="Énergie J", title="Énergies J des répartitions de matériau")
-    axes[0].grid(alpha=0.3)
-    axes[0].legend(fontsize=7)
-    selected = binary[robin] > 0.5
-    axes[1].scatter(cols[~selected] * h, rows[~selected] * h, c="gray", marker="s", s=9, label="Paroi non garnie")
-    axes[1].scatter(cols[selected & ~deep] * h, rows[selected & ~deep] * h, c="tab:blue", s=11, label="Matériau sélectionné")
-    axes[1].scatter(cols[selected & deep] * h, rows[selected & deep] * h, c="tab:orange", s=11, label=results["alternative_material"].replace("_", " ").title())
-    axes[1].set(xlabel="Position horizontale (m)", ylabel="Profondeur (m)", title="Répartition mixte testée")
-    axes[1].invert_yaxis()
-    axes[1].set_aspect("equal")
-    axes[1].legend(fontsize=7)
-    fig.tight_layout()
-    fig.savefig(output_dir / "fig_repartitions_binaire_et_mixte.jpg", dpi=160)
-    plt.close(fig)
-    np.savetxt(output_dir / "comparaison_repartitions.csv", np.column_stack((frequencies, results["initial_costs"], results["continuous_costs"], results["binary_costs"], results["mixed_costs"], results["full_costs"])), delimiter=",", header="frequency_hz,J_initial,J_continuous,J_binary,J_mixed,J_full", comments="")
-
-    # On utilise la même échelle de couleurs pour les deux champs d'un profil donné.
-    fig, axes = plt.subplots(2, 3, figsize=(11, 7.5))
-    exterior = domain == _env.NODE_COMPLEMENTARY
-    for col, profile in enumerate(results["profile_fields"]):
-        first_map = np.where(exterior, np.nan, np.abs(profile["initial"]))
-        second_map = np.where(exterior, np.nan, np.abs(profile["binary"]))
-        maximum = max(np.nanmax(first_map), np.nanmax(second_map), 1e-14)
-        fields = ((first_map, profile["initial_cost"], "Initiale"), (second_map, profile["binary_cost"], "Binaire"))
-        for row, (values, cost, title) in enumerate(fields):
-            image = axes[row, col].imshow(values, vmin=0.0, vmax=maximum, cmap="magma", extent=(0, N * h, M * h, 0))
-            axes[row, col].set(title=f"{profile['name']}\n{title}, énergie J = {cost:.4g}", xlabel="Position horizontale (m)")
-            axes[row, col].set_ylim(1.4, 0.0)
-            fig.colorbar(image, ax=axes[row, col], fraction=0.046)
-    axes[0, 0].set_ylabel("Profondeur (m)")
-    axes[1, 0].set_ylabel("Profondeur (m)")
-    fig.suptitle(f"Réponses à différents profils incidents à {results['profile_frequency']:g} Hz")
-    fig.tight_layout()
-    fig.savefig(output_dir / "fig_comparaison_profils_sources.jpg", dpi=160)
-    plt.close(fig)
-    with (output_dir / "robustesse_sources.csv").open("w", newline="", encoding="utf-8") as stream:
-        writer = csv.writer(stream)
-        writer.writerow(("profile", "J_initial", "J_binary"))
-        writer.writerows(results["source_costs"])
-
-    # On indique aussi la quantité discrète de matériau employée par chaque candidat.
-    candidates = results["candidates"]
-    with (output_dir / "tableau_synthese_produits.csv").open("w", newline="", encoding="utf-8") as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(candidates[0]))
-        writer.writeheader()
-        writer.writerows(candidates)
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4.9))
-    labels = [f"Niveau {candidate['level']}\n{candidate['material'].replace('_', ' ').title()}" for candidate in candidates]
-    positions = np.arange(len(candidates))
-    axes[0].bar(positions, [item["J_band_mean"] for item in candidates], label="Répartition binaire")
-    axes[0].plot(positions, [item["J_full_band_mean"] for item in candidates], "o--", label="Paroi entièrement garnie")
-    axes[0].set(ylabel="Énergie J moyenne sur la bande", title="Comparaison des configurations pour le RER B")
-    axes[0].legend(fontsize=8)
-    axes[1].bar(positions, [item["covered_nodes"] for item in candidates], color="tab:orange")
-    axes[1].set(ylabel="Nombre de points garnis", title="Quantité discrète de matériau utilisée")
-    for ax in axes:
-        ax.set_xticks(positions, labels, rotation=50, ha="right", fontsize=7)
-        ax.grid(axis="y", alpha=0.3)
-    fig.tight_layout()
-    fig.savefig(output_dir / "fig_comparaison_dispositifs_resonics.jpg", dpi=160)
-    plt.close(fig)
-    plot_source_profile_costs(results, output_dir)
-    np.savez(output_dir / "data_comparaison_dispositifs.npz", frequencies=frequencies, domain=domain,
-             chi_initial=results["initial"], chi_continuous=results["continuous"], chi_binary=binary,
-             initial_costs=results["initial_costs"], continuous_costs=results["continuous_costs"],
-             binary_costs=results["binary_costs"], mixed_costs=results["mixed_costs"], full_costs=results["full_costs"],
-             target_indices=results["target_indices"], history=results["history"], N=N,
-             source_name=results["source_name"], material_parameters=results["material_parameters"],
-             sound_speed_m_s=results["sound_speed_m_s"], iterations_requested=results["iterations_requested"],
-             volume_fraction=results["volume_fraction"])
-
-
-def plot_single_frequency_details(study_results, output_dir=None):
-    """On présente les historiques, les champs et le placement à une fréquence."""
-    if study_results is None:
-        return None
-    output_dir = Path(__file__).resolve().parent / "resultats_monofrequence" if output_dir is None else Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    optimizations = study_results["optimizations"]
-
-    # On distingue les énergies J continus et les énergies J mesurés après le tri binaire.
-    fig, axes = plt.subplots(1, 3, figsize=(13.5, 4.5), constrained_layout=True)
-    for ax, level in zip(axes, (0, 1, 2)):
-        for result in optimizations[level]:
-            history = np.asarray(result["ene_hist"]).ravel()
-            iterations = np.arange(len(history))
-            frequency = result["f_target"]
-            line, = ax.plot(iterations, history, linewidth=2,
-                            label=f"Continu, {frequency:g} Hz")
-            ax.plot(iterations[-1], result["J_opt"], "x", markersize=9,
-                    markeredgewidth=2, color=line.get_color(),
-                    label=f"Binaire, {frequency:g} Hz")
-        ax.set_title(f"Niveau {level}", fontsize=13)
-        ax.set_xlabel("Itération acceptée", fontsize=12)
-        ax.set_ylabel("Énergie J", fontsize=12)
-        ax.tick_params(labelsize=11)
-        ax.grid(alpha=0.3)
-        ax.legend(fontsize=11)
-    fig.savefig(output_dir / "fig_historiques_monofrequence.jpg", dpi=150, bbox_inches="tight")
-    plt.close(fig)
-
-    # On utilise la même échelle de couleurs pour les deux champs.
-    result = optimizations[2][0]
-    domain = study_results["domains"][2]
-    M, N = domain.shape
-    h = study_results["spacestep"]
-    interior = domain == _env.NODE_INTERIOR
-    extent = (-h / 2, (N - 0.5) * h, (M - 0.5) * h, -h / 2)
-    ymax = (np.max(np.where(domain == _env.NODE_ROBIN)[0]) + 2) * h
-    maximum = max(np.max(np.abs(result["u0"][interior])),
-                  np.max(np.abs(result["u_opt"][interior])), 1e-14)
-    fig, axes = plt.subplots(1, 3, figsize=(13.5, 4.5), constrained_layout=True)
-    for ax, field, title in zip(axes[:2], (result["u0"], result["u_opt"]),
-                                ("Champ initial", "Champ après tri binaire")):
-        values = np.ma.masked_where(~interior, np.abs(field))
-        image = ax.imshow(values, extent=extent, origin="upper", cmap="magma",
-                          vmin=0, vmax=maximum, interpolation="nearest")
-        ax.set_title(title, fontsize=13)
-        colorbar = fig.colorbar(image, ax=ax, fraction=0.046, pad=0.025)
-        colorbar.set_label("Module du champ", fontsize=11)
-        colorbar.ax.tick_params(labelsize=11)
-
-    # On repère les points garnis sur le contour du domaine.
-    axes[2].imshow(np.ma.masked_where(~interior, np.full(domain.shape, 0.93)),
-                   extent=extent, origin="upper", cmap="gray", vmin=0, vmax=1,
-                   interpolation="nearest")
-    rows, cols = np.where(domain == _env.NODE_ROBIN)
-    scatter = axes[2].scatter(cols * h, rows * h, c=result["chi_opt"][rows, cols],
-                              cmap="viridis", vmin=0, vmax=1, s=15)
-    axes[2].set_title("Placement binaire", fontsize=13)
-    colorbar = fig.colorbar(scatter, ax=axes[2], fraction=0.046, pad=0.025, ticks=[0, 1])
-    colorbar.ax.set_yticklabels(["Nu", "Garni"], fontsize=11)
-    for ax in axes:
-        ax.set_xlabel("Position horizontale (m)", fontsize=12)
-        ax.set_ylabel("Distance à la source (m)", fontsize=12)
-        ax.set_xlim(-h / 2, (N - 0.5) * h)
-        ax.set_ylim(ymax, 0)
-        ax.tick_params(labelsize=11)
-        ax.set_aspect("equal")
-    fig.suptitle(f"Champs et placement à {result['f_target']:g} Hz — niveau 2", fontsize=14)
-    fig.savefig(output_dir / "fig_champs_placement_monofrequence.jpg", dpi=150, bbox_inches="tight")
-    plt.close(fig)
-    return str(output_dir)
-
-
-def plot_multifrequency_details(study_results, output_dir=None):
-    """On présente la descente multifréquence et le spectre du placement obtenu."""
-    if study_results is None:
-        return None
-    output_dir = Path(__file__).resolve().parent / "resultats_multifrequence" if output_dir is None else Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    frequencies = np.asarray(study_results["frequencies"])
-    study = study_results["studies"][2]
-    targets = np.asarray(study["multi_targets"], dtype=int)
-    history = np.asarray(study["multi_history"]).ravel()
-    iterations = np.arange(len(history))
-
-    # On montre les énergies J individuels et la moyenne utilisée pendant la descente.
-    fig, ax = plt.subplots(figsize=(8.5, 4.5), constrained_layout=True)
-    for column, index in enumerate(targets):
-        ax.plot(iterations, study["multi_history_frequencies"][:, column],
-                linewidth=1.9, alpha=0.85, label=f"{frequencies[index]:g} Hz")
-    ax.plot(iterations, history, "k--", linewidth=2.5, label="Moyenne continue")
-    ax.plot(iterations[-1], np.mean(study["multi_spectrum"][targets]), "kx",
-            markersize=10, markeredgewidth=2, label="Moyenne après tri binaire")
-    ax.set_title("Historique multifréquence — niveau 2", fontsize=14)
-    ax.set_xlabel("Itération acceptée", fontsize=12)
-    ax.set_ylabel("Énergie J", fontsize=12)
-    ax.tick_params(labelsize=11)
-    ax.grid(alpha=0.3)
-    ax.legend(fontsize=11)
-    fig.savefig(output_dir / "fig_historique_multifrequence.jpg", dpi=150, bbox_inches="tight")
-    plt.close(fig)
-
-    # On évalue les différents placements sur la même bande de fréquences.
-    fig, ax = plt.subplots(figsize=(8.5, 4.5), constrained_layout=True)
-    ax.semilogy(frequencies, study["initial"], "--", color="gray", linewidth=1.8,
-                label="Répartition initiale")
-    for index, spectrum in zip(study["mono_targets"], study["mono_spectra"]):
-        ax.semilogy(frequencies, spectrum, linewidth=1.8,
-                    label=f"Placement à {frequencies[index]:g} Hz")
-    ax.semilogy(frequencies, study["multi_spectrum"], linewidth=2.5,
-                label="Placement multifréquence")
-    ax.semilogy(frequencies, study["full"], color="black", linewidth=1.8,
-                label="Mur entièrement garni")
-    ax.set_title("Spectres des placements — niveau 2", fontsize=14)
-    ax.set_xlabel("Fréquence (Hz)", fontsize=12)
-    ax.set_ylabel("Énergie J", fontsize=12)
-    ax.tick_params(labelsize=11)
-    ax.grid(alpha=0.3, which="both")
-    ax.legend(fontsize=11, loc="lower left")
-    fig.savefig(output_dir / "fig_spectre_multifrequence.jpg", dpi=150, bbox_inches="tight")
-    plt.close(fig)
-    return str(output_dir)
-
-
-
-def plot_wall_geometries(study_results, output_dir=None):
-    """On représente les domaines d'air et leurs frontières sur la même échelle."""
-    output_dir = Path(__file__).resolve().parent if output_dir is None else Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    levels = study_results["levels"]
-    h = study_results["spacestep"]
-    fig, axes = plt.subplots(1, len(levels), figsize=(12, 4.8), sharex=True, sharey=True, squeeze=False)
-    for ax, level in zip(axes.ravel(), levels):
-        domain = study_results["domains"][level]
-        M, N = domain.shape
-        air = np.ma.masked_where(domain != _env.NODE_INTERIOR, np.ones(domain.shape))
-        ax.imshow(air, extent=(-h/2, (N-.5)*h, (M-.5)*h, -h/2), cmap="Blues", vmin=0, vmax=3, interpolation="nearest")
-        rows, cols = np.where(domain == _env.NODE_ROBIN)
-        ax.scatter(cols*h, rows*h, color="tab:red", s=2, label="Paroi de Robin")
-        ax.plot([0, N*h], [0, 0], color="tab:blue", lw=2, label="Source imposée")
-        ax.set(title=f"Niveau {level}", xlabel="Position horizontale (m)", xlim=(-.03, 1.03), ylim=(1.4, -.05), aspect="equal")
-        ax.grid(alpha=.15)
-    axes[0, 0].set_ylabel("Distance à la source (m)")
-    handles, labels = axes[0, 0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="lower center", ncol=2, frameon=False)
-    fig.tight_layout(rect=(0, .15, 1, 1))
-    fig.savefig(output_dir/"fig_geometries.png", dpi=180)
+def _save(fig, folder, filename):
+    """On enregistre la figure puis on libère sa mémoire."""
+    fig.savefig(Path(folder) / filename, dpi=180)
     plt.close(fig)
 
 
-def plot_fixed_budget_comparison(results, output_dir=None):
-    """On compare les configurations binaires obtenues avec le même nombre de points garnis."""
-    output_dir = Path(__file__).resolve().parent/"resultats_comparaison_dispositifs" if output_dir is None else Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    candidates = results["candidates"]
-    positions = np.arange(len(candidates))
-    labels = [f"Niveau {c['level']}\n{c['material'].replace('_', ' ').title()}" for c in candidates]
-    means = np.array([c["J_band_mean"] for c in candidates])
-    best = int(np.argmin(means))
-    colors = ["tab:orange" if i == best else "tab:blue" for i in positions]
-    fig, ax = plt.subplots(figsize=(11, 4.8), constrained_layout=True)
-    ax.bar(positions, means, color=colors, label="Placement binaire")
-    ax.plot(positions, [c["J_full_band_mean"] for c in candidates], "ko--", label="Paroi entièrement garnie")
-    ax.set_xticks(positions, labels, rotation=35, ha="right", fontsize=10)
-    ax.set_ylabel("Énergie J moyenne sur la bande", fontsize=12)
-    ax.set_title(f"Comparaison avec {results['fixed_covered_nodes']} points garnis par configuration", fontsize=13)
-    ax.legend(fontsize=11)
-    ax.grid(axis="y", alpha=.3)
-    fig.savefig(output_dir/"fig_comparaison_budget_identique.jpg", dpi=160)
-    plt.close(fig)
-    with (output_dir/"comparaison_budget_identique.csv").open("w", newline="", encoding="utf-8") as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(candidates[0]))
-        writer.writeheader()
-        writer.writerows(candidates)
-
-
-
-def plot_coverage_details(study_results, output_dir=None):
-    """On montre l'effet de la quantité de matériau sur les critères du niveau deux."""
-    output_dir = Path(__file__).resolve().parent/"resultats_multifrequence" if output_dir is None else Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    study = study_results["studies"][2]
-    frequencies = study_results["frequencies"]
-    quantity = 100*study["actual_volumes"]
-    full = study["full"]
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4.3), constrained_layout=True)
-    cases = [(study["volume_mono_costs"], full[study["volume_mono_index"]], f"Une fréquence, {frequencies[study['volume_mono_index']]:g} Hz"),
-             (study["volume_multi_costs"], np.mean(full[study["multi_targets"]]), "Moyenne des trois cibles")]
-    for ax, (costs, reference, title) in zip(axes, cases):
-        ax.plot(quantity, costs, "o-", lw=2, label="Placements binaires")
-        ax.axhline(reference, color="black", linestyle="--", label="Mur entièrement garni")
-        best = int(np.argmin(costs))
-        ax.plot(quantity[best], costs[best], "r*", ms=13, label="Minimum testé")
-        ax.set_title(title, fontsize=13)
-        ax.set_xlabel("Points garnis (%)", fontsize=12)
-        ax.set_ylabel("Énergie J", fontsize=12)
-        ax.tick_params(labelsize=11)
-        ax.grid(alpha=.3)
-        ax.legend(fontsize=10)
-    fig.savefig(output_dir/"fig_quantite_niveau_deux.jpg", dpi=160)
-    plt.close(fig)
-
-
-def plot_source_profile_costs(results, output_dir=None):
-    """On compare les énergies J des trois profils avant et après le placement binaire."""
-    output_dir = Path(__file__).resolve().parent/"resultats_comparaison_dispositifs" if output_dir is None else Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    costs = results["source_costs"]
-    positions = np.arange(len(costs))
-    fig, ax = plt.subplots(figsize=(9.5, 4.3), constrained_layout=True)
-    ax.bar(positions-.18, [row[1] for row in costs], width=.36, label="Placement initial")
-    ax.bar(positions+.18, [row[2] for row in costs], width=.36, label="Placement binaire")
-    ax.set_xticks(positions, [row[0] for row in costs], fontsize=12)
-    ax.set_ylabel("Énergie J", fontsize=12)
-    ax.set_title(f"Effet du profil d'entrée à {results['profile_frequency']:g} Hz", fontsize=13)
-    ax.tick_params(axis="y", labelsize=11)
-    ax.grid(axis="y", alpha=.3)
-    ax.legend(fontsize=11)
-    fig.savefig(output_dir/"fig_cout_profils_sources.jpg", dpi=160)
-    plt.close(fig)
-
-
-
-
-def _spectrum_json_value(value):
-    """On convertit les tableaux et les nombres NumPy pour les fichiers JSON."""
+def _json_value(value):
+    """On convertit les valeurs numériques pour les fichiers JSON."""
     if isinstance(value, np.ndarray):
         return value.tolist()
     if isinstance(value, np.generic):
@@ -755,522 +91,308 @@ def _spectrum_json_value(value):
     return str(value)
 
 
-def _save_full_spectrum_data(result, output_dir):
-    """On conserve les paramètres, les spectres et les historiques dans des fichiers distincts."""
-    import json
-    evaluation = result["evaluation"]
-    band = result["band"]
-    frequencies = np.asarray(evaluation["frequencies_hz"], dtype=float)
-    cases = ("initial", "three_peaks", "band_continuous", "band_binary")
-    np.savetxt(
-        output_dir / "energies_frequences.csv",
-        np.column_stack([frequencies] + [evaluation[name] for name in cases]),
-        delimiter=",", header="frequency_hz,J_initial,J_three_peaks,J_band_continuous,J_band_binary", comments="",
-    )
-    width = float(band["frequencies_hz"][-1] - band["frequencies_hz"][0])
-    history = np.asarray(band["energy_history"]).ravel()
-    np.savetxt(
-        output_dir / "historique_spectre_complet.csv",
-        np.column_stack((np.arange(len(history)), history, history * width)),
-        delimiter=",", header="accepted_step,J_band_mean,J_band_integral", comments="",
-    )
-    np.savetxt(
-        output_dir / "grille_optimisation.csv",
-        np.column_stack((band["frequencies_hz"], band["weights"],
-                         np.real(band["alphas"]), np.imag(band["alphas"]))),
-        delimiter=",", header="frequency_hz,normalised_trapezoidal_weight,alpha_real,alpha_imag", comments="",
-    )
-    if evaluation.get("alphas") is not None:
-        evaluation_alphas = np.asarray(evaluation["alphas"])
-        np.savetxt(
-            output_dir / "grille_validation.csv",
-            np.column_stack((frequencies, evaluation_alphas.real, evaluation_alphas.imag)),
-            delimiter=",", header="frequency_hz,alpha_real,alpha_imag", comments="",
-        )
-    metrics = result["metrics"]
-    fields = ["configuration", "integral_J", "mean_J", "maximum_J", "frequency_max_hz", "reduction_relative"]
-    with (output_dir / "indicateurs_performances.csv").open("w", newline="", encoding="utf-8") as stream:
+def _metrics(frequencies, values):
+    """On calcule l'intégrale, la moyenne et le maximum du spectre évalué."""
+    f, values = np.asarray(frequencies), np.asarray(values)
+    area = float(np.sum(np.diff(f) * (values[:-1] + values[1:]) / 2))
+    width = float(f[-1] - f[0])
+    index = int(np.argmax(values))
+    return {"J_integral": area, "J_mean": area/width if width else float(values[0]),
+            "J_max": float(values[index]), "f_J_max_hz": float(f[index])}
+
+
+def _criterion_label(name, mode):
+    """On précise le critère effectivement pondéré pour chaque descente."""
+    if mode.get("criterion_label"):
+        return mode["criterion_label"]
+    if name == "bande":
+        total = np.sum(mode["weights"])
+        span = np.ptp(mode["frequencies_hz"])
+        if np.isclose(total, 1.):
+            return "moyenne de bande"
+        if np.isclose(total, span):
+            return "intégrale de bande"
+        return "somme pondérée sur la bande"
+    return {"mono": "énergie à la cible", "trois_pics": "somme aux trois centres", "pics_resonance": "somme aux pics repérés"}[name]
+
+
+def save_mode(mode_result, output_dir, name):
+    """On conserve les valeurs numériques d'une descente dès qu'elle est terminée."""
+    folder = Path(output_dir)
+    folder.mkdir(parents=True, exist_ok=True)
+    arrays = {}
+    for key in ("frequencies_hz", "weights", "history", "chi", "chi_relaxed", "binary_energy", "alphas", "accepted_steps"):
+        if key in mode_result and mode_result[key] is not None:
+            value = np.asarray(mode_result[key])
+            if value.dtype.kind in "biufc":
+                arrays[key] = value
+    path = folder / ("mode_"+name+".npz")
+    np.savez_compressed(path, **arrays)
+    return path
+
+
+def _save_comparison_data(results, folder):
+    """On conserve les paramètres, les spectres et les densités de chaque méthode."""
+    f = np.asarray(results["frequencies_hz"])
+    curves = {"initial": results["initial"], "full": results["full"]}
+    curves.update({name: mode["energies"] for name, mode in results["modes"].items()})
+    np.savetxt(folder/"spectres.csv", np.column_stack((f, *curves.values())), delimiter=",",
+               header="frequency_hz," + ",".join(curves), comments="")
+    arrays = {"frequencies_hz": f, "domain": results["domain"], "chi_initial": results["chi_initial"]}
+    metrics = {name: _metrics(f, values) for name, values in curves.items()}
+    initial = metrics["initial"]["J_integral"]
+    for values in metrics.values():
+        values["reduction_relative"] = 1-values["J_integral"]/initial if initial else 0.
+    modes = {}
+    for name, mode in results["modes"].items():
+        history = np.asarray(mode["history"]).ravel()
+        np.savetxt(folder/f"historique_{name}.csv", np.column_stack((np.arange(len(history)), history)),
+                   delimiter=",", header="accepted_step,J_continuous_criterion", comments="")
+        modes[name] = {key: mode[key] for key in ("frequencies_hz", "weights", "binary_energy", "accepted_steps")}
+        modes[name]["criterion_label"] = _criterion_label(name, mode)
+        for key in ("chi", "chi_relaxed", "history", "frequencies_hz", "weights", "alphas"):
+            if key in mode and mode[key] is not None:
+                arrays[name + "_" + key] = np.asarray(mode[key])
+        arrays[name + "_binary_energy"] = np.asarray(mode["binary_energy"])
+    arrays.update({"J_"+name: np.asarray(values) for name, values in curves.items()})
+    fm = np.asarray(results.get("material_frequencies_hz", f))
+    arrays["material_frequencies_hz"] = fm
+    for name, material in results.get("materials", {}).items():
+        alphas = np.asarray(material["alphas"])
+        columns, headers = [fm, alphas.real, alphas.imag], ["frequency_hz", "alpha_real", "alpha_imag"]
+        arrays[name + "_alphas"] = alphas
+        for level, values in material["full"].items():
+            columns.append(values)
+            headers.append("J_full_level"+str(level))
+            arrays[f"{name}_full_level{level}"] = np.asarray(values)
+        np.savetxt(folder/f"materiau_{name}.csv", np.column_stack(columns), delimiter=",", header=",".join(headers), comments="")
+    if results.get("quantities"):
+        q = results["quantities"]
+        arrays["quantity_fractions"], arrays["quantity_energies"] = np.asarray(q["fractions"]), np.asarray(q["energies"])
+        np.savetxt(folder/"quantites.csv", np.column_stack((q["fractions"], q["energies"])), delimiter=",", header="fraction,J_three_centres_binary", comments="")
+    np.savez_compressed(folder/"resultats_comparaisons.npz", **arrays)
+    for name, value in (("parametres", results["parameters"]), ("criteres_modes", modes), ("indicateurs", metrics),
+                        ("controle_frequences", results.get("sampling_history", [])), ("controle_gradient", results.get("gradient_check", {}))):
+        (folder/(name+".json")).write_text(json.dumps(value, ensure_ascii=False, indent=2, default=_json_value)+"\n", encoding="utf-8")
+    fields = ["configuration"]+list(next(iter(metrics.values())))
+    with (folder/"indicateurs.csv").open("w", newline="", encoding="utf-8") as stream:
         writer = csv.DictWriter(stream, fieldnames=fields)
         writer.writeheader()
-        for name in cases:
-            writer.writerow({"configuration": name, **{key: metrics[name][key] for key in fields[1:]}})
-    (output_dir / "parametres_simulation.json").write_text(
-        json.dumps(result["parameters"], ensure_ascii=False, indent=2, default=_spectrum_json_value) + "\n", encoding="utf-8",
-    )
-    (output_dir / "indicateurs_performances.json").write_text(
-        json.dumps(metrics, ensure_ascii=False, indent=2, default=_spectrum_json_value) + "\n", encoding="utf-8",
-    )
-    for name in ("sampling_history", "validation_history"):
-        records = result.get(name, [])
-        (output_dir / (name + ".json")).write_text(
-            json.dumps(records, ensure_ascii=False, indent=2, default=_spectrum_json_value) + "\n", encoding="utf-8",
-        )
-        if records:
-            columns = list(dict.fromkeys(key for record in records for key in record))
-            with (output_dir / (name + ".csv")).open("w", newline="", encoding="utf-8") as stream:
-                writer = csv.DictWriter(stream, fieldnames=columns)
-                writer.writeheader()
-                writer.writerows(records)
-    # On conserve séparément les densités continues et les placements binaires.
-    arrays = {
-        "domain": result["domain"], "spacestep": result["spacestep"],
-        "chi_initial": result["chi_initial"], "chi_three_peaks": result["three_peaks"]["chi"],
-        "chi_band_continuous": band["chi_relaxed"], "chi_band_binary": band["chi"],
-        "frequencies_evaluation_hz": frequencies,
-        "frequencies_optimization_hz": band["frequencies_hz"],
-        "optimization_weights": band["weights"], "optimization_alphas": band["alphas"],
-        "energy_history_continuous_mean": history,
-        "energy_history_continuous_integral": history * width,
-        "binary_mean_on_optimization_grid": band["binary_energy"],
-        "binary_integral_on_optimization_grid": band["binary_energy"] * width,
-        "three_peaks_energy_history_with_binary": result["three_peaks"]["energy_history"],
-    }
-    if result.get("chi_start_band") is not None:
-        arrays["chi_start_band"] = result["chi_start_band"]
-    if evaluation.get("alphas") is not None:
-        arrays["evaluation_alphas"] = evaluation["alphas"]
-    if "continuous_energy_history" in result["three_peaks"]:
-        arrays["three_peaks_energy_history_continuous"] = result["three_peaks"]["continuous_energy_history"]
-    if result["three_peaks"].get("binary_energy") is not None:
-        arrays["three_peaks_binary_energy"] = result["three_peaks"]["binary_energy"]
-    arrays.update({"J_" + name: np.asarray(evaluation[name]) for name in cases})
-    if band.get("energy_by_frequency") is not None:
-        arrays["energy_by_frequency_continuous"] = band["energy_by_frequency"]
-    np.savez_compressed(output_dir / "resultats_spectre_complet.npz", **arrays)
-    _write_full_spectrum_summary(result, output_dir)
+        for name, values in metrics.items():
+            writer.writerow({"configuration": name, **values})
+    return metrics
 
 
-def _write_full_spectrum_summary(result, output_dir):
-    """On résume uniquement les indicateurs obtenus par les calculs enregistrés."""
-    metrics = result["metrics"]
-    labels = {"initial": "Mur initial", "three_peaks": "Optimisation aux trois pics, binaire",
-              "band_continuous": "Optimisation sur la bande, continue",
-              "band_binary": "Optimisation sur la bande, binaire"}
-    lines = ["# Bilan numérique de l’optimisation sur la bande", "",
-             "Les quatre configurations sont évaluées sur la même grille, avec la même source, le même matériau et le même domaine.", "",
-             "| Configuration | Intégrale de l’Énergie J | Réduction relative | Maximum de l’Énergie J | Fréquence du maximum (Hz) |",
-             "| --- | ---: | ---: | ---: | ---: |"]
-    for name, label in labels.items():
-        value = metrics[name]
-        lines.append(f"| {label} | {value['integral_J']:.8g} | {100 * value['reduction_relative']:.3f} % | {value['maximum_J']:.8g} | {value['frequency_max_hz']:.6g} |")
-    band = result["band"]
-    width = float(band["frequencies_hz"][-1] - band["frequencies_hz"][0])
-    history = np.asarray(band["energy_history"]).ravel()
-    lines += ["", f"La descente sur la bande a accepté {len(history) - 1} étapes. L’intégrale sur sa grille passe de {history[0] * width:.8g} à {history[-1] * width:.8g} pour la densité continue.",
-              f"Après le tri binaire, l’intégrale recalculée sur cette même grille vaut {band['binary_energy'] * width:.8g}. Ce résultat est conservé séparément de l’historique continu."]
-    if metrics["band_binary"]["maximum_J"] > metrics["initial"]["maximum_J"]:
-        lines += ["", "Le maximum du placement binaire optimisé sur la bande est supérieur à celui du mur initial. Une diminution de l’intégrale peut donc s’accompagner d’un pic local plus important."]
-    else:
-        lines += ["", "Le maximum du placement binaire optimisé sur la bande a diminué par rapport au mur initial sur la grille d’évaluation."]
-    three_integral = metrics["three_peaks"]["integral_J"]
-    if three_integral > 0:
-        reduction = 100 * (1 - metrics["band_binary"]["integral_J"] / three_integral)
-        lines += ["", f"La réduction de l’intégrale par rapport au placement binaire à trois pics vaut {reduction:.3f} %."]
-    parameters = result["parameters"]
-    if parameters.get("initialization_band") == "three_peaks_continuous":
-        lines += ["", "La descente sur la bande part de la densité continue obtenue aux trois pics. Les deux procédures sont donc successives. Le gain observé compare cette succession à la référence aux trois pics, et ne mesure pas le seul effet du critère à budget d’itérations identique."]
-    elif parameters.get("initialization_band") == "original_wall":
-        lines += ["", "La descente sur la bande part directement du mur initial."]
-    if "three_peaks_accepted_iterations" in parameters:
-        lines += ["", f"Les trois pics ont demandé {parameters['three_peaks_accepted_iterations']} étapes acceptées, puis la bande {parameters['accepted_iterations']} étapes, soit {parameters['total_accepted_iterations']} étapes au total."]
-    if "optimization_minimum_gap_hz" in parameters:
-        lines += ["", f"La grille d’optimisation contient {len(band['frequencies_hz'])} fréquences, avec des intervalles de {parameters['optimization_minimum_gap_hz']:.6g} à {parameters['optimization_maximum_gap_hz']:.6g} Hz. La grille d’évaluation contient {len(result['evaluation']['frequencies_hz'])} fréquences, avec des intervalles de {np.min(np.diff(result['evaluation']['frequencies_hz'])):.6g} à {np.max(np.diff(result['evaluation']['frequencies_hz'])):.6g} Hz."]
-    if "points_per_shortest_wavelength" in parameters:
-        lines += ["", f"Le maillage spatial utilise N = {parameters['N']} et représente {parameters['points_per_shortest_wavelength']:.6g} points par longueur d’onde à la fréquence maximale."]
-    if not parameters.get("sampling_converged", True):
-        lines += ["", "Le contrôle de raffinement de la grille d’optimisation n’a pas atteint les tolérances demandées. La précision fréquentielle de cette grille reste à confirmer."]
-    if not parameters.get("validation_converged", True):
-        lines += ["", "Le contrôle de raffinement de la grille d’évaluation n’a pas atteint les tolérances demandées. Les valeurs intégrées et les maxima ne sont donc pas encore stabilisés selon ce contrôle."]
-    for key, label in (("band_continuous", "densité continue"), ("band_binary", "placement binaire")):
-        difference = parameters.get("quadrature_discrepancy_" + key)
-        if difference is not None:
-            lines += ["", f"Pour « {label} », l’écart relatif entre l’intégrale estimée pendant la descente et celle de la grille d’évaluation vaut {100 * difference:.4g} %."]
-            if difference > .01:
-                lines += ["L’écart dépasse 1 %. La grille de la descente sous-représente ou sur-représente une partie du spectre final, et un raffinement de l’optimisation est nécessaire avant de conclure à sa précision."]
-    lines += ["", "Les fichiers sampling_history et validation_history décrivent les essais de raffinement fréquentiel. Les maxima cités sont ceux de la grille effectivement évaluée. La minimisation de l’intégrale ne garantit pas la disparition de tous les pics.", ""]
-    (output_dir / "BILAN_NUMERIQUE.md").write_text("\n".join(lines), encoding="utf-8")
+def _plot_source_and_geometries(results, folder):
+    """On représente la source choisie et les domaines du support fourni."""
+    params = results["parameters"]
+    frequencies = np.asarray(results["frequencies_hz"])
+    source = results.get("source", getattr(preprocessing, params.get("source_name", ""), None))
+    amplitudes = results.get("source_amplitudes")
+    if source is not None:
+        amplitudes = np.asarray([abs(source(0., 2*np.pi*f)) for f in frequencies])
+    if amplitudes is not None:
+        fig, ax = plt.subplots(figsize=(10, 3.7), constrained_layout=True)
+        ax.plot(frequencies, amplitudes, color="#0072B2", lw=2)
+        ax.set(xlabel="Fréquence (Hz)", ylabel="Amplitude relative", title="Amplitude de la source")
+        ax.grid(alpha=.25)
+        _save(fig, folder, "fig_source_rer_b.png")
+    N = int(params["N"])
+    h = float(params.get("h", params.get("h_m", 1/N)))
+    fig, axes = plt.subplots(1, 3, figsize=(11, 4), constrained_layout=True)
+    for level, ax in enumerate(axes):
+        domain, _, _, _, _ = preprocessing._set_geometry_of_domain(2*N, N, level)
+        air = domain == _env.NODE_INTERIOR
+        rows, cols = np.where(domain == _env.NODE_ROBIN)
+        ax.imshow(air, cmap="Blues", origin="upper", extent=(-h/2, (N-.5)*h, (2*N-.5)*h, -h/2), alpha=.5)
+        ax.scatter(cols*h, rows*h, s=4, color="#D55E00")
+        ax.set(title=f"Niveau {level}", xlabel="Position horizontale (m)", ylabel="Position verticale (m)",
+               ylim=(max(rows.max(), np.where(air)[0].max())*h+2*h, -h))
+    _save(fig, folder, "fig_geometries.png")
 
 
-def _plot_full_spectrum_curves(result, output_dir):
-    """On confronte les spectres sur une grille commune et on détaille leurs maxima."""
-    evaluation = result["evaluation"]
-    frequencies = np.asarray(evaluation["frequencies_hz"])
-    curves = (("initial", "Mur initial", "#777777", "--"),
-              ("three_peaks", "Optimisation aux trois pics", "#D55E00", "-."),
-              ("band_binary", "Optimisation sur toute la bande", "#0072B2", "-"))
-    fig, ax = plt.subplots(figsize=(11, 4.7), constrained_layout=True)
-    for name, label, color, style in curves:
-        ax.plot(frequencies, evaluation[name], color=color, ls=style, lw=1.7, label=label)
-    ax.set(xlabel="Fréquence (Hz)", ylabel="Énergie J", xlim=(frequencies[0], frequencies[-1]),
-           title="Spectres avant et après optimisation")
+def _plot_materials(results, folder):
+    """On compare les coefficients et les murs entièrement garnis par matériau."""
+    materials = results.get("materials", {})
+    if not materials:
+        return
+    f = np.asarray(results.get("material_frequencies_hz", results["frequencies_hz"]))
+    fig, axes = plt.subplots(1, len(materials), figsize=(11, 3.7), squeeze=False, constrained_layout=True)
+    for ax, (name, material) in zip(axes.flat, materials.items()):
+        alphas = np.asarray(material["alphas"])
+        ax.plot(f, alphas.real, label="Partie réelle", color="#0072B2")
+        ax.plot(f, alphas.imag, "--", label="Partie imaginaire", color="#D55E00")
+        ax.set(title=MATERIAL_LABELS.get(name, name), xlabel="Fréquence (Hz)", ylabel="Coefficient de Robin")
+        ax.grid(alpha=.25)
+        ax.legend(fontsize=9)
+    _save(fig, folder, "fig_coefficients_materiaux.png")
+    fig, axes = plt.subplots(1, len(materials), figsize=(11, 3.7), squeeze=False, sharey=True, constrained_layout=True)
+    for ax, (name, material) in zip(axes.flat, materials.items()):
+        values = material["full"].get(0, material["full"].get("0"))
+        ax.plot(f, values, lw=1.6)
+        ax.set(title=MATERIAL_LABELS.get(name, name), xlabel="Fréquence (Hz)", ylabel="Énergie J")
+        ax.grid(alpha=.25)
+    _save(fig, folder, "fig_spectres_materiaux_niveau0.png")
+    name = results["parameters"]["material_name"]
+    if name not in materials:
+        return
+    shapes = materials[name]["full"]
+    fig, axes = plt.subplots(1, len(shapes), figsize=(11, 3.7), squeeze=False, sharey=True, constrained_layout=True)
+    for ax, (level, values) in zip(axes.flat, sorted(shapes.items(), key=lambda item: int(item[0]))):
+        ax.plot(f, values, lw=1.6)
+        ax.set(title=f"Niveau {level}", xlabel="Fréquence (Hz)", ylabel="Énergie J")
+        ax.grid(alpha=.25)
+    _save(fig, folder, "fig_spectres_formes.png")
+
+
+def _spectrum_axis(ax, f, curves, logarithmic=False):
+    """On conserve les mêmes axes pour confronter des spectres physiques."""
+    for values, label, color, style in curves:
+        ax.plot(f, values, label=label, color=color, ls=style, lw=1.6)
+    ax.set(xlabel="Fréquence (Hz)", ylabel="Énergie J", xlim=(f[0], f[-1]))
+    if logarithmic:
+        ax.set_yscale("log")
+        ax.set_ylabel("Énergie J (échelle logarithmique)")
+        positive = np.concatenate([np.asarray(values)[np.asarray(values)>0] for values, *_ in curves])
+        if positive.size:
+            ax.set_ylim(bottom=max(positive.max()*1e-7, positive.min()))
+    ax.grid(alpha=.25, which="both")
+    ax.legend(fontsize=9)
+
+
+def _plot_spectra(results, folder):
+    """On compare uniquement les placements binaires aux deux références."""
+    f = np.asarray(results["frequencies_hz"])
+    reference = [(results["initial"], "Mur initial", "#777777", "--"),
+                 (results["full"], "Entièrement garni", "black", ":")]
+    fig, ax = plt.subplots(figsize=(10, 4), constrained_layout=True)
+    _spectrum_axis(ax, f, reference, logarithmic=True)
+    ax.set_title("Répartition initiale et mur entièrement garni")
+    _save(fig, folder, "fig_repartition_initiale_complete.png")
+    fig, axes = plt.subplots(2, 2, figsize=(11, 7), constrained_layout=True)
+    filenames = {"mono": "mono", "trois_pics": "trois_pics", "pics_resonance": "pics", "bande": "bande"}
+    for ax, (name, mode) in zip(axes.flat, results["modes"].items()):
+        curves = reference + [(mode["energies"], MODE_LABELS[name], MODE_COLORS[name], "-")]
+        _spectrum_axis(ax, f, curves, logarithmic=True)
+        ax.set_title(MODE_LABELS[name])
+        single, single_ax = plt.subplots(figsize=(10, 4), constrained_layout=True)
+        _spectrum_axis(single_ax, f, curves, logarithmic=True)
+        single_ax.set_title("Spectre du placement binaire — " + MODE_LABELS[name].lower())
+        _save(single, folder, "fig_spectre_"+filenames[name]+".png")
+    for ax in list(axes.flat)[len(results["modes"]):]:
+        ax.axis("off")
+    _save(fig, folder, "fig_spectres_modes.png")
+    fig, ax = plt.subplots(figsize=(10.5, 4.3), constrained_layout=True)
+    curves = [(mode["energies"], MODE_LABELS[name], MODE_COLORS[name], style)
+              for (name, mode), style in zip(((name, mode) for name, mode in results["modes"].items() if name != "mono"), ("-.", "--", "-"))]
+    _spectrum_axis(ax, f, curves)
+    ax.set_title("Spectres des répartitions binaires optimisées")
+    _save(fig, folder, "fig_comparaison_optimisations.png")
+
+
+def _history_axis(ax, name, mode, normalise):
+    """On distingue la descente continue du résultat obtenu après binarisation."""
+    history = np.asarray(mode["history"]).ravel()
+    scale = history[0] if normalise and history[0] else 1.
+    ax.plot(np.arange(len(history)), history/scale, color=MODE_COLORS[name], label="Descente continue")
+    ax.plot(len(history)-1, mode["binary_energy"]/scale, "kx", ms=8, label="Après binarisation")
+    ax.set(xlabel="Étape acceptée", ylabel="Critère rapporté au départ" if normalise else "Énergie J",
+           title=MODE_LABELS[name]+" — "+_criterion_label(name, mode))
     ax.grid(alpha=.25)
-    ax.legend(fontsize=10)
-    fig.savefig(output_dir / "fig_spectres_avant_apres.png", dpi=180)
-    plt.close(fig)
-    # On sépare les configurations optimisées pour préserver leur lisibilité.
-    optimized = (curves[1], ("band_continuous", "Bande : densité continue", "#009E73", ":"), curves[2])
-    fig, ax = plt.subplots(figsize=(11, 4.7), constrained_layout=True)
-    for name, label, color, style in optimized:
-        ax.plot(frequencies, evaluation[name], color=color, ls=style, lw=1.7, label=label)
-    ax.set(xlabel="Fréquence (Hz)", ylabel="Énergie J", xlim=(frequencies[0], frequencies[-1]),
-           title="Comparaison des configurations optimisées")
-    ax.grid(alpha=.25)
-    ax.legend(fontsize=10)
-    fig.savefig(output_dir / "fig_comparaison_optimisations.png", dpi=180)
-    plt.close(fig)
-    # On adapte les échelles verticales pour lire les pics de chaque répartition.
-    details = curves[:2] + (("band_continuous", "Optimisation sur la bande avant le tri", "#009E73", "-"), curves[2])
-    fig, axes = plt.subplots(4, 1, figsize=(11, 9), sharex=True, constrained_layout=True)
-    for ax, (name, label, color, style) in zip(axes, details):
-        values = np.asarray(evaluation[name])
-        ax.plot(frequencies, values, color=color, lw=1.5)
-        peak = int(np.argmax(values))
-        ax.plot(frequencies[peak], values[peak], "x", color="black", ms=7)
-        ax.annotate(f"Maximum : {values[peak]:.5g} à {frequencies[peak]:g} Hz",
-                    (frequencies[peak], values[peak]), xytext=(6, -17),
-                    textcoords="offset points", fontsize=10)
-        ax.set(title=label, ylabel="Énergie J", xlim=(frequencies[0], frequencies[-1]))
-        ax.grid(alpha=.23)
-    axes[-1].set_xlabel("Fréquence (Hz)")
-    fig.suptitle("Spectres détaillés et maxima — échelles verticales adaptées", fontsize=13)
-    fig.savefig(output_dir / "fig_spectres_details.png", dpi=180)
-    plt.close(fig)
+    ax.legend(fontsize=9)
 
 
-def _plot_full_spectrum_densities(result, output_dir):
-    """On montre les portions garnies sur les mêmes points du mur."""
-    domain = np.asarray(result["domain"])
-    h = float(result["spacestep"])
+def _plot_histories_and_densities(results, folder):
+    """On distingue les critères de descente et on montre les portions finales garnies."""
+    fig, axes = plt.subplots(2, 2, figsize=(11, 7), constrained_layout=True)
+    for ax, (name, mode) in zip(axes.flat, results["modes"].items()):
+        _history_axis(ax, name, mode, normalise=True)
+    for ax in list(axes.flat)[len(results["modes"]):]:
+        ax.axis("off")
+    _save(fig, folder, "fig_historiques_modes.png")
+    mono = results["modes"].get("mono")
+    if mono is not None:
+        fig, ax = plt.subplots(figsize=(9, 4), constrained_layout=True)
+        _history_axis(ax, "mono", mono, normalise=False)
+        _save(fig, folder, "fig_descente_mono.png")
+    domain = np.asarray(results["domain"])
     rows, cols = np.where(domain == _env.NODE_ROBIN)
-    densities = ((result["chi_initial"], "Répartition initiale"),
-                 (result["three_peaks"]["chi"], "Trois pics : répartition binaire"),
-                 (result["band"]["chi_relaxed"], "Toute la bande : densité continue"),
-                 (result["band"]["chi"], "Toute la bande : répartition binaire"))
-    fig, axes = plt.subplots(2, 2, figsize=(11, 6), sharex=True, sharey=True, constrained_layout=True)
-    for ax, (density, title) in zip(axes.flat, densities):
-        points = ax.scatter(cols * h, rows * h, c=np.asarray(density)[rows, cols],
-                            marker="s", s=14, cmap="viridis", vmin=0, vmax=1)
-        ax.set(title=title, xlabel="Position horizontale (m)", ylabel="Position verticale (m)",
-               ylim=(rows.max() * h + 3 * h, rows.min() * h - 3 * h))
+    params = results["parameters"]
+    h = float(params.get("h", params.get("h_m", 1/int(params["N"]))))
+    densities = [(results["chi_initial"], "Mur initial")]+[(mode["chi"], MODE_LABELS[name]) for name, mode in results["modes"].items()]
+    fig, axes = plt.subplots(2, 3, figsize=(11, 6), sharex=True, sharey=True, constrained_layout=True)
+    for ax, (chi, label) in zip(axes.flat, densities):
+        image = ax.scatter(cols*h, rows*h, c=np.asarray(chi)[rows, cols], vmin=0, vmax=1, marker="s", s=17, cmap="viridis")
+        ax.set(title=label, xlabel="Position horizontale (m)", ylabel="Position verticale (m)",
+               ylim=(rows.max()*h+2*h, rows.min()*h-2*h))
         ax.set_aspect("equal")
-    fig.colorbar(points, ax=list(axes.flat), label="Densité de matériau", shrink=.8)
-    fig.savefig(output_dir / "fig_repartitions_materiau.png", dpi=180)
-    plt.close(fig)
+    for ax in list(axes.flat)[len(densities):]:
+        ax.axis("off")
+    fig.colorbar(image, ax=list(axes.flat), label="Matériau présent", ticks=[0, 1], shrink=.75)
+    _save(fig, folder, "fig_repartitions_modes.png")
 
 
-
-def _plot_frequency_convergence(result, output_dir):
-    """On montre les erreurs estimées pendant les deux raffinements fréquentiels."""
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4.3), constrained_layout=True)
-    for key, label, color, marker in (("sampling_history", "Grille d’optimisation", "#0072B2", "o"),
-                                      ("validation_history", "Grille d’évaluation", "#D55E00", "s")):
-        records = result.get(key, [])
-        if not records:
-            continue
-        points = [row["n_points"] for row in records]
-        integral_errors = [max(float(row.get("estimated_integral_error", row.get("integral_error", np.nan))), np.finfo(float).tiny) for row in records]
-        peak_errors = [float(row.get("peak_error", np.nan)) for row in records]
-        axes[0].semilogy(points, integral_errors, marker=marker, color=color, label=label)
-        axes[1].plot(points, peak_errors, marker=marker, color=color, label=label)
-    parameters = result["parameters"]
-    for ax, title, tolerance in zip(axes, ("Erreur relative estimée de l’intégrale", "Erreur relative estimée du maximum"),
-                                    (parameters.get("frequency_integral_tolerance"), parameters.get("frequency_peak_tolerance"))):
-        if tolerance is not None:
-            ax.axhline(tolerance, color="black", ls="--", lw=1, label="Tolérance demandée")
-        ax.set(title=title, xlabel="Nombre de fréquences de la grille", ylabel="Erreur relative estimée")
-        ax.grid(alpha=.25, which="both")
-        ax.legend(fontsize=10)
-    fig.savefig(output_dir / "fig_convergence_frequence.png", dpi=180)
-    plt.close(fig)
-
-def plot_full_spectrum_study(result, output_dir=None):
-    """On enregistre les comparaisons de spectres, les placements et la descente sur la bande."""
-    output_dir = Path(__file__).resolve().parent / "resultats_spectre_complet" if output_dir is None else Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    _save_full_spectrum_data(result, output_dir)
-    _plot_full_spectrum_curves(result, output_dir)
-    _plot_full_spectrum_densities(result, output_dir)
-    _plot_frequency_convergence(result, output_dir)
-    band = result["band"]
-    width = float(band["frequencies_hz"][-1] - band["frequencies_hz"][0])
-    history = np.asarray(band["energy_history"]).ravel() * width
-    fig, ax = plt.subplots(figsize=(10, 4.5), constrained_layout=True)
-    ax.plot(np.arange(len(history)), history, color="#0072B2", lw=1.8, label="Descente continue")
-    ax.scatter(len(history) - 1, band["binary_energy"] * width, marker="x", s=65,
-               color="#D55E00", label="Après le tri binaire", zorder=4)
-    ax.set(xlabel="Étape acceptée", ylabel="Énergie J intégrée sur la bande",
-           title="Historique de la descente et contrôle après binarisation")
-    ax.grid(alpha=.25)
-    ax.legend(fontsize=11)
-    fig.savefig(output_dir / "fig_historique_energie_bande.png", dpi=180)
-    plt.close(fig)
-    return output_dir
-
-def plot_frequency_sampling_analysis(data, output_dir):
-    """On compare uniquement des fréquences déjà évaluées pour montrer les pics manqués."""
-    output_dir = Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    order = np.argsort(data["frequencies_hz"])
-    frequencies = np.asarray(data["frequencies_hz"])[order]
-    energies = np.asarray(data["initial_energies"])[order]
-    summary = data.get("summary", {})
-    peak = int(np.argmax(energies))
-    peak_frequency = float(frequencies[peak])
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4.8), constrained_layout=True)
-    window = (frequencies >= 350) & (frequencies <= 450)
-    axes[0].semilogy(frequencies[window], energies[window], color="#555555", lw=1.5,
-                     label="Évaluations locales fines")
-    # On extrait les points réels des grilles régulières sans interpoler leurs valeurs.
-    for step, color, marker in ((50., "#0072B2", "o"), (25., "#D55E00", "s"), (12.5, "#009E73", "^")):
-        positions = (frequencies - 50.) / step
-        chosen = window & np.isclose(positions, np.rint(positions), atol=1e-8, rtol=0)
-        axes[0].semilogy(frequencies[chosen], energies[chosen], color=color,
-                         marker=marker, ls="--", ms=5, label=f"Pas {step:g} Hz")
-    axes[0].set(title="Influence du pas fréquentiel", xlim=(350, 450),
-                xlabel="Fréquence (Hz)", ylabel="Énergie J — échelle logarithmique")
-    narrow = (frequencies >= peak_frequency - .7) & (frequencies <= peak_frequency + .7)
-    axes[1].plot(frequencies[narrow], energies[narrow], color="#555555", lw=1.6,
-                 label="Évaluations locales fines")
-    positions = (frequencies - 50.) / .390625
-    chosen = narrow & np.isclose(positions, np.rint(positions), atol=1e-8, rtol=0)
-    axes[1].plot(frequencies[chosen], energies[chosen], color="#D55E00", marker="o",
-                 ls="--", ms=5, label="Points calculés, pas 0,390625 Hz")
-    axes[1].set(title=f"Détail du pic vers {peak_frequency:.2f} Hz", xlabel="Fréquence (Hz)",
-                ylabel="Énergie J", xlim=(peak_frequency - .7, peak_frequency + .7), ylim=(0, 1.08 * energies[peak]))
-    peaks = summary.get("peaks_refined", {}).get("initial", [])
-    if peaks:
-        width = float(peaks[0]["half_height_width_hz"])
-        axes[1].text(.03, .95, f"Largeur observée\nà mi-hauteur : {width:.3f} Hz",
-                     transform=axes[1].transAxes, va="top", fontsize=10)
-    for ax in axes:
-        ax.grid(alpha=.25, which="both")
-        ax.legend(fontsize=9, loc="upper right")
-    filename = output_dir / "fig_sensibilite_pas_frequence.png"
-    fig.savefig(filename, dpi=180)
-    plt.close(fig)
-    return filename
-
-
-def plot_material_energy_comparison(results, retained_materials, output_dir=None):
-    """On sépare les courbes par matériau pour comparer leurs pics sans les superposer."""
-    import json
-    output_dir = Path(__file__).resolve().parent / "resultats_comparaison_materiaux" if output_dir is None else Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    plt.rcParams.update({"font.size": 13, "axes.labelsize": 13, "xtick.labelsize": 11, "ytick.labelsize": 11})
-    frequencies = results["frequencies"]
-    names = results["material_names"]
-    retained = list(retained_materials)
-    labels = {"MELAMINE": "Mélamine", "LAINE_VERRE": "Laine de verre", "OUATE_POLYESTER": "Ouate polyester"}
-    colors = {"MELAMINE": "#0072B2", "LAINE_VERRE": "#D55E00", "OUATE_POLYESTER": "#009E73"}
-    columns, headers, arrays = [frequencies], ["frequency_hz"], {"frequencies_hz": frequencies}
-    summary = {key: results[key] for key in ("N", "source_name", "sound_speed_m_s", "alpha0", "material_parameters")}
-    summary.update({"frequency_step_hz": float(np.min(np.diff(frequencies))), "retained_materials": retained,
-                    "robin_convention": "normal_derivative + alpha * density * field = 0", "full_wall": {}})
-    for level in results["levels"]:
-        # On utilise les mêmes limites verticales pour les matériaux d'un même niveau.
-        peak = max(float(np.max(results["energies"][name][level])) for name in names)
-        fig, axes = plt.subplots(2, 4, figsize=(14, 6.2), sharex=True, sharey=True, constrained_layout=True)
-        for ax, name in zip(axes.flat, names):
-            energy = results["energies"][name][level]
-            color = colors.get(name, "#777777")
-            ax.plot(frequencies, energy, color=color, lw=1.4)
-            ax.set(title=labels.get(name, name.replace("_", " ").title()), xlim=(50, 3500), ylim=(0, peak * 1.08))
-            ax.grid(alpha=.22)
-            ax.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(4))
-            ax.set_xlabel("Fréquence (Hz)")
-            ax.set_ylabel("Énergie J")
-        for ax in list(axes.flat)[len(names):]:
-            ax.axis("off")
-        fig.suptitle(f"Énergie J des murs entièrement garnis — niveau {level}", fontsize=14)
-        fig.savefig(output_dir / f"fig_energie_tous_materiaux_niveau{level}.png", dpi=180)
-        plt.close(fig)
-        fig, axes = plt.subplots(1, len(retained), figsize=(10.5, 3.8), sharex=True, sharey=True, constrained_layout=True)
-        peak = max(float(np.max(results["energies"][name][level])) for name in retained)
-        for ax, name in zip(np.atleast_1d(axes), retained):
-            energy = results["energies"][name][level]
-            ax.plot(frequencies, energy, color=colors[name], lw=1.6)
-            maxima = processing.find_local_maxima(frequencies, 2 * np.pi * frequencies / results["sound_speed_m_s"], energy)
-            ax.plot(maxima[1], maxima[3], "o", color=colors[name], ms=3)
-            ax.set(title=labels[name], xlabel="Fréquence (Hz)", ylabel="Énergie J", xlim=(50, 3500), ylim=(0, peak * 1.08))
-            ax.grid(alpha=.22)
-            ax.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(4))
-        fig.suptitle(f"Énergie J des trois matériaux étudiés — mur entièrement garni, niveau {level}", fontsize=13)
-        fig.savefig(output_dir / f"fig_energie_trois_materiaux_niveau{level}.png", dpi=180)
-        plt.close(fig)
-        summary["full_wall"][str(level)] = {}
-        for name in names:
-            energy = results["energies"][name][level]
-            index = int(np.argmax(energy))
-            summary["full_wall"][str(level)][name] = {"J_band_mean": processing.mean_cost(frequencies, energy),
-                         "J_max": float(energy[index]), "f_J_max_hz": float(frequencies[index])}
-            columns.append(energy)
-            headers.append(f"J_level{level}_{name}")
-            arrays[f"J_level{level}_{name}"] = energy
-    for name in names:
-        arrays[f"alpha_{name}"] = results["alphas"][name]
-    np.savetxt(output_dir / "energies_materiaux.csv", np.column_stack(columns), delimiter=",", header=",".join(headers), comments="")
-    np.savez(output_dir / "energies_materiaux.npz", **arrays)
-    (output_dir / "comparaison_materiaux.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4), constrained_layout=True)
-    positions = np.arange(len(names))
-    for offset, level in enumerate(results["levels"]):
-        axes[0].bar(positions + (offset - 1) * .25, [summary["full_wall"][str(level)][name]["J_band_mean"] for name in names], width=.25, label=f"Niveau {level}")
-        axes[1].bar(positions + (offset - 1) * .25, [summary["full_wall"][str(level)][name]["J_max"] for name in names], width=.25, label=f"Niveau {level}")
-    for ax, title in zip(axes, ("Énergie J moyenne sur la bande", "Énergie J maximale échantillonnée")):
-        ax.set_xticks(positions, [labels.get(name, name.replace("_", " ").title()) for name in names], rotation=35, ha="right", fontsize=11)
-        ax.set_title(title)
-        ax.set_ylabel("Énergie J")
-        ax.legend(fontsize=11)
-        ax.grid(axis="y", alpha=.2)
-    fig.savefig(output_dir / "fig_bilan_materiaux.png", dpi=180)
-    plt.close(fig)
-    return summary
-
-
-
-def plot_retained_material_studies(material_data=None, output_dir=None):
-    """On compare les trois matériaux en séparant leurs courbes et leurs fréquences cibles."""
-    output_dir = Path(__file__).resolve().parent / "resultats_comparaison_materiaux" if output_dir is None else Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    if material_data is None:
-        material_data = {}
-        for name in ("MELAMINE", "LAINE_VERRE", "OUATE_POLYESTER"):
-            mono_path = output_dir / name / "monofrequence" / "data_monofrequence.npz"
-            multi_path = output_dir / name / "multifrequence" / "data_multifrequence.npz"
-            if not mono_path.exists() or not multi_path.exists():
-                print("On lance d'abord les études monofréquences et multifréquences pour", name)
-                return None
-            material_data[name] = {"mono": dict(np.load(mono_path)), "multi": dict(np.load(multi_path))}
-    names = list(material_data)
-    labels = {"MELAMINE": "Mélamine", "LAINE_VERRE": "Laine de verre", "OUATE_POLYESTER": "Ouate polyester"}
-    colors = {"MELAMINE": "#0072B2", "LAINE_VERRE": "#D55E00", "OUATE_POLYESTER": "#009E73"}
-    plt.rcParams.update({"font.size": 13, "axes.labelsize": 13, "xtick.labelsize": 11, "ytick.labelsize": 11})
-    level = 2
-    # On conserve la même échelle verticale pour chaque comparaison de spectres.
-    spectra = [material_data[name]["multi"][f"E_init_spec_l{level}"] for name in names]
-    max_energy = max(float(np.max(values)) for values in spectra)
-    for mode, filename in (("initial", "fig_repartition_initiale_trois_materiaux.png"),
-                           ("mono", "fig_spectres_mono_trois_materiaux.png"),
-                           ("multi", "fig_spectres_multi_trois_materiaux.png")):
-        fig, axes = plt.subplots(1, len(names), figsize=(10.5, 4), sharex=True, sharey=True, constrained_layout=True)
-        for ax, name in zip(np.atleast_1d(axes), names):
-            data = material_data[name]["multi"]
-            frequencies = data["freqs"]
-            ax.plot(frequencies, data[f"E_init_spec_l{level}"], ls="--", color="#777777", lw=1.5, label="Densité initiale")
-            ax.plot(frequencies, data[f"E_full_spec_l{level}"], color="black", ls=":", lw=1.8, label="Entièrement garni")
-            if mode == "mono":
-                target = float(data[f"mono_frequency_l{level}_peak1"])
-                ax.plot(frequencies, data[f"E_mono_spec_l{level}_peak1"], color=colors[name], lw=1.8, marker="o", ms=3, markevery=5, label=f"Placement à {target:g} Hz")
-            if mode == "multi":
-                targets = data[f"multi_frequencies_l{level}"]
-                ax.plot(frequencies, data[f"E_multi_spec_l{level}"], color=colors[name], lw=1.8, marker="s", ms=3, markevery=5, label="Placement multifréquence")
-                ax.set_title(labels[name] + "\nCibles : " + ", ".join(f"{f:g}" for f in targets) + " Hz", fontsize=11)
-            else:
-                ax.set_title(labels[name], fontsize=13)
-            ax.set(xlabel="Fréquence (Hz)", ylabel="Énergie J", xlim=(50, 3500), ylim=(0, max_energy * 1.08))
-            ax.legend(fontsize=11, loc="upper right")
-            ax.grid(alpha=.22)
-            ax.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(4))
-        fig.savefig(output_dir / filename, dpi=180)
-        plt.close(fig)
-    # On montre uniquement les énergies acceptées, puis le contrôle du placement binaire.
-    for mode, filename in (("mono", "fig_historiques_mono_trois_materiaux.png"),
-                           ("multi", "fig_historiques_multi_trois_materiaux.png")):
-        fig, axes = plt.subplots(1, len(names), figsize=(10.5, 3.8), constrained_layout=True)
-        for ax, name in zip(np.atleast_1d(axes), names):
-            data = material_data[name][mode]
-            if mode == "mono":
-                history = data[f"history_l{level}_peak1"]
-                binary = float(data[f"cost_binary_l{level}_peak1"])
-                targets = [float(data[f"f_target_l{level}_peak1"])]
-            else:
-                history = data[f"multi_history_l{level}"]
-                targets = data[f"multi_frequencies_l{level}"]
-                indices = [int(np.argmin(abs(data["freqs"] - frequency))) for frequency in targets]
-                binary = float(np.mean(data[f"E_multi_spec_l{level}"][indices]))
-            if mode == "multi":
-                individual = data[f"multi_history_frequencies_l{level}"]
-                for column, frequency in enumerate(targets):
-                    ax.plot(individual[:, column], lw=1.1, alpha=.65, label=f"{frequency:g} Hz")
-                ax.plot(np.arange(len(history)), history, "k--", lw=2, label="Moyenne continue")
-            else:
-                ax.plot(np.arange(len(history)), history, color=colors[name], lw=2, label="Densité continue")
-            ax.plot(len(history) - 1, binary, "x", color="black", ms=8, mew=2, label="Placement binaire")
-            ax.set_title(labels[name] + "\n" + ", ".join(f"{f:g}" for f in targets) + " Hz", fontsize=11)
-            ax.set(xlabel="Itération acceptée", ylabel="Énergie J" if mode == "mono" else "Énergie J moyenne des cibles")
+def _plot_controls(results, folder):
+    """On représente les contrôles du gradient, des fréquences et de la quantité."""
+    check = results.get("gradient_check")
+    if check:
+        adjoint, finite = np.asarray(check["adjoint"]), np.asarray(check["finite_difference"])
+        fig, ax = plt.subplots(figsize=(9, 4), constrained_layout=True)
+        ax.plot(finite, "o-", label="Différences centrées")
+        ax.plot(adjoint, "x--", label="Adjoint")
+        ax.set(xlabel="Point du mur testé", ylabel="Dérivée de l'énergie", title="Contrôle numérique du gradient")
+        ax.grid(alpha=.25)
+        ax.legend()
+        _save(fig, folder, "fig_validation_gradient.png")
+    history = results.get("sampling_history", [])
+    if history:
+        fig, axes = plt.subplots(1, 2, figsize=(11, 3.8), constrained_layout=True)
+        for phase in dict.fromkeys(row.get("phase", "contrôle") for row in history):
+            records = [row for row in history if row.get("phase", "contrôle") == phase]
+            points = [row["n_points"] for row in records]
+            axes[0].semilogy(points, [max(row["integral_error"], 1e-16) for row in records], "o-", label=phase)
+            axes[1].plot(points, [row["peak_error"] for row in records], "o-", label=phase)
+        for ax, title in zip(axes, ("Variation relative de l'intégrale", "Variation relative du maximum")):
+            ax.set(xlabel="Nombre de fréquences", ylabel="Écart relatif", title=title)
             ax.grid(alpha=.25)
-            ax.legend(fontsize=11)
-        fig.savefig(output_dir / filename, dpi=180)
-        plt.close(fig)
-    # On précise les cibles propres à chaque matériau pour interpréter l'étude de quantité.
-    fig, axes = plt.subplots(len(names), 2, figsize=(11.5, 8.5), constrained_layout=True)
-    for row, name in enumerate(names):
-        data = material_data[name]["multi"]
-        volume = 100 * data[f"actual_volumes_l{level}"]
-        mono_target = float(data[f"volume_mono_frequency_l{level}"])
-        multi_targets = data[f"multi_frequencies_l{level}"]
-        mono_index = int(np.argmin(abs(data["freqs"] - mono_target)))
-        multi_indices = [int(np.argmin(abs(data["freqs"] - frequency))) for frequency in multi_targets]
-        for col, (energy, reference, description) in enumerate((
-            (data[f"J_vol_l{level}"], data[f"E_full_spec_l{level}"][mono_index], f"{mono_target:g} Hz"),
-            (data[f"J_multi_vol_l{level}"], np.mean(data[f"E_full_spec_l{level}"][multi_indices]), ", ".join(f"{f:g}" for f in multi_targets) + " Hz"),
-        )):
-            ax = axes[row, col]
-            ax.plot(volume, energy, "o-", color=colors[name], lw=1.8, label="Placement binaire")
-            ax.axhline(reference, ls="--", color="black", label="Entièrement garni")
-            ax.set(title=f"{labels[name]} — {description}", xlabel="Part du mur garnie (%)", ylabel="Énergie J" if col == 0 else "Énergie J moyenne des cibles")
-            ax.grid(alpha=.22)
-            ax.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(4))
-            ax.legend(fontsize=11)
-    fig.savefig(output_dir / "fig_quantites_trois_materiaux.png", dpi=180)
-    plt.close(fig)
-    # On agrandit aussi les deux comparaisons de quantité pour chaque matériau.
-    for name in names:
-        data = material_data[name]["multi"]
-        volume = 100 * data[f"actual_volumes_l{level}"]
-        mono_target = float(data[f"volume_mono_frequency_l{level}"])
-        multi_targets = data[f"multi_frequencies_l{level}"]
-        mono_index = int(np.argmin(abs(data["freqs"] - mono_target)))
-        multi_indices = [int(np.argmin(abs(data["freqs"] - frequency))) for frequency in multi_targets]
-        fig, axes = plt.subplots(1, 2, figsize=(10.5, 3.8), constrained_layout=True)
-        for ax, energy, reference, description in (
-            (axes[0], data[f"J_vol_l{level}"], data[f"E_full_spec_l{level}"][mono_index], f"Une fréquence : {mono_target:g} Hz"),
-            (axes[1], data[f"J_multi_vol_l{level}"], np.mean(data[f"E_full_spec_l{level}"][multi_indices]), "Cibles : " + ", ".join(f"{f:g}" for f in multi_targets) + " Hz"),
-        ):
-            ax.plot(volume, energy, "o-", color=colors[name], lw=2, label="Placement binaire")
-            ax.axhline(reference, ls="--", color="black", label="Entièrement garni")
-            ax.set(title=description, xlabel="Part du mur garnie (%)", ylabel="Énergie J")
-            ax.tick_params(labelsize=11)
-            ax.grid(alpha=.25)
-            ax.legend(fontsize=11)
-        axes[1].set_ylabel("Énergie J moyenne des cibles")
-        fig.suptitle(labels[name] + " — niveau 2", fontsize=14)
-        fig.savefig(output_dir / f"fig_quantites_{name}.png", dpi=180)
-        plt.close(fig)
-    # On évalue toutes les répartitions sur une bande identique.
-    fig, axes = plt.subplots(1, len(names), figsize=(10.5, 4), sharey=True, constrained_layout=True)
-    rows = []
-    for ax, name in zip(np.atleast_1d(axes), names):
-        data = material_data[name]["multi"]
-        frequencies = data["freqs"]
-        cases = [("Initiale", data[f"E_init_spec_l{level}"]),
-                 ("Une fréquence", data[f"E_mono_spec_l{level}_peak1"]),
-                 ("Plusieurs fréquences", data[f"E_multi_spec_l{level}"]),
-                 ("Entièrement garni", data[f"E_full_spec_l{level}"])]
-        means = [processing.mean_cost(frequencies, values) for label, values in cases]
-        ax.bar(np.arange(len(cases)), means, color=["#AAAAAA", colors[name], colors[name], "#333333"], hatch=["", "//", "", ""])
-        ax.set_xticks(np.arange(len(cases)), [label for label, values in cases], rotation=25, ha="right", fontsize=11)
-        ax.set(title=labels[name], ylabel="Énergie J moyenne sur la bande")
-        ax.grid(axis="y", alpha=.22)
-        for (label, values), mean in zip(cases, means):
-            index = int(np.argmax(values))
-            rows.append({"material": name, "level": level, "placement": label, "J_band_mean": mean,
-                         "J_max": float(values[index]), "f_J_max_hz": float(frequencies[index])})
-    fig.savefig(output_dir / "fig_bilan_placements_trois_materiaux.png", dpi=180)
-    plt.close(fig)
-    with (output_dir / "indicateurs_placements.csv").open("w", newline="", encoding="utf-8") as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
-        writer.writeheader()
-        writer.writerows(rows)
-    return rows
+            ax.legend(fontsize=9)
+        _save(fig, folder, "fig_convergence_frequence.png")
+    quantities = results.get("quantities")
+    if quantities:
+        fig, ax = plt.subplots(figsize=(9, 4), constrained_layout=True)
+        ax.plot(100*np.asarray(quantities["fractions"]), quantities["energies"], "o-", lw=1.8)
+        ax.set(xlabel="Part du mur garnie (%)", ylabel="Somme des Énergies J aux trois centres", title="Énergie selon la quantité de matériau")
+        ax.grid(alpha=.25)
+        _save(fig, folder, "fig_quantites.png")
+    theory = results.get("sommerfeld")
+    if theory:
+        fig, ax = plt.subplots(figsize=(9, 4), constrained_layout=True)
+        ax.plot(theory["depths"], theory["open"], label="Sortie ouverte")
+        ax.plot(theory["depths"], theory["reflecting"], label="Paroi réfléchissante")
+        ax.set(xlabel="Profondeur (m)", ylabel="Énergie J", title=f"Forme du rectangle à {theory['frequency_hz']:g} Hz")
+        ax.set_yscale("log")
+        ax.grid(alpha=.25)
+        ax.legend()
+        _save(fig, folder, "fig_sommerfeld_forme.png")
 
+
+def plot_comparisons(results, output_dir):
+    """On enregistre les nouvelles comparaisons calculées avec le support fourni."""
+    folder = Path(output_dir)
+    folder.mkdir(parents=True, exist_ok=True)
+    metrics = _save_comparison_data(results, folder)
+    _plot_source_and_geometries(results, folder)
+    _plot_materials(results, folder)
+    _plot_spectra(results, folder)
+    _plot_histories_and_densities(results, folder)
+    _plot_controls(results, folder)
+    names = ["full"]+list(results["modes"])
+    labels = ["Entièrement garni"]+[MODE_LABELS[name] for name in results["modes"]]
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.4), constrained_layout=True)
+    for ax, key, title in zip(axes, ("J_integral", "J_max"), ("Énergie intégrée sur la bande", "Maximum de l'énergie sur la bande")):
+        ax.bar(np.arange(len(names)), [metrics[name][key] for name in names], color=["#444444"]+[MODE_COLORS[name] for name in results["modes"]])
+        ax.set_xticks(np.arange(len(names)), labels, rotation=25, ha="right", fontsize=9)
+        ax.set(ylabel="Énergie J", title=title)
+        ax.grid(axis="y", alpha=.25)
+    _save(fig, folder, "fig_bilan_performances.png")
+    return metrics

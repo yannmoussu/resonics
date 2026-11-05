@@ -465,12 +465,25 @@ def project_density(proposal, domain_omega, V_obj):
 
 
 def binarize_chi(chi_cont, domain_omega, V_obj):
-    """On garnit les points du mur dont les densités sont les plus grandes."""
-    robin = domain_omega == _env.NODE_ROBIN
-    order = numpy.argsort(-chi_cont[robin])
-    number = int(round(V_obj * len(order)))
-    values = numpy.zeros(len(order))
-    values[order[:number]] = 1.0
-    binary = numpy.zeros_like(chi_cont, dtype=numpy.float64)
-    binary[robin] = values
-    return binary
+    """On garnit les points de plus forte densité en conservant le nombre prévu."""
+    nodes = numpy.argwhere(domain_omega == _env.NODE_ROBIN)
+    values = chi_cont[domain_omega == _env.NODE_ROBIN]
+    order = numpy.argsort(-values, kind="stable")
+    chi = numpy.zeros(domain_omega.shape)
+    for i, j in nodes[order[:int(round(V_obj * len(nodes)))]]:
+        chi[i, j] = 1.0
+    return chi
+
+
+def trapezoidal_weights(frequencies_hz, normalise=True):
+    """On répartit la largeur de chaque intervalle entre ses deux extrémités."""
+    frequencies_hz = numpy.asarray(frequencies_hz, dtype=float)
+    if len(frequencies_hz) == 1:
+        return numpy.ones(1)
+    weights = numpy.zeros(len(frequencies_hz))
+    widths = numpy.diff(frequencies_hz) / 2.0
+    weights[:-1] += widths
+    weights[1:] += widths
+    if normalise:
+        weights /= frequencies_hz[-1] - frequencies_hz[0]
+    return weights
