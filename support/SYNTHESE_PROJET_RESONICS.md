@@ -50,3 +50,15 @@ Le pas fréquentiel et le pas de descente sont indépendants. Les seuils de cont
 Les nouvelles sorties se trouvent dans un sous-dossier de `support/resultats_antoine/` dont le nom précise le matériau, le maillage, l’étude et le nombre d’itérations. Cela évite de remplacer les sorties d’une autre étude. Les résultats retenus pour la présentation sont conservés directement dans `support/resultats_antoine/`. Chaque mode conserve son historique continu et son énergie après binarisation séparément. Les courbes de performance comparent uniquement des murs binaires. Le mode complet ajoute les comparaisons de matériaux et de formes, ainsi qu'une étude de quantité sur les trois centres de la source.
 
 Les anciennes données brutes sont regroupées dans `support/archives_numeriques/`. Les figures des anciennes études retirées ne servent plus à la nouvelle présentation. Le rapport n'est pas réécrit pendant ce nettoyage ; ses anciennes références de figures devront être adaptées lors de sa reprise.
+
+## Calculs enregistrés et présentation
+
+Les calculs présentés utilisent N=128 et dix itérations par procédure. Les quatre placements binaires sont évalués sur une grille commune de 7 145 fréquences. Le [bilan numérique](resultats_antoine/BILAN_NUMERIQUE.md) rassemble les indicateurs, les paramètres et les limites des essais.
+
+Dans cet exemple, l'optimisation sur tous les pics repérés donne le plus faible critère intégré après binarisation. La minimisation de bande améliore le résultat aux trois centres, avec un pic restant vers 452 Hz. Le choix du critère doit donc tenir compte des spectres et des maxima observés.
+
+La présentation complétée se trouve dans `presentation/presentation.pdf`. Sa source reprend le document de travail de l'équipe. Pour la compiler depuis la racine du projet :
+
+```sh
+latexmk -cd -pdf presentation/presentation.tex
+```

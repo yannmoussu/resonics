@@ -1,0 +1,53 @@
+{
+  "N": 128,
+  "h": 0.0078125,
+  "h_m": 0.0078125,
+  "level": 2,
+  "material_name": "OUATE_POLYESTER",
+  "source_name": "source_rer_b",
+  "V_obj": 0.3984375,
+  "iterations": 10,
+  "robin_points": 512,
+  "covered_points": 204,
+  "points_per_shortest_wavelength": 12.544,
+  "frequency_control_converged": true,
+  "frequency_tolerance": 0.01,
+  "peak_tolerance": 0.05,
+  "source_gaussians": [
+    [
+      200.0,
+      100.0,
+      1.0
+    ],
+    [
+      800.0,
+      350.0,
+      0.8
+    ],
+    [
+      2500.0,
+      150.0,
+      0.5
+    ]
+  ],
+  "alpha0": [
+    50.0,
+    -50.0
+  ],
+  "material_parameters": [
+    0.9,
+    1.05,
+    15000
+  ],
+  "initialization_pics_and_band": "three_peaks_continuous",
+  "linear_system": "support_complet",
+  "validation_processes": 4,
+  "optimization_grid_points": 813,
+  "validation_grid_points": 7145,
+  "validation_elapsed_seconds": 1386.248306708003,
+  "wavelength_resolution_ok": true,
+  "spatial_convergence_tested": false,
+  "gradient_initial_step": 5.0,
+  "gradient_min_step": 1e-05,
+  "density_stop_tolerance": 1e-07
+}

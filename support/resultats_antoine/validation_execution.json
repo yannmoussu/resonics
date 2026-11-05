@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "N": 128,
+  "iterations_requested": 10,
+  "four_modes": [
+    "mono",
+    "trois_pics",
+    "pics_resonance",
+    "bande"
+  ],
+  "covered_nodes": 204,
+  "frequency_control_converged": true,
+  "validation_processes": 4,
+  "validation_elapsed_seconds": 1398.8885830829968
+}

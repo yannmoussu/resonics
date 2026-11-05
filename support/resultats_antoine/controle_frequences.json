@@ -1,0 +1,122 @@
+[
+  {
+    "phase": "repérage des pics",
+    "iteration": 0,
+    "n_points": 139,
+    "integral_error": 0.8200701517324069,
+    "peak_error": 0.7412359625939522,
+    "converged": false
+  },
+  {
+    "phase": "repérage des pics",
+    "iteration": 1,
+    "n_points": 196,
+    "integral_error": 0.5706701824851594,
+    "peak_error": 0.18952643391192123,
+    "converged": false
+  },
+  {
+    "phase": "repérage des pics",
+    "iteration": 2,
+    "n_points": 301,
+    "integral_error": 0.5700943519479474,
+    "peak_error": 0.45952227297500603,
+    "converged": false
+  },
+  {
+    "phase": "repérage des pics",
+    "iteration": 3,
+    "n_points": 463,
+    "integral_error": 0.225729946482109,
+    "peak_error": 0.011809011276436809,
+    "converged": false
+  },
+  {
+    "phase": "repérage des pics",
+    "iteration": 4,
+    "n_points": 692,
+    "integral_error": 0.17988013477176226,
+    "peak_error": 0.31754794298249517,
+    "converged": false
+  },
+  {
+    "phase": "repérage des pics",
+    "iteration": 5,
+    "n_points": 971,
+    "integral_error": 0.151859031710379,
+    "peak_error": 0.7203220116372081,
+    "converged": false
+  },
+  {
+    "phase": "repérage des pics",
+    "iteration": 6,
+    "n_points": 1229,
+    "integral_error": 0.058306101591957614,
+    "peak_error": 0.0,
+    "converged": false
+  },
+  {
+    "phase": "repérage des pics",
+    "iteration": 7,
+    "n_points": 1454,
+    "integral_error": 0.03308105590250488,
+    "peak_error": 0.34110107169249604,
+    "converged": false
+  },
+  {
+    "phase": "repérage des pics",
+    "iteration": 8,
+    "n_points": 1617,
+    "integral_error": 0.008531671108024231,
+    "peak_error": 0.0,
+    "converged": true
+  },
+  {
+    "phase": "choix de la grille de bande",
+    "iteration": 0,
+    "n_points": 139,
+    "integral_error": 0.1378778577613335,
+    "peak_error": 0.14603389875564166,
+    "converged": false
+  },
+  {
+    "phase": "choix de la grille de bande",
+    "iteration": 1,
+    "n_points": 195,
+    "integral_error": 0.07510140664384762,
+    "peak_error": 0.1869287479835404,
+    "converged": false
+  },
+  {
+    "phase": "choix de la grille de bande",
+    "iteration": 2,
+    "n_points": 284,
+    "integral_error": 0.021630563851066844,
+    "peak_error": 0.0,
+    "converged": false
+  },
+  {
+    "phase": "choix de la grille de bande",
+    "iteration": 3,
+    "n_points": 407,
+    "integral_error": 0.007705714061044108,
+    "peak_error": 0.010077010341327654,
+    "converged": true
+  },
+  {
+    "phase": "validation commune",
+    "iteration": 0,
+    "n_points": 3509,
+    "integral_error": 0.007531420044925903,
+    "peak_error": 0.011344892571181276,
+    "converged": false
+  },
+  {
+    "phase": "validation commune",
+    "iteration": 1,
+    "n_points": 3573,
+    "integral_error": 0.003796059262882344,
+    "peak_error": 0.0,
+    "converged": true
+  }
+]

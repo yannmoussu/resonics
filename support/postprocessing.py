@@ -353,7 +353,7 @@ def _plot_histories_and_densities(results, folder):
     palette = ListedColormap(colors)
     norm = BoundaryNorm([-.5, .5, 1.5], 2)
     for ax, (chi, label) in zip(axes.flat, densities):
-        image = ax.scatter(cols*h, rows*h, c=np.asarray(chi)[rows, cols], norm=norm, marker="s", s=17, cmap=palette)
+        ax.scatter(cols*h, rows*h, c=np.asarray(chi)[rows, cols], norm=norm, marker="s", s=17, cmap=palette)
         ax.set(title=label, xlabel="Position horizontale (m)", ylabel="Position verticale (m)",
                ylim=(rows.max()*h+2*h, rows.min()*h-2*h))
         ax.set_aspect("equal")
@@ -388,7 +388,7 @@ def _plot_controls(results, folder):
         limits = (results["parameters"].get("frequency_tolerance", .01), results["parameters"].get("peak_tolerance", .05))
         for ax, title, limit in zip(axes, ("Variation relative de l'intégrale", "Variation relative du maximum"), limits):
             ax.axhline(limit, color="black", ls=":", label=f"Seuil {100*limit:g} %")
-            ax.set(xlabel="Nombre de fréquences", ylabel="Écart relatif", title=title)
+            ax.set(xlabel="Fréquences avant raffinement", ylabel="Écart relatif", title=title)
             ax.grid(alpha=.25)
             ax.legend(fontsize=9)
         _save(fig, folder, "fig_convergence_frequence.png")
@@ -425,7 +425,9 @@ def plot_comparisons(results, output_dir):
     labels = ["Entièrement garni"]+[MODE_LABELS[name] for name in results["modes"]]
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.4), constrained_layout=True)
     for ax, key, title in zip(axes, ("J_integral", "J_max"), ("Énergie intégrée sur la bande", "Maximum de l'énergie sur la bande")):
-        ax.bar(np.arange(len(names)), [metrics[name][key] for name in names], color=["#444444"]+[MODE_COLORS[name] for name in results["modes"]])
+        bars = ax.bar(np.arange(len(names)), [metrics[name][key] for name in names], color=["#444444"]+[MODE_COLORS[name] for name in results["modes"]])
+        ax.bar_label(bars, fmt="%.2f", padding=3, fontsize=9)
+        ax.margins(y=.13)
         ax.set_xticks(np.arange(len(names)), labels, rotation=25, ha="right", fontsize=9)
         ax.set(ylabel="Énergie J", title=title)
         ax.grid(axis="y", alpha=.25)

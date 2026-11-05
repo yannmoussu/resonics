@@ -1,0 +1,39 @@
+{
+  "N": 128,
+  "frequency_control_converged": true,
+  "wavelength_resolution_ok": true,
+  "spatial_convergence_tested": false,
+  "same_validation_grid_for_every_configuration": true,
+  "modes": {
+    "mono": {
+      "continuous_energy_strictly_decreasing": true,
+      "accepted_steps": 10,
+      "binary_covered_points": 204,
+      "binary_only_performance_spectrum": true
+    },
+    "trois_pics": {
+      "continuous_energy_strictly_decreasing": true,
+      "accepted_steps": 10,
+      "binary_covered_points": 204,
+      "binary_only_performance_spectrum": true,
+      "continuous_volume_error": 0.0
+    },
+    "pics_resonance": {
+      "continuous_energy_strictly_decreasing": true,
+      "accepted_steps": 10,
+      "binary_covered_points": 204,
+      "binary_only_performance_spectrum": true,
+      "continuous_volume_error": 0.0
+    },
+    "bande": {
+      "continuous_energy_strictly_decreasing": true,
+      "accepted_steps": 10,
+      "binary_covered_points": 204,
+      "binary_only_performance_spectrum": true,
+      "continuous_volume_error": 0.0,
+      "trapezoidal_weights_match_grid": true
+    }
+  },
+  "binary_band_mean_relative_grid_difference": 0.008328986249193282,
+  "passed_informatics": true
+}
