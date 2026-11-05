@@ -1,0 +1,40 @@
+{
+  "cases": [
+    {
+      "N": 16,
+      "matrix_shape": [
+        512,
+        512
+      ],
+      "maximum_matrix_difference": 0.0,
+      "maximum_state_difference": 3.859622123193719e-15,
+      "maximum_field_difference": 3.859622123193719e-15,
+      "old_full_seconds": 0.006786209007259458,
+      "new_without_prepared_seconds": 0.002432833003695123,
+      "new_with_prepared_seconds": 0.0009331250039394945,
+      "fixed_matrices_unchanged": true,
+      "changed_source_and_robin_reuse_passed": true,
+      "nonzero_volume_neumann_robin_loads": true
+    },
+    {
+      "N": 128,
+      "matrix_shape": [
+        32768,
+        32768
+      ],
+      "maximum_matrix_difference": 0.0,
+      "maximum_state_difference": 1.2945001701404055e-13,
+      "maximum_field_difference": 1.2945001701404055e-13,
+      "old_full_seconds": 0.21389991701289546,
+      "new_without_prepared_seconds": 0.20646091598609928,
+      "new_with_prepared_seconds": 0.07740224999724887,
+      "fixed_matrices_unchanged": true,
+      "changed_source_and_robin_reuse_passed": true,
+      "nonzero_volume_neumann_robin_loads": true
+    }
+  ],
+  "description": "Comparaisons informatiques du solveur complet fourni, coefficients synthetiques et charges non nulles.",
+  "gradient_finite_difference_relative_error": 2.5794537469299156e-09,
+  "helpers_share_one_implementation": true,
+  "passed": true
+}

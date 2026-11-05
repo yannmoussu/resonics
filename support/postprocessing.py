@@ -7,6 +7,9 @@ import matplotlib.pyplot as plt
 import _env
 import preprocessing
 
+plt.rcParams.update({"font.size": 11, "axes.titlesize": 12, "axes.labelsize": 11,
+                     "xtick.labelsize": 10, "ytick.labelsize": 10})
+
 
 MODE_LABELS = {"mono": "Une fréquence", "trois_pics": "Trois centres",
                "pics_resonance": "Pics de résonance", "bande": "Bande entière"}
@@ -161,10 +164,15 @@ def _save_comparison_data(results, folder):
         alphas = np.asarray(material["alphas"])
         columns, headers = [fm, alphas.real, alphas.imag], ["frequency_hz", "alpha_real", "alpha_imag"]
         arrays[name + "_alphas"] = alphas
+        peaks = []
         for level, values in material["full"].items():
+            for index in material.get("peaks", {}).get(level, []):
+                peaks.append((int(level), fm[index], values[index]))
             columns.append(values)
             headers.append("J_full_level"+str(level))
             arrays[f"{name}_full_level{level}"] = np.asarray(values)
+        np.savetxt(folder/f"pics_{name}.csv", np.asarray(peaks).reshape(-1, 3), delimiter=",",
+                   header="level,frequency_hz,J", comments="")
         np.savetxt(folder/f"materiau_{name}.csv", np.column_stack(columns), delimiter=",", header=",".join(headers), comments="")
     if results.get("quantities"):
         q = results["quantities"]
@@ -230,6 +238,9 @@ def _plot_materials(results, folder):
     for ax, (name, material) in zip(axes.flat, materials.items()):
         values = material["full"].get(0, material["full"].get("0"))
         ax.plot(f, values, lw=1.6)
+        indices = material.get("peaks", {}).get(0, [])
+        ax.scatter(f[indices], np.asarray(values)[indices], color="#D55E00", s=18, label="Maxima locaux", zorder=3)
+        ax.legend(fontsize=9)
         ax.set(title=MATERIAL_LABELS.get(name, name), xlabel="Fréquence (Hz)", ylabel="Énergie J")
         ax.grid(alpha=.25)
     _save(fig, folder, "fig_spectres_materiaux_niveau0.png")
@@ -240,6 +251,9 @@ def _plot_materials(results, folder):
     fig, axes = plt.subplots(1, len(shapes), figsize=(11, 3.7), squeeze=False, sharey=True, constrained_layout=True)
     for ax, (level, values) in zip(axes.flat, sorted(shapes.items(), key=lambda item: int(item[0]))):
         ax.plot(f, values, lw=1.6)
+        indices = materials[name].get("peaks", {}).get(level, [])
+        ax.scatter(f[indices], np.asarray(values)[indices], color="#D55E00", s=18, label="Maxima locaux", zorder=3)
+        ax.legend(fontsize=9)
         ax.set(title=f"Niveau {level}", xlabel="Fréquence (Hz)", ylabel="Énergie J")
         ax.grid(alpha=.25)
     _save(fig, folder, "fig_spectres_formes.png")

@@ -14,7 +14,6 @@ from processing import compute_state, compute_adjoint, compute_gradient
 
 SOURCE = preprocessing.source_rer_b
 MATERIAL_NAME = "OUATE_POLYESTER"
-CAR_MAT = MATERIAUX[MATERIAL_NAME]
 MATERIALS = ["MELAMINE", "LAINE_VERRE", "OUATE_POLYESTER"]
 ALPHA0 = [50.0, -50.0]
 C = 343.0
@@ -269,11 +268,11 @@ def energy_gradient(problem, chi, frequency_data, states, weights):
 def your_multifrequency_optimization(problem, frequencies_hz, chi=None, weights=None, mu=5.0, iterations=None):
     """On améliore une répartition commune aux fréquences choisies par descente projetée."""
     frequencies = numpy.asarray(frequencies_hz, dtype=float)
-    if len(frequencies) == 0 or numpy.any(numpy.diff(frequencies) <= 0):
+    if len(frequencies) == 0 or not numpy.all(numpy.isfinite(frequencies)) or numpy.any(numpy.diff(frequencies) <= 0):
         print("On fournit des fréquences distinctes dans l'ordre croissant.")
         return None
     weights = numpy.ones(len(frequencies)) if weights is None else numpy.asarray(weights, dtype=float)
-    if weights.shape != frequencies.shape or numpy.any(weights < 0) or weights.sum() <= 0:
+    if weights.shape != frequencies.shape or not numpy.all(numpy.isfinite(weights)) or numpy.any(weights < 0) or weights.sum() <= 0:
         print("On fournit un poids positif pour chaque fréquence.")
         return None
     iterations = N_ITERATIONS if iterations is None else int(iterations)
@@ -431,7 +430,7 @@ def material_comparisons(N, frequencies_hz):
     """On compare les trois matériaux sur les murs entièrement garnis."""
     results = {}
     for name in MATERIALS:
-        material = {"full": {}}
+        material = {"full": {}, "peaks": {}}
         first = None
         for level in (0, 1, 2):
             problem = make_problem(N, level, name)
@@ -442,6 +441,7 @@ def material_comparisons(N, frequencies_hz):
             data = prepare_frequencies(problem, frequencies_hz)
             energies, _ = evaluate_distribution(problem, full, data)
             material["full"][level] = energies
+            material["peaks"][level] = resonance_peaks(frequencies_hz, energies)[0]
             if first is None:
                 first = problem
                 material["alphas"] = data["alphas"]
@@ -576,6 +576,7 @@ def run_project(N=None, modes=None, output_dir=None, studies=True):
         # On vérifie le calcul différentiel sur une géométrie plus petite et bien résolue à ces fréquences.
         check = make_problem(128, 1)
         result["gradient_check"] = check_energy_derivative(check)
+    result["parameters"]["elapsed_seconds"] = time.perf_counter() - started
     postprocessing.plot_comparisons(result, output_dir)
     print("Résultats enregistrés dans", output_dir, flush=True)
     return result

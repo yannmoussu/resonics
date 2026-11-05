@@ -17,7 +17,7 @@ Les réglages sont au début du programme : `SOURCE`, `MATERIAL_NAME`, `N_POINTS
 | `mono` | Une fréquence critique repérée sur le spectre initial |
 | `trois_pics` | Somme des énergies à 200, 800 et 2 500 Hz |
 | `pics_resonance` | Somme des énergies à tous les maxima locaux repérés sur le spectre initial |
-| `bande` | Intégrale de l'énergie sur la bande, approchée par les trapèzes |
+| `bande` | Moyenne de l'énergie sur la bande, approchée par les trapèzes |
 | `complet` | Les quatre modes, les matériaux, les quantités et les contrôles |
 
 Les pics repérés sont des maxima de la réponse à la source, pas le résultat d'un calcul de valeurs propres.
@@ -39,7 +39,7 @@ On conserve la convention avec le signe plus devant le coefficient de Robin. Le 
 
 ## Fréquences et vérification
 
-La grille de départ couvre 50 à 3 500 Hz. Des points sont ajoutés dans les intervalles où les trapèzes ou les maxima varient encore. La grille est fixée pendant chaque descente, donc la répartition courante et la proposition sont toujours comparées avec les mêmes fréquences et les mêmes poids.
+La grille de départ couvre 50 à 3 500 Hz avec un pas de 25 Hz. Pour la descente de bande, les poids des trapèzes sont divisés par la largeur de la bande. On minimise ainsi l'énergie moyenne, qui a les mêmes minimiseurs que l'intégrale. Les indicateurs finaux donnent aussi cette intégrale sans normalisation. Des points sont ajoutés dans les intervalles où les trapèzes ou les maxima varient encore. La grille est fixée pendant chaque descente, donc la répartition courante et la proposition sont toujours comparées avec les mêmes fréquences et les mêmes poids.
 
 Le pas fréquentiel et le pas de descente sont indépendants. Les seuils de contrôle sont 1 % pour l'indicateur d'intégrale et 5 % pour la variation du maximum entre grilles testées. Ce sont des contrôles numériques observés, sans garantie mathématique sur une résonance qui n'aurait pas été échantillonnée.
 
@@ -49,4 +49,4 @@ Le pas fréquentiel et le pas de descente sont indépendants. Les seuils de cont
 
 Les nouvelles sorties se trouvent dans `support/resultats_antoine/`. Chaque mode conserve son historique continu et son énergie après binarisation séparément. Les courbes de performance comparent uniquement des murs binaires. Le mode complet ajoute les comparaisons de matériaux et de formes, ainsi qu'une étude de quantité sur les trois centres de la source.
 
-Les anciennes données brutes restent des archives. Les figures des anciennes études retirées ne servent plus à la nouvelle présentation. Le rapport n'est pas réécrit pendant ce nettoyage ; ses anciennes références de figures devront être adaptées lors de sa reprise.
+Les anciennes données brutes sont regroupées dans `support/archives_numeriques/`. Les figures des anciennes études retirées ne servent plus à la nouvelle présentation. Le rapport n'est pas réécrit pendant ce nettoyage ; ses anciennes références de figures devront être adaptées lors de sa reprise.

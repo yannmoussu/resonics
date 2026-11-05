@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "scope": "Tests informatiques N16, pas une validation physique des hautes fréquences",
+  "weighted_gradient_fd_relative_error": 1.644458195517781e-08,
+  "modes": {
+    "trois_pics": {
+      "accepted": 2,
+      "history": [
+        15.272867741481884,
+        11.655914992537625,
+        8.806432428547764
+      ],
+      "binary_energy": 16.20427242286548
+    },
+    "pics_resonance": {
+      "accepted": 2,
+      "history": [
+        33.60916597528793,
+        8.348207258154606,
+        2.0378647287638456
+      ],
+      "binary_energy": 2.304529209782385
+    },
+    "bande": {
+      "accepted": 2,
+      "history": [
+        4.7541399299181295,
+        2.163210267976221,
+        1.3171982709385939
+      ],
+      "binary_energy": 1.2545953146949502
+    }
+  },
+  "original_39_lines_preserved": true,
+  "no_class_or_duplicate_definition": true,
+  "pipeline_passed": true,
+  "elapsed_seconds": 9.045781833003275
+}

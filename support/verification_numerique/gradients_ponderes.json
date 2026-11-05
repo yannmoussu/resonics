@@ -1,0 +1,92 @@
+{
+  "scope": "Contrôles informatiques sur petit maillage ; aucune validation de convergence physique par ces seuls tests.",
+  "N": 16,
+  "passed": true,
+  "plus_robin_matches_original_opposite_coefficient": 3.019806626980426e-14,
+  "weighted_gradients": {
+    "one_frequency": {
+      "relative_error": 1.3584334453042547e-08,
+      "adjoint": [
+        -0.03252685489253766,
+        -0.0027927265429288244,
+        -0.0013107926323386548,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "finite_difference": [
+        -0.032526854834569185,
+        -0.00279272696634969,
+        -0.0013107927521183171,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weights": [
+        1.0,
+        0.0,
+        0.0
+      ]
+    },
+    "three_frequency_sum": {
+      "relative_error": 7.180607513892195e-09,
+      "adjoint": [
+        -0.8671907470187789,
+        -0.0034029328087871007,
+        0.021195532379131438,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "finite_difference": [
+        -0.8671907494178788,
+        -0.0034029293272119787,
+        0.021195527805106806,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weights": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "nonuniform_band_mean": {
+      "relative_error": 7.681643019260074e-09,
+      "adjoint": [
+        -0.41622420951776484,
+        -0.0017711333539328562,
+        0.009892400900655378,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "finite_difference": [
+        -0.4162242107599856,
+        -0.0017711314775903375,
+        0.00989239862803082,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weights": [
+        0.1,
+        0.5,
+        0.4
+      ]
+    }
+  },
+  "source_amplitude_squared_once": true,
+  "projection_and_binary_volume": true,
+  "provided_helpers_have_one_definition": true,
+  "new_demo_signatures": {
+    "your_optimization_procedure": "(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob, beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob, Alpha, mu, chi, V_obj)",
+    "your_multifrequency_optimization": "(problem, frequencies_hz, chi=None, weights=None, mu=5.0, iterations=None)",
+    "your_three_peaks_optimization": "(problem, chi=None, iterations=None)",
+    "your_peak_optimization": "(problem, frequencies_hz, energies, chi=None, iterations=None)",
+    "your_band_optimization": "(problem, frequencies_hz, chi=None, iterations=None)"
+  },
+  "processing_no_class_or_duplicate_definition": true,
+  "elapsed_seconds": 0.6047659999894677
+}
