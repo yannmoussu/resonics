@@ -315,7 +315,7 @@ def partition_domain(domain, seed):
                     b = is_on_boundary(domain[south[0], south[1]])
                     c = 'Not Exist'
                     d = is_on_boundary(domain[west[0], west[1]])
-                elif i == N - 1:  # Il n'y a pas de sud
+                elif i == M - 1:  # Il n'y a pas de sud
                     north = [i - 1, j]
                     west = [i, j - 1]
                     a = is_on_boundary(domain[north[0], north[1]])
@@ -327,8 +327,8 @@ def partition_domain(domain, seed):
                     south = [i + 1, j]
                     west = [i, j - 1]
                     a = is_on_boundary(domain[north[0], north[1]])
-                    b = 'Not Exist'
-                    c = is_on_boundary(domain[east[0], east[1]])
+                    b = is_on_boundary(domain[south[0], south[1]])
+                    c = 'Not Exist'
                     d = is_on_boundary(domain[west[0], west[1]])
             elif j == 0:  # Il n'y a pas d'ouest
                 if i == 0:  # Il n'y a pas de nord
@@ -338,7 +338,7 @@ def partition_domain(domain, seed):
                     b = is_on_boundary(domain[south[0], south[1]])
                     c = is_on_boundary(domain[east[0], east[1]])
                     d = 'Not Exist'
-                elif i == N - 1:  # Il n'y a pas de sud
+                elif i == M - 1:  # Il n'y a pas de sud
                     north = [i - 1, j]
                     east = [i, j + 1]
                     a = is_on_boundary(domain[north[0], north[1]])
@@ -382,44 +382,8 @@ def partition_domain(domain, seed):
 
     return domain
 
-# problème sur cette fonction (is_on_robin_boundary n'était pas importé et BelongsInteriorDomain n'existe pas)
-def surlignefractale(domain, color_domain, color_seed):
-    """Color the points in the interior domain at a distance to the boundary equal one."""
 
-    (M, N) = numpy.shape(domain)
-
-    for i in range(M):
-        for j in range(N):
-            if is_in_interior_domain(domain[i, j]) == color_domain:
-                a = is_on_robin_boundary(domain[i - 1, j])
-                b = is_on_robin_boundary(domain[i + 1, j])
-                c = is_on_robin_boundary(domain[i, j - 1])
-                d = is_on_robin_boundary(domain[i, j + 1])
-                e = is_on_robin_boundary(domain[i + 1, j + 1])
-                f = is_on_robin_boundary(domain[i - 1, j - 1])
-                g = is_on_robin_boundary(domain[i + 1, j - 1])
-                h = is_on_robin_boundary(domain[i - 1, j + 1])
-
-                if a:
-                    domain[i, j] = color_seed
-                if b:
-                    domain[i, j] = color_seed
-                if c:
-                    domain[i, j] = color_seed
-                if d:
-                    domain[i, j] = color_seed
-                if e:
-                    domain[i, j] = color_seed
-                if f:
-                    domain[i, j] = color_seed
-                if g:
-                    domain[i, j] = color_seed
-                if h:
-                    domain[i, j] = color_seed
-
-    return domain
-
-def source_rer_b(frequency_hz):
+def amplitude_rer_b(frequency_hz):
     """Renvoie l'amplitude spectrale hypothétique de la source du RER B."""
     frequency_hz = float(frequency_hz)
 
@@ -435,3 +399,13 @@ def source_rer_b(frequency_hz):
         )
     return float(amplitude)
 
+
+
+def source_rer_b(y, omega):
+    """On évalue l'amplitude du RER B à la pulsation demandée."""
+    return amplitude_rer_b(float(omega) / (2.0 * numpy.pi))
+
+
+def source_constant(y, omega):
+    """On impose une amplitude constante sur le bord de la source."""
+    return 1.0

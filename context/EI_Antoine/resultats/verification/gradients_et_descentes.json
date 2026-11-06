@@ -1,0 +1,230 @@
+{
+  "gradients": [
+    {
+      "n_points": 8,
+      "level": 0,
+      "random_direction": [
+        {
+          "epsilon": 0.001,
+          "adjoint": 0.29946118328313875,
+          "finite_difference": 0.299460002926466,
+          "relative_error": 3.941601578527109e-06
+        },
+        {
+          "epsilon": 0.0001,
+          "adjoint": 0.29946118328313875,
+          "finite_difference": 0.29946117141577133,
+          "relative_error": 3.9629067420303905e-08
+        },
+        {
+          "epsilon": 1e-05,
+          "adjoint": 0.29946118328313875,
+          "finite_difference": 0.2994611827844551,
+          "relative_error": 1.6652697503648914e-09
+        }
+      ]
+    },
+    {
+      "n_points": 16,
+      "level": 1,
+      "random_direction": [
+        {
+          "epsilon": 0.001,
+          "adjoint": 0.3545592414438978,
+          "finite_difference": 0.3545593064915309,
+          "relative_error": 1.8346051541243923e-07
+        },
+        {
+          "epsilon": 0.0001,
+          "adjoint": 0.3545592414438978,
+          "finite_difference": 0.35455924191740706,
+          "relative_error": 1.3354870818616613e-09
+        },
+        {
+          "epsilon": 1e-05,
+          "adjoint": 0.3545592414438978,
+          "finite_difference": 0.3545592424991639,
+          "relative_error": 2.976275810185036e-09
+        }
+      ],
+      "corner_count": 3,
+      "corner_direction": [
+        {
+          "epsilon": 0.001,
+          "adjoint": -0.5736545637371429,
+          "finite_difference": -0.5736550118307093,
+          "relative_error": 7.811202852462213e-07
+        },
+        {
+          "epsilon": 0.0001,
+          "adjoint": -0.5736545637371429,
+          "finite_difference": -0.573654568296611,
+          "relative_error": 7.948107429732156e-09
+        },
+        {
+          "epsilon": 1e-05,
+          "adjoint": -0.5736545637371429,
+          "finite_difference": -0.5736545629630996,
+          "relative_error": 1.3493194735148029e-09
+        }
+      ]
+    },
+    {
+      "n_points": 32,
+      "level": 2,
+      "random_direction": [
+        {
+          "epsilon": 0.001,
+          "adjoint": -0.020554947926242188,
+          "finite_difference": -0.020554948127027295,
+          "relative_error": 9.768212794781154e-09
+        },
+        {
+          "epsilon": 0.0001,
+          "adjoint": -0.020554947926242188,
+          "finite_difference": -0.020554948014783747,
+          "relative_error": 4.30755453320562e-09
+        },
+        {
+          "epsilon": 1e-05,
+          "adjoint": -0.020554947926242188,
+          "finite_difference": -0.02055494741082242,
+          "relative_error": 2.5075216329649223e-08
+        }
+      ],
+      "corner_count": 26,
+      "corner_direction": [
+        {
+          "epsilon": 0.001,
+          "adjoint": -0.09113984483644454,
+          "finite_difference": -0.09113985920194967,
+          "relative_error": 1.5762044464917045e-07
+        },
+        {
+          "epsilon": 0.0001,
+          "adjoint": -0.09113984483644454,
+          "finite_difference": -0.09113984504316441,
+          "relative_error": 2.268161386812835e-09
+        },
+        {
+          "epsilon": 1e-05,
+          "adjoint": -0.09113984483644454,
+          "finite_difference": -0.09113984428266163,
+          "relative_error": 6.076188843779614e-09
+        }
+      ]
+    },
+    {
+      "n_points": 128,
+      "level": 3,
+      "random_direction": [
+        {
+          "epsilon": 0.001,
+          "adjoint": -0.0017625411535031428,
+          "finite_difference": -0.0017625411523614076,
+          "relative_error": 6.477778641700109e-10
+        },
+        {
+          "epsilon": 0.0001,
+          "adjoint": -0.0017625411535031428,
+          "finite_difference": -0.0017625412462862755,
+          "relative_error": 5.2641680264139594e-08
+        },
+        {
+          "epsilon": 1e-05,
+          "adjoint": -0.0017625411535031428,
+          "finite_difference": -0.0017625405357435395,
+          "relative_error": 3.5049371869119244e-07
+        }
+      ],
+      "corner_count": 218,
+      "corner_direction": [
+        {
+          "epsilon": 0.001,
+          "adjoint": -8.667754101870581e-05,
+          "finite_difference": -8.667753581548254e-05,
+          "relative_error": 6.002965944534161e-08
+        },
+        {
+          "epsilon": 0.0001,
+          "adjoint": -8.667754101870581e-05,
+          "finite_difference": -8.667769835213335e-05,
+          "relative_error": 1.8151546537038155e-06
+        },
+        {
+          "epsilon": 1e-05,
+          "adjoint": -8.667754101870581e-05,
+          "finite_difference": -8.667818685026417e-05,
+          "relative_error": 7.4509121824778736e-06
+        }
+      ]
+    }
+  ],
+  "weighted_gradient": {
+    "energies": [
+      1.0651287154191451,
+      0.7559293031698346,
+      2.2654316649388244
+    ],
+    "weights": [
+      0.2,
+      0.3,
+      0.5
+    ],
+    "weighted_energy": 1.5725203665041916,
+    "weighted_gradient_equals_sum": true,
+    "adjoint": 0.1407760764782762,
+    "finite_difference": 0.14077607651485913,
+    "relative_error": 2.598661081805795e-10
+  },
+  "nonzero_robin": [
+    {
+      "epsilon": 0.001,
+      "adjoint": -0.07879119122780429,
+      "finite_difference": -0.07879120968223852,
+      "relative_error": 2.3421945551019536e-07
+    },
+    {
+      "epsilon": 0.0001,
+      "adjoint": -0.07879119122780429,
+      "finite_difference": -0.07879119136022794,
+      "relative_error": 1.6806911164618474e-09
+    },
+    {
+      "epsilon": 1e-05,
+      "adjoint": -0.07879119122780429,
+      "finite_difference": -0.0787911910160588,
+      "relative_error": 2.687425827171604e-09
+    }
+  ],
+  "sources": {
+    "frequency_hz": 200.0,
+    "amplitude": 1.1840530391950472,
+    "linear_source_scaling_verified": true
+  },
+  "descents": [
+    {
+      "step_rule": "increment",
+      "history": [
+        1.2106047466744096,
+        1.0488230094193463,
+        0.9398984907929723
+      ],
+      "binary_energy": 0.9280096972801011,
+      "checkpoint_resume_matches": true,
+      "covered_points": 13
+    },
+    {
+      "step_rule": "bb",
+      "history": [
+        1.2106047466744096,
+        1.0488230094193463,
+        0.8659152058526622
+      ],
+      "binary_energy": 1.1152402977853746,
+      "checkpoint_resume_matches": true,
+      "covered_points": 13
+    }
+  ],
+  "passed": true
+}
