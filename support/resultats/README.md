@@ -65,3 +65,5 @@ Les PNG sont aussi copiés dans le dossier presentation. Les noms commencés par
 validation utilisent les spectres au pas de contrôle de 2,5 Hz. L'optimisation
 reste faite au pas de 5 Hz. Les JSON de vérification consignent les contrôles
 et les paramètres réellement utilisés.
+
+La figure `influence_geometrie_energie.png` compare les énergies moyennes des quatre matériaux en fonction du niveau de fractale. Elle utilise les murs entièrement garnis, sur la bande de 50 à 3 500 Hz au pas de 5 Hz.

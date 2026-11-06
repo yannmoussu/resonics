@@ -6,7 +6,7 @@ Les références et les études de quantité couvrent les niveaux 0, 1, 2 et 3. 
 
 ## Résultats et contrôles
 
-Les données, les CSV, les paramètres et les 49 PNG sont dans support/resultats. Les mêmes PNG sont copiés à plat dans presentation. Le bilan chiffré est dans support/resultats/README.md. Les historiques acceptés sont strictement décroissants et les contraintes de volume sont respectées.
+Les données, les CSV, les paramètres et les 50 PNG sont dans support/resultats. Les mêmes PNG sont copiés à plat dans presentation. Le bilan chiffré est dans support/resultats/README.md. Les historiques acceptés sont strictement décroissants et les contraintes de volume sont respectées.
 
 La grille de contrôle au pas de 2,5 Hz révèle un pic initial à 397,5 Hz, mal mesuré au pas de 5 Hz. Pour la mélamine, elle révèle aussi un maximum final à 732,5 Hz supérieur à celui mesuré au pas de 5 Hz. Les réductions de l'énergie intégrée calculées sur la grille de contrôle vont d'environ 81 à 88 pour cent. Aucun matériau n'est choisi définitivement.
 

@@ -164,6 +164,18 @@ def plot_material_comparisons(folder, materials, levels, with_optimization=True)
         ax.plot(r["frequencies_hz"][peaks], r["full"][peaks], "o", color=color, ms=2.5)
     ax.legend()
     save_figure(fig, folder, "comparaison_mur_plan.png")
+    # On résume chaque spectre par son énergie moyenne sur la bande.
+    title = materials_title+"\nMurs entièrement garnis — niveaux 0 à 3 — 50–3500 Hz — pas 5 Hz"
+    fig, ax = curve_axes(title, "Niveau de fractale", "Énergie J moyenne sur la bande")
+    for name, color, style, marker in zip(materials, COLORS, STYLES, ("o", "s", "^", "D")):
+        means = [float(preprocessing.trapezoidal_weights(references[name][level]["frequencies_hz"])
+                       @ references[name][level]["full"]) for level in levels]
+        ax.plot(levels, means, color=color, ls=style, marker=marker, lw=1.7, ms=5,
+                label=MATERIAL_LABELS[name])
+    ax.set_xticks(levels)
+    ax.set_ylim(bottom=0)
+    ax.legend()
+    save_figure(fig, folder, "influence_geometrie_energie.png")
     for name in materials:
         fig, ax = curve_axes(f"{MATERIAL_LABELS[name]} — niveaux 0, 1, 2 et 3\nMur entièrement garni — 50–3500 Hz — pas 5 Hz")
         for level, color, style in zip(levels, COLORS, STYLES):
