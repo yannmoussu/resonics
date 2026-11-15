@@ -1,0 +1,162 @@
+{
+  "imports": {
+    "demo_control_polycopie2024": "support/demo_control_polycopie2024.py",
+    "preprocessing": "support/preprocessing.py",
+    "processing": "support/processing.py",
+    "postprocessing": "support/postprocessing.py",
+    "compute_alpha": "support/compute_alpha.py",
+    "_env": "support/_env.py"
+  },
+  "prepared_vs_reference": [
+    {
+      "N": 16,
+      "level": 1,
+      "frequency_hz": 200.0,
+      "matrix_max_abs": 4.440892098500626e-16,
+      "rhs_max_abs": 0.0,
+      "field_relative_error": 1.6003477686898755e-15
+    },
+    {
+      "N": 16,
+      "level": 1,
+      "frequency_hz": 500.0,
+      "matrix_max_abs": 2.237726045655905e-16,
+      "rhs_max_abs": 0.0,
+      "field_relative_error": 1.2076394996477416e-15
+    },
+    {
+      "N": 16,
+      "level": 1,
+      "frequency_hz": 800.0,
+      "matrix_max_abs": 0.0,
+      "rhs_max_abs": 0.0,
+      "field_relative_error": 0.0
+    },
+    {
+      "N": 128,
+      "level": 3,
+      "frequency_hz": 200.0,
+      "matrix_max_abs": 4.440892098500626e-16,
+      "rhs_max_abs": 0.0,
+      "field_relative_error": 2.1878763835651017e-15
+    },
+    {
+      "N": 128,
+      "level": 3,
+      "frequency_hz": 800.0,
+      "matrix_max_abs": 0.0,
+      "rhs_max_abs": 0.0,
+      "field_relative_error": 0.0
+    },
+    {
+      "N": 128,
+      "level": 3,
+      "frequency_hz": 2000.0,
+      "matrix_max_abs": 4.449557262054371e-16,
+      "rhs_max_abs": 0.0,
+      "field_relative_error": 1.1092221322581688e-14
+    }
+  ],
+  "gradients": [
+    {
+      "N": 16,
+      "level": 1,
+      "frequencies_hz": [
+        200.0,
+        500.0,
+        800.0
+      ],
+      "weighted_sum_relative_error": 0.0,
+      "finite_differences": [
+        {
+          "epsilon": 0.001,
+          "finite_difference": -0.06094399740426415,
+          "adjoint": -0.0609439732872157,
+          "relative_error": 3.957247551156076e-07
+        },
+        {
+          "epsilon": 0.0001,
+          "finite_difference": -0.06094397353662018,
+          "adjoint": -0.0609439732872157,
+          "relative_error": 4.092356664078348e-09
+        },
+        {
+          "epsilon": 1e-05,
+          "finite_difference": -0.060943973169413905,
+          "adjoint": -0.0609439732872157,
+          "relative_error": 1.932952345271091e-09
+        }
+      ]
+    },
+    {
+      "N": 128,
+      "level": 3,
+      "frequencies_hz": [
+        200.0,
+        800.0,
+        2000.0
+      ],
+      "weighted_sum_relative_error": 0.0,
+      "finite_differences": [
+        {
+          "epsilon": 0.001,
+          "finite_difference": -0.10087159303955032,
+          "adjoint": -0.10087160258426557,
+          "relative_error": 9.462242107533964e-08
+        },
+        {
+          "epsilon": 0.0001,
+          "finite_difference": -0.10087160246971462,
+          "adjoint": -0.10087160258426557,
+          "relative_error": 1.1356115013793347e-09
+        },
+        {
+          "epsilon": 1e-05,
+          "finite_difference": -0.10087160136605917,
+          "adjoint": -0.10087160258426557,
+          "relative_error": 1.2076802248198982e-08
+        }
+      ]
+    }
+  ],
+  "positive_robin_affine_error": 1.9984014443252818e-15,
+  "projection": {
+    "volume_error": 0.0,
+    "binary_count": 13,
+    "expected_binary_count": 13
+  },
+  "constant_source_amplitude": 1.0,
+  "descents": {
+    "multi_increment": {
+      "history": [
+        2.917051757817523,
+        1.2681642319123685,
+        0.9600188942534955
+      ],
+      "binary_energy": 0.9957690405666775,
+      "accepted_steps": 2
+    },
+    "band_bb": {
+      "history": [
+        2.917051757817523,
+        1.2681642319123685,
+        1.1986403256464844
+      ],
+      "binary_energy": 1.2681642319123685,
+      "accepted_steps": 2
+    },
+    "mono": {
+      "history": [
+        1.0112258103338765,
+        0.9945890424509986,
+        0.8303026075438674
+      ],
+      "binary_energy": 1.0112258103338791,
+      "accepted_steps": 2
+    }
+  },
+  "support_resultats_antoine_exists": false,
+  "source_files_unchanged_during_checks": true,
+  "seconds": 5.5872368812561035,
+  "status": "PASS"
+}

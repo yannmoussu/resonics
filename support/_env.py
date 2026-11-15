@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 
 
-NODE_INTERIOR = -1  # nodes located in the interior
-NODE_COMPLEMENTARY = -2  # nodes located in the complement of (interior + frontier)
-NODE_DIRICHLET = 1  # nodes with dirichlet boundary condition
-NODE_NEUMANN = 2  # nodes with neumann boundary condition
-NODE_ROBIN = 3  # nodes with robin boundary condition
-
+# On distingue les points intérieurs.
+NODE_INTERIOR = -1
+# On distingue les points extérieurs au domaine.
+NODE_COMPLEMENTARY = -2
+# On distingue les points où le champ est imposé.
+NODE_DIRICHLET = 1
+# On distingue les points où la dérivée normale est imposée.
+NODE_NEUMANN = 2
+# On distingue les points du mur avec une condition de Robin.
+NODE_ROBIN = 3

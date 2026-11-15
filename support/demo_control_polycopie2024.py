@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""On étudie les murs et les matériaux avec le programme d'Antoine."""
+"""On calcule les champs acoustiques et on compare les répartitions de matériau."""
 from pathlib import Path
 import hashlib
 import json
@@ -28,69 +28,88 @@ RESULTS = Path(__file__).resolve().parent / "resultats_antoine"
 
 
 def your_compute_objective_function(domain_omega, u, spacestep):
-    """On conserve la somme utilisée par Antoine sur les points du domaine."""
+    """On intègre le module du champ au carré sur les points du domaine."""
+    # On conserve les points appartenant au domaine.
     mask = domain_omega != _env.NODE_COMPLEMENTARY
+    # On additionne les contributions avec l'aire associée à chaque point.
     return float(numpy.sum(numpy.abs(u[mask]) ** 2) * spacestep ** 2)
 
 
 def frequency_weights(frequencies):
-    """On reprend les poids des trapèzes normalisés utilisés par Antoine."""
+    """On calcule les poids des trapèzes puis on les ramène à une somme unitaire."""
     frequencies = numpy.asarray(frequencies, dtype=float)
     weights = numpy.ones(len(frequencies))
+    # Une fréquence isolée reçoit tout le poids.
     if len(frequencies) > 1:
         weights[:] = 0
+        # Chaque intervalle contribue aux deux fréquences qui le délimitent.
         for j in range(len(frequencies) - 1):
             weights[j] += (frequencies[j + 1] - frequencies[j]) / 2
             weights[j + 1] += (frequencies[j + 1] - frequencies[j]) / 2
+        # On normalise les poids pour obtenir une moyenne sur la bande.
         weights /= frequencies[-1] - frequencies[0]
     return weights
 
 
 def prepare_frequencies(domain, spacestep, frequencies, c, material, g_source,
                         source=None, coefficient_cache=None):
-    """On calcule les coefficients et les données de Dirichlet avant la descente."""
+    """On prépare le coefficient du matériau et la source pour chaque fréquence."""
+    # On reprend la source choisie au début du fichier si aucune autre n'est donnée.
     source = SOURCE if source is None else source
+    # On réutilise les coefficients déjà calculés aux fréquences demandées.
     cache = {} if coefficient_cache is None else coefficient_cache
     frequencies = numpy.asarray(frequencies, dtype=float)
     alpha0 = compute_alpha.Alpha0
     alphas, f_dirs = [], []
     y = (numpy.arange(domain.shape[1]) - (domain.shape[1] - 1) / 2) * spacestep
+    # On prépare séparément chaque fréquence de la grille.
     for frequency in frequencies:
         omega = 2 * numpy.pi * frequency
         if float(frequency) not in cache:
+            # On identifie le coefficient du matériau quand il manque.
             pair, success, message = compute_alpha.compute_alpha(omega, g_source, material, alpha0)
             alpha = complex(*pair)
+            # On vérifie la réussite du calcul et les signes du coefficient obtenu.
             if not success or not numpy.isfinite(alpha) or alpha.real <= 0 or alpha.imag >= 0:
                 print("Coefficient non validé à", frequency, "Hz :", message, flush=True)
                 return None
             cache[float(frequency)] = alpha
         alpha = cache[float(frequency)]
+        # On initialise la fréquence suivante avec le coefficient précédent.
         alpha0 = [alpha.real, alpha.imag]
         alphas.append(alpha)
+        # On place l'amplitude de la source sur le bord supérieur.
         f_dir = numpy.zeros(domain.shape, dtype=complex)
         f_dir[0, :] = source(y, omega)
         f_dirs.append(f_dir)
+    # On renvoie les fréquences, les paramètres de propagation et les chargements.
     return {"frequencies_hz": frequencies, "wavenumbers": 2 * numpy.pi * frequencies / c,
             "alphas": numpy.asarray(alphas), "f_dirs": f_dirs}
 
 
 def subset_frequencies(data, indices):
-    """On sélectionne les fréquences utiles sans recalculer les coefficients."""
+    """On sélectionne une partie des fréquences et de leurs données."""
     indices = numpy.asarray(indices, dtype=int)
+    # On conserve les mêmes indices dans tous les tableaux associés.
     return {"frequencies_hz": data["frequencies_hz"][indices],
             "wavenumbers": data["wavenumbers"][indices], "alphas": data["alphas"][indices],
             "f_dirs": [data["f_dirs"][j] for j in indices]}
 
 
 def compute_boundary_gradient(domain, spacestep, Alpha, chi, u, p, prepared, f_rob=None):
-    """On additionne les contributions de chaque voisin intérieur au gradient de bord."""
+    """On additionne les contributions des voisins intérieurs en chaque point du bord."""
+    # On récupère chaque liaison entre un point intérieur et un point du bord.
     rows, nodes = prepared["robin_rows"], prepared["robin_nodes"]
     beta = prepared["robin_beta"]
+    # On reconstruit le champ au bord avec la même condition que dans le solveur.
     denominator = beta + spacestep * Alpha * chi.ravel()[nodes]
+    # Le chargement du bord intervient aussi lorsqu'il est non nul.
     load = 0 if f_rob is None else spacestep * f_rob.ravel()[nodes]
+    # On calcule la contribution de chaque voisin à la variation de l'énergie.
     values = -numpy.real(prepared["robin_coefficients"] * Alpha * p.ravel()[rows]
                          * (beta * u.ravel()[rows] + load) / denominator ** 2)
     gradient = numpy.zeros(domain.shape)
+    # On additionne les contributions lorsque plusieurs voisins partagent le même point.
     numpy.add.at(gradient.ravel(), nodes, values)
     return gradient
 
@@ -98,21 +117,28 @@ def compute_boundary_gradient(domain, spacestep, Alpha, chi, u, p, prepared, f_r
 def evaluate_frequencies(domain, spacestep, data, chi, f, f_neu, f_rob,
                          beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob,
                          prepared, weights=None):
-    """On calcule les énergies et, si demandé, leur gradient de bord pondéré."""
+    """On calcule les champs et on cumule les énergies et les gradients demandés."""
     energies = numpy.zeros(len(data["frequencies_hz"]))
+    # Le gradient est calculé seulement lorsque des poids sont fournis.
     gradient = numpy.zeros(domain.shape) if weights is not None else None
+    # Chaque fréquence utilise son coefficient de matériau et son propre chargement.
     for j, (wave, Alpha, f_dir) in enumerate(zip(data["wavenumbers"], data["alphas"], data["f_dirs"])):
+        # On résout le champ et on conserve la factorisation de la matrice.
         u, matrix, factor = processing.solve_helmholtz(
             domain, spacestep, wave, f, f_dir, f_neu, f_rob,
             beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, Alpha * chi,
             prepared=prepared, return_system=True,
         )
+        # On enregistre l'énergie du champ à cette fréquence.
         energies[j] = your_compute_objective_function(domain, u, spacestep)
         if weights is not None:
-            # On résout le même problème adjoint qu'Antoine avec la factorisation du champ.
+            # On prépare le chargement du problème adjoint.
             rhs = -2 * spacestep ** 2 * numpy.conj(u).ravel()
+            # On réutilise la factorisation du champ pour résoudre le problème adjoint.
             p = factor.solve(rhs).reshape(domain.shape)
+            # On garde la même convention de restitution des valeurs intérieures.
             p[domain != _env.NODE_INTERIOR] = 0
+            # On ajoute le gradient fréquentiel avec son poids.
             gradient += weights[j] * compute_boundary_gradient(
                 domain, spacestep, Alpha, chi, u, p, prepared, f_rob,
             )
@@ -121,20 +147,26 @@ def evaluate_frequencies(domain, spacestep, data, chi, f, f_neu, f_rob,
 
 def compute_chi_1(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
                   beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob, Alpha, chi):
-    """On calcule l'énergie pour la répartition fournie, à une fréquence."""
+    """On calcule l'énergie d'une répartition pour le nombre d'onde fourni."""
+    # On résout le champ avec la répartition fournie avant d'évaluer son énergie.
     u = processing.solve_helmholtz(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
                                    beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, Alpha * chi)
     return your_compute_objective_function(domain_omega, u, spacestep)
 
 
 def project_distribution(chi_tilde, domain, V_obj):
-    """On reprend la projection par écrêtage et dichotomie d'Antoine."""
+    """On décale et on écrête la densité pour retrouver la fraction de matériau demandée."""
+    # On repère les seuls points où le matériau peut être placé.
     robin = domain == _env.NODE_ROBIN
     S = numpy.sum(robin)
+    # On encadre le décalage qui permettra de retrouver la quantité imposée.
     l_min, l_max = -1 - numpy.max(numpy.abs(chi_tilde)), 1 + numpy.max(numpy.abs(chi_tilde))
+    # On resserre cet encadrement par dichotomie.
     for _ in range(60):
         l = (l_min + l_max) / 2
+        # On décale la densité puis on limite ses valeurs entre zéro et un.
         chi = preprocessing.set2zero(numpy.maximum(0, numpy.minimum(chi_tilde + l, 1)), domain)
+        # On ajuste le décalage selon la quantité obtenue sur le mur.
         if numpy.sum(chi) / S > V_obj:
             l_max = l
         else:
@@ -143,10 +175,12 @@ def project_distribution(chi_tilde, domain, V_obj):
 
 
 def binarize_distribution(chi, domain, V_obj):
-    """On garde les plus grandes densités avec le nombre de points garnis imposé."""
+    """On garnit les points de plus forte densité avec le nombre de points demandé."""
     robin = domain == _env.NODE_ROBIN
+    # On classe les points du mur par densité décroissante.
     nodes = numpy.argwhere(robin)[numpy.argsort(-chi[robin], kind="stable")]
     binary = numpy.zeros(domain.shape)
+    # On arrondit la quantité demandée au nombre entier de points le plus proche.
     for i, j in nodes[:int(round(V_obj * numpy.sum(robin)))]:
         binary[i, j] = 1
     return binary
@@ -157,37 +191,45 @@ def your_multifrequency_optimization(domain_omega, spacestep, frequencies, c, f,
                                      material, g_source, mu, chi, V_obj, *,
                                      prepared=None, frequency_data=None, iterations=None,
                                      return_details=False, checkpoint=None, verbose=False, step_rule="increment"):
-    """On reprend la descente multifréquentielle projetée d'Antoine."""
+    """On minimise l'énergie de plusieurs fréquences avec une même répartition."""
     frequencies = numpy.asarray(frequencies, dtype=float)
+    # On vérifie que les fréquences sont distinctes et rangées dans l'ordre croissant.
     if len(frequencies) == 0 or not numpy.all(numpy.isfinite(frequencies)) or numpy.any(numpy.diff(frequencies) <= 0):
         print("On fournit des fréquences distinctes dans l'ordre croissant.")
         return None
     k_max = N_ITERATIONS if iterations is None else int(iterations)
+    # Les mêmes poids serviront au critère courant et à chaque proposition.
     weights = frequency_weights(frequencies)
     data = frequency_data
+    # On prépare les coefficients et les sources si ces données ne sont pas fournies.
     if data is None:
         data = prepare_frequencies(domain_omega, spacestep, frequencies, c, material, g_source)
     if data is None:
         return None
+    # On prépare une seule fois les parties du système qui restent fixes.
     if prepared is None:
         prepared = processing.prepare_helmholtz_system(
             domain_omega, spacestep, beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob,
         )
     arguments = (domain_omega, spacestep, data)
     loads = (f, f_neu, f_rob, beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, prepared)
+    # On commence avec une répartition qui respecte les contraintes.
     chi = project_distribution(chi, domain_omega, V_obj)
     history = []
     variation = 1.0
     path = None if checkpoint is None else Path(checkpoint)
+    # Une sauvegarde existante permet de reprendre la dernière étape acceptée.
     if path is not None and path.exists():
         saved = dict(numpy.load(path))
         chi, history, mu = saved["chi"], saved["history"].tolist(), float(saved["mu"])
         variation = float(saved.get("variation", 1.0))
+    # On calcule le critère et le gradient de la répartition de départ.
     energies, grad, u = evaluate_frequencies(*arguments, chi, *loads, weights)
     if not numpy.all(numpy.isfinite(energies)) or not numpy.all(numpy.isfinite(grad)):
         print("Les énergies ou le gradient ne sont pas finis.")
         return None
     current = float(weights @ energies)
+    # On contrôle que la sauvegarde correspond toujours au calcul courant.
     if history:
         if not numpy.isclose(history[-1], current, rtol=1e-9, atol=1e-12):
             print("Le calcul de reprise ne correspond pas à l'énergie enregistrée.")
@@ -195,6 +237,7 @@ def your_multifrequency_optimization(domain_omega, spacestep, frequencies, c, f,
     else:
         history = [current]
     n = len(history) - 1
+    # La descente continue tant que les critères d'arrêt le permettent.
     while variation >= DELTA and n < k_max and mu > MU_MIN:
         if verbose:
             print('---- iteration number = ', n)
@@ -206,21 +249,26 @@ def your_multifrequency_optimization(domain_omega, spacestep, frequencies, c, f,
         while mu > MU_MIN:
             if verbose:
                 print('    a. computing gradient descent')
+            # On propose un déplacement opposé au gradient.
             chi_tilde = chi - mu * grad
             if verbose:
                 print('    b. computing projected gradient')
+            # On projette la proposition pour conserver la quantité de matériau.
             chi_new = project_distribution(chi_tilde, domain_omega, V_obj)
+            # On arrête les essais si la projection ne change plus la répartition.
             if numpy.array_equal(chi_new, chi):
                 break
             if verbose:
                 print('    c. computing solution of Helmholtz problem, i.e., u')
                 print('    d. computing objective function, i.e., energy (E)')
+            # On évalue la proposition sur les mêmes fréquences que la répartition courante.
             values, grad_new, u_new = evaluate_frequencies(*arguments, chi_new, *loads, weights)
             energy_new = float(weights @ values)
+            # On accepte seulement une proposition dont l'énergie totale diminue.
             if numpy.isfinite(energy_new) and energy_new < history[-1]:
                 variation = float(numpy.max(numpy.abs(chi_new - chi)))
+                # Pour la bande, le pas tient compte des variations du déplacement et du gradient.
                 if step_rule == "bb":
-                    # On conserve le réglage du pas utilisé par Antoine pour la bande.
                     robin = domain_omega == _env.NODE_ROBIN
                     step = (chi_new - chi)[robin]
                     change = (grad_new - grad)[robin]
@@ -228,23 +276,30 @@ def your_multifrequency_optimization(domain_omega, spacestep, frequencies, c, f,
                     new_mu = abs(numpy.dot(step, change)) / denominator if denominator > 0 else mu
                     mu = new_mu if new_mu > 0 else mu
                 else:
+                    # Dans l'autre variante, on augmente légèrement le pas après une étape acceptée.
                     mu = mu + 0.001
                 chi, energies, grad, u = chi_new, values, grad_new, u_new
                 history.append(energy_new)
                 n += 1
                 accepted = True
                 if path is not None:
+                    # On sauvegarde la nouvelle répartition après son acceptation.
                     numpy.savez_compressed(path, chi=chi, history=numpy.asarray(history), mu=mu, variation=variation)
                 print("Étape", n, "sur", k_max, ": Énergie J =", energy_new, flush=True)
                 break
+            # Un refus réduit le pas avant une nouvelle proposition.
             mu = mu / 2
         if not accepted:
             break
+    # On conserve le résultat continu pour le distinguer du mur final.
     chi_relaxed = chi.copy()
+    # On transforme ensuite la densité en portions garnies ou réfléchissantes.
     chi = binarize_distribution(chi_relaxed, domain_omega, V_obj)
     if verbose:
         print('end. computing solution of Helmholtz problem, i.e., u')
+    # On recalcule l'énergie après ce passage au binaire.
     binary_energies, grad, u = evaluate_frequencies(*arguments, chi, *loads, weights)
+    # On rassemble l'historique et les résultats nécessaires aux comparaisons.
     result = {"frequencies_hz": frequencies, "weights": weights, "alphas": data["alphas"],
               "history": numpy.asarray(history), "chi_relaxed": chi_relaxed, "chi": chi,
               "binary_energy": float(weights @ binary_energies),
@@ -259,10 +314,13 @@ def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu,
                                  beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
                                  Alpha, mu, chi, V_obj, *, prepared=None, iterations=None,
                                  return_details=False, checkpoint=None):
-    """On utilise la même descente pour la fréquence et la source fournies."""
+    """On applique la descente à une seule fréquence avec le chargement fourni."""
+    # Le paramètre de propagation fourni représente ici un nombre d'onde.
     frequency = C * omega / (2 * numpy.pi)
+    # On conserve le coefficient et le chargement fournis pour cette fréquence.
     data = {"frequencies_hz": numpy.array([frequency]), "wavenumbers": numpy.array([omega]),
             "alphas": numpy.array([Alpha]), "f_dirs": [f_dir]}
+    # On appelle la même descente avec une grille réduite à une seule fréquence.
     result = your_multifrequency_optimization(
         domain_omega, spacestep, [frequency], C, f, f_neu, f_rob,
         beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob,
@@ -272,13 +330,15 @@ def your_optimization_procedure(domain_omega, spacestep, omega, f, f_dir, f_neu,
     )
     if result is None or return_details:
         return result
+    # On conserve les quatre sorties attendues par la fonction initiale.
     return result["chi"], result["history"].reshape(-1, 1), result["u"], result["grad"]
 
 
 def your_band_optimization(domain_omega, spacestep, frequencies, c, f, f_neu, f_rob,
                            beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob,
                            material, g_source, mu, chi, V_obj, **options):
-    """On reprend le moteur multifréquentiel pour la grille régulière de la bande."""
+    """On applique la descente sur la bande avec un pas adapté aux variations du gradient."""
+    # On utilise le réglage du pas choisi pour la descente sur la bande.
     return your_multifrequency_optimization(
         domain_omega, spacestep, frequencies, c, f, f_neu, f_rob,
         beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob,
@@ -287,16 +347,22 @@ def your_band_optimization(domain_omega, spacestep, frequencies, c, f, f_neu, f_
 
 
 def make_problem(N=N_POINTS, level=LEVEL):
-    """On prépare la géométrie et les coefficients fournis dans le programme d'Antoine."""
+    """On construit le domaine, les conditions aux limites et la répartition initiale."""
+    # La grille de stockage est deux fois plus haute que large.
     M = 2 * N
     spacestep = 1.0 / N
+    # On initialise les coefficients du modèle et ses chargements.
     beta_pde, alpha_pde, alpha_dir, beta_neu, alpha_rob, beta_rob = preprocessing._set_coefficients_of_pde(M, N)
     f, f_dir, f_neu, f_rob = preprocessing._set_rhs_of_pde(M, N)
+    # On construit le contour et on marque les points du domaine.
     domain_omega, x, y, _, _ = preprocessing._set_geometry_of_domain(M, N, level)
+    # On garde le matériau uniquement sur les points du mur.
     chi = preprocessing.set2zero(preprocessing._set_chi(M, N, x, y), domain_omega)
+    # On prépare les matrices et les voisinages qui seront réutilisés.
     prepared = processing.prepare_helmholtz_system(
         domain_omega, spacestep, beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob,
     )
+    # On regroupe les données du domaine pour les transmettre aux calculs.
     return {"domain": domain_omega, "h": spacestep, "N": N, "level": level, "x": x, "y": y,
             "chi_initial": chi, "V_obj": float(chi.sum()/numpy.sum(domain_omega == _env.NODE_ROBIN)),
             "prepared": prepared, "f": f, "f_neu": f_neu, "f_rob": f_rob,
@@ -305,7 +371,8 @@ def make_problem(N=N_POINTS, level=LEVEL):
 
 
 def evaluate_problem(problem, chi, data, weights=None):
-    """On transmet les données du domaine à la boucle de résolution d'Antoine."""
+    """On transmet les paramètres et les chargements du domaine au calcul fréquentiel."""
+    # On utilise les chargements et les matrices préparés pour ce domaine.
     return evaluate_frequencies(
         problem["domain"], problem["h"], data, chi, problem["f"], problem["f_neu"], problem["f_rob"],
         problem["beta_pde"], problem["alpha_pde"], problem["alpha_dir"], problem["beta_neu"],
@@ -314,25 +381,31 @@ def evaluate_problem(problem, chi, data, weights=None):
 
 
 def local_maxima(energies):
-    """On garde les points dont l'énergie dépasse celle des deux voisins."""
+    """On repère les énergies plus élevées que leurs deux voisines."""
     return numpy.flatnonzero((energies[1:-1] > energies[:-2]) & (energies[1:-1] > energies[2:])) + 1
 
 
 def quantity_comparison(problem, data):
-    """On agrandit la portion garnie autour de sa position initiale sur le contour."""
+    """On mesure l'énergie de portions continues garnies avec plusieurs quantités."""
     nodes = []
+    # On suit les points du contour dans leur ordre géométrique.
     for y, x in zip(problem["y"][:-1], problem["x"][:-1]):
         node = (int(y), int(x))
+        # On évite de compter deux fois de suite le même point.
         if not nodes or node != nodes[-1]:
             nodes.append(node)
     fractions, energies = [], []
     weights = frequency_weights(data["frequencies_hz"])
+    # On teste chaque quantité en agrandissant une portion continue.
     for fraction in VOLUMES:
         count = int(round(fraction * len(nodes)))
+        # On place la portion garnie autour de la même position du contour.
         start = max(0, min(len(nodes)-count, int(round(.4*len(nodes)-count/2))))
+        # On repart d'un mur nu pour chaque quantité.
         chi = numpy.zeros(problem["domain"].shape)
         for i, j in nodes[start:start+count]:
             chi[i, j] = 1
+        # On mesure l'énergie sans lancer une descente pour cette étude de quantité.
         values, _, _ = evaluate_problem(problem, chi, data)
         fractions.append(float(chi.sum()/len(nodes)))
         energies.append(float(weights @ values))
@@ -340,17 +413,19 @@ def quantity_comparison(problem, data):
 
 
 def code_hashes():
-    """On identifie les fichiers de calcul qui ont produit les résultats."""
+    """On associe les résultats aux empreintes des fichiers qui ont servi au calcul."""
     folder = Path(__file__).resolve().parent
+    # On calcule une empreinte de chaque fichier de calcul.
     return {name: hashlib.sha256((folder/name).read_bytes()).hexdigest()
             for name in ("demo_control_polycopie2024.py", "processing.py", "preprocessing.py", "compute_alpha.py")}
 
 
 def study_material(name, output_dir=None):
-    """On calcule les références puis les quatre descentes du matériau au niveau choisi."""
+    """On enregistre les références et les descentes d'un matériau."""
     root = RESULTS if output_dir is None else Path(output_dir)
     folder = root/name
     folder.mkdir(parents=True, exist_ok=True)
+    # On conserve les paramètres pour identifier les résultats enregistrés.
     parameters = {"source_directory": "support", "code_hashes": code_hashes(),
                   "material": name, "material_parameters": list(compute_alpha.MATERIAUX[name]),
                   "N_points": N_POINTS, "levels": list(LEVELS), "optimization_level": LEVEL,
@@ -363,18 +438,22 @@ def study_material(name, output_dir=None):
                   "material_fit": {key: getattr(compute_alpha,key) for key in ("l","L","N","A","B","gamma_p","rho0","c0")},
                   "modes": list(MODES), "quantity_fractions": list(VOLUMES)}
     filename = folder/"parametres.json"
+    # On évite de mélanger des calculs réalisés avec des paramètres différents.
     if filename.exists() and json.loads(filename.read_text()) != parameters:
         print("Les paramètres ont changé. On choisit un autre dossier pour les nouveaux résultats.")
         return None
     filename.write_text(json.dumps(parameters, ensure_ascii=False, indent=2)+"\n")
     cache = {}
     coefficient_file = folder/"coefficients.npz"
+    # On recharge les coefficients du matériau déjà identifiés.
     if coefficient_file.exists():
         saved = numpy.load(coefficient_file)
         cache.update(zip(saved["frequencies_hz"].tolist(), saved["alphas"].tolist()))
     data = None
+    # On prépare les références pour chaque niveau de géométrie.
     for level in LEVELS:
         problem = make_problem(N_POINTS, level)
+        # Les coefficients et les sources sont communs aux géométries de même taille.
         if data is None:
             data = prepare_frequencies(problem["domain"], problem["h"], FREQUENCIES, C,
                                        compute_alpha.MATERIAUX[name], G_SOURCE, coefficient_cache=cache)
@@ -382,9 +461,11 @@ def study_material(name, output_dir=None):
                 return None
             numpy.savez_compressed(coefficient_file, frequencies_hz=FREQUENCIES, alphas=data["alphas"])
         reference_file = folder/f"niveau{level}.npz"
+        # On reprend les références existantes lorsqu'elles sont disponibles.
         if reference_file.exists():
             reference = dict(numpy.load(reference_file))
         else:
+            # On calcule séparément le mur entièrement garni et la répartition initiale.
             full = (problem["domain"] == _env.NODE_ROBIN).astype(float)
             full_values, _, _ = evaluate_problem(problem, full, data)
             initial_values, _, _ = evaluate_problem(problem, problem["chi_initial"], data)
@@ -393,26 +474,32 @@ def study_material(name, output_dir=None):
                          "h": problem["h"], "peaks": local_maxima(full_values)}
             numpy.savez_compressed(reference_file, **reference)
         quantity_file = folder/f"quantite_niveau{level}.npz"
+        # On enregistre ensuite les résultats de l'étude de quantité.
         if not quantity_file.exists():
             fractions, values = quantity_comparison(problem, data)
             numpy.savez_compressed(quantity_file, fractions=fractions, energies=values)
         print(name, "niveau", level, ": références et quantités terminées", flush=True)
-    # On conserve ce domaine de niveau trois pour les quatre comparaisons de descente.
+    # On sélectionne le domaine utilisé pour toutes les descentes.
     if problem["level"] != LEVEL:
         problem = make_problem(N_POINTS, LEVEL)
         reference = dict(numpy.load(folder/f"niveau{LEVEL}.npz"))
     peak_indices = reference["peaks"]
+    # En l'absence de pic intérieur, on prend la plus grande énergie échantillonnée.
     if not len(peak_indices):
         peak_indices = numpy.array([reference["full"].argmax()])
+    # Le cas monofréquentiel cible le pic le plus élevé.
     mono_index = peak_indices[numpy.argmax(reference["full"][peak_indices])]
+    # On prépare les fréquences propres à chaque étude.
     selections = {"mono": numpy.array([mono_index]), "resonances": peak_indices,
                   "bande50": numpy.flatnonzero((FREQUENCIES-50) % 50 == 0),
                   "bande5": numpy.arange(len(FREQUENCIES))}
     validation = None
+    # Chaque étude part de la même répartition initiale.
     for mode_name in MODES:
         mode_file = folder/f"descente_{mode_name}.npz"
         selected = subset_frequencies(data, selections[mode_name])
         checkpoint = folder/f"reprise_{mode_name}.npz"
+        # On réutilise une descente déjà enregistrée.
         if mode_file.exists():
             result = dict(numpy.load(mode_file))
         else:
@@ -424,6 +511,7 @@ def study_material(name, output_dir=None):
                       G_SOURCE, MU_INITIAL, problem["chi_initial"].copy(), problem["V_obj"])
             options = {"prepared": problem["prepared"], "frequency_data": selected,
                        "return_details": True, "checkpoint": checkpoint}
+            # On appelle la variante adaptée aux fréquences choisies.
             if mode_name == "mono":
                 j = selections[mode_name][0]
                 result = your_optimization_procedure(
@@ -439,20 +527,23 @@ def study_material(name, output_dir=None):
                 result = function(*common, **options)
             if result is None:
                 return None
-            # On garde le résultat de calcul et on sépare les champs temporaires volumineux.
+            # On retire les grands tableaux temporaires avant l'enregistrement.
             result.pop("u", None)
             result.pop("grad", None)
             numpy.savez_compressed(mode_file, **result)
             if checkpoint.exists():
                 checkpoint.unlink()
         spectrum_file = folder/f"spectre_{mode_name}.npz"
+        # On évalue le mur binaire sur la grille commune des spectres.
         if not spectrum_file.exists():
             binary_values, _, _ = evaluate_problem(problem, result["chi"], data)
             numpy.savez_compressed(spectrum_file, frequencies_hz=FREQUENCIES,
                                    initial=reference["initial"], full=reference["full"], binary=binary_values)
         validation_file = folder/f"validation_{mode_name}.npz"
+        # On contrôle aussi les spectres aux fréquences intermédiaires.
         if not validation_file.exists():
             if validation is None:
+                # On ajoute le milieu de chaque intervalle de la grille initiale.
                 fine = numpy.sort(numpy.r_[FREQUENCIES, (FREQUENCIES[:-1]+FREQUENCIES[1:])/2])
                 validation = prepare_frequencies(problem["domain"], problem["h"], fine, C,
                                                 compute_alpha.MATERIAUX[name], G_SOURCE, coefficient_cache=cache)
@@ -466,11 +557,13 @@ def study_material(name, output_dir=None):
 
 
 def run_all_studies(output_dir=None):
-    """On calcule les quatre matériaux puis on rassemble les figures."""
+    """On calcule chaque matériau puis on trace les résultats disponibles."""
     folder = RESULTS if output_dir is None else Path(output_dir)
+    # On traite les matériaux dans l'ordre indiqué au début du fichier.
     for name in MATERIALS:
         if study_material(name, folder) is None:
             return None
+    # Les tracés utilisent seulement les résultats enregistrés.
     postprocessing.plot_all_results(folder, MATERIALS, LEVELS, MODES)
     return folder
 

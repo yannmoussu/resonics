@@ -1,0 +1,36 @@
+{
+  "calculs_identiques": true,
+  "libelle_affichage_harmonise": "Pics d'énergie",
+  "fichiers": {
+    "demo_control_polycopie2024.py": {
+      "fonctions_documentees": 19,
+      "commentaires": 97,
+      "notations_mathematiques": 0
+    },
+    "compute_alpha.py": {
+      "fonctions_documentees": 15,
+      "commentaires": 28,
+      "notations_mathematiques": 0
+    },
+    "preprocessing.py": {
+      "fonctions_documentees": 14,
+      "commentaires": 26,
+      "notations_mathematiques": 0
+    },
+    "postprocessing.py": {
+      "fonctions_documentees": 25,
+      "commentaires": 34,
+      "notations_mathematiques": 0
+    },
+    "processing.py": {
+      "fonctions_documentees": 13,
+      "commentaires": 25,
+      "notations_mathematiques": 0
+    },
+    "_env.py": {
+      "fonctions_documentees": 0,
+      "commentaires": 5,
+      "notations_mathematiques": 0
+    }
+  }
+}
