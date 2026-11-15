@@ -29,34 +29,29 @@
 \newcommand{\code}[1]{\begingroup\def\UrlBreaks{\do\_\do\/\do\.}\nolinkurl{#1}\endgroup}
 \hypersetup{pdftitle={ResoniCS -- Un mur antibruit pour le RER B},pdfauthor={Antoine MARCHE, Joachim BRET, Olympia MIQUEL, Mathis MORET-BAILLY, Yann MOUSSU}}
 
-\begin{document}
-\hypersetup{pageanchor=false}
-\begin{titlepage}
-\centering
-{\Large CentraleSupélec\par}
-\vspace{1.6cm}
-\includegraphics[width=.43\textwidth]{logo_resonics_16_9.png}
-\vspace{.6cm}
 
-{\Huge\bfseries ResoniCS\par}
-\vspace{.6cm}
-{\LARGE\bfseries Un mur antibruit pour le RER B\par}
-\vspace{.8cm}
-{\large Enseignement d'intégration --- Contrôle des ondes\par}
-{\large Année universitaire 2026--2027\par}
-\vfill
-{\large Antoine MARCHE \quad Joachim BRET\par}
-{\large Olympia MIQUEL \quad Mathis MORET-BAILLY\par}
-{\large Yann MOUSSU\par}
-\vspace{.7cm}
-\end{titlepage}
-\hypersetup{pageanchor=true}
+\title{\textbf{ResoniCS}\\[0.3em]
+\Large Optimisation acoustique d'un mur antibruit\\[0.2em]
+\normalsize Bruit du RER B : matériau, géométrie et placement\\[0.5em]
+\small Enseignement d'intégration --- Pollution acoustique --- CentraleSupélec}
+\author{\normalsize Groupe 6\\[0.3em]
+\small Antoine MARCHE \quad Joachim BRET\\
+\small Olympia MIQUEL \quad Mathis MORET-BAILLY \quad Yann MOUSSU}
+\date{Novembre 2026}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+ResoniCS étudie un mur antibruit destiné aux voies du RER B. Nous avons comparé plusieurs matériaux et plusieurs géométries, puis recherché où placer une quantité fixée d'absorbant pour diminuer l'énergie acoustique. Le modèle repose sur l'équation de Helmholtz dans un tunnel réfléchissant et une condition de Robin sur le mur. Une descente de gradient projetée permet de modifier la répartition du matériau. Après un premier essai sur les cinq plus grands pics d'énergie, nous avons retenu une optimisation sur la bande jusqu'à 2\,000 Hz. La configuration choisie est une paroi de niveau deux, couverte d'ouate de polyester sur 20\,\% de son contour. Dans les résultats de la soutenance, son énergie intégrée vaut environ 608, contre 832 pour la même paroi entièrement garnie, soit une réduction d'environ 27\,\%.
+\end{abstract}
 
 \begingroup
-\small
+\footnotesize
 \setlength{\parskip}{0pt}
+\hypersetup{linkcolor=black}
 \tableofcontents
 \endgroup
+\hypersetup{linkcolor=blue}
 \newpage
 \section{Cadrage et méthodes}
 \subsection{Du bruit en gare au projet ResoniCS}
@@ -64,7 +59,7 @@ Imaginez-vous dans une gare, il fait nuit, il se fait tard, un RER passe et un b
 
 Si cette histoire ne vous a pas convaincu, nous avons en tout cas un marché, avec les 47 gares et les quelque 900\,000 voyageurs par jour du RER B. Nous avons donc choisi de nous intéresser au bruit de cette ligne et de chercher une solution pour le diminuer.
 
-Des murs antibruit existent déjà le long des voies. Certains réfléchissent le son et d'autres en absorbent une partie grâce à un matériau poreux. Nous avons notamment regardé les exemples des RER A et E, avec des murs en béton armé et en béton de bois. L'idée de ResoniCS a été de choisir un matériau, une géométrie et une répartition de l'absorbant pour diminuer le bruit en utilisant moins de matériau.
+Des murs antibruit existent déjà le long des voies. Certains réfléchissent le son et d'autres en absorbent une partie grâce à un matériau poreux. Nous avons notamment regardé les exemples des RER A et E, avec des murs en béton armé et en béton de bois. Trois choix se complètent dans notre projet : le matériau, la géométrie du mur et le placement de l'absorbant. L'idée de ResoniCS a été de les étudier ensemble pour diminuer l'énergie acoustique avec une quantité fixée de matériau.
 
 Le travail est présenté ici dans le même ordre que lors de la soutenance~\cite{soutenance}, en partant de la source et du choix du matériau pour arriver à la solution que nous proposons. Les rappels de modèle et les compléments numériques sont regroupés en annexe~\ref{sec:complements}.
 
@@ -82,7 +77,7 @@ On modélise le bruit du RER B par une source constante dans l'espace, somme de 
 
 Cela engendre des pics d'énergie, que l'on observe sur la figure~\ref{fig:premiere-energie}. Comme le professeur l'a précisé pendant la présentation, ce ne sont pas forcément des pics de résonance au sens strict, car la courbe dépend aussi de la source et du matériau.
 
-On remarque sur la figure~\ref{fig:premiere-energie} que le pic vers 2\,500 Hz est très faible, avec une énergie d'environ 0,28, contre 11,95 près de 180 Hz. Pour diminuer les temps de calcul, nous avons donc choisi de nous intéresser aux fréquences jusqu'à 2\,000 Hz. Les figures d'optimisation présentées portent sur la bande $[1,2\,000]$ Hz, avec un pas de 5 Hz.
+On remarque sur la figure~\ref{fig:premiere-energie} que le pic vers 2\,500 Hz est très faible, avec une énergie d'environ 0,28, contre 11,95 près de 180 Hz. Pour diminuer les temps de calcul, nous avons donc choisi de nous intéresser aux fréquences jusqu'à 2\,000 Hz. Les figures d'optimisation présentées portent sur la bande $[1,2\,000]$ Hz, avec un pas d'environ 5 Hz.
 
 \begin{figure}[!htbp]
 \centering
@@ -103,10 +98,10 @@ Pour ça, nous avons utilisé la descente de gradient projetée du cours~\cite{c
     \item Le pas de descente est ajusté selon la diminution de l'énergie.
     \item Une répartition binaire est finalement retenue, avec des portions garnies et des portions réfléchissantes, puis son énergie est recalculée.
 \end{enumerate}
-Le pas de descente règle l'ampleur de la modification de la répartition à chaque étape. Il se distingue du pas de 5 Hz, qui sert à choisir les fréquences calculées. Nous utilisons \code{your_optimization_procedure} pour une fréquence, \code{your_multifrequency_optimization} pour plusieurs fréquences et \code{your_band_optimization} pour une bande.
+Le pas de descente règle l'ampleur de la modification de la répartition à chaque étape. Il se distingue du pas fréquentiel, annoncé à environ 5 Hz dans les essais de soutenance. Le champ adjoint donne le gradient avec une résolution supplémentaire de Helmholtz à chaque fréquence, ce qui évite de perturber séparément chaque point du mur. Nous utilisons \code{your_optimization_procedure} pour une fréquence, \code{your_multifrequency_optimization} pour plusieurs fréquences et \code{your_band_optimization} pour une bande.
 
 \subsection{Calcul du coefficient de paroi et premier choix du matériau}
-Pour comparer les matériaux, nous avons d'abord calculé leur coefficient complexe $\alpha$ à chaque fréquence avec \code{compute_alpha}. Le calcul part de la porosité, de la tortuosité et de la résistivité à l'écoulement de l'air du matériau. La source est décomposée en série de Fourier, puis la méthode de Nelder--Mead permet de rapprocher le modèle avec condition de Robin du modèle poreux.
+Pour comparer les matériaux, nous avons d'abord calculé leur coefficient complexe $\alpha$ à chaque fréquence avec \code{compute_alpha}. Le calcul part de la porosité, de la tortuosité et de la résistivité à l'écoulement de l'air du matériau. Le modèle à deux milieux décrit la propagation dans l'air et dans le matériau poreux. Le modèle avec condition de Robin conserve seulement l'air et représente l'effet du matériau sur sa frontière. La source est décomposée en série de Fourier, puis la méthode de Nelder--Mead choisit le coefficient qui rapproche au mieux les deux solutions dans l'air.
 
 On remarque sur la figure~\ref{fig:coefficients} que l'ouate de polyester donne le deuxième rapport $\operatorname{Re}(\alpha)/|\operatorname{Im}(\alpha)|$ le plus faible, derrière ITFH. Comme ITFH ne correspond pas à un matériau spécifique identifié dans notre projet, nous l'avons gardé comme référence numérique. Cette première comparaison nous a conduits à regarder l'ouate de plus près, puis les courbes d'énergie ont permis de vérifier ce choix.
 
@@ -126,25 +121,25 @@ Nous avons aussi comparé les prix, en les ramenant à une épaisseur de 100 mm.
 \label{fig:prix}
 \end{figure}
 
-\newpage
-
 \section{Étude des murs et premières optimisations}
 \subsection{Comparaison des matériaux sur un mur plan}
-Nous avons commencé par calculer l'énergie pour un mur plan entièrement absorbant, avec chacun des matériaux. On remarque sur la figure~\ref{fig:materiaux} que l'ouate de polyester donne le deuxième meilleur résultat au niveau du premier grand pic, derrière ITFH, qui reste une référence sans produit identifié. Cette courbe confirme donc que l'ouate de polyester est le meilleur choix parmi les matériaux identifiés que nous avons comparés. Nous avons donc choisi de la garder pour la suite, d'autant plus que c'est aussi la moins chère dans notre comparaison.
+Nous avons commencé par calculer l'énergie pour un mur plan entièrement absorbant, avec chacun des matériaux.
 
-\begin{figure}[!htbp]
+\begin{figure}[!b]
 \centering
-\includegraphics[width=.94\textwidth,height=.25\textheight,keepaspectratio]{energie_frequence_niveau0_chi1_tous_materiaux.jpg}
+\includegraphics[width=.94\textwidth,height=.24\textheight,keepaspectratio]{energie_frequence_niveau0_chi1_tous_materiaux.jpg}
 \caption{Énergie du mur plan entièrement garni pour les différents matériaux}
 \label{fig:materiaux}
 \end{figure}
+
+On remarque sur la figure~\ref{fig:materiaux} que l'ouate de polyester donne le deuxième meilleur résultat au niveau du premier grand pic, derrière ITFH, qui reste une référence sans produit identifié. Cette courbe confirme donc que l'ouate de polyester est le meilleur choix parmi les matériaux identifiés que nous avons comparés. Nous avons donc choisi de la garder pour la suite, d'autant plus que c'est aussi la moins chère dans notre comparaison.
 
 \subsection{Géométries envisagées}
 Nous avons ensuite étudié l'influence de la géométrie à partir d'un mur plan et de parois fractales de niveaux un, deux et trois~\cite{filoche}, représentés sur la figure~\ref{fig:geometries}. À chaque niveau, le motif est répété à une échelle plus petite, ce qui ajoute des irrégularités et allonge le contour.
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{fig_geometries.png}
+\includegraphics[width=\textwidth,height=.20\textheight,keepaspectratio]{fig_geometries.png}
 \caption{Domaines et parois aux niveaux zéro à trois}
 \label{fig:geometries}
 \end{figure}
@@ -158,11 +153,11 @@ Ce premier placement ne donne donc pas un bon résultat. Nous avons cherché à 
 
 \begin{figure}[!b]
 \centering
-\includegraphics[width=.86\textwidth,height=.33\textheight,keepaspectratio]{energie_frequence_niveau2_chi0_vs_chi1_lineaire.jpg}
+\includegraphics[width=.86\textwidth,height=.27\textheight,keepaspectratio]{energie_frequence_niveau2_chi0_vs_chi1_lineaire.jpg}
 \caption{Énergie de la répartition initiale et du mur entièrement garni au niveau deux}
 \label{fig:initial}
 \end{figure}
-\newpage
+\clearpage
 \section{Optimisation multifréquentielle}
 \subsection{Première approche sur les cinq plus grands maxima}
 On a au départ fait la descente de gradient en calculant l'énergie sur chacun des cinq plus gros pics du mur entièrement absorbant. Cet essai est présenté sur la figure~\ref{fig:pics}, au niveau deux avec 40\,\% d'ouate de polyester.
@@ -177,14 +172,14 @@ Mais nous avons constaté que les pics se décalaient et que cela n'éliminait p
 \end{figure}
 
 \subsection{Optimisation sur la bande fréquentielle}
-On a donc opté pour une optimisation sur l'ensemble du spectre étudié, en faisant la descente de gradient avec une énergie calculée tous les 5 Hz. Nous cherchons une seule répartition qui fonctionne pour toutes ces fréquences. Pour ça, on calcule les champs et les gradients à chaque fréquence, puis on additionne leurs contributions. Les valeurs de $\alpha$ et de l'amplitude de la source sont calculées pour chaque fréquence, et les répartitions sont comparées sur la même grille.
+On a donc opté pour une optimisation sur l'ensemble du spectre étudié, en faisant la descente de gradient avec une énergie calculée environ tous les 5 Hz. Nous cherchons une seule répartition qui fonctionne pour toutes ces fréquences. Pour ça, on calcule les champs et les gradients à chaque fréquence, puis on additionne leurs contributions. Les valeurs de $\alpha$ et de l'amplitude de la source sont calculées pour chaque fréquence, et les répartitions sont comparées sur la même grille.
 
 On remarque sur la figure~\ref{fig:bande} que le grand pic diminue fortement et que plusieurs autres pics diminuent aussi. Cet essai concerne le niveau trois avec 40\,\% d'ouate de polyester, sur la bande jusqu'à 2\,000 Hz. Il reste des variations, mais l'amélioration concerne une partie plus large du spectre.
 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=.94\textwidth,height=.25\textheight,keepaspectratio]{energie_frequence_niveau3_optim_bande.jpg}
-\caption{Énergie après optimisation sur la bande de 1 à 2\,000 Hz, pas de 5 Hz, niveau trois et fraction couverte de 40\,\%}
+\caption{Énergie après optimisation sur la bande de 1 à 2\,000 Hz, pas d'environ 5 Hz, niveau trois et fraction couverte de 40\,\%}
 \label{fig:bande}
 \end{figure}
 
@@ -194,6 +189,28 @@ Comme le premier essai est au niveau deux et le second au niveau trois, chaque c
 Nous avons enfin regardé quelle quantité de matériau il fallait utiliser, en faisant varier la fraction couverte de 10 à 100\,\% pour les quatre niveaux. La figure~\ref{fig:quantite} montre qu'ajouter du matériau ne fait pas toujours diminuer l'énergie. Les différentes configurations sont donc comparées après optimisation.
 
 Nous avons sélectionné la configuration du point le plus bas sur la figure~\ref{fig:quantite}, c'est-à-dire le niveau deux avec $\beta=0{,}2$. C'est le minimum parmi les configurations testées. L'énergie intégrée vaut environ 608, contre 832 pour le même mur entièrement garni, soit environ 27\,\% de moins. Le résultat à 10\,\% vaut environ 611, donc les deux valeurs sont proches, mais nous avons retenu le minimum à 20\,\%.
+
+
+Le tableau~\ref{tab:configurations} complète cette comparaison avec les valeurs arrondies lues sur les courbes de la soutenance. L'énergie retenue au niveau deux est environ 44\,\% plus faible que celle du mur plan entièrement garni et 17\,\% plus faible que celle du meilleur mur plan testé.
+
+\begin{table}[!htbp]
+\centering
+\small
+\begin{tabular}{crrrr}
+\toprule
+Niveau & $\beta$ retenu & \shortstack{Longueur nominale\\garnie (m)} & \shortstack{Énergie\\optimisée} & \shortstack{Énergie du mur\\entièrement garni}\\
+\midrule
+0 & $0{,}4$ & $0{,}4$ & 730 & 1\,082\\
+1 & $0{,}3$ & $0{,}6$ & 619 & 849\\
+2 & $0{,}2$ & $0{,}8$ & 608 & 832\\
+3 & $0{,}1$ & $0{,}8$ & 618 & 967\\
+\bottomrule
+\end{tabular}
+\caption{Configurations retenues dans les essais de quantité}
+\label{tab:configurations}
+\end{table}
+
+La fraction couverte se rapporte à des contours de longueurs différentes. Au niveau deux, 20\,\% des quatre mètres de contour représentent une longueur garnie nominale de $0{,}8$ m. Le meilleur mur plan testé en utilise $0{,}4$ m. Le choix du niveau deux repose donc ici sur l'énergie calculée la plus faible. Au niveau un, plusieurs fractions donnent 619 après arrondi, et la valeur de 30\,\% ne désigne pas un minimum unique établi.
 
 \begin{figure}[!htbp]
 \centering
@@ -229,6 +246,16 @@ Nous sommes partis d'une source simplifiée du RER B pour choisir un matériau e
 
 \subsection{Propriétés de la solution et maillage}
 \label{sec:modele}
+La pression complexe à la fréquence $f$ est notée $u_f$. La source est imposée sur $\Gamma_D$, les côtés réfléchissants sont notés $\Gamma_N$ et le mur est $\Gamma_R$. Le problème utilisé dans le cours~\cite{cours} s'écrit
+\begin{equation*}
+\begin{cases}
+\Delta u_f+k_f^2u_f=0 & \text{dans }\Omega\\
+u_f=g & \text{sur }\Gamma_D\\
+\partial_nu_f=0 & \text{sur }\Gamma_N\\
+\partial_nu_f+\alpha_f\chi u_f=0 & \text{sur }\Gamma_R
+\end{cases}
+\qquad k_f=\frac{2\pi f}{c}
+\end{equation*}
 Les contours utilisés sont polygonaux et le bord où la source est imposée a une longueur positive. D'après les résultats du cours~\cite{cours}, le problème admet une solution unique pour une source suffisamment régulière, avec $\operatorname{Re}(\alpha)>0$, $\operatorname{Im}(\alpha)<0$ et une portion de longueur positive couverte de matériau. La solution dépend continûment de la source. Cela signifie qu'à fréquence fixée, une petite modification de la source produit une petite modification du champ.
 
 Le programme de référence utilise une largeur nominale de 1 m et une profondeur de 1 m pour le mur plan. Les motifs déplacent la paroi autour de cette profondeur, tout en conservant une aire géométrique nominale de $1\,\mathrm{m^2}$. La longueur du contour vaut 1, 2, 4 et 8 m aux niveaux zéro à trois. Son tableau de calcul comporte $N=128$ points en largeur et $M=256$ en hauteur, avec un pas $h=1/128$ m, soit environ $7{,}81$ mm. Les points situés sous la paroi sont extérieurs au domaine.
@@ -243,7 +270,7 @@ Le maillage satisfait donc ce contrôle pour la propagation des ondes. Les plus 
 
 \subsection{Critère minimisé et calcul du gradient}
 \label{sec:critere}
-L'énergie utilisée pour les comparaisons est l'intégrale du module de pression au carré. Nous cherchons une même répartition pour toute la bande $I$, en gardant la fraction couverte $\beta$. Le problème du cours~\cite{cours} s'écrit
+Les méthodes décrites ici correspondent aux fonctions du programme actuel. L'énergie utilisée pour les comparaisons est l'intégrale du module de pression au carré. Nous cherchons une même répartition pour toute la bande $I$, en gardant la fraction couverte $\beta$. Le problème du cours~\cite{cours} s'écrit
 \begin{equation*}
 J(f,\chi)=\int_\Omega |u_f(\chi)|^2\,\mathrm dx
 \qquad
@@ -264,12 +291,38 @@ Pour savoir où déplacer le matériau, nous utilisons le champ adjoint $p_f$. I
 =-\int_{\Gamma_R}\delta\chi\,
 \operatorname{Re}\!\left(\alpha_f u_f p_f\right)\,\mathrm ds
 \end{equation*}
-\code{compute_boundary_gradient} calcule les contributions du bord à partir de ses voisins intérieurs, puis \code{evaluate_frequencies} additionne les gradients des fréquences choisies avec leurs poids. La projection conserve la quantité de matériau pendant la descente. Le passage final à zéro ou un garde le nombre de points garnis le plus proche de la quantité demandée.
+\code{compute_boundary_gradient} calcule les contributions du bord à partir de ses voisins intérieurs, puis \code{evaluate_frequencies} additionne les gradients des fréquences choisies avec leurs poids. La projection conserve la quantité de matériau pendant la descente. Pour ça, la densité est décalée puis limitée entre zéro et un,
+\begin{equation*}
+\mathcal P(z)=\max\!\left(0,\min(z+\ell,1)\right)
+\end{equation*}
+Le décalage $\ell$ est trouvé par dichotomie pour retrouver la fraction $\beta$. Dans les variantes à une fréquence et sur les pics, le pas augmente de $0{,}001$ après une étape acceptée. Sur la bande, il est adapté à partir des variations du gradient, avec un réglage de type Barzilai--Borwein présenté dans le cours~\cite{cours}. Une proposition qui augmente le critère est refusée et le pas est divisé par deux. Le passage final à zéro ou un garde le nombre de points garnis le plus proche de la quantité demandée, puis son énergie est recalculée.
 
 \Needspace{11\baselineskip}
 \subsection{Valeurs du coefficient de l'ouate de polyester}
 \label{sec:alpha}
-Les paramètres retenus pour l'ouate sont une porosité de $0{,}90$, une tortuosité de $1{,}05$ et une résistivité de $15\,000\ \mathrm{Pa\,s\,m^{-2}}$. Nous avons vérifié le coefficient aux fréquences 200, 800 et 2\,000 Hz en relançant \code{compute_alpha}. Les valeurs obtenues sont données dans le tableau~\ref{tab:alpha}.
+Les paramètres numériques des sept matériaux comparés sont donnés dans le tableau~\ref{tab:materiaux}. Ils correspondent au dictionnaire \code{MATERIAUX} utilisé pour l'identification.
+
+\begin{table}[!htbp]
+\centering
+\small
+\begin{tabular}{lrrr}
+\toprule
+Matériau & Porosité & Tortuosité & \shortstack{Résistivité\\($\mathrm{Pa\,s\,m^{-2}}$)}\\
+\midrule
+Mélamine & $0{,}99$ & $1{,}02$ & 14\,000\\
+Isorel & $0{,}70$ & $1{,}15$ & 142\,300\\
+ITFH & $0{,}94$ & $1{,}00$ & 9\,067\\
+B5 & $0{,}20$ & $1{,}22$ & 2\,124\,000\\
+Laine de roche & $0{,}97$ & $1{,}10$ & 30\,000\\
+Laine de verre & $0{,}99$ & $1{,}10$ & 20\,000\\
+Ouate de polyester & $0{,}90$ & $1{,}05$ & 15\,000\\
+\bottomrule
+\end{tabular}
+\caption{Paramètres des matériaux comparés}
+\label{tab:materiaux}
+\end{table}
+
+Pour l'ouate retenue, nous avons vérifié le coefficient aux fréquences 200, 800 et 2\,000 Hz en relançant \code{compute_alpha}. Les valeurs obtenues sont données dans le tableau~\ref{tab:alpha}.
 
 \begin{table}[!htbp]
 \centering
@@ -320,7 +373,7 @@ La figure~\ref{fig:annexe-bande-deux} complète la comparaison avec les cinq pic
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=.94\textwidth,height=.25\textheight,keepaspectratio]{energie_frequence_niveau2_optim_bande.jpg}
-\caption{Énergie après optimisation sur la bande de 1 à 2\,000 Hz, pas de 5 Hz, niveau deux et fraction couverte de 40\,\%}
+\caption{Énergie après optimisation sur la bande de 1 à 2\,000 Hz, pas d'environ 5 Hz, niveau deux et fraction couverte de 40\,\%}
 \label{fig:annexe-bande-deux}
 \end{figure}
 

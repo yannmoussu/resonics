@@ -18,3 +18,15 @@ depuis ce CSV. Il ne modifie aucun programme de calcul.
 Les autres données numériques récentes ne sont pas utilisées pour redessiner
 les spectres historiques : les valeurs obtenues avec la version actuelle ne
 coïncident pas avec les courbes de soutenance.
+
+La fusion avec le rapport transmis ensuite ajoute configurations_soutenance.csv.
+Ses quatre lignes reprennent les minima présentés et les références entièrement
+garnies, lus sur les mosaïques historiques. La longueur garnie est la fraction
+couverte multipliée par la longueur nominale du contour. Une fraction plus petite
+ne signifie donc pas forcément moins de matériau entre deux niveaux différents.
+
+verification_numerique_code.json conserve les contrôles effectués après la
+réécriture des commentaires de support : assemblages préparés et de référence,
+solution affine, gradient par différences finies, projection, binarisation et
+quelques étapes des descentes. Ce sont des contrôles ciblés, pas une nouvelle
+exécution de toutes les études de la soutenance.

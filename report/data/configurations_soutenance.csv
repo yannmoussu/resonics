@@ -1,0 +1,5 @@
+niveau,fraction_retenue,longueur_contour_m,longueur_garnie_m,energie_optimisee,energie_entierement_garni
+0,0.4,1,0.4,730,1082
+1,0.3,2,0.6,619,849
+2,0.2,4,0.8,608,832
+3,0.1,8,0.8,618,967

@@ -1,5 +1,20 @@
 # Consigne actuelle — rapport après la soutenance
 
+## Fusion des deux rapports et commentaires du code
+
+Le rapport utilise désormais le titre, le résumé et la présentation initiale du
+rapport fourni dans context/rapport.tex, avec les cinq noms réels. Ses explications
+utiles sont combinées au récit de soutenance existant, dans le même style simple.
+Les erreurs de convention, de garanties numériques et de quantité sont corrigées.
+La comparaison des quantités doit toujours tenir compte de la longueur du contour.
+
+Les commentaires demandés concernent uniquement les six fichiers Python de
+support. Ils décrivent les étapes avec des phrases françaises sans notation
+mathématique. Les calculs et les signatures restent identiques. Le libellé des
+pics d'énergie est harmonisé ; les anciennes données et leurs paramètres ne sont
+pas réécrits.
+
+
 ## Compléments autorisés après vérification de l'énoncé
 
 Les rappels sur les propriétés de la solution, le maillage, le critère et le gradient,
