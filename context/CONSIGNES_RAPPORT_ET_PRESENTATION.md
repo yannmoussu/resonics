@@ -1,5 +1,24 @@
 # Consigne actuelle — rapport après la soutenance
 
+## Compléments autorisés après vérification de l'énoncé
+
+Les rappels sur les propriétés de la solution, le maillage, le critère et le gradient,
+les valeurs du coefficient de l'ouate et les comparaisons graphiques sont ajoutés.
+Ils restent courts et suivent les formulations de la soutenance, en alternant
+« on », « nous » et des formulations impersonnelles.
+
+L'étude théorique du bord ouvert comparé au bord réfléchissant est explicitement
+exclue par l'utilisateur. Aucun passage sur la répartition du travail du groupe
+ne doit être ajouté.
+
+Les performances historiques sont reprises des figures de SlidesVF. Elles ne
+doivent pas être mélangées avec les résultats du programme actuel, qui donnent
+des valeurs différentes. Les nouveaux calculs du coefficient de l'ouate sont
+identifiés séparément et vérifiés. Les programmes de simulation restent inchangés.
+
+## Cadrage conservé de la réécriture
+
+
 La demande du 15 novembre 2026 remplace les consignes de rédaction ci-dessous :
 réécrire report/report.tex en suivant uniquement le récit et les figures de
 context/SlidesVF/. Garder un rapport court, simple, sans nouveaux résultats,

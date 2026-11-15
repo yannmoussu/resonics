@@ -1,0 +1,150 @@
+{
+  "N": 128,
+  "M": 256,
+  "h": 0.0078125,
+  "c": 343.0,
+  "lambda_min": 0.1715,
+  "points_per_wavelength": 21.952,
+  "source_grid": [
+    50,
+    2000,
+    5
+  ],
+  "model_nominal_width": 1.0,
+  "array_x_last": 0.9921875,
+  "array_depth_last": 1.9921875,
+  "geometry": [
+    {
+      "level": 0,
+      "wall_x_bounds": [
+        0.0,
+        0.9921875
+      ],
+      "wall_depth_bounds": [
+        1.0,
+        1.0
+      ],
+      "nominal_length": 1.0,
+      "nominal_area": 1.0,
+      "smallest_segment": 1.0,
+      "steps_per_smallest_segment": 128.0,
+      "interior_nodes": 16002,
+      "robin_nodes": 128,
+      "interior_quadrature_area": 0.9766845703125
+    },
+    {
+      "level": 1,
+      "wall_x_bounds": [
+        0.0,
+        0.9921875
+      ],
+      "wall_depth_bounds": [
+        0.75,
+        1.25
+      ],
+      "nominal_length": 2.0,
+      "nominal_area": 1.0,
+      "smallest_segment": 0.25,
+      "steps_per_smallest_segment": 32.0,
+      "interior_nodes": 15938,
+      "robin_nodes": 256,
+      "interior_quadrature_area": 0.9727783203125
+    },
+    {
+      "level": 2,
+      "wall_x_bounds": [
+        0.0,
+        0.9921875
+      ],
+      "wall_depth_bounds": [
+        0.6875,
+        1.3125
+      ],
+      "nominal_length": 4.0,
+      "nominal_area": 1.0,
+      "smallest_segment": 0.0625,
+      "steps_per_smallest_segment": 8.0,
+      "interior_nodes": 15810,
+      "robin_nodes": 512,
+      "interior_quadrature_area": 0.9649658203125
+    },
+    {
+      "level": 3,
+      "wall_x_bounds": [
+        0.0,
+        0.9921875
+      ],
+      "wall_depth_bounds": [
+        0.671875,
+        1.328125
+      ],
+      "nominal_length": 8.0,
+      "nominal_area": 1.0,
+      "smallest_segment": 0.015625,
+      "steps_per_smallest_segment": 2.0,
+      "interior_nodes": 15554,
+      "robin_nodes": 1024,
+      "interior_quadrature_area": 0.9493408203125
+    }
+  ],
+  "alpha": [
+    {
+      "f": 200.0,
+      "alpha_cached": [
+        7.4144504171542085,
+        -8.334885155897098
+      ],
+      "alpha_direct": [
+        7.4144502384837825,
+        -8.334885280125265
+      ],
+      "relative_difference": 1.950737108516751e-08,
+      "success": true
+    },
+    {
+      "f": 800.0,
+      "alpha_cached": [
+        12.532998007981181,
+        -19.72348399652831
+      ],
+      "alpha_direct": [
+        12.532997808280534,
+        -19.723483705807453
+      ],
+      "relative_difference": 1.509299856092412e-08,
+      "success": true
+    },
+    {
+      "f": 2000.0,
+      "alpha_cached": [
+        15.089384971870977,
+        -40.95501288001932
+      ],
+      "alpha_direct": [
+        15.089385097567266,
+        -40.95501363070215
+      ],
+      "relative_difference": 1.7438658467397176e-08,
+      "success": true
+    }
+  ],
+  "material": [
+    0.9,
+    1.05,
+    15000
+  ],
+  "alpha0": [
+    50,
+    -50
+  ],
+  "coefficient_fit_parameters": {
+    "l_m": 2.5,
+    "L_m": 10.0,
+    "fourier_order_N": 20,
+    "A": 1,
+    "B": 1,
+    "gamma_p": 1.4,
+    "rho0_kg_m3": 1.2,
+    "c0_m_s": 343.0
+  }
+}
