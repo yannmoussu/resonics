@@ -1,3 +1,25 @@
+# Consigne actuelle — rapport après la soutenance
+
+La demande du 15 novembre 2026 remplace les consignes de rédaction ci-dessous :
+réécrire report/report.tex en suivant uniquement le récit et les figures de
+context/SlidesVF/. Garder un rapport court, simple, sans nouveaux résultats,
+nouvelles figures ou nouvelles slides. Le choix présenté est l'ouate de polyester,
+une paroi de niveau deux et une fraction garnie de 20 %. La réponse fréquentielle
+est décrite par ses maxima d'énergie, sans les assimiler systématiquement à des
+résonances propres. Les essais sur cinq maxima précèdent l'optimisation sur la bande
+jusqu'à 2 000 Hz, au pas annoncé de 5 Hz.
+
+Les programmes de context/EI_Antoine sont repris dans support sans changer leurs
+algorithmes. Les seuls ajustements concernent les chemins de sortie et l'indication
+du dossier source. Le programme actuel ne régénère pas par défaut toutes les figures
+historiques de la soutenance, notamment la sélection finale niveau deux à 20 %.
+L'ancien rapport et les anciens programmes sont conservés dans context/archives/,
+ignoré par Git, pour d'éventuelles améliorations ultérieures.
+
+---
+
+## Anciennes consignes conservées pour mémoire
+
 # Consignes pour la prochaine rédaction
 
 La priorité actuelle est le code et la validation numérique. Le rapport et la présentation ne doivent pas être repris avant la fin de cette étape.
