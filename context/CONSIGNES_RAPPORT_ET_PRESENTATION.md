@@ -3,7 +3,7 @@
 La demande du 15 novembre 2026 remplace les consignes de rédaction ci-dessous :
 réécrire report/report.tex en suivant uniquement le récit et les figures de
 context/SlidesVF/. Garder un rapport court, simple, sans nouveaux résultats,
-nouvelles figures ou nouvelles slides. Le rapport reprend les formulations données par le groupe dans le récit de la soutenance et emploie le même ton pour le reste, avec des phrases comme « On remarque », « On a constaté » et « On a donc opté ». Le choix présenté est l'ouate de polyester,
+nouvelles figures ou nouvelles slides. Le rapport reprend les formulations données par le groupe dans le récit de la soutenance et emploie le même ton pour le reste, en alternant « on », « nous » et des formulations impersonnelles pour éviter les répétitions, tout en gardant les tournures de la soutenance. Le choix présenté est l'ouate de polyester,
 une paroi de niveau deux et une fraction garnie de 20 %. La réponse fréquentielle
 est décrite par ses maxima d'énergie, sans les assimiler systématiquement à des
 résonances propres. Les essais sur cinq maxima précèdent l'optimisation sur la bande
