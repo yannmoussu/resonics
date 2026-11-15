@@ -212,6 +212,13 @@ def _plot_references(folder, references, materials, levels):
             peaks = result["peaks"].astype(int)
             ax.plot(frequencies[peaks], full[peaks], "o", ms=3, color="tab:orange")
             _save_figure(fig, folder, f"energie_{name}_niveau{level}.png")
+            if level == 3:
+                title = f"Niveau 3 — {MATERIAL_LABELS[name]}\nRépartition initiale et mur entièrement garni — "+_band_text(frequencies)
+                fig, ax = _axes(title)
+                ax.plot(frequencies, result["initial"], color="tab:blue", lw=1.4, label="Répartition initiale")
+                ax.plot(frequencies, full, color="black", ls="--", lw=1.3, label="Entièrement garni")
+                ax.legend()
+                _save_figure(fig, folder, f"comparaison_repartition_initiale_{name}_niveau3.png")
             _write_csv(folder/name/f"spectre_niveau{level}.csv",
                        ("frequence_hz", "J_initial", "J_entierement_garni"),
                        zip(frequencies, result["initial"], full))
@@ -279,14 +286,14 @@ def _plot_geometries(folder, references, materials, levels):
 
 
 def _plot_quantities(folder, references, materials, levels):
-    """On compare les portions centrales garnies aux différents niveaux."""
+    """On compare l'allongement d'une portion garnie aux différents niveaux."""
     for name in materials:
         quantities = {level: _read_result(folder/name/f"quantite_niveau{level}.npz") for level in levels}
         quantities = {level: result for level, result in quantities.items() if result is not None}
         if not quantities or not references[name]:
             continue
         first = next(iter(references[name].values()))
-        title = MATERIAL_LABELS[name]+" — niveaux "+", ".join(map(str, quantities))+"\nPortion centrale garnie — "+_band_text(first["frequencies_hz"])
+        title = MATERIAL_LABELS[name]+" — niveaux "+", ".join(map(str, quantities))+"\nAllongement de la portion initiale — "+_band_text(first["frequencies_hz"])
         fig, ax = _axes(title, "Part du mur garnie (%)", "Énergie J moyenne sur la bande")
         for (level, result), color, style in zip(quantities.items(), COLORS, STYLES):
             ax.plot(100*result["fractions"], result["energies"], "o", color=color, ls=style, lw=1.3, ms=3, label=f"Niveau {level}")
@@ -369,7 +376,7 @@ def _plot_mode_materials(folder, mode, materials, results, spectra, validations)
     first = spectra[first_name][mode]
     description = _mode_description(mode, results[first_name][mode], first["frequencies_hz"])
     if mode == "mono":
-        description = "Descentes à une fréquence — fréquences indiquées dans la légende"
+        description = "Descentes à une fréquence — 100 itérations maximum"
     elif mode == "resonances":
         description = "Pics repérés sur "+_band_text(first["frequencies_hz"])+" — 100 itérations maximum"
     title = "Niveau 3 — "+", ".join(MATERIAL_LABELS[name] for name in available)+"\n"+description
@@ -414,6 +421,7 @@ def plot_all_results(folder, materials, levels, modes=("mono", "resonances", "ba
     materials, levels = list(materials), list(levels)
     references = {name: {level: _read_result(folder/name/f"niveau{level}.npz") for level in levels} for name in materials}
     references = {name: {level: result for level, result in found.items() if result is not None} for name, found in references.items()}
+    _plot_coefficients(folder, materials)
     _plot_references(folder, references, materials, levels)
     _plot_geometries(folder, references, materials, levels)
     _plot_quantities(folder, references, materials, levels)
@@ -479,3 +487,24 @@ def _plot_legacy_figures(folder, references, results):
         ax.plot(len(result["history"])-1, result["binary_energy"], "x", color="black", ms=7, label="Mur binaire")
         ax.legend()
         _save_figure(fig, folder, "fig_energy_real.jpg")
+
+
+
+def _plot_coefficients(folder, materials):
+    """On compare le rapport des parties réelle et imaginaire du coefficient de paroi."""
+    coefficients = {name: _read_result(folder/name/"coefficients.npz") for name in materials}
+    coefficients = {name: values for name, values in coefficients.items() if values is not None}
+    if not coefficients:
+        return
+    first = next(iter(coefficients.values()))
+    title = ", ".join(MATERIAL_LABELS[name] for name in coefficients)+"\nCoefficient de paroi, profil uniforme — "+_band_text(first["frequencies_hz"])
+    fig, ax = _axes(title, ylabel="Re(α) / |Im(α)|")
+    for (name, values), color, style in zip(coefficients.items(), COLORS, STYLES):
+        alpha = values["alphas"]
+        ratio = numpy.divide(alpha.real, numpy.abs(alpha.imag),
+                             out=numpy.full(alpha.shape, numpy.nan), where=numpy.abs(alpha.imag)>0)
+        ax.plot(values["frequencies_hz"], ratio, color=color, ls=style, lw=1.4, label=MATERIAL_LABELS[name])
+        _write_csv(folder/name/"coefficients.csv", ("frequence_hz", "alpha_reel", "alpha_imaginaire", "rapport_reel_module_imaginaire"),
+                   zip(values["frequencies_hz"], alpha.real, alpha.imag, ratio))
+    ax.legend()
+    _save_figure(fig, folder, "rapport_ei.png")

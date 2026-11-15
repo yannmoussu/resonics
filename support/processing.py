@@ -10,8 +10,6 @@ import scipy.sparse.linalg
 
 # MRG packages
 import _env
-import preprocessing
-from preprocessing import set2zero, replace_old_by_new
 
 
 def is_in_interior_domain(node):
@@ -70,32 +68,8 @@ def is_on_robin_boundary(node):
         return False
 
 
-def is_on_liner_a_boundary(node):
-    """
-    :param node: node of the grid
-    :type node: int64
-    :return: boolean
-    :rtype: boolean
-    """
-
-    if node == _env.NODE_LINER_A:
-        return True
-    else:
-        return False
 
 
-def is_on_liner_b_boundary(node):
-    """
-    :param node: node of the grid
-    :type node: int64
-    :return: boolean
-    :rtype: boolean
-    """
-
-    if node == _env.NODE_LINER_B:
-        return True
-    else:
-        return False
 
 
 def compute_stiffness_matrix(domain, space_step, f, beta_pde):
@@ -207,16 +181,16 @@ def compute_dirichlet_condition(domain, f_dir, alpha_dir, beta_pde, mat, rhs):
                 row = i * N + j
                 if north:
                     mat[row, row - N] -= beta_pde[i - 1, j]
-                    rhs[row] += -f_dir[i - 1, j] / alpha_dir[i - 1, j]
+                    rhs[row] -= beta_pde[i - 1, j] * f_dir[i - 1, j] / alpha_dir[i - 1, j]
                 if south:
                     mat[row, row + N] -= beta_pde[i + 1, j]
-                    rhs[row] += -f_dir[i + 1, j] / alpha_dir[i + 1, j]
+                    rhs[row] -= beta_pde[i + 1, j] * f_dir[i + 1, j] / alpha_dir[i + 1, j]
                 if east:
                     mat[row, row + 1] -= beta_pde[i, j + 1]
-                    rhs[row] += -f_dir[i, j + 1] / alpha_dir[i, j + 1]
+                    rhs[row] -= beta_pde[i, j + 1] * f_dir[i, j + 1] / alpha_dir[i, j + 1]
                 if west:
                     mat[row, row - 1] -= beta_pde[i, j - 1]
-                    rhs[row] += -f_dir[i, j - 1] / alpha_dir[i, j - 1]
+                    rhs[row] -= beta_pde[i, j - 1] * f_dir[i, j - 1] / alpha_dir[i, j - 1]
 
     return mat, rhs
 
@@ -248,264 +222,134 @@ def compute_neumann_condition(domain, space_step, f_neu, beta_neu, beta_pde, mat
                 row = i * N + j
                 if north:
                     mat[row, row - N] -= beta_pde[i - 1, j]
-                    mat[row, row] += beta_pde[i, j]
-                    rhs[row] += h * f_neu[i - 1, j] / beta_neu[i - 1, j]
+                    mat[row, row] += beta_pde[i - 1, j]
+                    rhs[row] -= beta_pde[i - 1, j] * h * f_neu[i - 1, j] / beta_neu[i - 1, j]
                 if south:
                     mat[row, row + N] -= beta_pde[i + 1, j]
-                    mat[row, row] += beta_pde[i, j]
-                    rhs[row] += h * f_neu[i + 1, j] / beta_neu[i + 1, j]
+                    mat[row, row] += beta_pde[i + 1, j]
+                    rhs[row] -= beta_pde[i + 1, j] * h * f_neu[i + 1, j] / beta_neu[i + 1, j]
                 if east:
                     mat[row, row + 1] -= beta_pde[i, j + 1]
-                    mat[row, row] += beta_pde[i, j]
-                    rhs[row] += h * f_neu[i, j + 1] / beta_neu[i, j + 1]
+                    mat[row, row] += beta_pde[i, j + 1]
+                    rhs[row] -= beta_pde[i, j + 1] * h * f_neu[i, j + 1] / beta_neu[i, j + 1]
                 if west:
                     mat[row, row - 1] -= beta_pde[i, j - 1]
-                    mat[row, row] += beta_pde[i, j]
-                    rhs[row] += h * f_neu[i, j - 1] / beta_neu[i, j - 1]
+                    mat[row, row] += beta_pde[i, j - 1]
+                    rhs[row] -= beta_pde[i, j - 1] * h * f_neu[i, j - 1] / beta_neu[i, j - 1]
 
     return mat, rhs
 
 
 def compute_robin_condition(domain, space_step, f_rob, alpha_rob, beta_rob, beta_pde, mat, rhs):
-    """
-    On assemble la condition de Robin avec le signe du polycopié.
-
-    :param domain:
-    :param space_step:
-    :param f_rob:
-    :param alpha_rob:
-    :param beta_rob:
-    :param beta_pde:
-    :param mat:
-    :param rhs:
-    :return:
-    """
-
+    """On élimine les voisins de Robin avec la convention positive du coefficient."""
     h = space_step
-    (M, N) = numpy.shape(domain)
-    for i in range(0, M):
-        for j in range(0, N):
-            # the interior domain AND the frontiers have to be strictly inside of domain
+    M, N = domain.shape
+    for i in range(M):
+        for j in range(N):
             if is_in_interior_domain(domain[i, j]):
-                north = is_on_robin_boundary(domain[i - 1, j])
-                south = is_on_robin_boundary(domain[i + 1, j])
-                east = is_on_robin_boundary(domain[i, j + 1])
-                west = is_on_robin_boundary(domain[i, j - 1])
                 row = i * N + j
-                if north:
-                    mat[row, row - N] -= beta_pde[i - 1, j]
-                    mat[row, row] += beta_pde[i, j] - (alpha_rob[i - 1, j] / beta_pde[i, j]) * h / (
-                            beta_rob[i - 1, j] + (alpha_rob[i - 1, j] / beta_pde[i, j] * h))
-                    rhs[row] += (h / (beta_rob[i - 1, j] + ((alpha_rob[i - 1, j] / beta_pde[i, j]) * h))) * f_rob[
-                        i - 1, j]
-                if south:
-                    mat[row, row + N] -= beta_pde[i + 1, j]
-                    mat[row, row] += beta_pde[i, j] - (alpha_rob[i + 1, j] / beta_pde[i, j]) * h / (
-                            beta_rob[i + 1, j] + (alpha_rob[i + 1, j] / beta_pde[i, j] * h))
-                    rhs[row] += (h / (beta_rob[i + 1, j] + ((alpha_rob[i + 1, j] / beta_pde[i, j]) * h))) * f_rob[
-                        i + 1, j]
-                if east:
-                    mat[row, row + 1] -= beta_pde[i, j + 1]
-                    mat[row, row] += beta_pde[i, j] - (alpha_rob[i, j + 1] / beta_pde[i, j]) * h / (
-                            beta_rob[i, j + 1] + (alpha_rob[i, j + 1] / beta_pde[i, j] * h))
-                    rhs[row] += (h / (beta_rob[i, j + 1] + ((alpha_rob[i, j + 1] / beta_pde[i, j]) * h))) * f_rob[
-                        i, j + 1]
-                if west:
-                    mat[row, row - 1] -= beta_pde[i, j - 1]
-                    mat[row, row] += beta_pde[i, j] - (alpha_rob[i, j - 1] / beta_pde[i, j]) * h / (
-                            beta_rob[i, j - 1] + (alpha_rob[i, j - 1] / beta_pde[i, j] * h))
-                    rhs[row] += (h / (beta_rob[i, j - 1] + ((alpha_rob[i, j - 1] / beta_pde[i, j]) * h))) * f_rob[
-                        i, j - 1]
-
+                for a, b in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):
+                    if is_on_robin_boundary(domain[a, b]):
+                        coefficient = beta_pde[a, b]
+                        denominator = beta_rob[a, b] + h * alpha_rob[a, b]
+                        mat[row, a * N + b] -= coefficient
+                        mat[row, row] += coefficient * beta_rob[a, b] / denominator
+                        rhs[row] -= coefficient * h * f_rob[a, b] / denominator
     return mat, rhs
+
+
+def prepare_helmholtz_system(domain, space_step, beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob):
+    """On prépare les matrices et les voisins de bord qui restent fixes."""
+    zero = numpy.zeros(domain.shape, dtype=numpy.complex128)
+    matrix, rhs = compute_stiffness_matrix(domain, space_step, zero, beta_pde)
+    mass, _ = compute_mass_matrix(domain, space_step, alpha_pde)
+    matrix, rhs = compute_dirichlet_condition(domain, zero, alpha_dir, beta_pde, matrix, rhs)
+    matrix, rhs = compute_neumann_condition(domain, space_step, zero, beta_neu, beta_pde, matrix, rhs)
+    matrix, rhs = compute_robin_condition(domain, space_step, zero, zero, beta_rob, beta_pde, matrix, rhs)
+    faces = {kind: [[], [], []] for kind in ('dirichlet', 'neumann', 'robin')}
+    M, N = domain.shape
+    for i, j in numpy.argwhere(domain == _env.NODE_INTERIOR):
+        for a, b in ((i - 1, j), (i + 1, j), (i, j - 1), (i, j + 1)):
+            kind = {_env.NODE_DIRICHLET: 'dirichlet', _env.NODE_NEUMANN: 'neumann',
+                    _env.NODE_ROBIN: 'robin'}.get(domain[a, b])
+            if kind is not None:
+                faces[kind][0].append(i * N + j)
+                faces[kind][1].append(a * N + b)
+                faces[kind][2].append(beta_pde[a, b])
+    prepared = {'stiffness': matrix.tocsr(), 'mass': mass.tocsr(),
+                'interior_mask': (domain == _env.NODE_INTERIOR).ravel(), 'shape': domain.shape}
+    prepared['stiffness'].eliminate_zeros()
+    for kind, (rows, nodes, coefficients) in faces.items():
+        prepared[kind + '_rows'] = numpy.asarray(rows, dtype=int)
+        prepared[kind + '_nodes'] = numpy.asarray(nodes, dtype=int)
+        prepared[kind + '_coefficients'] = numpy.asarray(coefficients, dtype=complex)
+    prepared['dirichlet_factors'] = prepared['dirichlet_coefficients'] / alpha_dir.ravel()[prepared['dirichlet_nodes']]
+    prepared['neumann_factors'] = space_step * prepared['neumann_coefficients'] / beta_neu.ravel()[prepared['neumann_nodes']]
+    prepared['robin_beta'] = beta_rob.ravel()[prepared['robin_nodes']]
+    return prepared
+
+
+def assemble_helmholtz_system(domain, space_step, omega, f, f_dir, f_neu, f_rob,
+                             beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
+                             prepared=None):
+    """On assemble le système complet avec les données de la fréquence choisie."""
+    if prepared is None:
+        # On suit les étapes d'assemblage du solveur initial.
+        matrix, rhs = compute_stiffness_matrix(domain, space_step, f, beta_pde)
+        mass, _ = compute_mass_matrix(domain, space_step, alpha_pde)
+        matrix = matrix + omega ** 2 * mass
+        matrix, rhs = compute_dirichlet_condition(domain, f_dir, alpha_dir, beta_pde, matrix, rhs)
+        matrix, rhs = compute_neumann_condition(domain, space_step, f_neu, beta_neu, beta_pde, matrix, rhs)
+        matrix, rhs = compute_robin_condition(domain, space_step, f_rob, alpha_rob, beta_rob, beta_pde, matrix, rhs)
+        rhs = rhs.ravel()
+    else:
+        # On réutilise les matrices et on actualise les charges et la diagonale.
+        matrix = prepared['stiffness'] + omega ** 2 * prepared['mass']
+        rhs = space_step ** 2 * numpy.asarray(f).ravel() * prepared['interior_mask']
+        rhs = rhs.astype(complex)
+        numpy.add.at(rhs, prepared['dirichlet_rows'],
+                     -prepared['dirichlet_factors'] * numpy.asarray(f_dir).ravel()[prepared['dirichlet_nodes']])
+        numpy.add.at(rhs, prepared['neumann_rows'],
+                     -prepared['neumann_factors'] * numpy.asarray(f_neu).ravel()[prepared['neumann_nodes']])
+        rows, nodes = prepared['robin_rows'], prepared['robin_nodes']
+        coefficient, beta = prepared['robin_coefficients'], prepared['robin_beta']
+        alpha = numpy.asarray(alpha_rob).ravel()[nodes]
+        denominator = beta + space_step * alpha
+        diagonal = numpy.zeros(domain.size, dtype=complex)
+        numpy.add.at(diagonal, rows, -coefficient * space_step * alpha / denominator)
+        matrix = matrix + scipy.sparse.diags(diagonal)
+        numpy.add.at(rhs, rows, -coefficient * space_step * numpy.asarray(f_rob).ravel()[nodes] / denominator)
+    matrix = matrix.tocsc()
+    matrix.eliminate_zeros()
+    return matrix, rhs
 
 
 def solve_helmholtz(domain, space_step, omega,
                     f, f_dir, f_neu, f_rob,
                     beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
-                    prepared=None):
-    """On résout le système complet et on renvoie le champ sur la grille."""
-    _, _, field = compute_state(
-        domain, space_step, omega, f, f_dir, f_neu, f_rob,
-        beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
-        prepared=prepared,
-    )
-    return field
+                    prepared=None, return_system=False):
+    """On résout le problème pour le nombre d'onde fourni dans omega.
 
-
-
-def compute_robin_condition_down(domain, u, space_step, beta_rob, alpha_rob):
-    """On évalue la condition de Robin avec la normale extérieure et la pression moyenne.
-
-    :param domain:
-    :param u:
-    :param space_step:
-    :param beta_rob:
-    :param alpha_rob:
-    :return:
+    On conserve les valeurs intérieures dans le tableau retourné.
+    On peut aussi renvoyer la matrice et sa factorisation pour le calcul adjoint.
     """
-
-    h = space_step
-    (M, N) = numpy.shape(domain)
-    value = numpy.zeros((M, N), dtype=numpy.complex128)
-    for i in range(0, M):
-        for j in range(0, N):
-            if is_in_interior_domain(domain[i, j]):
-                north = is_on_robin_boundary(domain[i - 1, j])
-                south = is_on_robin_boundary(domain[i + 1, j])
-                east = is_on_robin_boundary(domain[i, j + 1])
-                west = is_on_robin_boundary(domain[i, j - 1])
-                if north:
-                    value[i - 1, j] += beta_rob[i - 1, j] * (u[i - 1, j] - u[i, j]) / h + alpha_rob[
-                        i - 1, j] * (u[i - 1, j] + u[i, j]) / 2
-                if south:
-                    value[i + 1, j] += beta_rob[i + 1, j] * (u[i + 1, j] - u[i, j]) / h + alpha_rob[
-                        i + 1, j] * (u[i + 1, j] + u[i, j]) / 2
-                if east:
-                    value[i, j + 1] += beta_rob[i, j + 1] * (u[i, j + 1] - u[i, j]) / h + alpha_rob[
-                        i, j + 1] * (u[i, j + 1] + u[i, j]) / 2
-                if west:
-                    value[i, j - 1] += beta_rob[i, j - 1] * (u[i, j - 1] - u[i, j]) / h + alpha_rob[
-                        i, j - 1] * (u[i, j - 1] + u[i, j]) / 2
-
-    return value
-
-
-
-def compute_robin_condition_up(domain, u, space_step, beta_rob, alpha_rob):
-    """On évalue la condition de Robin avec la normale extérieure et la pression moyenne.
-
-    :param domain:
-    :param u:
-    :param space_step:
-    :param beta_rob:
-    :param alpha_rob:
-    :return:
-    """
-
-    h = space_step
-    (M, N) = numpy.shape(domain)
-    value = numpy.zeros((M, N), dtype=numpy.complex128)
-    #for i in range(M - 1, -1, -1):  # la frontière est sur un bord donc on ne regarde que
-        # les points qui sont strictement à l'intérieur (i.e d'où le 2:M-2 et 2:N-2)
-    #    for j in range(N - 1, -1, -1):
-    for i in range(0, M):
-        for j in range(0, N):
-            if is_in_interior_domain(domain[i, j]):
-                north = is_on_robin_boundary(domain[i - 1, j])
-                south = is_on_robin_boundary(domain[i + 1, j])
-                east = is_on_robin_boundary(domain[i, j + 1])
-                west = is_on_robin_boundary(domain[i, j - 1])
-                if north:
-                    value[i - 1, j] += beta_rob[i - 1, j] * (u[i - 1, j] - u[i, j]) / h + alpha_rob[
-                        i - 1, j] * (u[i - 1, j] + u[i, j]) / 2
-                if south:
-                    value[i + 1, j] += beta_rob[i + 1, j] * (u[i + 1, j] - u[i, j]) / h + alpha_rob[
-                        i + 1, j] * (u[i + 1, j] + u[i, j]) / 2
-                if east:
-                    value[i, j + 1] += beta_rob[i, j + 1] * (u[i, j + 1] - u[i, j]) / h + alpha_rob[
-                        i, j + 1] * (u[i, j + 1] + u[i, j]) / 2
-                if west:
-                    value[i, j - 1] += beta_rob[i, j - 1] * (u[i, j - 1] - u[i, j]) / h + alpha_rob[
-                        i, j - 1] * (u[i, j - 1] + u[i, j]) / 2
-
-    return value
-
-
-
-def boundary_neighbours(domain, boundary):
-    """On repère chaque voisinage entre un point intérieur et le bord demandé."""
-    ncols = domain.shape[1]
-    i, j = numpy.nonzero(domain == _env.NODE_INTERIOR)
-    rows, nodes = [], []
-    for di, dj in ((-1, 0), (1, 0), (0, -1), (0, 1)):
-        selected = domain[i + di, j + dj] == boundary
-        rows.append(i[selected] * ncols + j[selected])
-        nodes.append((i[selected] + di) * ncols + j[selected] + dj)
-    return numpy.concatenate(rows), numpy.concatenate(nodes)
-
-
-def prepare_helmholtz_system(domain_omega, spacestep, f, f_neu,
-                             beta_pde, alpha_pde, beta_neu):
-    """On prépare les matrices fournies et les voisinages qui restent fixes."""
-    stiffness, rhs = compute_stiffness_matrix(domain_omega, spacestep, f, beta_pde)
-    mass, _ = compute_mass_matrix(domain_omega, spacestep, alpha_pde)
-    stiffness, rhs = compute_neumann_condition(
-        domain_omega, spacestep, f_neu, beta_neu, beta_pde, stiffness, rhs,
-    )
-    dr, dn = boundary_neighbours(domain_omega, _env.NODE_DIRICHLET)
-    rr, rn = boundary_neighbours(domain_omega, _env.NODE_ROBIN)
-    # On supprime une seule fois les coefficients reliant le fluide aux points de bord.
-    for rows, nodes in ((dr, dn), (rr, rn)):
-        stiffness[rows, nodes] = 0.0
-    diagonal = stiffness.diagonal()
-    numpy.add.at(diagonal, rr, beta_pde.ravel()[rr])
-    stiffness.setdiag(diagonal)
-    return {"stiffness": stiffness.tocsr(), "mass": mass.tocsr(), "rhs": rhs.ravel(),
-            "dir_rows": dr, "dir_nodes": dn, "rob_rows": rr, "rob_nodes": rn}
-
-
-def assemble_helmholtz_system(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
-                              beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
-                              prepared=None):
-    """On applique les mêmes conditions de bord à tous les voisinages repérés."""
-    if prepared is None:
-        prepared = prepare_helmholtz_system(
-            domain_omega, spacestep, f, f_neu, beta_pde, alpha_pde, beta_neu,
-        )
-    matrix = prepared["stiffness"] + omega**2 * prepared["mass"]
-    rhs = prepared["rhs"].copy()
-    dr, dn = prepared["dir_rows"], prepared["dir_nodes"]
-    rr, rn = prepared["rob_rows"], prepared["rob_nodes"]
-    numpy.add.at(rhs, dr, -f_dir.ravel()[dn] / alpha_dir.ravel()[dn])
-    scale = spacestep * alpha_rob.ravel()[rn] / beta_pde.ravel()[rr]
-    denominator = beta_rob.ravel()[rn] + scale
-    diagonal = matrix.diagonal()
-    # On additionne les effets des différentes faces d'un même point intérieur.
-    numpy.add.at(diagonal, rr, -scale / denominator)
-    numpy.add.at(rhs, rr, spacestep * f_rob.ravel()[rn] / denominator)
-    matrix.setdiag(diagonal)
-    return matrix.tocsr(), rhs
-
-
-def compute_state(domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
-                  beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
-                  prepared=None, return_factor=False):
-    """On résout le système complet puis on remet le champ sur la grille."""
     matrix, rhs = assemble_helmholtz_system(
-        domain_omega, spacestep, omega, f, f_dir, f_neu, f_rob,
-        beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob,
-        prepared=prepared,
+        domain, space_step, omega, f, f_dir, f_neu, f_rob,
+        beta_pde, alpha_pde, alpha_dir, beta_neu, beta_rob, alpha_rob, prepared,
     )
-    factor = scipy.sparse.linalg.splu(matrix.tocsc())
-    state = factor.solve(rhs)
-    interior = domain_omega == _env.NODE_INTERIOR
-    field = numpy.zeros(domain_omega.shape, dtype=numpy.complex128)
-    field[interior] = state.reshape(domain_omega.shape)[interior]
-    if return_factor:
-        return matrix, state, field, factor
-    return matrix, state, field
+    factor = scipy.sparse.linalg.splu(matrix)
+    sol = factor.solve(rhs)
+    u = numpy.zeros(domain.shape, dtype=numpy.complex128)
+    interior = domain == _env.NODE_INTERIOR
+    u[interior] = sol.reshape(domain.shape)[interior]
+    if return_system:
+        return u, matrix, factor
+    return u
 
 
-def compute_adjoint(domain_omega, spacestep, matrix, state, factor=None):
-    """On résout le système adjoint à partir du champ dans le fluide."""
-    interior = domain_omega == _env.NODE_INTERIOR
-    adjoint_rhs = numpy.zeros_like(state)
-    adjoint_rhs[interior.ravel()] = 2.0 * spacestep**2 * state[interior.ravel()]
-    if factor is not None:
-        return factor.solve(adjoint_rhs, trans="H")
-    return scipy.sparse.linalg.spsolve(matrix.conjugate().transpose(), adjoint_rhs)
 
 
-def compute_gradient(domain_omega, spacestep, Alpha, density,
-                     beta_pde, beta_rob, f_rob, adjoint, state):
-    """On additionne les effets des faces du mur, y compris aux coins."""
-    rows, nodes = boundary_neighbours(domain_omega, _env.NODE_ROBIN)
-    scale = spacestep * Alpha / beta_pde.ravel()[rows]
-    denominator = beta_rob.ravel()[nodes] + scale * density.ravel()[nodes]
-    diagonal_derivative = -scale * beta_rob.ravel()[nodes] / denominator**2
-    rhs_derivative = -spacestep * f_rob.ravel()[nodes] * scale / denominator**2
-    gradient = numpy.zeros(domain_omega.size)
-    numpy.add.at(gradient, nodes, numpy.real(numpy.conjugate(adjoint[rows])
-                 * (rhs_derivative - diagonal_derivative * state[rows])))
-    return gradient.reshape(domain_omega.shape)
+
+
+
+

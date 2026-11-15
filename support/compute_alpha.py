@@ -124,7 +124,8 @@ def erreur(alpha, omega, mat, tab_k, tab_fourier, tab_l0, tab_l1):
 
 ### Determination du alpha optimal ###
 
-Alpha0 = [50, -50]  # On choisit le point de départ dans la convention du polycopié.
+Alpha0 = [50, -50]  # l'algorithme étant robuste, l'alpha0 n'est pas important et j'en ai donc mis un ici simplement
+                    # pour ne pas réécrire un couple de départ à chaque test
 
 def passage_CetR(alpha_reel, omega, mat, tab_k, tab_fourier, tab_l0, tab_l1):
 
@@ -140,14 +141,15 @@ def passage_CetR(alpha_reel, omega, mat, tab_k, tab_fourier, tab_l0, tab_l1):
 def compute_alpha(omega, g, car_mat, alpha0):
     
     """ On détermine ici le paramètre alpha optimal en fonction de la pulsation (qui n'a pas forcément d'impact), de la fonction g et du materiau.
-    On utilise le signe du polycopié pour le point de départ et le coefficient renvoyé.
-    Le résultat contient les parties réelle et imaginaire, le succès et le message de la minimisation."""
+    Il faut donner un point de départ alpha0 mais l'algorithme est assez robuste pour trouver le bon alpha qu'import le point de départ."""
     
     mat = materiau(car_mat)
     tab_k, tab_fourier, tab_l0, tab_l1 = coefficients(omega, g, mat)   # Les coefficients de fourier, les lambda0 et les lambda1 étant indépendants de alpha, on les calcule avant de rentrer dans l'optimisation.
     res = opt.minimize(passage_CetR, alpha0, args= (omega, mat, tab_k, tab_fourier, tab_l0, tab_l1), method='Nelder-Mead', options={'xatol': 1e-6, 'fatol': 1e-10})
     return res.x, res.success, res.message              
 
-# On vérifie le succès de la minimisation avant d’utiliser le coefficient.
+# alpha_opt renvoie le alpha optimal determiner par l'algorithme mais celui-ci n'est pas forcément fiable
+# c'est pourquoi on renvoie success (booléen) indiquant si l'algorithme considère le alpha comme fiable.
+# Si ce n'est pas le cas, message donne la raison de cette erreur (ex: trop d'itérations).
 
 ### Alpha comme fonction de la fréquence (Q3) ###

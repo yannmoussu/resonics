@@ -1,25 +1,32 @@
-# Comparer les matériaux et les géométries
+# Code utilisé et rapport de la soutenance
 
-On utilise Python 3, NumPy, SciPy et Matplotlib. Depuis la racine du projet :
+Les six fichiers Python de ce dossier reprennent la version actuellement présente dans
+context/EI_Antoine/. Les algorithmes sont conservés. Seuls les chemins de sortie et
+l'indication du dossier source ont été adaptés à l'installation dans support/.
 
-```sh
+Python 3, NumPy, SciPy et Matplotlib sont nécessaires. Depuis la racine :
+
+~~~sh
 python support/demo_control_polycopie2024.py
-```
+~~~
 
-Les paramètres sont au début de ce fichier. La comparaison demandée utilise les quatre matériaux `MELAMINE`, `LAINE_ROCHE`, `LAINE_VERRE` et `OUATE_POLYESTER`, la source RER B, une bande de 50 à 3 500 Hz avec un pas de 5 Hz et un maximum de 100 itérations de descente. Le maillage comporte 128 points sur sa largeur.
+Ce lancement peut être long. Il utilise les paramètres présents en tête du programme :
+quatre matériaux, niveaux zéro à trois pour les références, descente au niveau trois,
+bande 50–2 000 Hz au pas de 5 Hz et au plus cent itérations.
+Les nouveaux calculs vont dans support/resultats_antoine/.
+Les données conservées dans support/resultats/ proviennent de l'ancienne version.
 
-La descente compare les quatre matériaux au niveau de fractale 3, avec la même répartition initiale. Les géométries et les quantités sont également étudiées aux niveaux 0, 1 et 2. Les étapes acceptées diminuent le critère, et les contraintes de quantité sont conservées. Les spectres finaux sont recalculés avec le matériau présent ou absent à chaque point du mur.
+Le rapport et les figures de la soutenance sont dans report/ et context/SlidesVF/.
+L'exécution actuelle ne reproduit pas automatiquement toutes les figures historiques :
+elle ne lance notamment pas l'étude de quantité optimisée au niveau deux avec 20 % de
+matériau, ni la sélection des cinq plus grands maxima. Le rapport reprend les résultats
+présentés et ne prétend pas les avoir recalculés.
 
-Pour l’étude de quantité, on augmente la longueur d’une portion centrale garnie, avec cinq fractions de chaque contour. On mesure donc l’influence de cette quantité à position fixée. Les longueurs totales des contours diffèrent selon le niveau.
+L'ancien rapport, les anciens programmes et leurs données sont conservés localement dans
+context/archives/avant_rapport_SlidesVF_2026-11-15/, dossier ignoré par Git.
 
-Après la descente, on recalcule les spectres initial et binaire aux fréquences intermédiaires. On obtient ainsi une grille de contrôle au pas de 2,5 Hz. Cette comparaison mesure ce qui change lorsque le pas est divisé par deux. Le contrôle a notamment repéré un pic initial à 397,5 Hz, entre deux points de la grille de descente.
+Pour compiler le rapport :
 
-Les données et les figures se trouvent dans `support/resultats/`. Les PNG sont aussi copiés directement dans `presentation/`. Les calculs déjà enregistrés sont réutilisés quand leurs paramètres sont identiques. Le programme peut ainsi reprendre un calcul interrompu à la fin d’une étude déjà enregistrée.
-
-Le système conserve tous les points de la grille et les conditions aux limites du support. Les voisinages fixes sont préparés une fois. La même factorisation est utilisée pour le champ et son adjoint à une fréquence donnée. Les matrices ont été comparées à celles du support et le gradient a été contrôlé par différences finies.
-
-Pour compiler les slides depuis la racine :
-
-```sh
-latexmk -cd -pdf presentation/presentation.tex
-```
+~~~sh
+latexmk -cd -pdf -outdir=build report/report.tex
+~~~

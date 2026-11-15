@@ -9,6 +9,7 @@ import os
 
 # MRG packages
 import _env
+from processing import is_in_interior_domain, is_on_robin_boundary
 
 
 def set2zero(alpha, domain_omega):
@@ -185,8 +186,10 @@ def create_fractal_coordinates(nodes, domain):
     current_node = [[a[k], b[k]] for k in range(len(nodes))]
     l = []
     for k in range(0, len(current_node) - 1):
-        n = nodes[k + 1][0] - nodes[k][0]
-        m = nodes[k + 1][1] - nodes[k][1]
+        # differences on the rounded nodes: the rotation in create_motif_koch leaves
+        # residues like 1e-15 on vertical segments, which were then taken as n > 0
+        n = current_node[k + 1][0] - current_node[k][0]
+        m = current_node[k + 1][1] - current_node[k][1]
         if n > 0:
             for o in range(0, int(n) + 1):
                 a = [[current_node[k][0] + o], [current_node[k][1]]]
@@ -312,7 +315,7 @@ def partition_domain(domain, seed):
                     b = is_on_boundary(domain[south[0], south[1]])
                     c = 'Not Exist'
                     d = is_on_boundary(domain[west[0], west[1]])
-                elif i == N - 1:  # Il n'y a pas de sud
+                elif i == M - 1:  # Il n'y a pas de sud
                     north = [i - 1, j]
                     west = [i, j - 1]
                     a = is_on_boundary(domain[north[0], north[1]])
@@ -324,8 +327,8 @@ def partition_domain(domain, seed):
                     south = [i + 1, j]
                     west = [i, j - 1]
                     a = is_on_boundary(domain[north[0], north[1]])
-                    b = 'Not Exist'
-                    c = is_on_boundary(domain[east[0], east[1]])
+                    b = is_on_boundary(domain[south[0], south[1]])
+                    c = 'Not Exist'
                     d = is_on_boundary(domain[west[0], west[1]])
             elif j == 0:  # Il n'y a pas d'ouest
                 if i == 0:  # Il n'y a pas de nord
@@ -335,7 +338,7 @@ def partition_domain(domain, seed):
                     b = is_on_boundary(domain[south[0], south[1]])
                     c = is_on_boundary(domain[east[0], east[1]])
                     d = 'Not Exist'
-                elif i == N - 1:  # Il n'y a pas de sud
+                elif i == M - 1:  # Il n'y a pas de sud
                     north = [i - 1, j]
                     east = [i, j + 1]
                     a = is_on_boundary(domain[north[0], north[1]])
@@ -380,110 +383,29 @@ def partition_domain(domain, seed):
     return domain
 
 
-def surlignefractale(domain, color_domain, color_seed):
-    """Color the points in the interior domain at a distance to the boundary equal one."""
+def amplitude_rer_b(frequency_hz):
+    """Renvoie l'amplitude spectrale hypothétique de la source du RER B."""
+    frequency_hz = float(frequency_hz)
 
-    (M, N) = numpy.shape(domain)
-
-    for i in range(M):
-        for j in range(N):
-            if BelongsInteriorDomain(domain[i, j]) == color_domain:
-                a = is_on_robin_boundary(domain[i - 1, j])
-                b = is_on_robin_boundary(domain[i + 1, j])
-                c = is_on_robin_boundary(domain[i, j - 1])
-                d = is_on_robin_boundary(domain[i, j + 1])
-                e = is_on_robin_boundary(domain[i + 1, j + 1])
-                f = is_on_robin_boundary(domain[i - 1, j - 1])
-                g = is_on_robin_boundary(domain[i + 1, j - 1])
-                h = is_on_robin_boundary(domain[i - 1, j + 1])
-
-                if a:
-                    domain[i, j] = color_seed
-                if b:
-                    domain[i, j] = color_seed
-                if c:
-                    domain[i, j] = color_seed
-                if d:
-                    domain[i, j] = color_seed
-                if e:
-                    domain[i, j] = color_seed
-                if f:
-                    domain[i, j] = color_seed
-                if g:
-                    domain[i, j] = color_seed
-                if h:
-                    domain[i, j] = color_seed
-
-    return domain
-
-def source_constant(y, omega):
-    """On renvoie une amplitude unitaire en tout point du bord."""
-    return 1.0
-
-
-RER_B_GAUSSIANS = (
-    (200.0, 100.0, 1.0),   # (fréquence centrale en Hz, largeur en Hz, amplitude)
-    (800.0, 350.0, 0.8),
-    (2500.0, 150.0, 0.5),
-)
-
-
-def source_rer_b(y, omega):
-    """On renvoie l'amplitude du spectre RER B pour la pulsation donnée."""
-    frequency_hz = float(omega) / (2.0 * numpy.pi)
+    composantes = (
+        (200.0, 100.0, 1.0),   # Basses fréquences (moteur, ventilation, etc.)
+        (800.0, 350.0, 0.8),   # Bruit de roulement
+        (2500.0, 150.0, 0.5),  # Bruit de crissement.
+    )
     amplitude = 0.0
-    for centre, largeur, poids in RER_B_GAUSSIANS:
+    for centre, largeur, poids in composantes:
         amplitude += poids * numpy.exp(
             -0.5 * ((frequency_hz - centre) / largeur) ** 2
         )
     return float(amplitude)
 
 
-def project_density(proposal, domain_omega, V_obj):
-    """On borne les valeurs du mur en conservant la quantité de matériau imposée."""
-    robin = domain_omega == _env.NODE_ROBIN
-    values = proposal[robin]
-    target = float(V_obj * numpy.count_nonzero(robin))
-    projected = numpy.zeros(domain_omega.shape, dtype=numpy.float64)
-    if target == 0:
-        return projected
-    if target == values.size:
-        projected[robin] = 1.0
-        return projected
 
-    # On cherche le décalage commun par dichotomie.
-    lower = float(values.min() - 1.0)
-    upper = float(values.max())
-    for _ in range(60):
-        shift = (lower + upper) / 2.0
-        if numpy.clip(values - shift, 0.0, 1.0).sum() > target:
-            lower = shift
-        else:
-            upper = shift
-    projected[robin] = numpy.clip(values - (lower + upper) / 2.0, 0.0, 1.0)
-    return projected
+def source_rer_b(y, omega):
+    """On évalue l'amplitude du RER B à la pulsation demandée."""
+    return amplitude_rer_b(float(omega) / (2.0 * numpy.pi))
 
 
-def binarize_chi(chi_cont, domain_omega, V_obj):
-    """On garnit les points de plus forte densité en conservant le nombre prévu."""
-    nodes = numpy.argwhere(domain_omega == _env.NODE_ROBIN)
-    values = chi_cont[domain_omega == _env.NODE_ROBIN]
-    order = numpy.argsort(-values, kind="stable")
-    chi = numpy.zeros(domain_omega.shape)
-    for i, j in nodes[order[:int(round(V_obj * len(nodes)))]]:
-        chi[i, j] = 1.0
-    return chi
-
-
-def trapezoidal_weights(frequencies_hz, normalise=True):
-    """On répartit la largeur de chaque intervalle entre ses deux extrémités."""
-    frequencies_hz = numpy.asarray(frequencies_hz, dtype=float)
-    if len(frequencies_hz) == 1:
-        return numpy.ones(1)
-    weights = numpy.zeros(len(frequencies_hz))
-    widths = numpy.diff(frequencies_hz) / 2.0
-    weights[:-1] += widths
-    weights[1:] += widths
-    if normalise:
-        weights /= frequencies_hz[-1] - frequencies_hz[0]
-    return weights
+def source_constant(y, omega):
+    """On impose une amplitude constante sur le bord de la source."""
+    return 1.0
